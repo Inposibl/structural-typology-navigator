@@ -5,7 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "@/components/chat/chat-message";
 import { MessageComposer } from "@/components/chat/message-composer";
 import type { ChatMessage as ChatMessageType } from "@/components/chat/types";
-import { getAssistantResponse } from "@/lib/chat-response";
+import { requestAssistantResponse } from "@/lib/chat-api";
+import type { ConversationMessage } from "@/lib/chat-contract";
 
 const INITIAL_MESSAGE: ChatMessageType = {
   id: "assistant-initial",
@@ -19,17 +20,20 @@ export function ChatInterface() {
     INITIAL_MESSAGE,
   ]);
   const [draft, setDraft] = useState("");
+  const [isPending, setIsPending] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
   const nextMessageId = useRef(1);
+  const requestInFlight = useRef(false);
   const conversationEnd = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     conversationEnd.current?.scrollIntoView({ block: "end" });
-  }, [messages]);
+  }, [isPending, messages, requestError]);
 
   async function sendMessage() {
     const content = draft.trim();
 
-    if (!content) {
+    if (!content || requestInFlight.current) {
       return;
     }
 
@@ -39,20 +43,44 @@ export function ChatInterface() {
       content,
     };
 
+    const conversation: ConversationMessage[] = [
+      ...messages
+        .filter((message) => message.id !== INITIAL_MESSAGE.id)
+        .map(({ role, content: messageContent }) => ({
+          role,
+          content: messageContent,
+        })),
+      { role: userMessage.role, content: userMessage.content },
+    ];
+
+    requestInFlight.current = true;
+    setIsPending(true);
+    setRequestError(null);
     setMessages((currentMessages) => [...currentMessages, userMessage]);
     setDraft("");
 
-    const response = await getAssistantResponse(content);
-    const assistantMessage: ChatMessageType = {
-      id: `assistant-${nextMessageId.current++}`,
-      role: "assistant",
-      content: response,
-    };
+    try {
+      const response = await requestAssistantResponse(conversation);
+      const assistantMessage: ChatMessageType = {
+        id: `assistant-${nextMessageId.current++}`,
+        role: "assistant",
+        content: response,
+      };
 
-    setMessages((currentMessages) => [
-      ...currentMessages,
-      assistantMessage,
-    ]);
+      setMessages((currentMessages) => [
+        ...currentMessages,
+        assistantMessage,
+      ]);
+    } catch (error) {
+      setRequestError(
+        error instanceof Error
+          ? error.message
+          : "Не удалось получить ответ Навигатора. Попробуйте ещё раз.",
+      );
+    } finally {
+      requestInFlight.current = false;
+      setIsPending(false);
+    }
   }
 
   return (
@@ -71,12 +99,27 @@ export function ChatInterface() {
           {messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
+          {isPending ? (
+            <li
+              className="message message--assistant message--pending"
+              role="status"
+            >
+              <p className="message__author">Навигатор</p>
+              <p className="message__content">Готовлю ответ…</p>
+            </li>
+          ) : null}
+          {requestError ? (
+            <li className="request-error" role="alert">
+              {requestError}
+            </li>
+          ) : null}
         </ol>
         <div ref={conversationEnd} aria-hidden="true" />
       </section>
 
       <MessageComposer
         value={draft}
+        isPending={isPending}
         onChange={setDraft}
         onSubmit={sendMessage}
       />
