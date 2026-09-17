@@ -1,13 +1,17 @@
 import type { FormEvent, KeyboardEvent } from "react";
 
+import { MAX_CHAT_MESSAGE_LENGTH } from "@/lib/chat-contract";
+
 type MessageComposerProps = {
   value: string;
+  isPending: boolean;
   onChange: (value: string) => void;
   onSubmit: () => void;
 };
 
 export function MessageComposer({
   value,
+  isPending,
   onChange,
   onSubmit,
 }: MessageComposerProps) {
@@ -16,7 +20,7 @@ export function MessageComposer({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (isEmpty) {
+    if (isEmpty || isPending) {
       return;
     }
 
@@ -39,7 +43,11 @@ export function MessageComposer({
 
   return (
     <footer className="composer-region">
-      <form className="composer" onSubmit={handleSubmit}>
+      <form
+        className="composer"
+        aria-busy={isPending}
+        onSubmit={handleSubmit}
+      >
         <div className="composer__field">
           <label htmlFor="chat-message">Ваш вопрос</label>
           <textarea
@@ -50,12 +58,13 @@ export function MessageComposer({
             onKeyDown={handleKeyDown}
             placeholder="Напишите вопрос о материалах Академии"
             aria-describedby="composer-hint"
+            maxLength={MAX_CHAT_MESSAGE_LENGTH}
             rows={2}
           />
         </div>
 
-        <button type="submit" disabled={isEmpty}>
-          Отправить
+        <button type="submit" disabled={isEmpty || isPending}>
+          {isPending ? "Навигатор отвечает…" : "Отправить"}
         </button>
 
         <p className="composer__hint" id="composer-hint">

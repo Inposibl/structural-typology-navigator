@@ -123,6 +123,19 @@ textarea:focus-visible {
   white-space: pre-wrap;
 }
 
+.message--pending .message__content {
+  color: var(--muted);
+}
+
+.request-error {
+  width: min(100%, 44rem);
+  border-inline-start: 3px solid #b42318;
+  color: #8f1d16;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
 .composer-region {
   border-block-start: 1px solid var(--line);
   background: var(--surface);

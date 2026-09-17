@@ -1,5 +1,5 @@
-export type ChatMessage = {
+import type { ConversationMessage } from "@/lib/chat-contract";
+
+export type ChatMessage = ConversationMessage & {
   id: string;
-  role: "assistant" | "user";
-  content: string;
 };
