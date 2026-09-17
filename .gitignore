@@ -12,6 +12,7 @@
 
 # testing
 /coverage
+/.ingestion-plans/
 
 # next.js
 /.next/
