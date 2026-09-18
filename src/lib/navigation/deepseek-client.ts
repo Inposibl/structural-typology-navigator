@@ -142,6 +142,7 @@ async function callDeepSeek(
           model: DEEPSEEK_MODEL,
           messages,
           stream: false,
+          thinking: { type: "disabled" },
           max_tokens: options.maxTokens,
           ...(options.jsonMode
             ? { response_format: { type: "json_object" } }
