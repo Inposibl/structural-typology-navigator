@@ -1,0 +1,56 @@
+{
+  "record": "NAVIGATOR-EDU-ROUTING-1.LIVE-SUPABASE-CONTROL",
+  "status": "PASS_CLOSED",
+  "artifact_status": "READY_FOR_OWNER_ACCEPTANCE",
+  "date": "2026-09-18",
+  "project_ref": "mgtghkxebccahtqqyyjv",
+  "git_head": "ac4cee5c58c700976abba8d4c83757f98e08a874",
+  "migration": {
+    "version": "20260918142356",
+    "name": "course_source_registry",
+    "sha256": "83a33e58e585006a665d9d33bc975d220aeec1c77aeb8492832f2c959a368cd0"
+  },
+  "registry": {
+    "rows": 5,
+    "active_maslow_rows": 5,
+    "non_maslow_rows": 0,
+    "synthetic_bindings": 0
+  },
+  "corpus": {
+    "canonical_ready_embedded_chunks": 591,
+    "by_source": {
+      "maslow-new-paradigm": 283,
+      "maslow-first-meet-transcript": 111,
+      "maslow-new-paradigm-presentation-2025-02-22": 20,
+      "maslow-second-meet-transcript": 140,
+      "maslow-qa-2025-04-20": 37
+    }
+  },
+  "q11": {
+    "chunk_id": 12918,
+    "chunk_index": 32,
+    "document_id": "b7e264ec-02cf-4ee0-8912-564a221c295c",
+    "pdf_page": 29,
+    "question_number": 11,
+    "authority_relation": "PROPOSITION_SCOPED_CORRECTION",
+    "controlling_entry": "QA-Q11-CORR-SUBLIMATION-REALITY",
+    "rpc_similarity": 1.0
+  },
+  "security": {
+    "rls_enabled": true,
+    "rpc_security_invoker": true,
+    "rpc_search_path_empty": true,
+    "anon_table_select": false,
+    "authenticated_table_select": false,
+    "anon_rpc_execute": false,
+    "authenticated_rpc_execute": false,
+    "service_role_rpc_execute": true,
+    "platform_default_acl_note": "NON_BLOCKING"
+  },
+  "synthetic_adversarial_rpc": {
+    "threshold": 0.9999,
+    "returned_rows": 0,
+    "synthetic_rows": 0
+  },
+  "next_gate": "LIVE_CONVERSATIONAL_PILOT_AFTER_DEEPSEEK_MODEL_ID_VERIFICATION"
+}
