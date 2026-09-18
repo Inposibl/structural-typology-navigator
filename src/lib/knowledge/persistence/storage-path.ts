@@ -1,25 +1,66 @@
-import { isSha256Hex } from "../../ingestion/hash.ts";
+import { isSha256Hex, sha256Hex } from "../../ingestion/hash.ts";
 
 export const ACADEMY_KNOWLEDGE_BUCKET = "academy-knowledge";
 
-const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/gu;
-const PATH_SEPARATORS = /[\\/]+/gu;
-const TRAVERSAL_DOTS = /\.{2,}/gu;
+// Supabase Storage only accepts ASCII object keys, so each physical segment
+// carries a conservative ASCII hint plus the full SHA-256 of the
+// NFC-normalized logical value. The logical values stay untouched in
+// knowledge_documents.original_filename and knowledge_sources.slug; the digest
+// is what keeps distinct Unicode values distinct in the physical key.
+const UNSUPPORTED_HINT_CHARACTERS = /[^A-Za-z0-9._-]+/gu;
+const REPEATED_DOTS = /\.{2,}/gu;
+const REPEATED_HYPHENS = /-{2,}/gu;
+const HINT_EDGE_PUNCTUATION = /^[._-]+|[._-]+$/gu;
+const PHYSICAL_SEGMENT_PATTERN = /^[A-Za-z0-9._-]+$/u;
+const EMPTY_HINT = "u";
+const SEGMENT_SEPARATOR = "--";
 
-function sanitizePathSegment(value: string, fieldName: string): string {
-  const sanitized = value
-    .normalize("NFC")
-    .trim()
-    .replace(CONTROL_CHARACTERS, "-")
-    .replace(PATH_SEPARATORS, "-")
-    .replace(TRAVERSAL_DOTS, "-")
-    .replace(/^\.+|\.+$/gu, "");
+export function isPhysicalStorageSegment(value: unknown): value is string {
+  return typeof value === "string" && PHYSICAL_SEGMENT_PATTERN.test(value);
+}
 
-  if (sanitized.length === 0 || sanitized === "." || sanitized === "..") {
+// The physical key contract: sources/<ascii-segment>/<document-sha256>/<ascii-segment>.
+export function isDeterministicOriginalFileStoragePath(
+  path: unknown,
+  documentSha256: string,
+): boolean {
+  if (typeof path !== "string" || path.length === 0) {
+    return false;
+  }
+
+  const segments = path.split("/");
+  return (
+    segments.length === 4 &&
+    segments[0] === "sources" &&
+    segments[2] === documentSha256 &&
+    isSha256Hex(segments[2]) &&
+    segments
+      .slice(1)
+      .every(
+        (segment) =>
+          isPhysicalStorageSegment(segment) &&
+          segment !== "." &&
+          segment !== "..",
+      )
+  );
+}
+
+function buildPhysicalStorageSegment(value: string, fieldName: string): string {
+  const normalized = value.normalize("NFC");
+
+  if (normalized.trim().length === 0) {
     throw new Error(`${fieldName} must contain a safe path segment.`);
   }
 
-  return sanitized;
+  const hint = normalized
+    .replace(UNSUPPORTED_HINT_CHARACTERS, "-")
+    .replace(REPEATED_DOTS, "-")
+    .replace(REPEATED_HYPHENS, "-")
+    .replace(HINT_EDGE_PUNCTUATION, "");
+
+  return `${hint.length === 0 ? EMPTY_HINT : hint}${SEGMENT_SEPARATOR}${sha256Hex(
+    normalized,
+  )}`;
 }
 
 export function buildOriginalFileStoragePath(
@@ -31,11 +72,11 @@ export function buildOriginalFileStoragePath(
     throw new Error("documentSha256 must be a lowercase SHA-256 value.");
   }
 
-  const safeSourceSlug = sanitizePathSegment(sourceSlug, "sourceSlug");
-  const safeFilename = sanitizePathSegment(
+  const sourceSegment = buildPhysicalStorageSegment(sourceSlug, "sourceSlug");
+  const filenameSegment = buildPhysicalStorageSegment(
     originalFilename,
     "originalFilename",
   );
 
-  return `sources/${safeSourceSlug}/${documentSha256}/${safeFilename}`;
+  return `sources/${sourceSegment}/${documentSha256}/${filenameSegment}`;
 }

@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import test from "node:test";
 
 import {
@@ -136,24 +137,22 @@ test("keeps the private bucket contract when no original filename exists", () =>
   assert.equal(payload.document.storage_path, null);
 });
 
-test("builds deterministic Unicode-safe storage paths", () => {
+test("builds deterministic ASCII-safe storage paths from Unicode values", () => {
   const hash = "a".repeat(64);
-  const first = buildOriginalFileStoragePath(
-    "курс-основы",
-    hash,
-    "Лекция № 1 — Введение.md",
-  );
-  const second = buildOriginalFileStoragePath(
-    "курс-основы",
-    hash,
-    "Лекция № 1 — Введение.md",
-  );
+  const slug = "курс-основы";
+  const filename = "Лекция № 1 — Введение.md";
+  const digestOf = (value: string) =>
+    createHash("sha256").update(value.normalize("NFC"), "utf8").digest("hex");
+
+  const first = buildOriginalFileStoragePath(slug, hash, filename);
+  const second = buildOriginalFileStoragePath(slug, hash, filename);
 
   assert.equal(first, second);
   assert.equal(
     first,
-    `sources/курс-основы/${hash}/Лекция № 1 — Введение.md`,
+    `sources/u--${digestOf(slug)}/${hash}/1-.md--${digestOf(filename)}`,
   );
+  assert.match(first, /^sources\/[A-Za-z0-9._-]+\/[0-9a-f]{64}\/[A-Za-z0-9._-]+$/u);
   assert.equal(ACADEMY_KNOWLEDGE_BUCKET, "academy-knowledge");
 });
 
