@@ -12,6 +12,7 @@ export type ComposeNavigatorAnswerOptions = {
   courseEvidence?: readonly ResolvedCourseEvidence[];
   evidenceSelection?: CourseEvidenceSelection;
   hasActiveCourseSources?: boolean;
+  showEvidence?: boolean;
 };
 
 function russianQuestionBlock(questions: readonly string[]): string {
@@ -136,7 +137,9 @@ export async function composeNavigatorAnswer(
   const parts = [
     `Из того, что вы описали, ключевая учебная задача сейчас — ${decision.learningNeed}`,
     `В текущем каталоге Академии ей соответствует курс ${courseReference(primary)}.`,
-    evidenceSentence(options.evidenceSelection, options.courseEvidence),
+    options.showEvidence
+      ? evidenceSentence(options.evidenceSelection, options.courseEvidence)
+      : "",
     outcomeSentence(primary),
     secondarySequence(decision.secondaryCourseIds),
   ].filter(Boolean);

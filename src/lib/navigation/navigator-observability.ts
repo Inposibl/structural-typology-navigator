@@ -1,10 +1,12 @@
 export const NAVIGATOR_FAILURE_STAGES = [
+  "ACT_ROUTER",
   "ROUTER",
   "BINDINGS",
   "COHERE",
   "COURSE_RPC",
   "AUTHORITY",
   "EVIDENCE_LLM",
+  "FOLLOW_UP",
   "COMPOSER",
 ] as const;
 
@@ -43,12 +45,14 @@ const PROVIDER_BY_STAGE: Record<
   NavigatorFailureStage,
   Exclude<NavigatorFailureProvider, "UNKNOWN">
 > = {
+  ACT_ROUTER: "DEEPSEEK",
   ROUTER: "DEEPSEEK",
   BINDINGS: "SUPABASE",
   COHERE: "COHERE",
   COURSE_RPC: "SUPABASE",
   AUTHORITY: "LOCAL",
   EVIDENCE_LLM: "DEEPSEEK",
+  FOLLOW_UP: "DEEPSEEK",
   COMPOSER: "LOCAL",
 };
 

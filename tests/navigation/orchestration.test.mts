@@ -17,6 +17,7 @@ test("ASK_MORE never calls deep course retrieval or evidence selection", async (
 
   const result = await orchestrateNavigatorResponse(messages, {
     dependencies: {
+      classifyAct: async () => ({ state: "NAVIGATE" }),
       route: async () => ({
         state: "ASK_MORE",
         candidateCourseIds: ["maslow", "normative-situation"],
@@ -35,7 +36,7 @@ test("ASK_MORE never calls deep course retrieval or evidence selection", async (
     },
   });
 
-  assert.equal(result.decision.state, "ASK_MORE");
+  assert.equal(result.decision?.state, "ASK_MORE");
   assert.equal(retrievalCalls, 0);
   assert.equal(selectorCalls, 0);
   assert.equal(result.evidenceSelectionStatus, "NOT_RUN");
@@ -47,6 +48,7 @@ test("NO_CURRENT_COURSE_MATCH never calls deep course retrieval or evidence sele
 
   const result = await orchestrateNavigatorResponse(messages, {
     dependencies: {
+      classifyAct: async () => ({ state: "NAVIGATE" }),
       route: async () => ({
         state: "NO_CURRENT_COURSE_MATCH",
         rationale: "Outside catalog.",
@@ -63,7 +65,7 @@ test("NO_CURRENT_COURSE_MATCH never calls deep course retrieval or evidence sele
     },
   });
 
-  assert.equal(result.decision.state, "NO_CURRENT_COURSE_MATCH");
+  assert.equal(result.decision?.state, "NO_CURRENT_COURSE_MATCH");
   assert.equal(retrievalCalls, 0);
   assert.equal(selectorCalls, 0);
   assert.equal(result.evidenceSelectionStatus, "NOT_RUN");
@@ -75,6 +77,7 @@ test("routable course with zero deep sources remains recommendable and selector 
 
   const result = await orchestrateNavigatorResponse(messages, {
     dependencies: {
+      classifyAct: async () => ({ state: "NAVIGATE" }),
       route: async () => ({
         state: "RECOMMEND_COURSE",
         primaryCourseId: "normative-situation",
@@ -140,6 +143,7 @@ test("Maslow uses the same generic retrieval path and selected RAG evidence reac
 
   const result = await orchestrateNavigatorResponse(messages, {
     dependencies: {
+      classifyAct: async () => ({ state: "NAVIGATE" }),
       route: async () => ({
         state: "RECOMMEND_COURSE",
         primaryCourseId: "maslow",
@@ -220,6 +224,7 @@ test("invalid evidence selection degrades to INSUFFICIENT without discarding the
     const result = await orchestrateNavigatorResponse(messages, {
       requestId: "request-evidence-degraded",
       dependencies: {
+      classifyAct: async () => ({ state: "NAVIGATE" }),
         route: async () => ({
           state: "RECOMMEND_COURSE",
           primaryCourseId: "maslow",
@@ -253,7 +258,7 @@ test("invalid evidence selection degrades to INSUFFICIENT without discarding the
     });
 
     assert.equal(result.message, "Маслоу без неподтверждённой RAG-цитаты");
-    assert.equal(result.decision.state, "RECOMMEND_COURSE");
+    assert.equal(result.decision?.state, "RECOMMEND_COURSE");
     assert.equal(result.courseHadActiveSources, true);
     assert.equal(result.evidenceSelectionStatus, "INSUFFICIENT");
 
@@ -272,4 +277,149 @@ test("invalid evidence selection degrades to INSUFFICIENT without discarding the
   } finally {
     console.warn = originalWarn;
   }
+});
+
+
+test("OUT_OF_SCOPE latest turn bypasses course routing and all RAG work", async () => {
+  let routeCalls = 0;
+  let retrievalCalls = 0;
+  let selectorCalls = 0;
+
+  const result = await orchestrateNavigatorResponse(
+    [
+      {
+        role: "user",
+        content: "Хочу понять мотивацию команды.",
+      },
+      {
+        role: "assistant",
+        content:
+          "В текущем каталоге Академии ей соответствует курс «Иерархия потребностей А. Маслоу: новая парадигма» — https://structural-typology.academy/courses/maslow.",
+      },
+      {
+        role: "user",
+        content: "Какая самая известная дизайн студия в Москве?",
+      },
+    ],
+    {
+      dependencies: {
+        classifyAct: async () => ({ state: "OUT_OF_SCOPE" }),
+        route: async () => {
+          routeCalls += 1;
+          throw new Error("must not route");
+        },
+        retrieve: async () => {
+          retrievalCalls += 1;
+          throw new Error("must not retrieve");
+        },
+        selectEvidence: async () => {
+          selectorCalls += 1;
+          throw new Error("must not select evidence");
+        },
+      },
+    },
+  );
+
+  assert.equal(result.conversationAct.state, "OUT_OF_SCOPE");
+  assert.equal(result.decision, null);
+  assert.equal(routeCalls, 0);
+  assert.equal(retrievalCalls, 0);
+  assert.equal(selectorCalls, 0);
+  assert.match(result.message, /вне функции Навигатора/u);
+  assert.match(result.message, /Google|Perplexity/u);
+  assert.match(result.message, /ChatGPT/u);
+});
+
+test("META latest turn answers navigator behavior and bypasses rerouting", async () => {
+  let routeCalls = 0;
+
+  const result = await orchestrateNavigatorResponse(
+    [
+      {
+        role: "user",
+        content: "Хочу понять мотивацию команды.",
+      },
+      {
+        role: "assistant",
+        content:
+          "В текущем каталоге Академии ей соответствует курс «Иерархия потребностей А. Маслоу: новая парадигма» — https://structural-typology.academy/courses/maslow.",
+      },
+      {
+        role: "user",
+        content: "А зачем ты мне даёшь ссылки на тексты?",
+      },
+    ],
+    {
+      dependencies: {
+        classifyAct: async () => ({ state: "META" }),
+        route: async () => {
+          routeCalls += 1;
+          throw new Error("must not route");
+        },
+      },
+    },
+  );
+
+  assert.equal(result.conversationAct.state, "META");
+  assert.equal(result.decision, null);
+  assert.equal(routeCalls, 0);
+  assert.match(result.message, /не должны появляться.*автоматически/u);
+});
+
+test("COURSE_FOLLOW_UP binds to the discussed course without invoking educational router", async () => {
+  let routeCalls = 0;
+  let requestedCourseId = "";
+
+  const result = await orchestrateNavigatorResponse(
+    [
+      {
+        role: "user",
+        content: "Хочу понять мотивацию команды.",
+      },
+      {
+        role: "assistant",
+        content:
+          "В текущем каталоге Академии ей соответствует курс «Иерархия потребностей А. Маслоу: новая парадигма» — https://structural-typology.academy/courses/maslow.",
+      },
+      {
+        role: "user",
+        content: "Что это за динамическая модель?",
+      },
+    ],
+    {
+      dependencies: {
+        classifyAct: async () => ({
+          state: "COURSE_FOLLOW_UP",
+          courseId: "maslow",
+          evidenceRequested: false,
+        }),
+        route: async () => {
+          routeCalls += 1;
+          throw new Error("must not reroute");
+        },
+        retrieve: async (courseId) => {
+          requestedCourseId = courseId;
+          return {
+            hasActiveSources: false,
+            bindings: [],
+            matches: [],
+          };
+        },
+        composeFollowUp: async (_messages, act, options) => {
+          assert.equal(act.courseId, "maslow");
+          assert.equal(options.evidenceSelection, undefined);
+          return "Краткий ответ по уже выбранному курсу.";
+        },
+      },
+    },
+  );
+
+  assert.equal(routeCalls, 0);
+  assert.equal(requestedCourseId, "maslow");
+  assert.equal(result.decision, null);
+  assert.equal(result.conversationAct.state, "COURSE_FOLLOW_UP");
+  assert.equal(
+    result.message,
+    "Краткий ответ по уже выбранному курсу.",
+  );
 });

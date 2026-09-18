@@ -1,4 +1,5 @@
 import type { ChatMessage as ChatMessageType } from "@/components/chat/types";
+import { tokenizeMessageContent } from "@/components/chat/message-linkifier";
 
 type ChatMessageProps = {
   message: ChatMessageType;
@@ -10,7 +11,25 @@ export function ChatMessage({ message }: ChatMessageProps) {
   return (
     <li className={`message message--${message.role}`}>
       {isAssistant ? <p className="message__author">Навигатор</p> : null}
-      <p className="message__content">{message.content}</p>
+      <p className="message__content">
+        {isAssistant
+          ? tokenizeMessageContent(message.content).map((segment, index) =>
+              segment.kind === "link" ? (
+                <a
+                  className="message__link"
+                  href={segment.href}
+                  key={`${segment.href}-${index}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {segment.value}
+                </a>
+              ) : (
+                <span key={`text-${index}`}>{segment.value}</span>
+              ),
+            )
+          : message.content}
+      </p>
     </li>
   );
 }

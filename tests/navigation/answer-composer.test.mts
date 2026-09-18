@@ -36,7 +36,7 @@ const courseEvidence: ResolvedCourseEvidence[] = [
   },
 ];
 
-test("recommendation identity comes from catalog while RAG evidence materially appears in the answer", async () => {
+test("initial recommendation keeps selected RAG evidence private by default", async () => {
   const answer = await composeNavigatorAnswer(
     messages,
     {
@@ -75,12 +75,51 @@ test("recommendation identity comes from catalog while RAG evidence materially a
     answer,
     /https:\/\/structural-typology\.academy\/courses\/maslow/u,
   );
+  assert.doesNotMatch(
+    answer,
+    /Мотивация человека меняется под влиянием контекста/u,
+  );
+  assert.doesNotMatch(answer, /Manuscript/u);
+  assert.doesNotMatch(answer, /Нормативная ситуация/u);
+});
+
+test("raw RAG evidence requires an explicit composer opt-in", async () => {
+  const answer = await composeNavigatorAnswer(
+    messages,
+    {
+      state: "RECOMMEND_COURSE",
+      primaryCourseId: "maslow",
+      secondaryCourseIds: [],
+      learningNeed: "понять изменение мотивации команды",
+      evidence: [
+        {
+          messageIndex: 0,
+          quote: "понять мотивацию команды",
+        },
+      ],
+      confidence: "strong",
+    },
+    {
+      courseEvidence,
+      evidenceSelection: {
+        status: "SUPPORTED",
+        evidence: [
+          {
+            chunkId: 10,
+            quote: "Мотивация человека меняется под влиянием контекста",
+          },
+        ],
+      },
+      hasActiveCourseSources: true,
+      showEvidence: true,
+    },
+  );
+
   assert.match(
     answer,
     /Мотивация человека меняется под влиянием контекста/u,
   );
   assert.match(answer, /Manuscript \(стр\. 12\)/u);
-  assert.doesNotMatch(answer, /Нормативная ситуация/u);
 });
 
 test("ASK_MORE exposes only approved questions and no internal candidate courses", async () => {
@@ -180,6 +219,7 @@ test("supported RAG evidence does not re-enable canonical internal outcome label
         ],
       },
       hasActiveCourseSources: true,
+      showEvidence: true,
     },
   );
 

@@ -50,6 +50,7 @@ function resolvedEvidence(): ResolvedCourseEvidence[] {
 
 async function expectStage(
   expectedStage:
+    | "ACT_ROUTER"
     | "ROUTER"
     | "COURSE_RPC"
     | "AUTHORITY"
@@ -68,6 +69,7 @@ test("orchestrator classifies router failures as ROUTER", async () => {
   await expectStage("ROUTER", () =>
     orchestrateNavigatorResponse(messages, {
       dependencies: {
+        classifyAct: async () => ({ state: "NAVIGATE" }),
         route: async () => {
           throw new Error("router failure");
         },
@@ -80,6 +82,7 @@ test("orchestrator provides COURSE_RPC fallback for unclassified retrieval failu
   await expectStage("COURSE_RPC", () =>
     orchestrateNavigatorResponse(messages, {
       dependencies: {
+        classifyAct: async () => ({ state: "NAVIGATE" }),
         route: async () => recommendMaslow(),
         retrieve: async () => {
           throw new Error("retrieval failure");
@@ -93,6 +96,7 @@ test("orchestrator classifies authority resolution failures as AUTHORITY", async
   await expectStage("AUTHORITY", () =>
     orchestrateNavigatorResponse(messages, {
       dependencies: {
+        classifyAct: async () => ({ state: "NAVIGATE" }),
         route: async () => recommendMaslow(),
         retrieve: async () => ({
           hasActiveSources: true,
@@ -111,6 +115,7 @@ test("orchestrator classifies evidence selector failures as EVIDENCE_LLM", async
   await expectStage("EVIDENCE_LLM", () =>
     orchestrateNavigatorResponse(messages, {
       dependencies: {
+        classifyAct: async () => ({ state: "NAVIGATE" }),
         route: async () => recommendMaslow(),
         retrieve: async () => ({
           hasActiveSources: true,
@@ -130,6 +135,7 @@ test("orchestrator classifies composer failures as COMPOSER", async () => {
   await expectStage("COMPOSER", () =>
     orchestrateNavigatorResponse(messages, {
       dependencies: {
+        classifyAct: async () => ({ state: "NAVIGATE" }),
         route: async () => ({
           state: "ASK_MORE",
           candidateCourseIds: ["maslow"],
@@ -138,6 +144,19 @@ test("orchestrator classifies composer failures as COMPOSER", async () => {
         }),
         compose: async () => {
           throw new Error("composer failure");
+        },
+      },
+    }),
+  );
+});
+
+
+test("orchestrator classifies conversation-act failures as ACT_ROUTER", async () => {
+  await expectStage("ACT_ROUTER", () =>
+    orchestrateNavigatorResponse(messages, {
+      dependencies: {
+        classifyAct: async () => {
+          throw new Error("conversation-act failure");
         },
       },
     }),
