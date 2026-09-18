@@ -3,6 +3,7 @@ import {
   getAcademyCourse,
   type AcademyCourse,
 } from "../academy/course-catalog.ts";
+import { getPublicCourseOutcomes } from "../academy/public-course-outcomes.ts";
 import type { ResolvedCourseEvidence } from "../knowledge/retrieval/authority-resolver.ts";
 import type { CourseEvidenceSelection } from "../knowledge/retrieval/evidence-selector.ts";
 import type { NavigationDecision } from "./navigation-decision.ts";
@@ -31,7 +32,7 @@ function courseReference(course: AcademyCourse): string {
 }
 
 function outcomeSentence(course: AcademyCourse): string {
-  const outcomes = course.siteOutcomes.slice(0, 3);
+  const outcomes = getPublicCourseOutcomes(course);
   if (outcomes.length === 0) {
     return "";
   }

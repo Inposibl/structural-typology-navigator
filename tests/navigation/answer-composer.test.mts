@@ -107,3 +107,88 @@ test("NO_CURRENT_COURSE_MATCH cannot invent an external or fictional course", as
   assert.match(answer, /не вижу в текущем каталоге Академии курса/u);
   assert.doesNotMatch(answer, /рекомендую/u);
 });
+
+
+test("Maslow public recommendation never renders internal mode labels from canonical outcomes", async () => {
+  const answer = await composeNavigatorAnswer(
+    messages,
+    {
+      state: "RECOMMEND_COURSE",
+      primaryCourseId: "maslow",
+      secondaryCourseIds: [],
+      learningNeed:
+        "понять потребности и индивидуальную мотивацию сотрудников",
+      evidence: [
+        {
+          messageIndex: 0,
+          quote: "понять мотивацию команды",
+        },
+      ],
+      confidence: "strong",
+    },
+    {
+      evidenceSelection: {
+        status: "INSUFFICIENT",
+        evidence: [],
+      },
+      courseEvidence,
+      hasActiveCourseSources: true,
+    },
+  );
+
+  assert.match(
+    answer,
+    /освоить динамическую модель потребностей вместо статичной пирамиды/u,
+  );
+  assert.match(
+    answer,
+    /понимать разнонаправленные переходы мотивации под давлением контекста/u,
+  );
+  assert.doesNotMatch(
+    answer,
+    /Mono\(S\)|Meta\(S\)|S[–-]O[–-]S|S[–-]O|S[–-]S/u,
+  );
+});
+
+test("supported RAG evidence does not re-enable canonical internal outcome labels", async () => {
+  const answer = await composeNavigatorAnswer(
+    messages,
+    {
+      state: "RECOMMEND_COURSE",
+      primaryCourseId: "maslow",
+      secondaryCourseIds: [],
+      learningNeed:
+        "понять изменение мотивации команды",
+      evidence: [
+        {
+          messageIndex: 0,
+          quote: "понять мотивацию команды",
+        },
+      ],
+      confidence: "strong",
+    },
+    {
+      courseEvidence,
+      evidenceSelection: {
+        status: "SUPPORTED",
+        evidence: [
+          {
+            chunkId: 10,
+            quote:
+              "Мотивация человека меняется под влиянием контекста",
+          },
+        ],
+      },
+      hasActiveCourseSources: true,
+    },
+  );
+
+  assert.match(
+    answer,
+    /Мотивация человека меняется под влиянием контекста/u,
+  );
+  assert.doesNotMatch(
+    answer,
+    /Mono\(S\)|Meta\(S\)|S[–-]O[–-]S|S[–-]O|S[–-]S/u,
+  );
+});
