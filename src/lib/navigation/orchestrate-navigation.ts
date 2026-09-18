@@ -22,6 +22,7 @@ import {
 } from "./router.ts";
 import type { NavigationDecision } from "./navigation-decision.ts";
 import type { RetrieveCourseKnowledgeOptions } from "../knowledge/retrieval/retrieve-course-knowledge.ts";
+import { withNavigatorStage } from "./navigator-observability.ts";
 
 export type NavigatorOrchestrationResult = {
   message: string;
@@ -84,40 +85,49 @@ export async function orchestrateNavigatorResponse(
   const compose = options.dependencies?.compose ?? composeNavigatorAnswer;
 
   // Critical anti-bias invariant: no course knowledge retrieval before routing.
-  const decision = await route(messages, {
-    env: options.env,
-    fetch: options.fetch,
-    signal: options.signal,
-  });
+  const decision = await withNavigatorStage("ROUTER", () =>
+    route(messages, {
+      env: options.env,
+      fetch: options.fetch,
+      signal: options.signal,
+    }),
+  );
 
   let courseKnowledge: RetrieveCourseKnowledgeResult | null = null;
   let resolvedEvidence: ResolvedCourseEvidence[] = [];
   let evidenceSelection: CourseEvidenceSelection | undefined;
 
   if (decision.state === "RECOMMEND_COURSE") {
-    courseKnowledge = await retrieve(
-      decision.primaryCourseId,
-      decision.learningNeed,
-      {
-        env: options.env,
-        fetch: options.fetch,
-        signal: options.signal,
-        matchCount: 12,
-      },
+    courseKnowledge = await withNavigatorStage("COURSE_RPC", () =>
+      retrieve(
+        decision.primaryCourseId,
+        decision.learningNeed,
+        {
+          env: options.env,
+          fetch: options.fetch,
+          signal: options.signal,
+          matchCount: 12,
+        },
+      ),
     );
 
     if (courseKnowledge.hasActiveSources) {
-      resolvedEvidence = resolve(courseKnowledge.matches, 8);
+      const courseMatches = courseKnowledge.matches;
+      resolvedEvidence = await withNavigatorStage("AUTHORITY", () =>
+        resolve(courseMatches, 8),
+      );
 
       if (resolvedEvidence.length > 0) {
-        evidenceSelection = await selectEvidence(
-          decision.learningNeed,
-          resolvedEvidence,
-          {
-            env: options.env,
-            fetch: options.fetch,
-            signal: options.signal,
-          },
+        evidenceSelection = await withNavigatorStage("EVIDENCE_LLM", () =>
+          selectEvidence(
+            decision.learningNeed,
+            resolvedEvidence,
+            {
+              env: options.env,
+              fetch: options.fetch,
+              signal: options.signal,
+            },
+          ),
         );
       } else {
         evidenceSelection = {
@@ -128,11 +138,13 @@ export async function orchestrateNavigatorResponse(
     }
   }
 
-  const message = await compose(messages, decision, {
-    courseEvidence: resolvedEvidence,
-    evidenceSelection,
-    hasActiveCourseSources: courseKnowledge?.hasActiveSources ?? false,
-  });
+  const message = await withNavigatorStage("COMPOSER", () =>
+    compose(messages, decision, {
+      courseEvidence: resolvedEvidence,
+      evidenceSelection,
+      hasActiveCourseSources: courseKnowledge?.hasActiveSources ?? false,
+    }),
+  );
 
   return {
     message,

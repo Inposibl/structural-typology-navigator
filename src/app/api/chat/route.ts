@@ -1,4 +1,6 @@
 
+import { randomUUID } from "node:crypto";
+
 import type {
   ChatErrorResponse,
   ChatSuccessResponse,
@@ -9,6 +11,7 @@ import {
   MAX_CONVERSATION_MESSAGES,
 } from "@/lib/chat-contract";
 import { orchestrateNavigatorResponse } from "@/lib/navigation/orchestrate-navigation";
+import { createNavigatorFailureLog } from "@/lib/navigation/navigator-observability";
 
 const MAX_REQUEST_BYTES = 200_000;
 
@@ -136,6 +139,8 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError(400, "INVALID_REQUEST", validation.message);
   }
 
+  const requestId = randomUUID();
+
   try {
     const result = await orchestrateNavigatorResponse(validation.messages, {
       signal: request.signal,
@@ -146,7 +151,11 @@ export async function POST(request: Request): Promise<Response> {
     };
 
     return Response.json(responseBody);
-  } catch {
+  } catch (error) {
+    console.error(
+      JSON.stringify(createNavigatorFailureLog(error, requestId)),
+    );
+
     return jsonError(
       502,
       "NAVIGATOR_ROUTING_UNAVAILABLE",

@@ -1,6 +1,7 @@
 
 import { createSupabaseServerClient } from "../../supabase/server/http-client.ts";
 import { embedKnowledgeQuery } from "../embeddings/cohere-query.ts";
+import { withNavigatorStage } from "../../navigation/navigator-observability.ts";
 import {
   listActiveCourseSourceBindings,
   type CourseSourceBinding,
@@ -163,11 +164,13 @@ export async function retrieveCourseKnowledge(
     options.dependencies?.listBindings ?? listActiveCourseSourceBindings;
   const embedQuery = options.dependencies?.embedQuery ?? embedKnowledgeQuery;
 
-  const bindings = await listBindings(courseId, {
-    env: options.env,
-    fetch: options.fetch,
-    signal: options.signal,
-  });
+  const bindings = await withNavigatorStage("BINDINGS", () =>
+    listBindings(courseId, {
+      env: options.env,
+      fetch: options.fetch,
+      signal: options.signal,
+    }),
+  );
 
   if (bindings.length === 0) {
     return {
@@ -177,11 +180,13 @@ export async function retrieveCourseKnowledge(
     };
   }
 
-  const queryEmbedding = await embedQuery(query, {
-    env: options.env,
-    fetch: options.fetch,
-    signal: options.signal,
-  });
+  const queryEmbedding = await withNavigatorStage("COHERE", () =>
+    embedQuery(query, {
+      env: options.env,
+      fetch: options.fetch,
+      signal: options.signal,
+    }),
+  );
 
   if (
     !Array.isArray(queryEmbedding) ||
@@ -195,34 +200,38 @@ export async function retrieveCourseKnowledge(
     );
   }
 
-  const client = createSupabaseServerClient({
-    env: options.env,
-    fetch: options.fetch,
-  });
+  const matches = await withNavigatorStage("COURSE_RPC", async () => {
+    const client = createSupabaseServerClient({
+      env: options.env,
+      fetch: options.fetch,
+    });
 
-  const rows = await client.requestJson<RpcRow[]>(
-    "/rest/v1/rpc/match_course_knowledge_chunks",
-    {
-      method: "POST",
-      body: JSON.stringify({
-        p_course_id: courseId,
-        p_query_embedding: queryEmbedding,
-        p_match_threshold: normalizeThreshold(options.matchThreshold),
-        p_match_count: normalizeMatchCount(options.matchCount),
-      }),
-      signal: options.signal,
-    },
-  );
-
-  if (!Array.isArray(rows)) {
-    throw new CourseKnowledgeRetrievalError(
-      "Supabase returned a non-array course retrieval payload.",
+    const rows = await client.requestJson<RpcRow[]>(
+      "/rest/v1/rpc/match_course_knowledge_chunks",
+      {
+        method: "POST",
+        body: JSON.stringify({
+          p_course_id: courseId,
+          p_query_embedding: queryEmbedding,
+          p_match_threshold: normalizeThreshold(options.matchThreshold),
+          p_match_count: normalizeMatchCount(options.matchCount),
+        }),
+        signal: options.signal,
+      },
     );
-  }
+
+    if (!Array.isArray(rows)) {
+      throw new CourseKnowledgeRetrievalError(
+        "Supabase returned a non-array course retrieval payload.",
+      );
+    }
+
+    return rows.map((row) => normalizeRow(row, courseId));
+  });
 
   return {
     hasActiveSources: true,
     bindings,
-    matches: rows.map((row) => normalizeRow(row, courseId)),
+    matches,
   };
 }
