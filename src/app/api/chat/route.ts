@@ -1,3 +1,4 @@
+
 import type {
   ChatErrorResponse,
   ChatSuccessResponse,
@@ -7,25 +8,13 @@ import {
   MAX_CHAT_MESSAGE_LENGTH,
   MAX_CONVERSATION_MESSAGES,
 } from "@/lib/chat-contract";
+import { orchestrateNavigatorResponse } from "@/lib/navigation/orchestrate-navigation";
 
-const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/chat/completions";
 const MAX_REQUEST_BYTES = 200_000;
-const UPSTREAM_TIMEOUT_MS = 45_000;
-
-const SYSTEM_MESSAGE =
-  "Ты — Навигатор Академии структурной типологии. Отвечай на русском языке. Помогай пользователю ориентироваться в темах и материалах Академии, но не утверждай, что располагаешь знаниями из материалов Академии, которые ещё не подключены. Не ставь психологические или медицинские диагнозы. Если для точного ответа потребуется база знаний Академии, прямо скажи об этом.";
 
 type ValidationResult =
   | { ok: true; messages: ConversationMessage[] }
   | { ok: false; message: string };
-
-type DeepSeekResponse = {
-  choices?: Array<{
-    message?: {
-      content?: unknown;
-    };
-  }>;
-};
 
 function jsonError(
   status: number,
@@ -112,19 +101,6 @@ function validateRequestBody(value: unknown): ValidationResult {
   return { ok: true, messages };
 }
 
-function getAssistantContent(value: unknown): string | null {
-  if (!isRecord(value)) {
-    return null;
-  }
-
-  const response = value as DeepSeekResponse;
-  const content = response.choices?.[0]?.message?.content;
-
-  return typeof content === "string" && content.trim().length > 0
-    ? content.trim()
-    : null;
-}
-
 export async function POST(request: Request): Promise<Response> {
   const contentType = request.headers.get("content-type");
 
@@ -160,78 +136,21 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError(400, "INVALID_REQUEST", validation.message);
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY;
-
-  if (!apiKey) {
-    return jsonError(
-      500,
-      "SERVER_CONFIGURATION_ERROR",
-      "Сервис Навигатора временно не настроен.",
-    );
-  }
-
-  let upstreamResponse: Response;
-
   try {
-    upstreamResponse = await fetch(DEEPSEEK_ENDPOINT, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "deepseek-flash",
-        messages: [
-          { role: "system", content: SYSTEM_MESSAGE },
-          ...validation.messages,
-        ],
-        stream: false,
-      }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    const result = await orchestrateNavigatorResponse(validation.messages, {
+      signal: request.signal,
     });
+
+    const responseBody: ChatSuccessResponse = {
+      message: result.message,
+    };
+
+    return Response.json(responseBody);
   } catch {
     return jsonError(
       502,
-      "UPSTREAM_UNAVAILABLE",
-      "Навигатор временно не может получить ответ. Попробуйте ещё раз.",
+      "NAVIGATOR_ROUTING_UNAVAILABLE",
+      "Навигатор временно не может надёжно определить образовательный маршрут. Попробуйте ещё раз.",
     );
   }
-
-  if (!upstreamResponse.ok) {
-    return jsonError(
-      502,
-      "UPSTREAM_ERROR",
-      "Навигатор временно не может получить ответ. Попробуйте ещё раз.",
-    );
-  }
-
-  let upstreamBody: unknown;
-
-  try {
-    upstreamBody = await upstreamResponse.json();
-  } catch {
-    return jsonError(
-      502,
-      "UPSTREAM_INVALID_RESPONSE",
-      "Навигатор получил некорректный ответ. Попробуйте ещё раз.",
-    );
-  }
-
-  const assistantContent = getAssistantContent(upstreamBody);
-
-  if (!assistantContent) {
-    return jsonError(
-      502,
-      "UPSTREAM_INVALID_RESPONSE",
-      "Навигатор получил некорректный ответ. Попробуйте ещё раз.",
-    );
-  }
-
-  const responseBody: ChatSuccessResponse = {
-    message: assistantContent,
-  };
-
-  return Response.json(responseBody);
 }

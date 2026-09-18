@@ -7,8 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit",
+    "lint": "eslint --max-warnings=0",
     "test": "node --import tsx --test tests/**/*.test.mts",
+    "validate": "npm run typecheck && npm test && npm run lint && npm run build",
     "ingest:plan": "node --import tsx scripts/ingest-plan.mts"
   },
   "dependencies": {
