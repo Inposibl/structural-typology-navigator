@@ -144,6 +144,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const result = await orchestrateNavigatorResponse(validation.messages, {
       signal: request.signal,
+      requestId,
     });
 
     const responseBody: ChatSuccessResponse = {

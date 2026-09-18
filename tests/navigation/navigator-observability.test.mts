@@ -2,10 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  createNavigatorDegradationLog,
   createNavigatorFailureLog,
+  isRecoverableEvidenceSelectionFailure,
   NavigatorStageError,
   withNavigatorStage,
 } from "../../src/lib/navigation/navigator-observability.ts";
+import {
+  CourseEvidenceSelectionError,
+} from "../../src/lib/knowledge/retrieval/evidence-selector.ts";
 
 test("navigator failure log contains only bounded safe metadata", async () => {
   const secretMarker = "synthetic-sensitive-marker-never-log";
@@ -86,5 +91,58 @@ test("outer stage wrapper preserves an already-classified inner stage", async ()
       assert.equal(error.status, 503);
       return true;
     },
+  );
+});
+
+
+test("only strict evidence-selection validation failures may degrade to INSUFFICIENT", () => {
+  const invalidSelection = new NavigatorStageError(
+    "EVIDENCE_LLM",
+    new CourseEvidenceSelectionError("invented quote"),
+  );
+
+  assert.equal(
+    isRecoverableEvidenceSelectionFailure(invalidSelection),
+    true,
+  );
+
+  const log = createNavigatorDegradationLog(
+    invalidSelection,
+    "request-degraded-1",
+  );
+
+  assert.deepEqual(log, {
+    event: "NAVIGATOR_DEGRADATION",
+    requestId: "request-degraded-1",
+    stage: "EVIDENCE_LLM",
+    provider: "DEEPSEEK",
+    fallback: "INSUFFICIENT",
+    errorName: "CourseEvidenceSelectionError",
+    errorCode: "INVALID_COURSE_EVIDENCE_SELECTION",
+    status: null,
+  });
+
+  assert.equal(JSON.stringify(log).includes("invented quote"), false);
+
+  const upstreamFailure = new NavigatorStageError(
+    "EVIDENCE_LLM",
+    Object.assign(new Error("provider failed"), {
+      code: "UPSTREAM_ERROR",
+      status: 503,
+    }),
+  );
+
+  assert.equal(
+    isRecoverableEvidenceSelectionFailure(upstreamFailure),
+    false,
+  );
+
+  assert.throws(
+    () =>
+      createNavigatorDegradationLog(
+        upstreamFailure,
+        "request-must-fail",
+      ),
+    /Only invalid course evidence selections/u,
   );
 });

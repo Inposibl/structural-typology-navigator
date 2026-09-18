@@ -31,6 +31,14 @@ export type NavigatorFailureLog = SafeErrorMetadata & {
   provider: NavigatorFailureProvider;
 };
 
+export type NavigatorDegradationLog = SafeErrorMetadata & {
+  event: "NAVIGATOR_DEGRADATION";
+  requestId: string;
+  stage: "EVIDENCE_LLM";
+  provider: "DEEPSEEK";
+  fallback: "INSUFFICIENT";
+};
+
 const PROVIDER_BY_STAGE: Record<
   NavigatorFailureStage,
   Exclude<NavigatorFailureProvider, "UNKNOWN">
@@ -101,6 +109,40 @@ export class NavigatorStageError extends Error {
     this.errorCode = metadata.errorCode;
     this.status = metadata.status;
   }
+}
+
+export function isRecoverableEvidenceSelectionFailure(
+  error: unknown,
+): error is NavigatorStageError {
+  return (
+    error instanceof NavigatorStageError &&
+    error.stage === "EVIDENCE_LLM" &&
+    error.errorName === "CourseEvidenceSelectionError" &&
+    error.errorCode === "INVALID_COURSE_EVIDENCE_SELECTION" &&
+    error.status === null
+  );
+}
+
+export function createNavigatorDegradationLog(
+  error: unknown,
+  requestId: string,
+): NavigatorDegradationLog {
+  if (!isRecoverableEvidenceSelectionFailure(error)) {
+    throw new Error(
+      "Only invalid course evidence selections may degrade to INSUFFICIENT.",
+    );
+  }
+
+  return {
+    event: "NAVIGATOR_DEGRADATION",
+    requestId,
+    stage: "EVIDENCE_LLM",
+    provider: "DEEPSEEK",
+    fallback: "INSUFFICIENT",
+    errorName: error.errorName,
+    errorCode: error.errorCode,
+    status: error.status,
+  };
 }
 
 export async function withNavigatorStage<T>(

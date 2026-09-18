@@ -5,6 +5,9 @@ import {
   orchestrateNavigatorResponse,
 } from "../../src/lib/navigation/orchestrate-navigation.ts";
 import type { ResolvedCourseEvidence } from "../../src/lib/knowledge/retrieval/authority-resolver.ts";
+import {
+  CourseEvidenceSelectionError,
+} from "../../src/lib/knowledge/retrieval/evidence-selector.ts";
 
 const messages = [{ role: "user" as const, content: "Тест" }];
 
@@ -179,4 +182,94 @@ test("Maslow uses the same generic retrieval path and selected RAG evidence reac
   assert.equal(selectorCalls, 1);
   assert.equal(result.courseHadActiveSources, true);
   assert.equal(result.evidenceSelectionStatus, "SUPPORTED");
+});
+
+
+test("invalid evidence selection degrades to INSUFFICIENT without discarding the routed course", async () => {
+  const resolved: ResolvedCourseEvidence[] = [
+    {
+      chunkId: 7,
+      documentId: "doc",
+      sourceId: "source",
+      courseId: "maslow",
+      sourceSlug: "maslow-new-paradigm",
+      sourceTitle: "Manuscript",
+      sourceKind: "manuscript",
+      authorityRelation: "FOUNDATIONAL",
+      courseSourceMetadata: {},
+      sourceMetadata: {},
+      documentMetadata: {},
+      content: "Мотивация зависит от актуальной потребности.",
+      contentSha256: "b".repeat(64),
+      headingPath: [],
+      locator: {},
+      chunkMetadata: {},
+      similarity: 0.92,
+      controllingAuthorityEntries: [],
+      evidenceRole: "FOUNDATIONAL",
+    },
+  ];
+
+  const warnings: string[] = [];
+  const originalWarn = console.warn;
+  console.warn = (...values: unknown[]) => {
+    warnings.push(values.map(String).join(" "));
+  };
+
+  try {
+    const result = await orchestrateNavigatorResponse(messages, {
+      requestId: "request-evidence-degraded",
+      dependencies: {
+        route: async () => ({
+          state: "RECOMMEND_COURSE",
+          primaryCourseId: "maslow",
+          secondaryCourseIds: [],
+          learningNeed: "Понять индивидуальную мотивацию.",
+          evidence: [{ messageIndex: 0, quote: "Тест" }],
+          confidence: "sufficient",
+        }),
+        retrieve: async () => ({
+          hasActiveSources: true,
+          bindings: [],
+          matches: [],
+        }),
+        resolve: () => resolved,
+        selectEvidence: async () => {
+          throw new CourseEvidenceSelectionError(
+            "Evidence quote is not verbatim grounded.",
+          );
+        },
+        compose: async (_messages, decision, options) => {
+          assert.equal(decision.state, "RECOMMEND_COURSE");
+          assert.equal(decision.primaryCourseId, "maslow");
+          assert.deepEqual(options.evidenceSelection, {
+            status: "INSUFFICIENT",
+            evidence: [],
+          });
+          assert.equal(options.courseEvidence?.[0].chunkId, 7);
+          return "Маслоу без неподтверждённой RAG-цитаты";
+        },
+      },
+    });
+
+    assert.equal(result.message, "Маслоу без неподтверждённой RAG-цитаты");
+    assert.equal(result.decision.state, "RECOMMEND_COURSE");
+    assert.equal(result.courseHadActiveSources, true);
+    assert.equal(result.evidenceSelectionStatus, "INSUFFICIENT");
+
+    assert.equal(warnings.length, 1);
+    const event = JSON.parse(warnings[0]) as Record<string, unknown>;
+    assert.deepEqual(event, {
+      event: "NAVIGATOR_DEGRADATION",
+      requestId: "request-evidence-degraded",
+      stage: "EVIDENCE_LLM",
+      provider: "DEEPSEEK",
+      fallback: "INSUFFICIENT",
+      errorName: "CourseEvidenceSelectionError",
+      errorCode: "INVALID_COURSE_EVIDENCE_SELECTION",
+      status: null,
+    });
+  } finally {
+    console.warn = originalWarn;
+  }
 });

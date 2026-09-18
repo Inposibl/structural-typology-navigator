@@ -22,7 +22,11 @@ import {
 } from "./router.ts";
 import type { NavigationDecision } from "./navigation-decision.ts";
 import type { RetrieveCourseKnowledgeOptions } from "../knowledge/retrieval/retrieve-course-knowledge.ts";
-import { withNavigatorStage } from "./navigator-observability.ts";
+import {
+  createNavigatorDegradationLog,
+  isRecoverableEvidenceSelectionFailure,
+  withNavigatorStage,
+} from "./navigator-observability.ts";
 
 export type NavigatorOrchestrationResult = {
   message: string;
@@ -69,6 +73,7 @@ export type OrchestrateNavigatorOptions = {
   env?: Readonly<Record<string, string | undefined>>;
   fetch?: typeof globalThis.fetch;
   signal?: AbortSignal;
+  requestId?: string;
   dependencies?: OrchestrationDependencies;
 };
 
@@ -118,17 +123,40 @@ export async function orchestrateNavigatorResponse(
       );
 
       if (resolvedEvidence.length > 0) {
-        evidenceSelection = await withNavigatorStage("EVIDENCE_LLM", () =>
-          selectEvidence(
-            decision.learningNeed,
-            resolvedEvidence,
-            {
-              env: options.env,
-              fetch: options.fetch,
-              signal: options.signal,
-            },
-          ),
-        );
+        try {
+          evidenceSelection = await withNavigatorStage("EVIDENCE_LLM", () =>
+            selectEvidence(
+              decision.learningNeed,
+              resolvedEvidence,
+              {
+                env: options.env,
+                fetch: options.fetch,
+                signal: options.signal,
+              },
+            ),
+          );
+        } catch (error) {
+          if (!isRecoverableEvidenceSelectionFailure(error)) {
+            throw error;
+          }
+
+          // Evidence enrichment is optional. A selector payload that fails
+          // strict grounding validation is discarded in full; the already
+          // validated course recommendation remains available without a
+          // source quote.
+          evidenceSelection = {
+            status: "INSUFFICIENT",
+            evidence: [],
+          };
+
+          if (options.requestId) {
+            console.warn(
+              JSON.stringify(
+                createNavigatorDegradationLog(error, options.requestId),
+              ),
+            );
+          }
+        }
       } else {
         evidenceSelection = {
           status: "INSUFFICIENT",
