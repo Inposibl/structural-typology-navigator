@@ -1,7 +1,7 @@
 export { adaptMarkdownDocument, adaptPlainTextDocument } from "./adapters.ts";
 export { buildIngestionPlan } from "./build-ingestion-plan.ts";
 export { DEFAULT_CHUNKING_CONFIG } from "./chunker.ts";
-export { sha256Hex } from "./hash.ts";
+export { isSha256Hex, sha256Hex } from "./hash.ts";
 export {
   hasSourceContent,
   normalizeBlockText,
