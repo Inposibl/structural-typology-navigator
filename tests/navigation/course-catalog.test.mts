@@ -6,6 +6,7 @@ import {
   ACADEMY_COURSES,
   OFFICIAL_TRACK_SEQUENCES,
   getAcademyCourse,
+  getRoutingCourseSummaries,
   isContiguousOfficialCourseSequence,
   isRecommendableCourseId,
 } from "../../src/lib/academy/course-catalog.ts";
@@ -60,5 +61,19 @@ test("official course sequences are contiguous-only authority", () => {
       "structural-typology",
     ]),
     false,
+  );
+});
+
+test("router catalog projection excludes course outcomes while canonical catalog retains them", () => {
+  const routing = getRoutingCourseSummaries();
+
+  assert.equal(routing.length, ACADEMY_COURSES.length);
+  for (const course of routing) {
+    assert.equal("siteOutcomes" in course, false);
+  }
+
+  assert.ok(
+    (getAcademyCourse("maslow")?.siteOutcomes.length ?? 0) > 0,
+    "Canonical course outcomes must remain available outside the router projection.",
   );
 });

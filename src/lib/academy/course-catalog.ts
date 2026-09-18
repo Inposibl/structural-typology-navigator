@@ -210,7 +210,6 @@ export function getRoutingCourseSummaries(): Array<{
   status: CourseStatus;
   meetings: number;
   learningNeeds: readonly string[];
-  siteOutcomes: readonly string[];
   negativeFitSignals: readonly string[];
   routingBlockReason: string | null;
 }> {
@@ -220,7 +219,6 @@ export function getRoutingCourseSummaries(): Array<{
     status: course.status,
     meetings: course.meetings,
     learningNeeds: course.learningNeeds,
-    siteOutcomes: course.siteOutcomes,
     negativeFitSignals: course.negativeFitSignals ?? [],
     routingBlockReason: course.routingBlockReason ?? null,
   }));
