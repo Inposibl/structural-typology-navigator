@@ -266,6 +266,41 @@ test("keeps overlap provenance aligned to the same source block", () => {
   assert.ok(secondRange.end > firstRange.end);
 });
 
+test("advances past an already-covered block boundary when overlap starts inside that block", () => {
+  const document: NormalizedKnowledgeDocument = {
+    ...BASE_METADATA,
+    blocks: [
+      {
+        blockIndex: 0,
+        text: "alpha beta gamma.",
+        headingPath: [],
+        locator: { format: "synthetic", block: 0 },
+        metadata: {},
+      },
+      {
+        blockIndex: 1,
+        text: "delta ".repeat(30).trim(),
+        headingPath: [],
+        locator: { format: "synthetic", block: 1 },
+        metadata: {},
+      },
+    ],
+  };
+
+  const plan = buildIngestionPlan(document, {
+    targetCharacters: 30,
+    hardMaximumCharacters: 40,
+    overlapCharacters: 8,
+  });
+
+  assert.equal(plan.chunks[0].content, "alpha beta gamma.");
+  assert.match(plan.chunks[1].content, /delta/u);
+  assert.deepEqual(plan.chunks[1].locator.sourceBlockRange, {
+    start: 0,
+    end: 1,
+  });
+});
+
 test("rejects empty input", () => {
   const document = adaptPlainTextDocument("\uFEFF \r\n\t", BASE_METADATA);
 

@@ -94,8 +94,14 @@ function nearestBlockEnd(
   start: number,
   preferredEnd: number,
   hardEnd: number,
+  minimumEndExclusive: number,
 ): number | undefined {
-  const first = firstSpanEndingAfter(spans, start);
+  // Overlap may move the next chunk start back inside a block that the
+  // previous chunk already finished. Never reuse that same block end.
+  const first = firstSpanEndingAfter(
+    spans,
+    Math.max(start, minimumEndExclusive),
+  );
   let low = first;
   let high = spans.length;
   while (low < high) {
@@ -165,6 +171,7 @@ function chooseEnd(
   spans: BlockSpan[],
   start: number,
   config: CharacterChunkingConfig,
+  minimumEndExclusive: number,
 ): number {
   const hardEnd = Math.min(content.length, start + config.hardMaximumCharacters);
   if (hardEnd === content.length) {
@@ -172,17 +179,28 @@ function chooseEnd(
   }
 
   const preferredEnd = Math.min(content.length, start + config.targetCharacters);
-  const blockEnd = nearestBlockEnd(spans, start, preferredEnd, hardEnd);
+  const progressFloor = Math.max(start, minimumEndExclusive);
+  const blockEnd = nearestBlockEnd(
+    spans,
+    start,
+    preferredEnd,
+    hardEnd,
+    minimumEndExclusive,
+  );
   if (blockEnd !== undefined) {
     return blockEnd;
   }
 
-  const before = findBreakAtOrBefore(content, start, preferredEnd);
+  const before = findBreakAtOrBefore(content, progressFloor, preferredEnd);
   if (before !== undefined) {
     return before;
   }
 
-  const after = findBreakAtOrAfter(content, preferredEnd, hardEnd);
+  const after = findBreakAtOrAfter(
+    content,
+    Math.max(preferredEnd, progressFloor),
+    hardEnd,
+  );
   if (after !== undefined) {
     return after;
   }
@@ -233,6 +251,7 @@ export function chunkNormalizedBlocks(
   const { content, spans } = buildCanonicalContent(blocks);
   const chunks: IngestionChunk[] = [];
   let cursor = 0;
+  let previousEnd = -1;
 
   while (cursor < content.length) {
     cursor = advancePastCanonicalSeparator(spans, cursor);
@@ -240,7 +259,16 @@ export function chunkNormalizedBlocks(
       break;
     }
 
-    const selectedEnd = chooseEnd(content, spans, cursor, config);
+    const selectedEnd = chooseEnd(
+      content,
+      spans,
+      cursor,
+      config,
+      previousEnd,
+    );
+    if (selectedEnd <= previousEnd) {
+      throw new Error("Chunking did not advance the chunk end.");
+    }
     const range = { start: cursor, end: selectedEnd };
     const chunkContent = content.slice(range.start, range.end);
     if (!hasSourceContent(chunkContent)) {
@@ -293,6 +321,7 @@ export function chunkNormalizedBlocks(
       },
     });
 
+    previousEnd = selectedEnd;
     if (selectedEnd >= content.length) {
       break;
     }
