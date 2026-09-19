@@ -1,4 +1,8 @@
-import type { ConversationMessage } from "../chat-contract.ts";
+import type {
+  AcademyContactCard,
+  ConversationMessage,
+  ConversationProfile,
+} from "../chat-contract.ts";
 import {
   resolveCourseEvidence,
   type ResolvedCourseEvidence,
@@ -34,6 +38,14 @@ import {
   type ComposeCourseFollowUpOptions,
 } from "./conversation-response.ts";
 import {
+  composeAcademyContactAnswer,
+  detectAcademyContactIntent,
+} from "../academy/contact-policy.ts";
+import {
+  composeEnrollmentPaymentAnswer,
+  resolveEnrollmentPaymentAction,
+} from "../academy/payment-policy.ts";
+import {
   createNavigatorDegradationLog,
   isRecoverableEvidenceSelectionFailure,
   withNavigatorStage,
@@ -41,6 +53,7 @@ import {
 
 export type NavigatorOrchestrationResult = {
   message: string;
+  contactCard: AcademyContactCard | null;
   conversationAct: ConversationActDecision;
   decision: NavigationDecision | null;
   courseEvidenceCount: number;
@@ -102,6 +115,7 @@ export type OrchestrateNavigatorOptions = {
   fetch?: typeof globalThis.fetch;
   signal?: AbortSignal;
   requestId?: string;
+  profile?: ConversationProfile;
   dependencies?: OrchestrationDependencies;
 };
 
@@ -153,6 +167,22 @@ async function selectEvidenceOrDegrade(
   }
 }
 
+function emptyResult(
+  message: string,
+  conversationAct: ConversationActDecision,
+  contactCard: AcademyContactCard | null = null,
+): NavigatorOrchestrationResult {
+  return {
+    message,
+    contactCard,
+    conversationAct,
+    decision: null,
+    courseEvidenceCount: 0,
+    courseHadActiveSources: false,
+    evidenceSelectionStatus: "NOT_RUN",
+  };
+}
+
 export async function orchestrateNavigatorResponse(
   messages: readonly ConversationMessage[],
   options: OrchestrateNavigatorOptions = {},
@@ -177,30 +207,51 @@ export async function orchestrateNavigatorResponse(
     }),
   );
 
-  if (conversationAct.state === "OUT_OF_SCOPE") {
-    return {
-      message: composeNavigatorOutOfScopeAnswer(),
+  const query = lastUserMessage(messages);
+  const paymentAction = resolveEnrollmentPaymentAction(
+    query,
+    conversationAct,
+  );
+
+  if (paymentAction) {
+    return emptyResult(
+      composeEnrollmentPaymentAnswer(paymentAction),
       conversationAct,
-      decision: null,
-      courseEvidenceCount: 0,
-      courseHadActiveSources: false,
-      evidenceSelectionStatus: "NOT_RUN",
-    };
+    );
+  }
+
+  const contactIntent = detectAcademyContactIntent(query, {
+    hasCourseContext:
+      conversationAct.state === "COURSE_FOLLOW_UP",
+  });
+
+  if (
+    contactIntent &&
+    conversationAct.state !== "NAVIGATE"
+  ) {
+    const contact = composeAcademyContactAnswer(contactIntent);
+    return emptyResult(
+      contact.message,
+      conversationAct,
+      contact.contactCard,
+    );
+  }
+
+  if (conversationAct.state === "OUT_OF_SCOPE") {
+    return emptyResult(
+      composeNavigatorOutOfScopeAnswer(),
+      conversationAct,
+    );
   }
 
   if (conversationAct.state === "META") {
-    return {
-      message: composeNavigatorMetaAnswer(),
+    return emptyResult(
+      composeNavigatorMetaAnswer(),
       conversationAct,
-      decision: null,
-      courseEvidenceCount: 0,
-      courseHadActiveSources: false,
-      evidenceSelectionStatus: "NOT_RUN",
-    };
+    );
   }
 
   if (conversationAct.state === "COURSE_FOLLOW_UP") {
-    const query = lastUserMessage(messages);
     const courseKnowledge = await withNavigatorStage("COURSE_RPC", () =>
       retrieve(
         conversationAct.courseId,
@@ -244,11 +295,13 @@ export async function orchestrateNavigatorResponse(
         signal: options.signal,
         courseEvidence: resolvedEvidence,
         evidenceSelection,
+        profile: options.profile,
       }),
     );
 
     return {
       message,
+      contactCard: null,
       conversationAct,
       decision: null,
       courseEvidenceCount: resolvedEvidence.length,
@@ -258,13 +311,12 @@ export async function orchestrateNavigatorResponse(
     };
   }
 
-  // Critical anti-bias invariant: no course knowledge retrieval before
-  // educational routing.
   const decision = await withNavigatorStage("ROUTER", () =>
     route(messages, {
       env: options.env,
       fetch: options.fetch,
       signal: options.signal,
+      profile: options.profile,
     }),
   );
 
@@ -316,11 +368,13 @@ export async function orchestrateNavigatorResponse(
       evidenceSelection,
       hasActiveCourseSources: courseKnowledge?.hasActiveSources ?? false,
       showEvidence: false,
+      profile: options.profile,
     }),
   );
 
   return {
     message,
+    contactCard: null,
     conversationAct,
     decision,
     courseEvidenceCount: resolvedEvidence.length,

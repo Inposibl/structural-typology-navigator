@@ -1,4 +1,7 @@
-import type { ConversationMessage } from "../chat-contract.ts";
+import type {
+  ConversationMessage,
+  ConversationProfile,
+} from "../chat-contract.ts";
 import {
   getRoutingCourseSummaries,
   OFFICIAL_TRACK_SEQUENCES,
@@ -8,12 +11,18 @@ import {
   validateNavigationDecision,
   type NavigationDecision,
 } from "./navigation-decision.ts";
+import {
+  addressStyleInstruction,
+} from "./conversation-profile.ts";
 
 export type RouteEducationalNavigationOptions = DeepSeekClientOptions & {
   callJson?: typeof callDeepSeekJson;
+  profile?: ConversationProfile;
 };
 
-function routerSystemPrompt(): string {
+function routerSystemPrompt(
+  profile: ConversationProfile | undefined,
+): string {
   return `Ты — внутренний образовательный маршрутизатор Академии структурной типологии.
 
 ТВОЯ ЕДИНСТВЕННАЯ ЗАДАЧА:
@@ -44,7 +53,7 @@ function routerSystemPrompt(): string {
 ДОСТАТОЧНОСТЬ И STOPPING RULE:
 - ASK_MORE разрешён только если (a) как минимум два ROUTABLE курса остаются сопоставимо правдоподобными по прямым пользовательским сигналам И конкретный недостающий ответ может изменить primaryCourseId, ИЛИ (b) пока нет достаточной прямой поддержки ни одного курса, но один конкретный вопрос может установить соответствие;
 - если один ROUTABLE курс имеет прямую явную поддержку из пользовательских формулировок, а альтернативы заметно слабее, выбирай RECOMMEND_COURSE;
-- не задавай дополнительные вопросы только ради повышения confidence с sufficient до strong, ради сбора полезного, но не решающего контекста, или ради объяснения теории Академии;
+- не задавай дополнительные вопросы только ради повышения confidence с sufficient до strong, ради сбора полезного, но не решающего контекста, или ради объяснения теории Академии до выбора маршрута;
 - если текущий каталог не соответствует запросу, не растягивай ASK_MORE: используй NO_CURRENT_COURSE_MATCH.
 
 RECOMMEND_COURSE:
@@ -67,7 +76,8 @@ ASK_MORE:
 - НЕ называй и НЕ объясняй внутренние обозначения режимов, типов, уровней, формулы, аббревиатуры и иные course-internal теоретические конструкции Академии;
 - НЕ проси пользователя выбирать между моделями или курсами Академии;
 - НЕ проверяй "готовность к абстрактной модели" как самостоятельный критерий. Такой вопрос допустим только если конкретный documented negativeFitSignal делает это решение-критичным, и даже тогда формулируй его через реальную учебную задачу пользователя, а не через внутреннюю терминологию курса;
-- вопросы должны различать образовательные потребности, а не диагностировать человека и не обучать теории до выбора маршрута.
+- вопросы должны различать образовательные потребности, а не диагностировать человека и не обучать теории до выбора маршрута;
+- ${addressStyleInstruction(profile)}
 
 JSON FORMAT — используй ровно один из шаблонов:
 
@@ -93,7 +103,7 @@ export async function routeEducationalNavigation(
 
   const raw = await callJson(
     [
-      { role: "system", content: routerSystemPrompt() },
+      { role: "system", content: routerSystemPrompt(options.profile) },
       {
         role: "user",
         content:
@@ -101,6 +111,7 @@ export async function routeEducationalNavigation(
           JSON.stringify(
             {
               catalogSnapshot: "2026-09-18",
+              addressMode: options.profile?.addressMode ?? "VY",
               courses: catalog,
               officialTrackSequences: OFFICIAL_TRACK_SEQUENCES,
               conversation: indexedConversation,

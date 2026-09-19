@@ -1,4 +1,7 @@
-import type { ConversationMessage } from "../chat-contract.ts";
+import type {
+  ConversationMessage,
+  ConversationProfile,
+} from "../chat-contract.ts";
 import {
   getAcademyCourse,
   type AcademyCourse,
@@ -13,6 +16,7 @@ export type ComposeNavigatorAnswerOptions = {
   evidenceSelection?: CourseEvidenceSelection;
   hasActiveCourseSources?: boolean;
   showEvidence?: boolean;
+  profile?: ConversationProfile;
 };
 
 function russianQuestionBlock(questions: readonly string[]): string {
@@ -113,6 +117,14 @@ function evidenceSentence(
   ].join("\n");
 }
 
+function descriptionPrefix(
+  profile: ConversationProfile | undefined,
+): string {
+  return profile?.addressMode === "TY"
+    ? "По твоему описанию"
+    : "По вашему описанию";
+}
+
 export async function composeNavigatorAnswer(
   _messages: readonly ConversationMessage[],
   decision: NavigationDecision,
@@ -126,7 +138,7 @@ export async function composeNavigatorAnswer(
   }
 
   if (decision.state === "NO_CURRENT_COURSE_MATCH") {
-    return "По тому, что вы описали, я сейчас не вижу в текущем каталоге Академии курса, который можно было бы честно рекомендовать без натяжки.";
+    return `${descriptionPrefix(options.profile)} я сейчас не вижу в текущем каталоге Академии курса, который можно было бы честно рекомендовать без натяжки.`;
   }
 
   const primary = getAcademyCourse(decision.primaryCourseId);
@@ -135,7 +147,7 @@ export async function composeNavigatorAnswer(
   }
 
   const parts = [
-    `Из того, что вы описали, ключевая учебная задача сейчас — ${decision.learningNeed}`,
+    `${descriptionPrefix(options.profile)} ключевая учебная задача сейчас — ${decision.learningNeed}`,
     `В текущем каталоге Академии ей соответствует курс ${courseReference(primary)}.`,
     options.showEvidence
       ? evidenceSentence(options.evidenceSelection, options.courseEvidence)

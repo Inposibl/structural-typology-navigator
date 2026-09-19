@@ -141,6 +141,69 @@ textarea:focus-visible {
   border-radius: 0.2rem;
 }
 
+.manager-card {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 1rem;
+  width: min(100%, 34rem);
+  margin-top: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--surface);
+  padding: 1rem;
+}
+
+.manager-card__photo {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 0.85rem;
+  object-fit: cover;
+}
+
+.manager-card__body {
+  min-width: 0;
+}
+
+.manager-card__name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.manager-card__role,
+.manager-card__availability {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.manager-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.manager-card__action {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--brand);
+  padding: 0.45rem 0.7rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.manager-card__action:hover {
+  text-decoration: underline;
+}
+
+.manager-card__action:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
 .message--pending .message__content {
   color: var(--muted);
 }
@@ -269,6 +332,15 @@ textarea:focus-visible {
 
   .message__content {
     font-size: 1rem;
+  }
+
+  .manager-card {
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+  }
+
+  .manager-card__photo {
+    width: 4.5rem;
+    height: 4.5rem;
   }
 
   .composer-region {

@@ -2,7 +2,11 @@ import type {
   ChatErrorResponse,
   ChatSuccessResponse,
   ConversationMessage,
+  ConversationProfile,
 } from "@/lib/chat-contract";
+import {
+  normalizeConversationProfilePayload,
+} from "@/lib/navigation/conversation-profile";
 
 const FALLBACK_ERROR_MESSAGE =
   "Не удалось получить ответ Навигатора. Попробуйте ещё раз.";
@@ -12,10 +16,42 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isSuccessResponse(value: unknown): value is ChatSuccessResponse {
+  if (
+    !isRecord(value) ||
+    typeof value.message !== "string" ||
+    value.message.trim().length === 0 ||
+    !("profile" in value) ||
+    !("contactCard" in value)
+  ) {
+    return false;
+  }
+
+  try {
+    normalizeConversationProfilePayload(value.profile);
+  } catch {
+    return false;
+  }
+
+  if (value.contactCard === null) {
+    return true;
+  }
+
+  if (!isRecord(value.contactCard)) {
+    return false;
+  }
+
   return (
-    isRecord(value) &&
-    typeof value.message === "string" &&
-    value.message.trim().length > 0
+    value.contactCard.kind === "ACADEMY_MANAGER" &&
+    typeof value.contactCard.name === "string" &&
+    typeof value.contactCard.role === "string" &&
+    typeof value.contactCard.availability === "string" &&
+    typeof value.contactCard.imageUrl === "string" &&
+    isRecord(value.contactCard.telegram) &&
+    typeof value.contactCard.telegram.label === "string" &&
+    typeof value.contactCard.telegram.href === "string" &&
+    isRecord(value.contactCard.phone) &&
+    typeof value.contactCard.phone.label === "string" &&
+    typeof value.contactCard.phone.href === "string"
   );
 }
 
@@ -33,7 +69,8 @@ function getSafeErrorMessage(value: unknown): string {
 
 export async function requestAssistantResponse(
   messages: ConversationMessage[],
-): Promise<string> {
+  profile: ConversationProfile,
+): Promise<ChatSuccessResponse> {
   let response: Response;
 
   try {
@@ -42,7 +79,7 @@ export async function requestAssistantResponse(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messages }),
+      body: JSON.stringify({ messages, profile }),
     });
   } catch {
     throw new Error(FALLBACK_ERROR_MESSAGE);
@@ -64,5 +101,5 @@ export async function requestAssistantResponse(
     throw new Error(FALLBACK_ERROR_MESSAGE);
   }
 
-  return payload.message;
+  return payload;
 }

@@ -1,22 +1,32 @@
-
 import { randomUUID } from "node:crypto";
 
 import type {
   ChatErrorResponse,
   ChatSuccessResponse,
   ConversationMessage,
+  ConversationProfile,
 } from "@/lib/chat-contract";
 import {
   MAX_CHAT_MESSAGE_LENGTH,
   MAX_CONVERSATION_MESSAGES,
 } from "@/lib/chat-contract";
+import {
+  advanceConversationProfile,
+  isConversationProfileComplete,
+  normalizeConversationProfilePayload,
+  ConversationProfileValidationError,
+} from "@/lib/navigation/conversation-profile";
 import { orchestrateNavigatorResponse } from "@/lib/navigation/orchestrate-navigation";
 import { createNavigatorFailureLog } from "@/lib/navigation/navigator-observability";
 
 const MAX_REQUEST_BYTES = 200_000;
 
 type ValidationResult =
-  | { ok: true; messages: ConversationMessage[] }
+  | {
+      ok: true;
+      messages: ConversationMessage[];
+      profile: ConversationProfile;
+    }
   | { ok: false; message: string };
 
 function jsonError(
@@ -45,7 +55,7 @@ function hasOnlyKeys(
 function validateRequestBody(value: unknown): ValidationResult {
   if (
     !isRecord(value) ||
-    !hasOnlyKeys(value, ["messages"]) ||
+    !hasOnlyKeys(value, ["messages", "profile"]) ||
     !Array.isArray(value.messages)
   ) {
     return { ok: false, message: "Некорректный формат запроса." };
@@ -101,7 +111,31 @@ function validateRequestBody(value: unknown): ValidationResult {
     };
   }
 
-  return { ok: true, messages };
+  let profile: ConversationProfile;
+  try {
+    profile = normalizeConversationProfilePayload(value.profile);
+  } catch (error) {
+    if (error instanceof ConversationProfileValidationError) {
+      return {
+        ok: false,
+        message: "Некорректный контекст обращения в диалоге.",
+      };
+    }
+    throw error;
+  }
+
+  return { ok: true, messages, profile };
+}
+
+function replaceLastUserMessage(
+  messages: readonly ConversationMessage[],
+  content: string,
+): ConversationMessage[] {
+  return messages.map((message, index) =>
+    index === messages.length - 1
+      ? { role: "user", content }
+      : message,
+  );
 }
 
 export async function POST(request: Request): Promise<Response> {
@@ -135,20 +169,56 @@ export async function POST(request: Request): Promise<Response> {
 
   const validation = validateRequestBody(body);
 
-  if (!validation.ok) {
+  if (validation.ok === false) {
     return jsonError(400, "INVALID_REQUEST", validation.message);
+  }
+
+  let profile = validation.profile;
+  let navigationMessages = validation.messages;
+
+  if (!isConversationProfileComplete(profile)) {
+    const latestUserMessage =
+      validation.messages.at(-1)?.content ?? "";
+    const setup = advanceConversationProfile(
+      profile,
+      latestUserMessage,
+    );
+    profile = setup.profile;
+
+    if (!setup.complete || setup.effectiveUserRequest === null) {
+      const responseBody: ChatSuccessResponse = {
+        message:
+          setup.response ??
+          "Скажите, пожалуйста, как к вам обращаться.",
+        profile,
+        contactCard: null,
+      };
+
+      return Response.json(responseBody);
+    }
+
+    navigationMessages = replaceLastUserMessage(
+      validation.messages,
+      setup.effectiveUserRequest,
+    );
   }
 
   const requestId = randomUUID();
 
   try {
-    const result = await orchestrateNavigatorResponse(validation.messages, {
-      signal: request.signal,
-      requestId,
-    });
+    const result = await orchestrateNavigatorResponse(
+      navigationMessages,
+      {
+        signal: request.signal,
+        requestId,
+        profile,
+      },
+    );
 
     const responseBody: ChatSuccessResponse = {
       message: result.message,
+      profile,
+      contactCard: result.contactCard,
     };
 
     return Response.json(responseBody);

@@ -1,3 +1,4 @@
+import { AcademyManagerCard } from "@/components/chat/academy-manager-card";
 import type { ChatMessage as ChatMessageType } from "@/components/chat/types";
 import { tokenizeMessageContent } from "@/components/chat/message-linkifier";
 
@@ -30,6 +31,9 @@ export function ChatMessage({ message }: ChatMessageProps) {
             )
           : message.content}
       </p>
+      {isAssistant && message.contactCard ? (
+        <AcademyManagerCard card={message.contactCard} />
+      ) : null}
     </li>
   );
 }

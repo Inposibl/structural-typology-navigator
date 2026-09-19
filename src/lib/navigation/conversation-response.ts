@@ -1,16 +1,32 @@
-import type { ConversationMessage } from "../chat-contract.ts";
+import type {
+  ConversationMessage,
+  ConversationProfile,
+} from "../chat-contract.ts";
 import {
   getAcademyCourse,
   type AcademyCourse,
 } from "../academy/course-catalog.ts";
-import { getPublicCourseOutcomes } from "../academy/public-course-outcomes.ts";
 import type { ResolvedCourseEvidence } from "../knowledge/retrieval/authority-resolver.ts";
 import type { CourseEvidenceSelection } from "../knowledge/retrieval/evidence-selector.ts";
 import {
+  callDeepSeekJson,
   callDeepSeekText,
   type DeepSeekClientOptions,
 } from "./deepseek-client.ts";
 import type { ConversationActDecision } from "./conversation-act-router.ts";
+import {
+  addressStyleInstruction,
+} from "./conversation-profile.ts";
+import {
+  auditCourseFollowUpAnswer,
+  buildFollowUpAuthorityPayload,
+  composeCatalogFollowUpAnswer,
+  isCatalogAnswerableFollowUp,
+  type FollowUpEvidenceExcerpt,
+} from "./follow-up-grounding.ts";
+import {
+  composeCourseFactualCeilingAnswer,
+} from "../academy/contact-policy.ts";
 
 type CourseFollowUpAct = Extract<
   ConversationActDecision,
@@ -19,14 +35,16 @@ type CourseFollowUpAct = Extract<
 
 export type ComposeCourseFollowUpOptions = DeepSeekClientOptions & {
   callText?: typeof callDeepSeekText;
+  callJson?: typeof callDeepSeekJson;
   courseEvidence?: readonly ResolvedCourseEvidence[];
   evidenceSelection?: CourseEvidenceSelection;
+  profile?: ConversationProfile;
 };
 
 export function composeNavigatorMetaAnswer(): string {
   return [
     "Навигатор нужен для выбора и объяснения учебного маршрута внутри Академии структурной типологии.",
-    "Цитаты и ссылки на внутренние материалы не должны появляться в обычной рекомендации автоматически. Я показываю их только когда вы прямо просите основания, источники или конкретные выдержки из материалов курса.",
+    "Цитаты и ссылки на внутренние материалы не должны появляться в обычной рекомендации автоматически. Я показываю их только по прямому запросу на основания, источники или конкретные выдержки из материалов курса.",
     "Если вопрос не относится к курсам Академии, Навигатор должен честно обозначить границу своей функции, а не притягивать новый вопрос к уже обсуждавшемуся курсу.",
   ].join("\n\n");
 }
@@ -34,7 +52,7 @@ export function composeNavigatorMetaAnswer(): string {
 export function composeNavigatorOutOfScopeAnswer(): string {
   return [
     "Этот вопрос вне функции Навигатора: здесь я помогаю выбирать и понимать учебные маршруты Академии структурной типологии.",
-    "Для общего поиска лучше использовать, например, Google или Perplexity; для диалогового разбора — универсальный ассистент вроде ChatGPT. Так вы получите более качественный ответ по теме, которая не относится к курсам Академии.",
+    "Для общего поиска лучше использовать, например, Google или Perplexity; для диалогового разбора — универсальный ассистент вроде ChatGPT. Так ответ будет качественнее по теме, которая не относится к курсам Академии.",
   ].join("\n\n");
 }
 
@@ -68,10 +86,7 @@ function sourceProvenance(source: ResolvedCourseEvidence): string {
 function selectedEvidence(
   selection: CourseEvidenceSelection | undefined,
   evidence: readonly ResolvedCourseEvidence[] | undefined,
-): Array<{
-  quote: string;
-  source: string;
-}> {
+): FollowUpEvidenceExcerpt[] {
   if (!selection || selection.status !== "SUPPORTED" || !evidence) {
     return [];
   }
@@ -91,14 +106,11 @@ function selectedEvidence(
   });
 }
 
-function coursePublicPayload(course: AcademyCourse) {
-  return {
-    id: course.id,
-    title: course.title,
-    url: course.url,
-    learningNeeds: course.learningNeeds,
-    publicOutcomes: getPublicCourseOutcomes(course),
-  };
+function coursePublicPayload(
+  course: AcademyCourse,
+  evidence: readonly FollowUpEvidenceExcerpt[],
+) {
+  return buildFollowUpAuthorityPayload(course, evidence);
 }
 
 export async function composeCourseFollowUpAnswer(
@@ -111,12 +123,31 @@ export async function composeCourseFollowUpAnswer(
     throw new Error("Follow-up course is unavailable.");
   }
 
-  const callText = options.callText ?? callDeepSeekText;
   const evidence = selectedEvidence(
     options.evidenceSelection,
     options.courseEvidence,
   );
   const latestUserMessage = messages.at(-1)?.content ?? "";
+
+  if (
+    options.evidenceSelection?.status !== "SUPPORTED" ||
+    evidence.length === 0
+  ) {
+    if (isCatalogAnswerableFollowUp(latestUserMessage)) {
+      return composeCatalogFollowUpAnswer(
+        course,
+        latestUserMessage,
+      );
+    }
+
+    return composeCourseFactualCeilingAnswer(course.title);
+  }
+
+  const callText = options.callText ?? callDeepSeekText;
+  const authority = coursePublicPayload(course, evidence);
+  const userContext = messages
+    .filter((message) => message.role === "user")
+    .map((message) => message.content);
 
   const answer = await callText(
     [
@@ -126,11 +157,20 @@ export async function composeCourseFollowUpAnswer(
 
 Ответь ТОЛЬКО на последнюю реплику пользователя как на follow-up по уже обсуждаемому курсу.
 Не выбирай курс заново и не повторяй полный recommendation template.
-Используй только переданные публичные сведения о курсе и, если есть, строго отобранные evidence excerpts.
-Не выдумывай содержание курса.
-Если данных недостаточно для точного ответа, скажи об этом прямо.
-Если evidenceRequested=false, не показывай пользователю сырые цитаты, названия внутренних документов, страницы и provenance; evidence можно использовать только как внутреннее содержательное основание для краткого ответа.
-Если evidenceRequested=true, можешь опираться на excerpts, но сам список точных цитат и provenance будет добавлен системой после твоего ответа.
+
+КРИТИЧЕСКАЯ ГРАНИЦА АВТОРИТЕТА:
+- используй только authorityPayload;
+- НЕ используй общие знания модели;
+- НЕ используй предыдущие ответы assistant как фактический источник;
+- предыдущие сообщения assistant намеренно не передаются как authority;
+- научная/эмпирическая оценка допустима только если прямо подтверждена evidence, и тогда формулируй её как утверждение подключённого материала курса, а не как внешний научный консенсус;
+- не придумывай формат курса, упражнения, психологическую безопасность, эффективность, поддержку, преподавателей, контакты или гарантии;
+- если делаешь практический вывод, явно обозначь его словами "из этого следует", "это может означать" или аналогично и не добавляй новых фактов.
+
+${addressStyleInstruction(options.profile)}
+
+Если evidenceRequested=false, не показывай пользователю сырые цитаты, названия внутренних документов, страницы и provenance.
+Если evidenceRequested=true, список точных цитат и provenance будет добавлен системой после твоего ответа.
 Не раскрывай внутренние формулы, служебные labels или технические обозначения, если пользователь сам прямо о них не спрашивает.
 Пиши по-русски, коротко и по существу.`,
       },
@@ -139,12 +179,9 @@ export async function composeCourseFollowUpAnswer(
         content: JSON.stringify(
           {
             latestUserMessage,
-            course: coursePublicPayload(course),
+            userContext,
             evidenceRequested: act.evidenceRequested,
-            evidenceStatus:
-              options.evidenceSelection?.status ?? "NOT_AVAILABLE",
-            evidence,
-            conversation: messages,
+            authorityPayload: authority,
           },
           null,
           2,
@@ -154,7 +191,24 @@ export async function composeCourseFollowUpAnswer(
     options,
   );
 
-  if (!act.evidenceRequested || evidence.length === 0) {
+  const audit = await auditCourseFollowUpAnswer(
+    answer,
+    latestUserMessage,
+    authority,
+    {
+      env: options.env,
+      fetch: options.fetch,
+      signal: options.signal,
+      timeoutMs: options.timeoutMs,
+      callJson: options.callJson,
+    },
+  );
+
+  if (audit.status !== "PASS") {
+    return composeCourseFactualCeilingAnswer(course.title);
+  }
+
+  if (!act.evidenceRequested) {
     return answer;
   }
 
