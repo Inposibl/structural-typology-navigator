@@ -36,6 +36,7 @@ export type ChatSuccessResponse = {
   message: string;
   profile: ConversationProfile;
   contactCard: AcademyContactCard | null;
+  resetConversation: boolean;
 };
 
 export type ChatErrorResponse = {

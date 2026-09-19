@@ -11,11 +11,12 @@ import {
   MAX_CONVERSATION_MESSAGES,
 } from "@/lib/chat-contract";
 import {
-  advanceConversationProfile,
-  isConversationProfileComplete,
   normalizeConversationProfilePayload,
   ConversationProfileValidationError,
 } from "@/lib/navigation/conversation-profile";
+import {
+  prepareConversationTurn,
+} from "@/lib/navigation/conversation-turn-control";
 import { orchestrateNavigatorResponse } from "@/lib/navigation/orchestrate-navigation";
 import { createNavigatorFailureLog } from "@/lib/navigation/navigator-observability";
 
@@ -127,17 +128,6 @@ function validateRequestBody(value: unknown): ValidationResult {
   return { ok: true, messages, profile };
 }
 
-function replaceLastUserMessage(
-  messages: readonly ConversationMessage[],
-  content: string,
-): ConversationMessage[] {
-  return messages.map((message, index) =>
-    index === messages.length - 1
-      ? { role: "user", content }
-      : message,
-  );
-}
-
 export async function POST(request: Request): Promise<Response> {
   const contentType = request.headers.get("content-type");
 
@@ -173,52 +163,39 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError(400, "INVALID_REQUEST", validation.message);
   }
 
-  let profile = validation.profile;
-  let navigationMessages = validation.messages;
+  const prepared = prepareConversationTurn(
+    validation.messages,
+    validation.profile,
+  );
 
-  if (!isConversationProfileComplete(profile)) {
-    const latestUserMessage =
-      validation.messages.at(-1)?.content ?? "";
-    const setup = advanceConversationProfile(
-      profile,
-      latestUserMessage,
-    );
-    profile = setup.profile;
+  if (prepared.state === "RESPOND") {
+    const responseBody: ChatSuccessResponse = {
+      message: prepared.message,
+      profile: prepared.profile,
+      contactCard: null,
+      resetConversation: prepared.resetConversation,
+    };
 
-    if (!setup.complete || setup.effectiveUserRequest === null) {
-      const responseBody: ChatSuccessResponse = {
-        message:
-          setup.response ??
-          "Скажите, пожалуйста, как к вам обращаться.",
-        profile,
-        contactCard: null,
-      };
-
-      return Response.json(responseBody);
-    }
-
-    navigationMessages = replaceLastUserMessage(
-      validation.messages,
-      setup.effectiveUserRequest,
-    );
+    return Response.json(responseBody);
   }
 
   const requestId = randomUUID();
 
   try {
     const result = await orchestrateNavigatorResponse(
-      navigationMessages,
+      prepared.messages,
       {
         signal: request.signal,
         requestId,
-        profile,
+        profile: prepared.profile,
       },
     );
 
     const responseBody: ChatSuccessResponse = {
       message: result.message,
-      profile,
+      profile: prepared.profile,
       contactCard: result.contactCard,
+      resetConversation: false,
     };
 
     return Response.json(responseBody);

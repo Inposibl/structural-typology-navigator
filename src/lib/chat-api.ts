@@ -21,7 +21,8 @@ function isSuccessResponse(value: unknown): value is ChatSuccessResponse {
     typeof value.message !== "string" ||
     value.message.trim().length === 0 ||
     !("profile" in value) ||
-    !("contactCard" in value)
+    !("contactCard" in value) ||
+    typeof value.resetConversation !== "boolean"
   ) {
     return false;
   }

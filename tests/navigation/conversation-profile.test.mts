@@ -21,6 +21,33 @@ test("complete name + TY setup is collected before routing", () => {
   assert.match(result.response ?? "", /Буду обращаться на «ты»/u);
 });
 
+test("multi-word display name is accepted during setup", () => {
+  const result = advanceConversationProfile(
+    createEmptyConversationProfile(),
+    "Хуй с горы на ты",
+  );
+
+  assert.equal(result.complete, true);
+  assert.equal(result.profile.displayName, "Хуй с горы");
+  assert.equal(result.profile.addressMode, "TY");
+  assert.equal(result.profile.pendingUserRequest, null);
+  assert.equal(result.effectiveUserRequest, null);
+  assert.match(result.response ?? "", /Хуй с горы/u);
+});
+
+test("multi-word name without mode is retained and only mode is requested", () => {
+  const result = advanceConversationProfile(
+    createEmptyConversationProfile(),
+    "Доктор Хаус",
+  );
+
+  assert.equal(result.complete, false);
+  assert.equal(result.profile.displayName, "Доктор Хаус");
+  assert.equal(result.profile.addressMode, null);
+  assert.equal(result.profile.pendingUserRequest, null);
+  assert.match(result.response ?? "", /на «ты» или на «вы»/u);
+});
+
 test("name-only answer asks only for address mode", () => {
   const result = advanceConversationProfile(
     createEmptyConversationProfile(),
@@ -70,6 +97,55 @@ test("substantive request survives partial profile setup and routes after missin
     second.effectiveUserRequest,
     "Мне нужен курс про мотивацию команды",
   );
+});
+
+test("substantive request without profile fields is retained but never mistaken for a name", () => {
+  const result = advanceConversationProfile(
+    createEmptyConversationProfile(),
+    "я хочу учиться еба",
+  );
+
+  assert.equal(result.complete, false);
+  assert.equal(result.profile.displayName, null);
+  assert.equal(result.profile.addressMode, null);
+  assert.equal(
+    result.profile.pendingUserRequest,
+    "я хочу учиться еба",
+  );
+  assert.equal(result.effectiveUserRequest, null);
+});
+
+test("name, mode and clearly separate task can arrive in the same turn", () => {
+  const result = advanceConversationProfile(
+    createEmptyConversationProfile(),
+    "Иван, на ты. Хочу разобраться с мотивацией команды",
+  );
+
+  assert.equal(result.complete, true);
+  assert.equal(result.profile.displayName, "Иван");
+  assert.equal(result.profile.addressMode, "TY");
+  assert.equal(result.profile.pendingUserRequest, null);
+  assert.equal(
+    result.effectiveUserRequest,
+    "Хочу разобраться с мотивацией команды",
+  );
+});
+
+test("unknown setup residue is not promoted to a pending educational request", () => {
+  const result = advanceConversationProfile(
+    {
+      displayName: "Иван",
+      addressMode: null,
+      nameDeclined: false,
+      pendingUserRequest: null,
+    },
+    "ты чё дебил?",
+  );
+
+  assert.equal(result.complete, false);
+  assert.equal(result.profile.displayName, "Иван");
+  assert.equal(result.profile.pendingUserRequest, null);
+  assert.match(result.response ?? "", /на «ты» или на «вы»/u);
 });
 
 test("user may decline name while retaining a stable VY mode", () => {

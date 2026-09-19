@@ -82,10 +82,14 @@ export function ChatInterface() {
         contactCard: response.contactCard,
       };
 
-      setMessages((currentMessages) => [
-        ...currentMessages,
-        assistantMessage,
-      ]);
+      if (response.resetConversation) {
+        setMessages([assistantMessage]);
+      } else {
+        setMessages((currentMessages) => [
+          ...currentMessages,
+          assistantMessage,
+        ]);
+      }
     } catch (error) {
       setRequestError(
         error instanceof Error

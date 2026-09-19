@@ -26,12 +26,21 @@ export type AddressSetupAdvance = {
 
 const MODE_CHOICE_PATTERN =
   /(?:^|[\s,;:.!?()])на\s+[«"'“”]?(ты|вы)[»"'“”]?(?=$|[\s,;:.!?()])/giu;
+
 const NAME_DECLINE_PATTERN =
   /(?:можно\s+без\s+имени|без\s+имени|имя\s+(?:не\s+)?(?:важно|нужно)|не\s+хочу\s+(?:называть|говорить)\s+(?:сво[её]\s+)?имя)/giu;
-const EXPLICIT_NAME_PATTERN =
-  /(?:меня\s+зовут|зови(?:те)?(?:\s+меня)?|называй(?:те)?(?:\s+меня)?|можно\s+(?:звать|называть)\s+меня)\s+([A-Za-zА-Яа-яЁё][A-Za-zА-Яа-яЁё'’-]{0,39}(?:\s+[A-Za-zА-Яа-яЁё][A-Za-zА-Яа-яЁё'’-]{0,39}){0,2})/iu;
-const SIMPLE_NAME_TOKEN =
-  /^[A-Za-zА-Яа-яЁё][A-Za-zА-Яа-яЁё'’-]{0,39}$/u;
+
+const EXPLICIT_NAME_PREFIX =
+  /^(?:меня\s+зовут|зови(?:те)?(?:\s+меня)?|называй(?:те)?(?:\s+меня)?|можно\s+(?:звать|называть)\s+меня)\s+/iu;
+
+const SUBSTANTIVE_TASK_START =
+  /(?:я\s+хочу|хочу|мне\s+нуж(?:ен|на|но|ны)|нуж(?:ен|на|но|ны)\s+мне|помоги(?:те)?|подбери(?:те)?|посоветуй(?:те)?|интересует|я\s+пытаюсь|хочу\s+понять|хочу\s+разобраться|нужно\s+понять|нужно\s+разобраться|у\s+меня\s+(?:ситуац|проблем|вопрос)|как\s+(?:мне|лучше|можно)|почему\s+|что\s+(?:делать|выбрать|изучать)|какой\s+курс|какие\s+курсы|учиться|обучение|курс\s+про)/iu;
+
+const MODE_ONLY_PATTERN =
+  /^(?:на\s+)?(?:ты|вы)$/iu;
+
+const FILLER_ONLY_PATTERN =
+  /^(?:да|ок|окей|конечно|пожалуйста|можно|хорошо|спасибо)[.!?]*$/iu;
 
 export function createEmptyConversationProfile(): ConversationProfile {
   return {
@@ -55,6 +64,39 @@ function onlyKeys(
 
 function normalizeDisplayName(value: string): string {
   return value.trim().replace(/\s+/gu, " ");
+}
+
+export function normalizeDisplayNameCandidate(
+  value: string,
+): string | null {
+  const normalized = normalizeDisplayName(
+    value
+      .replace(/^[\s,.;:!?—–-]+|[\s,.;:!?—–-]+$/gu, "")
+      .trim(),
+  );
+
+  if (
+    normalized.length === 0 ||
+    normalized.length > MAX_DISPLAY_NAME_LENGTH ||
+    normalized.includes("\n") ||
+    /https?:\/\/|www\.|@/iu.test(normalized) ||
+    MODE_ONLY_PATTERN.test(normalized) ||
+    FILLER_ONLY_PATTERN.test(normalized) ||
+    SUBSTANTIVE_TASK_START.test(normalized)
+  ) {
+    return null;
+  }
+
+  const tokens = normalized.split(/\s+/u).filter(Boolean);
+  if (tokens.length === 0 || tokens.length > 8) {
+    return null;
+  }
+
+  if (!/[A-Za-zА-Яа-яЁё]/u.test(normalized)) {
+    return null;
+  }
+
+  return normalized;
 }
 
 export function normalizeConversationProfilePayload(
@@ -202,58 +244,82 @@ function stripModeChoice(text: string): string {
   return text.replace(MODE_CHOICE_PATTERN, " ");
 }
 
-function looksLikeSimpleName(value: string): boolean {
-  const tokens = value.split(/\s+/u).filter(Boolean);
-  return (
-    tokens.length >= 1 &&
-    tokens.length <= 2 &&
-    tokens.every((token) => SIMPLE_NAME_TOKEN.test(token)) &&
-    value.length <= MAX_DISPLAY_NAME_LENGTH
-  );
+function cleanText(value: string): string {
+  return value
+    .replace(/^[\s,.;:!?—–-]+|[\s,.;:!?—–-]+$/gu, "")
+    .replace(/\s+/gu, " ")
+    .trim();
 }
 
-function extractName(
-  textWithoutMode: string,
+function splitTask(
+  value: string,
 ): {
-  displayName: string | null;
-  consumedText: string | null;
+  beforeTask: string;
+  task: string | null;
 } {
-  const explicit = textWithoutMode.match(EXPLICIT_NAME_PATTERN);
-  if (explicit?.[1]) {
+  const match = value.match(SUBSTANTIVE_TASK_START);
+  if (!match || match.index === undefined) {
     return {
-      displayName: normalizeDisplayName(explicit[1]),
-      consumedText: explicit[0],
+      beforeTask: cleanText(value),
+      task: null,
     };
   }
 
-  const firstSegment =
-    textWithoutMode.split(/[,.!?;:\n]/u)[0]?.trim() ?? "";
+  let beforeTask = cleanText(value.slice(0, match.index));
+  beforeTask = beforeTask
+    .replace(/(?:^|\s)(?:и|а|но)$/iu, "")
+    .trim();
 
-  if (looksLikeSimpleName(firstSegment)) {
+  const task = cleanText(value.slice(match.index));
+
+  return {
+    beforeTask,
+    task: task.length > 0 ? task : null,
+  };
+}
+
+function parseNameAndTask(
+  value: string,
+): {
+  displayName: string | null;
+  task: string | null;
+} {
+  const cleaned = cleanText(value);
+
+  if (!cleaned) {
+    return { displayName: null, task: null };
+  }
+
+  const explicitPrefix = cleaned.match(EXPLICIT_NAME_PREFIX);
+  if (explicitPrefix) {
+    const rest = cleanText(cleaned.slice(explicitPrefix[0].length));
+    const split = splitTask(rest);
     return {
-      displayName: normalizeDisplayName(firstSegment),
-      consumedText: firstSegment,
+      displayName: normalizeDisplayNameCandidate(split.beforeTask),
+      task: split.task,
+    };
+  }
+
+  const split = splitTask(cleaned);
+
+  if (split.task && split.beforeTask) {
+    return {
+      displayName: normalizeDisplayNameCandidate(split.beforeTask),
+      task: split.task,
+    };
+  }
+
+  if (split.task) {
+    return {
+      displayName: null,
+      task: split.task,
     };
   }
 
   return {
-    displayName: null,
-    consumedText: null,
+    displayName: normalizeDisplayNameCandidate(cleaned),
+    task: null,
   };
-}
-
-function cleanRemainder(value: string): string | null {
-  const cleaned = value
-    .replace(NAME_DECLINE_PATTERN, " ")
-    .replace(
-      /(?:^|[\s,;:.!?])(?:да|ок|окей|конечно|пожалуйста|можно|хорошо)(?=$|[\s,;:.!?])/giu,
-      " ",
-    )
-    .replace(/^[\s,.;:!?—–-]+|[\s,.;:!?—–-]+$/gu, "")
-    .replace(/\s+/gu, " ")
-    .trim();
-
-  return cleaned.length > 0 ? cleaned : null;
 }
 
 function mergePending(
@@ -317,6 +383,7 @@ export function advanceConversationProfile(
 
   let working = userText.trim();
   const mode = incoming.addressMode ?? detectAddressMode(working);
+
   if (mode !== null) {
     working = stripModeChoice(working);
   }
@@ -334,20 +401,15 @@ export function advanceConversationProfile(
   }
   NAME_DECLINE_PATTERN.lastIndex = 0;
 
-  if (!displayName && !nameDeclined) {
-    const extracted = extractName(working);
-    if (extracted.displayName) {
-      displayName = extracted.displayName;
-      if (extracted.consumedText) {
-        working = working.replace(extracted.consumedText, " ");
-      }
-    }
+  const parsed = parseNameAndTask(working);
+
+  if (!displayName && !nameDeclined && parsed.displayName) {
+    displayName = parsed.displayName;
   }
 
-  const remainder = cleanRemainder(working);
   const pending = mergePending(
     incoming.pendingUserRequest,
-    remainder,
+    parsed.task,
   );
 
   const provisional: ConversationProfile = {
