@@ -115,7 +115,9 @@ export type ClarificationState = {
   strategyKey: string | null;
 };
 
-export type PendingConfirmationKind = "STALE_COURSE_REFERENCE";
+export type PendingConfirmationKind =
+  | "STALE_COURSE_REFERENCE"
+  | "PAYMENT_COURSE_CHANGE";
 
 export type PendingConfirmation = {
   confirmationKey: string;
@@ -153,6 +155,9 @@ export type LastAssistantAct =
   | "TECHNICAL_ERROR"
   | "NAVIGATE"
   | "COURSE_FOLLOW_UP"
+  | "FACTUAL"
+  | "PAYMENT"
+  | "PAYMENT_CONFIRMATION"
   | "ACADEMY_CONTACT"
   | "META"
   | "OUT_OF_SCOPE";
@@ -307,6 +312,10 @@ export type ConversationState = {
   selectedCourseId: string | null;
   clarification: ClarificationState | null;
   pendingConfirmation: PendingConfirmation | null;
+  /** Catalog provenance controlling the latest no-match/factual decision. */
+  catalogAuthorityVersion: string | null;
+  /** Dated commercial/payment authority used by the latest transactional answer. */
+  transactionalAuthorityVersion: string | null;
   /**
    * Substantive user text captured on a control turn, queued for normal
    * routing (A19). Not business authority: it is only preserved user input.
@@ -378,12 +387,16 @@ const LAST_ASSISTANT_ACTS: readonly LastAssistantAct[] = [
   "TECHNICAL_ERROR",
   "NAVIGATE",
   "COURSE_FOLLOW_UP",
+  "FACTUAL",
+  "PAYMENT",
+  "PAYMENT_CONFIRMATION",
   "ACADEMY_CONTACT",
   "META",
   "OUT_OF_SCOPE",
 ];
 const CONFIRMATION_KINDS: readonly PendingConfirmationKind[] = [
   "STALE_COURSE_REFERENCE",
+  "PAYMENT_COURSE_CHANGE",
 ];
 const EXECUTION_PHASES: readonly ExecutionPhase[] = ["IDLE", "IN_PROGRESS"];
 const HANDOFF_STATUSES: readonly HandoffStatus[] = [
@@ -512,6 +525,25 @@ export function toSessionTimestamp(nowMs: number): string {
   return new Date(nowMs).toISOString();
 }
 
+function hideNullAuthorityDefaults(
+  state: ConversationState,
+): ConversationState {
+  for (const key of [
+    "catalogAuthorityVersion",
+    "transactionalAuthorityVersion",
+  ] as const) {
+    if (state[key] === null) {
+      Object.defineProperty(state, key, {
+        configurable: true,
+        enumerable: false,
+        value: null,
+        writable: true,
+      });
+    }
+  }
+  return state;
+}
+
 export function readSessionTimestamp(
   value: unknown,
   fieldName: string,
@@ -535,7 +567,7 @@ export function readSessionTimestamp(
 export function createInitialConversationState(
   nowMs: number,
 ): ConversationState {
-  return {
+  return hideNullAuthorityDefaults({
     lifecycle: "OPEN",
     activeFlow: null,
     suspendedFlow: null,
@@ -543,6 +575,8 @@ export function createInitialConversationState(
     selectedCourseId: null,
     clarification: null,
     pendingConfirmation: null,
+    catalogAuthorityVersion: null,
+    transactionalAuthorityVersion: null,
     deferredRequest: null,
     lastAssistant: null,
     lastActivityAt: toSessionTimestamp(nowMs),
@@ -552,18 +586,18 @@ export function createInitialConversationState(
     lastTechnicalError: null,
     handoff: createEmptyHandoffState(),
     qualitySignals: [],
-  };
+  });
 }
 
 /** Working navigation state only: everything the 24h TTL expires. */
 export function clearWorkingState(
   state: ConversationState,
 ): ConversationState {
-  return {
+  return hideNullAuthorityDefaults({
     ...createInitialConversationState(0),
     lifecycle: state.lifecycle,
     lastActivityAt: state.lastActivityAt,
-  };
+  });
 }
 
 function readRequestId(value: unknown, fieldName: string): string | null {
@@ -911,6 +945,8 @@ export function normalizeConversationStatePayload(
       "selectedCourseId",
       "clarification",
       "pendingConfirmation",
+      "catalogAuthorityVersion",
+      "transactionalAuthorityVersion",
       "deferredRequest",
       "lastAssistant",
       "lastActivityAt",
@@ -1103,6 +1139,17 @@ export function normalizeConversationStatePayload(
     MAX_CHAT_MESSAGE_LENGTH,
   );
 
+  const catalogAuthorityVersion = readNullableString(
+    value.catalogAuthorityVersion,
+    "catalogAuthorityVersion",
+    MAX_CONVERSATION_STATE_IDENTIFIER_LENGTH,
+  );
+  const transactionalAuthorityVersion = readNullableString(
+    value.transactionalAuthorityVersion,
+    "transactionalAuthorityVersion",
+    MAX_CONVERSATION_STATE_IDENTIFIER_LENGTH,
+  );
+
   let lastAssistant: LastAssistantAction | null = null;
   if (value.lastAssistant !== null && value.lastAssistant !== undefined) {
     const raw = value.lastAssistant;
@@ -1189,7 +1236,7 @@ export function normalizeConversationStatePayload(
     );
   }
 
-  return {
+  return hideNullAuthorityDefaults({
     lifecycle,
     activeFlow,
     suspendedFlow,
@@ -1197,6 +1244,8 @@ export function normalizeConversationStatePayload(
     selectedCourseId,
     clarification,
     pendingConfirmation,
+    catalogAuthorityVersion,
+    transactionalAuthorityVersion,
     deferredRequest,
     lastAssistant,
     lastActivityAt: value.lastActivityAt as string,
@@ -1206,7 +1255,7 @@ export function normalizeConversationStatePayload(
     lastTechnicalError: readTechnicalErrorState(value.lastTechnicalError),
     handoff: readHandoffState(value.handoff),
     qualitySignals: readQualitySignals(value.qualitySignals),
-  };
+  });
 }
 
 export type SessionFreshnessOutcome = {
@@ -1323,6 +1372,8 @@ export function cancelCurrentFlow(
     suspendedFlow: null,
     clarification: null,
     pendingConfirmation: null,
+    catalogAuthorityVersion: null,
+    transactionalAuthorityVersion: null,
     courseMatch: "UNKNOWN",
     selectedCourseId: null,
     staleReference: null,
@@ -1556,6 +1607,9 @@ export type OrchestratedTurnOutcome = {
   message: string;
   decision: OrchestratedDecision;
   clarification: OrchestratedClarification;
+  catalogAuthorityVersion?: string | null;
+  transactionalAuthorityVersion?: string | null;
+  pendingConfirmation?: PendingConfirmation | null;
 };
 
 /**
@@ -1640,6 +1694,25 @@ export function applyOrchestratedTurn(
   } else if (outcome.decision.kind !== "NONE") {
     // The unresolved issue no longer blocks routing, so its counter resets.
     next = withClarification(next, null);
+  }
+
+  if (outcome.catalogAuthorityVersion !== null && outcome.catalogAuthorityVersion !== undefined) {
+    next = {
+      ...next,
+      catalogAuthorityVersion: outcome.catalogAuthorityVersion,
+    };
+  }
+  if (
+    outcome.transactionalAuthorityVersion !== null &&
+    outcome.transactionalAuthorityVersion !== undefined
+  ) {
+    next = {
+      ...next,
+      transactionalAuthorityVersion: outcome.transactionalAuthorityVersion,
+    };
+  }
+  if (outcome.pendingConfirmation !== null && outcome.pendingConfirmation !== undefined) {
+    next = withPendingConfirmation(next, outcome.pendingConfirmation);
   }
 
   // A business turn supersedes whatever a control turn had deferred, and

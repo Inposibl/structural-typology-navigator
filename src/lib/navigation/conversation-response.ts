@@ -3,9 +3,16 @@ import type {
   ConversationProfile,
 } from "../chat-contract.ts";
 import {
+  ACADEMY_COURSES,
+  ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
   getAcademyCourse,
   type AcademyCourse,
 } from "../academy/course-catalog.ts";
+import { getPublicCourseOutcomes } from "../academy/public-course-outcomes.ts";
+import {
+  ACADEMY_COMMERCIAL_AUTHORITY,
+  getAuthoritativeCoursePrice,
+} from "../academy/commercial-authority.ts";
 import type { ResolvedCourseEvidence } from "../knowledge/retrieval/authority-resolver.ts";
 import type { CourseEvidenceSelection } from "../knowledge/retrieval/evidence-selector.ts";
 import {
@@ -13,7 +20,10 @@ import {
   callDeepSeekText,
   type DeepSeekClientOptions,
 } from "./deepseek-client.ts";
-import type { ConversationActDecision } from "./conversation-act-router.ts";
+import type {
+  ConversationActDecision,
+  FactualIntent,
+} from "./conversation-act-router.ts";
 import {
   addressStyleInstruction,
 } from "./conversation-profile.ts";
@@ -509,6 +519,173 @@ export function composeNavigatorOutOfScopeAnswer(): string {
     "Этот вопрос вне функции Навигатора: здесь я помогаю выбирать и понимать учебные маршруты Академии структурной типологии.",
     "Для общего поиска лучше использовать, например, Google или Perplexity; для диалогового разбора — универсальный ассистент вроде ChatGPT. Так ответ будет качественнее по теме, которая не относится к курсам Академии.",
   ].join("\n\n");
+}
+
+export function composeStableNoMatchAnswer(): string {
+  return [
+    "По уже описанной задаче в текущем каталоге нет курса, который я могу обоснованно рекомендовать.",
+    "Просьба выбрать любой курс не создаёт оснований для рекомендации. Я смогу проверить подбор заново, если появятся новые факты о задаче или изменится каталог Академии.",
+  ].join("\n\n");
+}
+
+export function composePaymentAmbiguityAnswer(): string {
+  return "В запросе указано несколько курсов. Назовите, пожалуйста, один курс для оплаты — до уточнения я не буду давать платёжную ссылку.";
+}
+
+export function composePaymentCourseChangeConfirmationAnswer(
+  currentTitle: string,
+  requestedTitle: string,
+): string {
+  return `Сейчас выбран курс «${currentTitle}», а оплатить вы просите курс «${requestedTitle}». Подтвердите, пожалуйста: переключиться на «${requestedTitle}» и открыть оплату?`;
+}
+
+export function composePaymentCourseChangeDeclinedAnswer(
+  currentTitle: string,
+): string {
+  return `Хорошо, курс для оплаты не меняю. Выбранным остаётся «${currentTitle}».`;
+}
+
+export function composePaymentCourseIdentityRequiredAnswer(): string {
+  return "Перед оплатой нужно заново определить курс. Назовите, пожалуйста, точное название курса — до этого платёжную ссылку не дам.";
+}
+
+export function composePaymentUnavailableAnswer(courseTitle: string): string {
+  return `Для курса «${courseTitle}» в действующей платёжной политике нет подтверждённой ссылки на оплату. Я не буду придумывать или подменять её общей ссылкой.`;
+}
+
+function formatRub(value: number): string {
+  return `${new Intl.NumberFormat("ru-RU").format(value)} ₽`;
+}
+
+function authorityDateRu(): string {
+  return "19 сентября 2026 года";
+}
+
+export function composeAcademyOverviewAnswer(): string {
+  return [
+    "Академия структурной типологии — образовательный проект с каталогом курсов о моделях личности, мотивации, восприятия, взаимодействия, поведения и организационных ситуаций.",
+    `Я могу сообщать только сведения из каталога Академии по состоянию на ${ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE}, помогать сравнивать программы и подбирать учебный маршрут. Это не клиническая помощь и не подтверждение аккредитации или научного статуса программ.`,
+  ].join("\n\n");
+}
+
+export function composePsychologyBoundaryAnswer(): string {
+  return "В каталоге есть темы, смежные с психологией: мотивация, личность, восприятие, взаимодействие и поведение. При этом Навигатор не утверждает, что Академия оказывает клиническую психологическую помощь, выдаёт профессиональную аккредитацию или что программы имеют подтверждённый научный статус.";
+}
+
+export function composeCatalogListAnswer(): string {
+  return [
+    `Каталог Академии по состоянию на ${ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE}:`,
+    ...ACADEMY_COURSES.map((course) => {
+      const availability =
+        course.status === "ROUTABLE"
+          ? "доступен для навигации"
+          : `только указан в каталоге; ${course.routingBlockReason ?? "для рекомендации недостаточно публичных данных"}`;
+      return `• «${course.title}» — ${course.meetings} встреч; ${availability.replace(/[.!?]+$/u, "")}${course.url ? `; ${course.url}` : ""}.`;
+    }),
+  ].join("\n");
+}
+
+function metadataCourseIds(
+  intent: Extract<FactualIntent, { kind: "CURRENT_METADATA" }>,
+  selectedCourseId: string | null,
+): string[] {
+  if (intent.scope === "ALL") return ACADEMY_COURSES.map((course) => course.id);
+  if (intent.courseIds.length > 0) return intent.courseIds;
+  return selectedCourseId === null ? [] : [selectedCourseId];
+}
+
+export function composeCurrentMetadataAnswer(
+  intent: Extract<FactualIntent, { kind: "CURRENT_METADATA" }>,
+  selectedCourseId: string | null,
+): string {
+  const courseIds = metadataCourseIds(intent, selectedCourseId);
+  if (courseIds.length === 0 && intent.fields.includes("PRICE")) {
+    return "Уточните, пожалуйста, название курса. Без выбранного или названного курса я не могу определить, о какой цене идёт речь.";
+  }
+
+  const lines: string[] = [];
+  if (intent.fields.includes("PRICE")) {
+    for (const courseId of courseIds) {
+      const course = getAcademyCourse(courseId);
+      if (!course) continue;
+      const price = getAuthoritativeCoursePrice(courseId as Parameters<typeof getAuthoritativeCoursePrice>[0]);
+      lines.push(
+        price.status === "SUPPORTED"
+          ? `• «${course.title}»: последняя подтверждённая цена по данным на ${authorityDateRu()} — ${formatRub(price.value)}.`
+          : `• «${course.title}»: подтверждённой цены по данным авторитета на ${authorityDateRu()} нет.`,
+      );
+    }
+  }
+
+  const unavailableLabels: Record<string, string> = {
+    SCHEDULE: "расписание",
+    COHORT: "текущий поток",
+    ENROLLMENT_WINDOW: "окно набора",
+  };
+  for (const field of intent.fields) {
+    if (field === "PRICE") continue;
+    lines.push(
+      `• ${unavailableLabels[field]}: авторитетного значения нет; я не буду восстанавливать его из истории, памяти модели или материалов курса.`,
+    );
+  }
+
+  return [
+    `Коммерческие сведения ограничены авторитетом ${ACADEMY_COMMERCIAL_AUTHORITY.authorityId}.`,
+    ...lines,
+  ].join("\n");
+}
+
+function courseComparisonBlock(course: AcademyCourse): string {
+  const outcomes = getPublicCourseOutcomes(course);
+  const status =
+    course.status === "ROUTABLE"
+      ? "доступен для навигации"
+      : `только указан в каталоге; ${course.routingBlockReason ?? "для рекомендации недостаточно данных"}`;
+  return [
+    `«${course.title}»`,
+    `• Статус: ${status}.`,
+    `• Встреч: ${course.meetings}.`,
+    `• Учебные задачи: ${course.learningNeeds.length > 0 ? course.learningNeeds.join("; ") : "не указаны"}.`,
+    `• Публичные результаты: ${outcomes.length > 0 ? outcomes.join("; ") : "не указаны"}.`,
+    `• Аудитория: ${course.audienceSignals.length > 0 ? course.audienceSignals.join("; ") : "не указана"}.`,
+    `• Публичная страница: ${course.url ?? "не указана"}.`,
+  ].join("\n");
+}
+
+export function composeCourseComparisonAnswer(
+  intent: Extract<FactualIntent, { kind: "COURSE_COMPARISON" }>,
+): string {
+  if (intent.hasUnknownCourse || intent.courseIds.length !== 2) {
+    return "Не могу выполнить сравнение: один из названных курсов не найден в текущем каталоге Академии. Уточните точное название.";
+  }
+  const courses = intent.courseIds.map(getAcademyCourse);
+  if (courses.some((course) => course === null)) {
+    return "Не могу выполнить сравнение: один из курсов отсутствует в текущем каталоге Академии.";
+  }
+  return [
+    "Нейтральное сравнение по данным каталога — без выбора победителя и без вывода о том, что лучше именно для вас:",
+    ...courses.map((course) => courseComparisonBlock(course as AcademyCourse)),
+  ].join("\n\n");
+}
+
+export function composeFactualAnswer(
+  intents: readonly FactualIntent[],
+  selectedCourseId: string | null,
+): string {
+  return intents.map((intent) => {
+    switch (intent.kind) {
+      case "ACADEMY_OVERVIEW":
+        return composeAcademyOverviewAnswer();
+      case "CATALOG_LIST":
+        return composeCatalogListAnswer();
+      case "PSYCHOLOGY_BOUNDARY":
+        return composePsychologyBoundaryAnswer();
+      case "CURRENT_METADATA":
+        return composeCurrentMetadataAnswer(intent, selectedCourseId);
+      case "COURSE_COMPARISON":
+        return composeCourseComparisonAnswer(intent);
+    }
+  }).join("\n\n");
 }
 
 function sourceProvenance(source: ResolvedCourseEvidence): string {

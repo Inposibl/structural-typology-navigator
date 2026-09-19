@@ -30,6 +30,11 @@
 
 import type { ConversationProfile } from "../chat-contract.ts";
 import { getAcademyCourse } from "../academy/course-catalog.ts";
+import { ACADEMY_COMMERCIAL_AUTHORITY_VERSION } from "../academy/commercial-authority.ts";
+import {
+  composeEnrollmentPaymentAnswer,
+  paymentActionForCourse,
+} from "../academy/payment-policy.ts";
 import {
   applyConversationProfileControl,
   isConversationResetRequest,
@@ -97,6 +102,7 @@ import {
   composeExpiredContextAnswer,
   composeHandoffOfferedAnswer,
   composeHandoffReadyAnswer,
+  composePaymentCourseChangeDeclinedAnswer,
   composeRepairChallengeAnswer,
   composeRepairClarifyAnswer,
   composeRepairRestateAnswer,
@@ -132,6 +138,8 @@ export type ConversationControlAct =
   | "ADDRESS_SETUP"
   | "UNSUPPORTED_ADDRESS_MODE"
   | "PENDING_CONFIRMATION_RESOLVED"
+  | "PAYMENT_CONFIRMATION"
+  | "PAYMENT_CONFIRMATION_RESOLVED"
   | "RESUME_FLOW"
   | "SKIP"
   | "DEFERRED_NOT_ACCEPTED";
@@ -211,11 +219,21 @@ function lastAssistantActFor(act: RecordedControlAct): LastAssistantAct {
   switch (act) {
     case "PENDING_CONFIRMATION_RESOLVED":
       return "STALE_REFERENCE_CONFIRMATION";
+    case "PAYMENT_CONFIRMATION_RESOLVED":
+      return "PAYMENT";
     case "UNSUPPORTED_ADDRESS_MODE":
       return "ADDRESS_SETUP";
     default:
       return act;
   }
+}
+
+function confirmationControlAct(
+  state: ConversationState,
+): "STALE_REFERENCE_CONFIRMATION" | "PAYMENT_CONFIRMATION" {
+  return state.pendingConfirmation?.kind === "PAYMENT_COURSE_CHANGE"
+    ? "PAYMENT_CONFIRMATION"
+    : "STALE_REFERENCE_CONFIRMATION";
 }
 
 function respond(
@@ -436,7 +454,7 @@ function resolveConversationControl(
       // The question is already outstanding; restate it rather than letting a
       // repeated stale reference fall through to ordinary routing.
       return respond(
-        "STALE_REFERENCE_CONFIRMATION",
+        confirmationControlAct(state),
         profile,
         state,
         pending.prompt,
@@ -679,7 +697,7 @@ function resolveConversationControl(
     // ordinary routing (CORR2-A): the request it produced is preserved instead.
     if (state.pendingConfirmation !== null) {
       return respondPreservingRemainder(
-        "STALE_REFERENCE_CONFIRMATION",
+        confirmationControlAct(state),
         setup.profile,
         state,
         state.pendingConfirmation.prompt,
@@ -763,6 +781,45 @@ function resolveConversationControl(
   const answeredNo = has(controls, "CONFIRM_NO");
 
   if (confirmation !== null && (answeredYes || answeredNo)) {
+    if (confirmation.kind === "PAYMENT_COURSE_CHANGE") {
+      const candidate = confirmation.candidateCourseId;
+      const requestedCourse = candidate === null ? null : getAcademyCourse(candidate);
+
+      if (answeredYes && requestedCourse && requestedCourse.status === "ROUTABLE") {
+        return respondPreservingRemainder(
+          "PAYMENT_CONFIRMATION_RESOLVED",
+          profile,
+          {
+            ...withPendingConfirmation(
+              withCourseBinding(state, "MATCHED", requestedCourse.id),
+              null,
+            ),
+            transactionalAuthorityVersion:
+              ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
+          },
+          composeEnrollmentPaymentAnswer(
+            paymentActionForCourse(
+              requestedCourse.id as Parameters<typeof paymentActionForCourse>[0],
+            ),
+          ),
+          remainder,
+        );
+      }
+
+      const currentTitle = state.selectedCourseId === null
+        ? null
+        : getAcademyCourse(state.selectedCourseId)?.title ?? null;
+      return respondPreservingRemainder(
+        "PAYMENT_CONFIRMATION_RESOLVED",
+        profile,
+        withPendingConfirmation(state, null),
+        currentTitle === null
+          ? composeStaleReferenceDeclinedAnswer(profile)
+          : composePaymentCourseChangeDeclinedAnswer(currentTitle),
+        remainder,
+      );
+    }
+
     const course =
       answeredYes && confirmation.candidateCourseId !== null
         ? getAcademyCourse(confirmation.candidateCourseId)
@@ -812,7 +869,7 @@ function resolveConversationControl(
   // the confirmation stays the outstanding gate.
   if (confirmation !== null) {
     return respondPreservingRemainder(
-      "STALE_REFERENCE_CONFIRMATION",
+      confirmationControlAct(state),
       profile,
       state,
       confirmation.prompt,

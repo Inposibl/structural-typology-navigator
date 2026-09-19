@@ -210,6 +210,18 @@ function validateRequestBody(
 function orchestrationAct(
   result: NavigatorOrchestrationResult,
 ): { act: LastAssistantAct; flowId: ConversationFlowId | null } {
+  if (result.stateEffects.pendingConfirmation?.kind === "PAYMENT_COURSE_CHANGE") {
+    return { act: "PAYMENT_CONFIRMATION", flowId: null };
+  }
+
+  if (result.conversationAct.state === "FACTUAL") {
+    return { act: "FACTUAL", flowId: null };
+  }
+
+  if (result.stateEffects.transactionalAuthorityVersion !== null) {
+    return { act: "PAYMENT", flowId: null };
+  }
+
   if (result.clarification.status === "ASKED") {
     return { act: "CLARIFICATION", flowId: "COURSE_SELECTION" };
   }
@@ -337,6 +349,7 @@ export async function handleChatRequest(
         priorIssueKey: clarification?.issueKey ?? null,
         priorAttempts: clarification?.attempts ?? 0,
       },
+      conversationState: prepared.conversationState,
     });
 
     const { act, flowId } = orchestrationAct(result);
@@ -353,6 +366,11 @@ export async function handleChatRequest(
             message: result.message,
             decision: orchestrationDecision(result),
             clarification: result.clarification,
+            catalogAuthorityVersion:
+              result.stateEffects.catalogAuthorityVersion,
+            transactionalAuthorityVersion:
+              result.stateEffects.transactionalAuthorityVersion,
+            pendingConfirmation: result.stateEffects.pendingConfirmation,
           },
           nowMs,
         ),

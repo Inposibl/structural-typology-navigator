@@ -132,13 +132,13 @@ export async function composeNavigatorAnswer(
 ): Promise<string> {
   if (decision.state === "ASK_MORE") {
     return [
-      "Чтобы выбрать учебную траекторию без натяжки, мне нужно уточнить несколько вещей.",
+      "Чтобы выбрать учебную траекторию на подтверждённых основаниях, мне нужно уточнить несколько вещей.",
       russianQuestionBlock(decision.questions),
     ].join("\n\n");
   }
 
   if (decision.state === "NO_CURRENT_COURSE_MATCH") {
-    return `${descriptionPrefix(options.profile)} я сейчас не вижу в текущем каталоге Академии курса, который можно было бы честно рекомендовать без натяжки.`;
+    return `${descriptionPrefix(options.profile)} я сейчас не вижу в текущем каталоге Академии курса, для которого есть достаточно подтверждённых оснований для рекомендации.`;
   }
 
   const primary = getAcademyCourse(decision.primaryCourseId);

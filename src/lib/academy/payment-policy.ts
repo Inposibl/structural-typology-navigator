@@ -1,6 +1,10 @@
 import type {
   ConversationActDecision,
 } from "../navigation/conversation-act-router.ts";
+import {
+  resolveCourseReferences,
+  type AcademyCourseId,
+} from "./course-reference.ts";
 
 export const ACADEMY_PAYMENT_POLICY = {
   generalUrl: "https://t.me/AST_payment_course_bot",
@@ -42,6 +46,29 @@ export type EnrollmentPaymentAction = {
   paymentUrl: string;
 };
 
+export type PaymentResolutionContext = {
+  selectedCourseId?: string | null;
+  courseMatch?:
+    | "UNKNOWN"
+    | "MATCHED"
+    | "NO_CURRENT_COURSE_MATCH"
+    | "AMBIGUOUS";
+  staleCourseReference?: boolean;
+};
+
+export type EnrollmentPaymentDecision =
+  | { kind: "NONE" }
+  | { kind: "ACTION"; action: EnrollmentPaymentAction }
+  | { kind: "CLARIFY_MULTIPLE"; courseIds: readonly AcademyCourseId[] }
+  | {
+      kind: "CONFIRM_COURSE_CHANGE";
+      currentCourseId: PaymentCourseId;
+      requestedCourseId: PaymentCourseId;
+    }
+  | { kind: "REESTABLISH_COURSE" }
+  | { kind: "PRESERVE_NO_MATCH" }
+  | { kind: "COURSE_NOT_PAYABLE"; courseId: AcademyCourseId };
+
 const ENROLLMENT_INTENT_PATTERNS: readonly RegExp[] = [
   /хочу\s+на\s+(?:этот\s+)?курс/iu,
   /хочу\s+(?:оплатить|записаться|купить|участвовать|оформить)/iu,
@@ -50,46 +77,9 @@ const ENROLLMENT_INTENT_PATTERNS: readonly RegExp[] = [
   /готов[а-я]*\s+(?:оплатить|записаться|идти\s+на\s+курс|участвовать)/iu,
   /(?:запишите|запиши)\s+меня/iu,
   /(?:пришлите|пришли)\s+(?:ссылку\s+)?(?:на\s+)?оплат/iu,
-];
-
-const EXPLICIT_COURSE_ALIASES: ReadonlyArray<{
-  courseId: PaymentCourseId;
-  patterns: readonly RegExp[];
-}> = [
-  {
-    courseId: "structural-typology",
-    patterns: [
-      /структурн[а-я]*\s+типолог/iu,
-      /типолог[а-я]*\s+личност/iu,
-    ],
-  },
-  {
-    courseId: "levels-of-consciousness",
-    patterns: [
-      /уровн[а-я]*\s+сознани/iu,
-      /иерархи[а-я]*\s+уровн[а-я]*\s+сознани/iu,
-    ],
-  },
-  {
-    courseId: "maslow",
-    patterns: [
-      /маслоу/iu,
-      /иерархи[а-я]*\s+потребност/iu,
-    ],
-  },
-  {
-    courseId: "normative-situation",
-    patterns: [
-      /нормативн[а-я]*\s+ситуац/iu,
-    ],
-  },
-  {
-    courseId: "play-and-creativity",
-    patterns: [
-      /игр[а-я]*\s+(?:и|&)\s+творчеств/iu,
-      /творчеств[а-я]*\s+(?:и|&)\s+игр/iu,
-    ],
-  },
+  // A bare imperative at the start of the message is itself an enrollment
+  // request; the same words mid-sentence stay narrative, not a request.
+  /(?:^|\n)\s*(?:оплатить|записаться|купить|оформить)(?![а-яё])/iu,
 ];
 
 export function hasEnrollmentPaymentIntent(
@@ -103,13 +93,10 @@ export function hasEnrollmentPaymentIntent(
 export function resolveExplicitPaymentCourseId(
   query: string,
 ): PaymentCourseId | null {
-  for (const entry of EXPLICIT_COURSE_ALIASES) {
-    if (entry.patterns.some((pattern) => pattern.test(query))) {
-      return entry.courseId;
-    }
-  }
-
-  return null;
+  const resolution = resolveCourseReferences(query);
+  return resolution.kind === "ONE" && isPaymentCourseId(resolution.courseIds[0])
+    ? resolution.courseIds[0]
+    : null;
 }
 
 function isPaymentCourseId(value: string): value is PaymentCourseId {
@@ -122,42 +109,91 @@ function isPaymentCourseId(value: string): value is PaymentCourseId {
 export function resolveEnrollmentPaymentAction(
   query: string,
   act: ConversationActDecision,
+  context: PaymentResolutionContext = {},
 ): EnrollmentPaymentAction | null {
+  const decision = resolveEnrollmentPaymentDecision(query, act, context);
+  return decision.kind === "ACTION" ? decision.action : null;
+}
+
+export function paymentActionForCourse(
+  courseId: PaymentCourseId,
+): EnrollmentPaymentAction {
+  return {
+    courseId,
+    paymentUrl: ACADEMY_PAYMENT_POLICY.courses[courseId].paymentUrl,
+  };
+}
+
+export function resolveEnrollmentPaymentDecision(
+  query: string,
+  act: ConversationActDecision,
+  context: PaymentResolutionContext = {},
+): EnrollmentPaymentDecision {
   if (!hasEnrollmentPaymentIntent(query)) {
-    return null;
+    return { kind: "NONE" };
   }
 
-  const explicitCourseId = resolveExplicitPaymentCourseId(query);
-  if (explicitCourseId) {
+  if (act.state === "OUT_OF_SCOPE") {
+    return { kind: "NONE" };
+  }
+
+  const references = resolveCourseReferences(query);
+  if (references.kind === "MULTIPLE") {
     return {
-      courseId: explicitCourseId,
-      paymentUrl:
-        ACADEMY_PAYMENT_POLICY.courses[explicitCourseId].paymentUrl,
+      kind: "CLARIFY_MULTIPLE",
+      courseIds: references.courseIds,
     };
   }
 
-  if (
-    act.state === "COURSE_FOLLOW_UP" &&
-    isPaymentCourseId(act.courseId)
-  ) {
+  const explicitCourseId = references.kind === "ONE"
+    ? references.courseIds[0]
+    : null;
+  if (explicitCourseId !== null && !isPaymentCourseId(explicitCourseId)) {
+    return { kind: "COURSE_NOT_PAYABLE", courseId: explicitCourseId };
+  }
+
+  const selectedCourseId =
+    context.selectedCourseId && isPaymentCourseId(context.selectedCourseId)
+      ? context.selectedCourseId
+      : act.state === "COURSE_FOLLOW_UP" && isPaymentCourseId(act.courseId)
+        ? act.courseId
+        : null;
+
+  if (explicitCourseId !== null && isPaymentCourseId(explicitCourseId)) {
+    if (selectedCourseId !== null && selectedCourseId !== explicitCourseId) {
+      return {
+        kind: "CONFIRM_COURSE_CHANGE",
+        currentCourseId: selectedCourseId,
+        requestedCourseId: explicitCourseId,
+      };
+    }
+
+    return { kind: "ACTION", action: paymentActionForCourse(explicitCourseId) };
+  }
+
+  if (context.staleCourseReference) {
+    return { kind: "REESTABLISH_COURSE" };
+  }
+
+  if (context.courseMatch === "NO_CURRENT_COURSE_MATCH") {
+    return { kind: "PRESERVE_NO_MATCH" };
+  }
+
+  if (selectedCourseId !== null) {
+    return { kind: "ACTION", action: paymentActionForCourse(selectedCourseId) };
+  }
+
+  if (act.state !== "META") {
     return {
-      courseId: act.courseId,
-      paymentUrl:
-        ACADEMY_PAYMENT_POLICY.courses[act.courseId].paymentUrl,
+      kind: "ACTION",
+      action: {
+        courseId: null,
+        paymentUrl: ACADEMY_PAYMENT_POLICY.generalUrl,
+      },
     };
   }
 
-  if (
-    act.state === "NAVIGATE" ||
-    act.state === "COURSE_FOLLOW_UP"
-  ) {
-    return {
-      courseId: null,
-      paymentUrl: ACADEMY_PAYMENT_POLICY.generalUrl,
-    };
-  }
-
-  return null;
+  return { kind: "NONE" };
 }
 
 export function composeEnrollmentPaymentAnswer(
@@ -166,7 +202,7 @@ export function composeEnrollmentPaymentAnswer(
   if (action.courseId) {
     const course = ACADEMY_PAYMENT_POLICY.courses[action.courseId];
     return [
-      `Отлично! Для оформления участия, выбора удобного потока и оплаты курса «${course.title}» перейдите к Помощнику по оплате курсов в Telegram: ${action.paymentUrl}.`,
+      `Отлично! Для оформления участия и оплаты курса «${course.title}» перейдите к Помощнику по оплате курсов в Telegram: ${action.paymentUrl}.`,
       "Он за 1 минуту оформит заявку и пришлёт реквизиты или счёт для бухгалтерии.",
     ].join("\n\n");
   }

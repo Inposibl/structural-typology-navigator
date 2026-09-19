@@ -32,10 +32,23 @@ import {
   type RouteConversationActOptions,
 } from "./conversation-act-router.ts";
 import {
+  ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
+  getAcademyCourse,
+} from "../academy/course-catalog.ts";
+import {
+  ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
+} from "../academy/commercial-authority.ts";
+import {
   composeCourseFollowUpAnswer,
   composeClarificationExhaustionAnswer,
   composeNavigatorMetaAnswer,
   composeNavigatorOutOfScopeAnswer,
+  composeFactualAnswer,
+  composePaymentAmbiguityAnswer,
+  composePaymentCourseChangeConfirmationAnswer,
+  composePaymentCourseIdentityRequiredAnswer,
+  composePaymentUnavailableAnswer,
+  composeStableNoMatchAnswer,
   type ComposeCourseFollowUpOptions,
 } from "./conversation-response.ts";
 import {
@@ -48,8 +61,12 @@ import {
 } from "../academy/contact-policy.ts";
 import {
   composeEnrollmentPaymentAnswer,
-  resolveEnrollmentPaymentAction,
+  resolveEnrollmentPaymentDecision,
 } from "../academy/payment-policy.ts";
+import type {
+  ConversationState,
+  PendingConfirmation,
+} from "./conversation-state.ts";
 import {
   createNavigatorDegradationLog,
   isRecoverableEvidenceSelectionFailure,
@@ -65,6 +82,13 @@ export type NavigatorOrchestrationResult = {
   courseHadActiveSources: boolean;
   evidenceSelectionStatus: CourseEvidenceSelection["status"] | "NOT_RUN";
   clarification: OrchestrationClarificationOutcome;
+  stateEffects: OrchestrationStateEffects;
+};
+
+export type OrchestrationStateEffects = {
+  catalogAuthorityVersion: string | null;
+  transactionalAuthorityVersion: string | null;
+  pendingConfirmation: PendingConfirmation | null;
 };
 
 /**
@@ -140,6 +164,14 @@ export type OrchestrateNavigatorOptions = {
   profile?: ConversationProfile;
   /** Prior unresolved-clarification record, for the A14 budget. */
   clarification?: ClarificationControlInput;
+  conversationState?: Pick<
+    ConversationState,
+    | "courseMatch"
+    | "selectedCourseId"
+    | "staleReference"
+    | "catalogAuthorityVersion"
+    | "transactionalAuthorityVersion"
+  >;
   dependencies?: OrchestrationDependencies;
 };
 
@@ -195,6 +227,7 @@ function emptyResult(
   message: string,
   conversationAct: ConversationActDecision,
   contactCard: AcademyContactCard | null = null,
+  stateEffects: Partial<OrchestrationStateEffects> = {},
 ): NavigatorOrchestrationResult {
   return {
     message,
@@ -205,6 +238,12 @@ function emptyResult(
     courseHadActiveSources: false,
     evidenceSelectionStatus: "NOT_RUN",
     clarification: NOT_APPLICABLE_CLARIFICATION,
+    stateEffects: {
+      catalogAuthorityVersion: stateEffects.catalogAuthorityVersion ?? null,
+      transactionalAuthorityVersion:
+        stateEffects.transactionalAuthorityVersion ?? null,
+      pendingConfirmation: stateEffects.pendingConfirmation ?? null,
+    },
   };
 }
 
@@ -240,16 +279,99 @@ export async function orchestrateNavigatorResponse(
   );
 
   const query = lastUserMessage(messages);
-  const paymentAction = resolveEnrollmentPaymentAction(
+  const paymentDecision = resolveEnrollmentPaymentDecision(
     query,
     conversationAct,
+    {
+      selectedCourseId: options.conversationState?.selectedCourseId ?? null,
+      courseMatch: options.conversationState?.courseMatch ?? "UNKNOWN",
+      staleCourseReference:
+        options.conversationState?.staleReference !== null &&
+        options.conversationState?.staleReference !== undefined,
+    },
   );
 
-  if (paymentAction) {
+  const factualMessage = conversationAct.state === "FACTUAL"
+    ? composeFactualAnswer(
+        conversationAct.intents,
+        options.conversationState?.selectedCourseId ?? null,
+      )
+    : null;
+  const factualUsesTransactionalAuthority =
+    conversationAct.state === "FACTUAL" &&
+    conversationAct.intents.some((intent) => intent.kind === "CURRENT_METADATA");
+  const combineFactual = (message: string): string =>
+    factualMessage === null ? message : `${factualMessage}\n\n${message}`;
+
+  if (paymentDecision.kind === "ACTION") {
     return emptyResult(
-      composeEnrollmentPaymentAnswer(paymentAction),
+      combineFactual(composeEnrollmentPaymentAnswer(paymentDecision.action)),
+      conversationAct,
+      null,
+      {
+        catalogAuthorityVersion:
+          conversationAct.state === "FACTUAL"
+            ? ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE
+            : null,
+        transactionalAuthorityVersion: ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
+      },
+    );
+  }
+
+  if (paymentDecision.kind === "CLARIFY_MULTIPLE") {
+    return emptyResult(
+      combineFactual(composePaymentAmbiguityAnswer()),
       conversationAct,
     );
+  }
+
+  if (paymentDecision.kind === "CONFIRM_COURSE_CHANGE") {
+    const currentCourse = getAcademyCourse(paymentDecision.currentCourseId);
+    const requestedCourse = getAcademyCourse(paymentDecision.requestedCourseId);
+    if (!currentCourse || !requestedCourse) {
+      throw new Error("Payment course confirmation references an unavailable course.");
+    }
+    const prompt = composePaymentCourseChangeConfirmationAnswer(
+      currentCourse.title,
+      requestedCourse.title,
+    );
+    return emptyResult(combineFactual(prompt), conversationAct, null, {
+      pendingConfirmation: {
+        confirmationKey: `payment-course-change:${paymentDecision.currentCourseId}:${paymentDecision.requestedCourseId}`,
+        kind: "PAYMENT_COURSE_CHANGE",
+        prompt,
+        candidateCourseId: paymentDecision.requestedCourseId,
+      },
+    });
+  }
+
+  if (
+    paymentDecision.kind === "REESTABLISH_COURSE" ||
+    paymentDecision.kind === "PRESERVE_NO_MATCH"
+  ) {
+    return emptyResult(
+      combineFactual(composePaymentCourseIdentityRequiredAnswer()),
+      conversationAct,
+    );
+  }
+
+  if (paymentDecision.kind === "COURSE_NOT_PAYABLE") {
+    const course = getAcademyCourse(paymentDecision.courseId);
+    return emptyResult(
+      combineFactual(
+        composePaymentUnavailableAnswer(course?.title ?? paymentDecision.courseId),
+      ),
+      conversationAct,
+    );
+  }
+
+  if (conversationAct.state === "FACTUAL") {
+    return emptyResult(factualMessage ?? "", conversationAct, null, {
+      catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
+      transactionalAuthorityVersion: factualUsesTransactionalAuthority
+        ? ACADEMY_COMMERCIAL_AUTHORITY_VERSION
+        : null,
+    });
   }
 
   const contactIntent = detectAcademyContactIntent(query, {
@@ -341,7 +463,32 @@ export async function orchestrateNavigatorResponse(
       evidenceSelectionStatus:
         evidenceSelection?.status ?? "NOT_RUN",
       clarification: NOT_APPLICABLE_CLARIFICATION,
+      stateEffects: {
+        catalogAuthorityVersion: null,
+        transactionalAuthorityVersion: null,
+        pendingConfirmation: null,
+      },
     };
+  }
+
+  const storedNoMatch =
+    options.conversationState?.courseMatch === "NO_CURRENT_COURSE_MATCH";
+  const storedCatalogVersion =
+    options.conversationState?.catalogAuthorityVersion ?? null;
+  const authorityChanged =
+    storedCatalogVersion !== null &&
+    storedCatalogVersion !== ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE;
+  const hasNewTaskEvidence =
+    conversationAct.state === "NAVIGATE" &&
+    typeof conversationAct.newTaskEvidence === "string";
+
+  if (storedNoMatch && !authorityChanged && !hasNewTaskEvidence) {
+    return emptyResult(
+      composeStableNoMatchAnswer(),
+      conversationAct,
+      null,
+      { catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE },
+    );
   }
 
   const decision = await withNavigatorStage("ROUTER", () =>
@@ -420,6 +567,11 @@ export async function orchestrateNavigatorResponse(
     courseHadActiveSources: courseKnowledge?.hasActiveSources ?? false,
     evidenceSelectionStatus: evidenceSelection?.status ?? "NOT_RUN",
     clarification: NOT_APPLICABLE_CLARIFICATION,
+    stateEffects: {
+      catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
+      transactionalAuthorityVersion: null,
+      pendingConfirmation: null,
+    },
   };
 }
 
@@ -464,6 +616,11 @@ async function composeClarificationTurn(
         attempts: CLARIFICATION_BUDGET,
         question: null,
       },
+      stateEffects: {
+        catalogAuthorityVersion: null,
+        transactionalAuthorityVersion: null,
+        pendingConfirmation: null,
+      },
     };
   }
 
@@ -492,6 +649,11 @@ async function composeClarificationTurn(
       issueKey,
       attempts: priorAttempts + 1,
       question,
+    },
+    stateEffects: {
+      catalogAuthorityVersion: null,
+      transactionalAuthorityVersion: null,
+      pendingConfirmation: null,
     },
   };
 }
