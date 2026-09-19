@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "@/components/chat/chat-message";
 import { MessageComposer } from "@/components/chat/message-composer";
 import type { ChatMessage as ChatMessageType } from "@/components/chat/types";
-import { requestAssistantResponse } from "@/lib/chat-api";
+import { ChatRequestError, requestAssistantResponse } from "@/lib/chat-api";
 import type {
   ConversationMessage,
   ConversationProfile,
@@ -15,6 +15,13 @@ import {
   createEmptyConversationProfile,
   INITIAL_ADDRESS_PROMPT,
 } from "@/lib/navigation/conversation-profile";
+import {
+  IDLE_EXECUTION,
+  completeExecution,
+  createClientRequestId,
+  submitExecution,
+  type ClientExecutionState,
+} from "@/lib/navigation/execution-control";
 
 const INITIAL_MESSAGE: ChatMessageType = {
   id: "assistant-initial",
@@ -36,7 +43,9 @@ export function ChatInterface() {
   const [isPending, setIsPending] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
   const nextMessageId = useRef(1);
-  const requestInFlight = useRef(false);
+  // A22 — one submission at a time. This is the guard the handler itself uses,
+  // so a double submit can never issue a second outbound chat request.
+  const execution = useRef<ClientExecutionState>(IDLE_EXECUTION);
   const conversationEnd = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,16 +53,22 @@ export function ChatInterface() {
   }, [isPending, messages, requestError]);
 
   async function sendMessage() {
-    const content = draft.trim();
+    const decision = submitExecution(
+      execution.current,
+      draft,
+      createClientRequestId,
+    );
 
-    if (!content || requestInFlight.current) {
+    if (decision.status !== "ACCEPTED") {
       return;
     }
+
+    execution.current = decision.execution;
 
     const userMessage: ChatMessageType = {
       id: `user-${nextMessageId.current++}`,
       role: "user",
-      content,
+      content: decision.text,
     };
 
     const conversation: ConversationMessage[] = [
@@ -66,7 +81,6 @@ export function ChatInterface() {
       { role: userMessage.role, content: userMessage.content },
     ];
 
-    requestInFlight.current = true;
     setIsPending(true);
     setRequestError(null);
     setMessages((currentMessages) => [...currentMessages, userMessage]);
@@ -77,6 +91,7 @@ export function ChatInterface() {
         conversation,
         profile,
         conversationState,
+        decision.requestId,
       );
       setProfile(response.profile);
       setConversationState(response.conversationState);
@@ -97,13 +112,22 @@ export function ChatInterface() {
         ]);
       }
     } catch (error) {
+      if (error instanceof ChatRequestError && error.conversationState) {
+        // Continue from the canonical state the server preserved, so a retry
+        // resumes the conversation instead of a locally guessed one.
+        setConversationState(error.conversationState);
+      }
+
       setRequestError(
         error instanceof Error
           ? error.message
           : "Не удалось получить ответ Навигатора. Попробуйте ещё раз.",
       );
     } finally {
-      requestInFlight.current = false;
+      execution.current = completeExecution(
+        execution.current,
+        decision.requestId,
+      );
       setIsPending(false);
     }
   }

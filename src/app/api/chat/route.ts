@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import type {
   ChatErrorResponse,
   ChatSuccessResponse,
+  ChatTechnicalErrorResponse,
   ConversationMessage,
   ConversationProfile,
 } from "@/lib/chat-contract";
@@ -16,9 +17,13 @@ import {
 } from "@/lib/navigation/conversation-profile";
 import {
   ConversationStateValidationError,
+  appendQualitySignal,
   applyOrchestratedTurn,
   normalizeConversationStatePayload,
   systemSessionClock,
+  withCompletedExecution,
+  withTechnicalError,
+  isValidRequestId,
   type ConversationFlowId,
   type ConversationState,
   type LastAssistantAct,
@@ -32,6 +37,9 @@ import {
   type NavigatorOrchestrationResult,
 } from "@/lib/navigation/orchestrate-navigation";
 import { createNavigatorFailureLog } from "@/lib/navigation/navigator-observability";
+import { buildTechnicalErrorState } from "@/lib/navigation/technical-error";
+import { buildMaterialFailureSignal } from "@/lib/navigation/failure-capture";
+import { composeTechnicalErrorAnswer } from "@/lib/navigation/conversation-response";
 
 const MAX_REQUEST_BYTES = 200_000;
 
@@ -41,6 +49,7 @@ type ValidationResult =
       messages: ConversationMessage[];
       profile: ConversationProfile;
       conversationState: ConversationState;
+      requestId: string | null;
     }
   | { ok: false; message: string };
 
@@ -73,7 +82,12 @@ function validateRequestBody(
 ): ValidationResult {
   if (
     !isRecord(value) ||
-    !hasOnlyKeys(value, ["messages", "profile", "conversationState"]) ||
+    !hasOnlyKeys(value, [
+      "messages",
+      "profile",
+      "conversationState",
+      "requestId",
+    ]) ||
     !Array.isArray(value.messages)
   ) {
     return { ok: false, message: "Некорректный формат запроса." };
@@ -158,7 +172,38 @@ function validateRequestBody(
     throw error;
   }
 
-  return { ok: true, messages, profile, conversationState };
+  // A22 — fail closed on a contradictory execution baseline. A state handed
+  // back as the baseline of a new turn is always idle, because a completed turn
+  // returns idle and a failed turn never marks itself completed. An in-progress
+  // baseline therefore cannot be a clean turn, and is refused instead of
+  // executed.
+  if (conversationState.execution.phase === "IN_PROGRESS") {
+    return {
+      ok: false,
+      message: "Некорректное состояние диалога.",
+    };
+  }
+
+  const requestIdRaw = value.requestId;
+
+  if (
+    requestIdRaw !== undefined &&
+    requestIdRaw !== null &&
+    !isValidRequestId(requestIdRaw)
+  ) {
+    return {
+      ok: false,
+      message: "Некорректный идентификатор запроса.",
+    };
+  }
+
+  return {
+    ok: true,
+    messages,
+    profile,
+    conversationState,
+    requestId: typeof requestIdRaw === "string" ? requestIdRaw : null,
+  };
 }
 
 /** Package-A act identity for an orchestrated turn. */
@@ -208,7 +253,20 @@ function orchestrationDecision(
   }
 }
 
-export async function POST(request: Request): Promise<Response> {
+/**
+ * Injectable seams for the conversation turn. The production entry point
+ * (`POST`) uses the real orchestration; a test injects a deterministic failure
+ * so the technical-error lane can be verified without a live provider,
+ * database, or network timeout.
+ */
+export type ChatRouteDependencies = {
+  orchestrate?: typeof orchestrateNavigatorResponse;
+};
+
+export async function handleChatRequest(
+  request: Request,
+  dependencies: ChatRouteDependencies = {},
+): Promise<Response> {
   const nowMs = systemSessionClock.now();
   const contentType = request.headers.get("content-type");
 
@@ -250,6 +308,7 @@ export async function POST(request: Request): Promise<Response> {
     {
       conversationState: validation.conversationState,
       nowMs,
+      requestId: validation.requestId,
     },
   );
 
@@ -265,38 +324,39 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json(responseBody);
   }
 
-  const requestId = randomUUID();
+  const logRequestId = randomUUID();
   const clarification = prepared.conversationState.clarification;
 
   try {
-    const result = await orchestrateNavigatorResponse(
-      prepared.messages,
-      {
-        signal: request.signal,
-        requestId,
-        profile: prepared.profile,
-        clarification: {
-          priorIssueKey: clarification?.issueKey ?? null,
-          priorAttempts: clarification?.attempts ?? 0,
-        },
+    const result = await (dependencies.orchestrate ??
+      orchestrateNavigatorResponse)(prepared.messages, {
+      signal: request.signal,
+      requestId: logRequestId,
+      profile: prepared.profile,
+      clarification: {
+        priorIssueKey: clarification?.issueKey ?? null,
+        priorAttempts: clarification?.attempts ?? 0,
       },
-    );
+    });
 
     const { act, flowId } = orchestrationAct(result);
 
     const responseBody: ChatSuccessResponse = {
       message: result.message,
       profile: prepared.profile,
-      conversationState: applyOrchestratedTurn(
-        prepared.conversationState,
-        {
-          act,
-          flowId,
-          message: result.message,
-          decision: orchestrationDecision(result),
-          clarification: result.clarification,
-        },
-        nowMs,
+      conversationState: withCompletedExecution(
+        applyOrchestratedTurn(
+          prepared.conversationState,
+          {
+            act,
+            flowId,
+            message: result.message,
+            decision: orchestrationDecision(result),
+            clarification: result.clarification,
+          },
+          nowMs,
+        ),
+        validation.requestId,
       ),
       contactCard: result.contactCard,
       resetConversation: false,
@@ -304,14 +364,67 @@ export async function POST(request: Request): Promise<Response> {
 
     return Response.json(responseBody);
   } catch (error) {
-    console.error(
-      JSON.stringify(createNavigatorFailureLog(error, requestId)),
-    );
-
-    return jsonError(
-      502,
-      "NAVIGATOR_ROUTING_UNAVAILABLE",
-      "Навигатор временно не может надёжно определить образовательный маршрут. Попробуйте ещё раз.",
-    );
+    return technicalErrorResponse({
+      error,
+      profile: prepared.profile,
+      conversationState: prepared.conversationState,
+      requestId: validation.requestId,
+      logRequestId,
+      nowMs,
+    });
   }
+}
+
+type TechnicalErrorResponseInput = {
+  error: unknown;
+  profile: ConversationProfile;
+  conversationState: ConversationState;
+  requestId: string | null;
+  logRequestId: string;
+  nowMs: number;
+};
+
+/**
+ * A21 — the technical-error lane. The failure is classified coarsely, recorded
+ * in bounded structured state, and rendered as a safe public response. The
+ * canonical conversation state is preserved exactly: no business action is
+ * marked successful, no deferred remainder is consumed, no course match moves,
+ * and no clarification counter is incremented because infrastructure failed.
+ */
+function technicalErrorResponse(input: TechnicalErrorResponseInput): Response {
+  console.error(
+    JSON.stringify(createNavigatorFailureLog(input.error, input.logRequestId)),
+  );
+
+  const technicalError = buildTechnicalErrorState(input.error, input.nowMs);
+
+  const preserved = appendQualitySignal(
+    withTechnicalError(input.conversationState, technicalError),
+    buildMaterialFailureSignal({
+      state: input.conversationState,
+      technicalError,
+      requestId: input.requestId,
+      nowMs: input.nowMs,
+    }),
+  );
+
+  const body: ChatTechnicalErrorResponse = {
+    error: {
+      code: "NAVIGATOR_TECHNICAL_ERROR",
+      message: composeTechnicalErrorAnswer(
+        input.profile,
+        technicalError.retryable,
+      ),
+      retryable: technicalError.retryable,
+      conversationState: preserved,
+    },
+  };
+
+  return Response.json(body, {
+    status: technicalError.retryable ? 503 : 500,
+  });
+}
+
+export async function POST(request: Request): Promise<Response> {
+  return handleChatRequest(request);
 }

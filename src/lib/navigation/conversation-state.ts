@@ -30,6 +30,32 @@ export const MAX_CONVERSATION_STATE_IDENTIFIER_LENGTH = 120;
 export const MAX_PENDING_CONFIRMATION_PROMPT_LENGTH = 600;
 
 /**
+ * One centrally configured repair-failure threshold (A05/A23). The counter it
+ * bounds is scoped to one repair issue by RepairState.issueKey, never to the
+ * session lifetime, and is deliberately separate from the clarification budget:
+ * a semantic misunderstanding and an unsatisfactory answer are different
+ * resources.
+ */
+export const REPAIR_FAILURE_THRESHOLD = 2;
+
+/** Bounded session-scope evidence list (A25). Newest entry is last. */
+export const MAX_SESSION_QUALITY_SIGNALS = 3;
+
+/** Opaque request/execution identity carried by the client (A22). */
+export const MAX_REQUEST_ID_LENGTH = 64;
+
+export const MAX_TECHNICAL_ERROR_STAGE_LENGTH = 40;
+export const MAX_QUALITY_SIGNAL_TRIGGER_LENGTH = 60;
+export const MAX_HANDOFF_ESTABLISHED_FACTS = 6;
+
+/**
+ * Hard total-size limit for a composed handoff summary (A24). The structured
+ * context is closed and small; this bounds the rendered text so a handoff can
+ * never become a transcript dump.
+ */
+export const MAX_HANDOFF_CONTEXT_LENGTH = 900;
+
+/**
  * Joins a preserved remainder to the text it is combined with. Exactly one
  * character, so the effective-request bound below stays exact.
  */
@@ -112,12 +138,19 @@ export type LastAssistantAct =
   | "REPEAT"
   | "REPHRASE"
   | "SIMPLIFY"
+  | "REPAIR_RESTATE"
+  | "REPAIR_CLARIFY"
+  | "REPAIR_CHALLENGE"
+  | "REPAIR_UNAVAILABLE"
   | "RESUME_FLOW"
   | "SKIP"
   | "DEFERRED_NOT_ACCEPTED"
   | "STALE_REFERENCE_CONFIRMATION"
   | "CLARIFICATION"
   | "CLARIFICATION_EXHAUSTED"
+  | "HANDOFF_OFFERED"
+  | "HANDOFF_READY"
+  | "TECHNICAL_ERROR"
   | "NAVIGATE"
   | "COURSE_FOLLOW_UP"
   | "ACADEMY_CONTACT"
@@ -129,6 +162,142 @@ export type LastAssistantAction = {
   content: string;
   courseId: string | null;
 };
+
+/**
+ * Repair state (A05). Scoped to one unresolved repair issue by issueKey and
+ * bounded by REPAIR_FAILURE_THRESHOLD, so an unrelated later complaint starts a
+ * fresh issue instead of inheriting an old count.
+ */
+export type RepairState = {
+  issueKey: string;
+  /** Repair signals recorded for this issue, including the current turn. */
+  attempts: number;
+};
+
+export type ExecutionPhase = "IDLE" | "IN_PROGRESS";
+
+/**
+ * Structured busy/duplicate state (A22).
+ *
+ * `phase` describes the request a state payload belongs to: a payload handed
+ * back as the baseline for a new turn is always IDLE, because a successful turn
+ * completes synchronously and a failed turn never marks itself completed. An
+ * IN_PROGRESS baseline is therefore contradictory by construction and is
+ * rejected at the API boundary rather than executed.
+ */
+export type ExecutionState = {
+  phase: ExecutionPhase;
+  requestId: string | null;
+  /** Identity of the request whose turn completed. Used for replay detection. */
+  lastCompletedRequestId: string | null;
+};
+
+/**
+ * Coarse internal technical-failure taxonomy (A21). Never rendered to the user:
+ * the public error response carries none of these labels.
+ */
+export const TECHNICAL_FAILURE_CLASSES = [
+  "PROVIDER_TIMEOUT",
+  "PROVIDER_UNAVAILABLE",
+  "CONFIGURATION_FAILURE",
+  "DATA_ACCESS_FAILURE",
+  "INTERNAL_RUNTIME_FAILURE",
+  "UNKNOWN_TECHNICAL_FAILURE",
+] as const;
+
+export type TechnicalFailureClass = (typeof TECHNICAL_FAILURE_CLASSES)[number];
+
+export type TechnicalErrorState = {
+  failureClass: TechnicalFailureClass;
+  occurredAt: string;
+  retryable: boolean;
+  /** Navigator stage where the failure surfaced; internal provenance only. */
+  stage: string;
+};
+
+export type HandoffStatus = "NONE" | "OFFERED" | "REQUESTED" | "READY";
+
+export type HandoffReason =
+  | "DIRECT_REQUEST"
+  | "REPEATED_REPAIR_FAILURE"
+  | "FRUSTRATION"
+  | "CLARIFICATION_EXHAUSTED"
+  | "REPAIR_CONTEXT_UNAVAILABLE"
+  /** Reserved for the commercial-authority package; never detected here. */
+  | "INSUFFICIENT_AUTHORITY";
+
+export type HandoffGoal =
+  | "COURSE_SELECTION"
+  | "COURSE_FOLLOW_UP"
+  | "ACADEMY_CONTACT"
+  | "HUMAN_CONTACT"
+  | "COURSE_CONFIRMATION"
+  | "UNRESOLVED_CLARIFICATION";
+
+export type HandoffUnresolvedChoice =
+  | "NONE"
+  | "NOT_MATCHED"
+  | "AMBIGUOUS"
+  | "CLARIFYING"
+  | "AWAITING_CONFIRMATION";
+
+export type HandoffFact =
+  | "SELECTED_COURSE"
+  | "NO_CURRENT_COURSE_MATCH"
+  | "AMBIGUOUS_COURSE_CHOICE"
+  | "UNRESOLVED_COURSE_CHOICE"
+  | "PRESERVED_REQUEST"
+  | "PENDING_CONFIRMATION"
+  | "AWAITING_CLARIFICATION"
+  | "RECENT_TECHNICAL_FAILURE"
+  | "REPAIR_IN_PROGRESS";
+
+export type HandoffContactPreference = "NONE" | "TELEGRAM" | "PHONE" | "CHAT";
+
+/**
+ * Bounded handoff context (A24).
+ *
+ * Every field is either a closed enum or a canonical catalog identifier, so the
+ * summary cannot carry an invented fact: the human-readable text is rendered
+ * from these closed values, never stored as free prose.
+ */
+export type HandoffContext = {
+  goal: HandoffGoal | null;
+  /** Canonical routable course identity; the title is read from the catalog. */
+  courseId: string | null;
+  unresolvedChoice: HandoffUnresolvedChoice;
+  flowId: ConversationFlowId | null;
+  blockingProblem: HandoffReason;
+  facts: HandoffFact[];
+  contactPreference: HandoffContactPreference;
+};
+
+export type HandoffState = {
+  status: HandoffStatus;
+  reason: HandoffReason | null;
+  context: HandoffContext | null;
+};
+
+export type QualitySignalType = "NEGATIVE_FEEDBACK" | "MATERIAL_FAILURE";
+
+/**
+ * Structured quality / failure-capture candidate (A25). Session-scope evidence
+ * with bounded provenance, created for the observability package to consume
+ * later. Package B stores no transcript, no stack and no credential here.
+ */
+export type QualitySignal = {
+  signalType: QualitySignalType;
+  trigger: string;
+  occurredAt: string;
+  stage: string;
+  lastAssistantAct: LastAssistantAct | null;
+  flowId: ConversationFlowId | null;
+  courseId: string | null;
+  requestId: string | null;
+  repairOffered: boolean;
+  handoffOffered: boolean;
+};
+
 
 export type ConversationState = {
   lifecycle: ConversationLifecycle;
@@ -151,6 +320,16 @@ export type ConversationState = {
   lastAssistant: LastAssistantAction | null;
   lastActivityAt: string;
   staleReference: StaleReference | null;
+  /** A05 repair episode. Null when no repair issue is open. */
+  repair: RepairState | null;
+  /** A22 execution identity of the request this state belongs to. */
+  execution: ExecutionState;
+  /** A21 last material technical failure; cleared by a later successful turn. */
+  lastTechnicalError: TechnicalErrorState | null;
+  /** A23/A24 handoff policy state and its bounded prepared context. */
+  handoff: HandoffState;
+  /** A25 bounded session-scope quality and failure-capture evidence. */
+  qualitySignals: QualitySignal[];
 };
 
 export class ConversationStateValidationError extends Error {
@@ -184,12 +363,19 @@ const LAST_ASSISTANT_ACTS: readonly LastAssistantAct[] = [
   "REPEAT",
   "REPHRASE",
   "SIMPLIFY",
+  "REPAIR_RESTATE",
+  "REPAIR_CLARIFY",
+  "REPAIR_CHALLENGE",
+  "REPAIR_UNAVAILABLE",
   "RESUME_FLOW",
   "SKIP",
   "DEFERRED_NOT_ACCEPTED",
   "STALE_REFERENCE_CONFIRMATION",
   "CLARIFICATION",
   "CLARIFICATION_EXHAUSTED",
+  "HANDOFF_OFFERED",
+  "HANDOFF_READY",
+  "TECHNICAL_ERROR",
   "NAVIGATE",
   "COURSE_FOLLOW_UP",
   "ACADEMY_CONTACT",
@@ -199,6 +385,77 @@ const LAST_ASSISTANT_ACTS: readonly LastAssistantAct[] = [
 const CONFIRMATION_KINDS: readonly PendingConfirmationKind[] = [
   "STALE_COURSE_REFERENCE",
 ];
+const EXECUTION_PHASES: readonly ExecutionPhase[] = ["IDLE", "IN_PROGRESS"];
+const HANDOFF_STATUSES: readonly HandoffStatus[] = [
+  "NONE",
+  "OFFERED",
+  "REQUESTED",
+  "READY",
+];
+const HANDOFF_REASONS: readonly HandoffReason[] = [
+  "DIRECT_REQUEST",
+  "REPEATED_REPAIR_FAILURE",
+  "FRUSTRATION",
+  "CLARIFICATION_EXHAUSTED",
+  "REPAIR_CONTEXT_UNAVAILABLE",
+  "INSUFFICIENT_AUTHORITY",
+];
+const HANDOFF_GOALS: readonly HandoffGoal[] = [
+  "COURSE_SELECTION",
+  "COURSE_FOLLOW_UP",
+  "ACADEMY_CONTACT",
+  "HUMAN_CONTACT",
+  "COURSE_CONFIRMATION",
+  "UNRESOLVED_CLARIFICATION",
+];
+const HANDOFF_UNRESOLVED_CHOICES: readonly HandoffUnresolvedChoice[] = [
+  "NONE",
+  "NOT_MATCHED",
+  "AMBIGUOUS",
+  "CLARIFYING",
+  "AWAITING_CONFIRMATION",
+];
+const HANDOFF_FACTS: readonly HandoffFact[] = [
+  "SELECTED_COURSE",
+  "NO_CURRENT_COURSE_MATCH",
+  "AMBIGUOUS_COURSE_CHOICE",
+  "UNRESOLVED_COURSE_CHOICE",
+  "PRESERVED_REQUEST",
+  "PENDING_CONFIRMATION",
+  "AWAITING_CLARIFICATION",
+  "RECENT_TECHNICAL_FAILURE",
+  "REPAIR_IN_PROGRESS",
+];
+const HANDOFF_CONTACT_PREFERENCES: readonly HandoffContactPreference[] = [
+  "NONE",
+  "TELEGRAM",
+  "PHONE",
+  "CHAT",
+];
+const QUALITY_SIGNAL_TYPES: readonly QualitySignalType[] = [
+  "NEGATIVE_FEEDBACK",
+  "MATERIAL_FAILURE",
+];
+
+const REQUEST_ID_PATTERN = /^[A-Za-z0-9_-]{1,64}$/u;
+
+/**
+ * Opaque client request identity (A22). Validated, never interpreted: it is an
+ * equality token for replay detection and carries no business meaning.
+ */
+export function isValidRequestId(value: unknown): value is string {
+  return typeof value === "string" && REQUEST_ID_PATTERN.test(value);
+}
+
+const EMPTY_EXECUTION: ExecutionState = {
+  phase: "IDLE",
+  requestId: null,
+  lastCompletedRequestId: null,
+};
+
+export function createEmptyHandoffState(): HandoffState {
+  return { status: "NONE", reason: null, context: null };
+}
 
 const ISO_TIMESTAMP_PATTERN =
   /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/u;
@@ -290,6 +547,11 @@ export function createInitialConversationState(
     lastAssistant: null,
     lastActivityAt: toSessionTimestamp(nowMs),
     staleReference: null,
+    repair: null,
+    execution: { ...EMPTY_EXECUTION },
+    lastTechnicalError: null,
+    handoff: createEmptyHandoffState(),
+    qualitySignals: [],
   };
 }
 
@@ -302,6 +564,333 @@ export function clearWorkingState(
     lifecycle: state.lifecycle,
     lastActivityAt: state.lastActivityAt,
   };
+}
+
+function readRequestId(value: unknown, fieldName: string): string | null {
+  if (value === null || value === undefined) return null;
+
+  if (!isValidRequestId(value)) {
+    throw new ConversationStateValidationError(
+      `${fieldName} must be a bounded opaque request identity.`,
+    );
+  }
+
+  return value;
+}
+
+function readRepairState(raw: unknown): RepairState | null {
+  if (raw === null || raw === undefined) return null;
+
+  if (!isRecord(raw) || !onlyKeys(raw, ["issueKey", "attempts"])) {
+    throw new ConversationStateValidationError("repair has an invalid shape.");
+  }
+
+  const issueKey = readNullableString(
+    raw.issueKey,
+    "repair.issueKey",
+    MAX_CONVERSATION_STATE_IDENTIFIER_LENGTH,
+  );
+
+  if (issueKey === null) {
+    throw new ConversationStateValidationError("repair.issueKey is required.");
+  }
+
+  if (
+    !Number.isInteger(raw.attempts) ||
+    (raw.attempts as number) < 1 ||
+    (raw.attempts as number) > REPAIR_FAILURE_THRESHOLD
+  ) {
+    throw new ConversationStateValidationError(
+      `repair.attempts must be an integer between 1 and ${REPAIR_FAILURE_THRESHOLD}.`,
+    );
+  }
+
+  return { issueKey, attempts: raw.attempts as number };
+}
+
+function readExecutionState(raw: unknown): ExecutionState {
+  if (raw === null || raw === undefined) return { ...EMPTY_EXECUTION };
+
+  if (
+    !isRecord(raw) ||
+    !onlyKeys(raw, ["phase", "requestId", "lastCompletedRequestId"])
+  ) {
+    throw new ConversationStateValidationError(
+      "execution has an invalid shape.",
+    );
+  }
+
+  const phase = readEnum(raw.phase, EXECUTION_PHASES, "execution.phase");
+  const requestId = readRequestId(raw.requestId, "execution.requestId");
+  const lastCompletedRequestId = readRequestId(
+    raw.lastCompletedRequestId,
+    "execution.lastCompletedRequestId",
+  );
+
+  if (phase === "IN_PROGRESS" && requestId === null) {
+    throw new ConversationStateValidationError(
+      "An in-progress execution requires a request identity.",
+    );
+  }
+
+  return { phase, requestId, lastCompletedRequestId };
+}
+
+function readTechnicalErrorState(raw: unknown): TechnicalErrorState | null {
+  if (raw === null || raw === undefined) return null;
+
+  if (
+    !isRecord(raw) ||
+    !onlyKeys(raw, ["failureClass", "occurredAt", "retryable", "stage"])
+  ) {
+    throw new ConversationStateValidationError(
+      "lastTechnicalError has an invalid shape.",
+    );
+  }
+
+  const stage = readNullableString(
+    raw.stage,
+    "lastTechnicalError.stage",
+    MAX_TECHNICAL_ERROR_STAGE_LENGTH,
+  );
+
+  if (stage === null) {
+    throw new ConversationStateValidationError(
+      "lastTechnicalError.stage is required.",
+    );
+  }
+
+  if (typeof raw.retryable !== "boolean") {
+    throw new ConversationStateValidationError(
+      "lastTechnicalError.retryable must be boolean.",
+    );
+  }
+
+  readSessionTimestamp(raw.occurredAt, "lastTechnicalError.occurredAt");
+
+  return {
+    failureClass: readEnum(
+      raw.failureClass,
+      TECHNICAL_FAILURE_CLASSES,
+      "lastTechnicalError.failureClass",
+    ),
+    occurredAt: raw.occurredAt as string,
+    retryable: raw.retryable,
+    stage,
+  };
+}
+
+function readHandoffContext(raw: unknown): HandoffContext | null {
+  if (raw === null || raw === undefined) return null;
+
+  if (
+    !isRecord(raw) ||
+    !onlyKeys(raw, [
+      "goal",
+      "courseId",
+      "unresolvedChoice",
+      "flowId",
+      "blockingProblem",
+      "facts",
+      "contactPreference",
+    ])
+  ) {
+    throw new ConversationStateValidationError(
+      "handoff.context has an invalid shape.",
+    );
+  }
+
+  const courseId = readNullableString(
+    raw.courseId,
+    "handoff.context.courseId",
+    MAX_CONVERSATION_STATE_IDENTIFIER_LENGTH,
+  );
+
+  if (courseId !== null && !isRecommendableCourseId(courseId)) {
+    throw new ConversationStateValidationError(
+      "handoff.context.courseId must be a current routable course.",
+    );
+  }
+
+  const rawFacts = raw.facts;
+  if (
+    !Array.isArray(rawFacts) ||
+    rawFacts.length > MAX_HANDOFF_ESTABLISHED_FACTS
+  ) {
+    throw new ConversationStateValidationError(
+      "handoff.context.facts has an invalid shape.",
+    );
+  }
+
+  return {
+    goal:
+      raw.goal === null || raw.goal === undefined
+        ? null
+        : readEnum(raw.goal, HANDOFF_GOALS, "handoff.context.goal"),
+    courseId,
+    unresolvedChoice: readEnum(
+      raw.unresolvedChoice,
+      HANDOFF_UNRESOLVED_CHOICES,
+      "handoff.context.unresolvedChoice",
+    ),
+    flowId:
+      raw.flowId === null || raw.flowId === undefined
+        ? null
+        : readEnum(raw.flowId, FLOW_IDS, "handoff.context.flowId"),
+    blockingProblem: readEnum(
+      raw.blockingProblem,
+      HANDOFF_REASONS,
+      "handoff.context.blockingProblem",
+    ),
+    facts: rawFacts.map((fact, index) =>
+      readEnum(fact, HANDOFF_FACTS, `handoff.context.facts[${String(index)}]`),
+    ),
+    contactPreference: readEnum(
+      raw.contactPreference,
+      HANDOFF_CONTACT_PREFERENCES,
+      "handoff.context.contactPreference",
+    ),
+  };
+}
+
+function readHandoffState(raw: unknown): HandoffState {
+  if (raw === null || raw === undefined) return createEmptyHandoffState();
+
+  if (!isRecord(raw) || !onlyKeys(raw, ["status", "reason", "context"])) {
+    throw new ConversationStateValidationError("handoff has an invalid shape.");
+  }
+
+  const status = readEnum(raw.status, HANDOFF_STATUSES, "handoff.status");
+  const reason =
+    raw.reason === null || raw.reason === undefined
+      ? null
+      : readEnum(raw.reason, HANDOFF_REASONS, "handoff.reason");
+  const context = readHandoffContext(raw.context);
+
+  if (status === "NONE") {
+    if (reason !== null || context !== null) {
+      throw new ConversationStateValidationError(
+        "A NONE handoff cannot carry a reason or a context.",
+      );
+    }
+
+    return { status, reason: null, context: null };
+  }
+
+  if (reason === null) {
+    throw new ConversationStateValidationError(
+      "An active handoff requires a reason.",
+    );
+  }
+
+  if (status === "READY" && context === null) {
+    throw new ConversationStateValidationError(
+      "A READY handoff requires a prepared context.",
+    );
+  }
+
+  return { status, reason, context };
+}
+
+function readQualitySignals(raw: unknown): QualitySignal[] {
+  if (raw === null || raw === undefined) return [];
+
+  if (!Array.isArray(raw) || raw.length > MAX_SESSION_QUALITY_SIGNALS) {
+    throw new ConversationStateValidationError(
+      "qualitySignals has an invalid shape.",
+    );
+  }
+
+  return raw.map((entry, index) => {
+    const fieldName = `qualitySignals[${String(index)}]`;
+
+    if (
+      !isRecord(entry) ||
+      !onlyKeys(entry, [
+        "signalType",
+        "trigger",
+        "occurredAt",
+        "stage",
+        "lastAssistantAct",
+        "flowId",
+        "courseId",
+        "requestId",
+        "repairOffered",
+        "handoffOffered",
+      ])
+    ) {
+      throw new ConversationStateValidationError(
+        `${fieldName} has an invalid shape.`,
+      );
+    }
+
+    const trigger = readNullableString(
+      entry.trigger,
+      `${fieldName}.trigger`,
+      MAX_QUALITY_SIGNAL_TRIGGER_LENGTH,
+    );
+    const stage = readNullableString(
+      entry.stage,
+      `${fieldName}.stage`,
+      MAX_TECHNICAL_ERROR_STAGE_LENGTH,
+    );
+
+    if (trigger === null || stage === null) {
+      throw new ConversationStateValidationError(
+        `${fieldName} requires a trigger and a stage.`,
+      );
+    }
+
+    if (
+      typeof entry.repairOffered !== "boolean" ||
+      typeof entry.handoffOffered !== "boolean"
+    ) {
+      throw new ConversationStateValidationError(
+        `${fieldName} offer flags must be boolean.`,
+      );
+    }
+
+    readSessionTimestamp(entry.occurredAt, `${fieldName}.occurredAt`);
+
+    const courseId = readNullableString(
+      entry.courseId,
+      `${fieldName}.courseId`,
+      MAX_CONVERSATION_STATE_IDENTIFIER_LENGTH,
+    );
+
+    if (courseId !== null && !isRecommendableCourseId(courseId)) {
+      throw new ConversationStateValidationError(
+        `${fieldName}.courseId must be a current routable course.`,
+      );
+    }
+
+    return {
+      signalType: readEnum(
+        entry.signalType,
+        QUALITY_SIGNAL_TYPES,
+        `${fieldName}.signalType`,
+      ),
+      trigger,
+      occurredAt: entry.occurredAt as string,
+      stage,
+      lastAssistantAct:
+        entry.lastAssistantAct === null || entry.lastAssistantAct === undefined
+          ? null
+          : readEnum(
+              entry.lastAssistantAct,
+              LAST_ASSISTANT_ACTS,
+              `${fieldName}.lastAssistantAct`,
+            ),
+      flowId:
+        entry.flowId === null || entry.flowId === undefined
+          ? null
+          : readEnum(entry.flowId, FLOW_IDS, `${fieldName}.flowId`),
+      courseId,
+      requestId: readRequestId(entry.requestId, `${fieldName}.requestId`),
+      repairOffered: entry.repairOffered,
+      handoffOffered: entry.handoffOffered,
+    };
+  });
 }
 
 export function normalizeConversationStatePayload(
@@ -326,6 +915,11 @@ export function normalizeConversationStatePayload(
       "lastAssistant",
       "lastActivityAt",
       "staleReference",
+      "repair",
+      "execution",
+      "lastTechnicalError",
+      "handoff",
+      "qualitySignals",
     ])
   ) {
     throw new ConversationStateValidationError(
@@ -607,6 +1201,11 @@ export function normalizeConversationStatePayload(
     lastAssistant,
     lastActivityAt: value.lastActivityAt as string,
     staleReference,
+    repair: readRepairState(value.repair),
+    execution: readExecutionState(value.execution),
+    lastTechnicalError: readTechnicalErrorState(value.lastTechnicalError),
+    handoff: readHandoffState(value.handoff),
+    qualitySignals: readQualitySignals(value.qualitySignals),
   };
 }
 
@@ -771,6 +1370,63 @@ export function withDeferredRequest(
   deferredRequest: string | null,
 ): ConversationState {
   return { ...state, deferredRequest };
+}
+
+export function withRepair(
+  state: ConversationState,
+  repair: RepairState | null,
+): ConversationState {
+  return { ...state, repair };
+}
+
+export function withTechnicalError(
+  state: ConversationState,
+  lastTechnicalError: TechnicalErrorState | null,
+): ConversationState {
+  return { ...state, lastTechnicalError };
+}
+
+export function withHandoff(
+  state: ConversationState,
+  handoff: HandoffState,
+): ConversationState {
+  return { ...state, handoff };
+}
+
+/**
+ * Marks one request identity as completed (A22), leaving the session idle so
+ * the next turn can execute. Only a turn that actually completed calls this:
+ * a technical failure never marks its request as completed, so a retry of the
+ * same identity re-executes rather than being suppressed as a replay.
+ */
+export function withCompletedExecution(
+  state: ConversationState,
+  requestId: string | null,
+): ConversationState {
+  return {
+    ...state,
+    execution: {
+      phase: "IDLE",
+      requestId: null,
+      lastCompletedRequestId: requestId ?? state.execution.lastCompletedRequestId,
+    },
+  };
+}
+
+/**
+ * Appends bounded quality evidence (A25), keeping only the most recent
+ * entries so session state cannot grow with the conversation length.
+ */
+export function appendQualitySignal(
+  state: ConversationState,
+  signal: QualitySignal,
+): ConversationState {
+  const appended = [...state.qualitySignals, signal];
+
+  return {
+    ...state,
+    qualitySignals: appended.slice(-MAX_SESSION_QUALITY_SIGNALS),
+  };
 }
 
 export type DeferredCaptureStatus = "ACCEPTED" | "REJECTED_CAPACITY";
@@ -990,6 +1646,11 @@ export function applyOrchestratedTurn(
   // establishes fresh context, so the stale-session marker is retired.
   next = withDeferredRequest(next, null);
   next = { ...next, staleReference: null };
+
+  // The turn completed normally, so an open repair episode is closed (the user
+  // stopped complaining) and a recorded technical failure is superseded (A21).
+  next = withRepair(next, null);
+  next = withTechnicalError(next, null);
 
   next = withLastAssistant(next, {
     act: outcome.act,

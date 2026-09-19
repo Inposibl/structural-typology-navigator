@@ -1,17 +1,21 @@
 /**
- * Package-A deterministic conversation-control kernel.
+ * Package-A/Package-B deterministic conversation-control kernel.
  *
  * The kernel runs ahead of the existing conversation-act router and owns the
- * conversational-control lanes only. Semantic precedence (controlling v1.2 §6):
+ * conversational-control lanes only. Semantic precedence (controlling v1.2 §6,
+ * with the Package-B lanes in their controlling positions):
  *
+ *   0. duplicate / replay protection for an already completed request (A22)
  *   1. restart / cancel / close / stale-reference
- *   2. repeat / rephrase / simplify
+ *   2. restatement, repair, challenge and frustration signals (A05)
  *   3. ADDRESS_SETUP and the existing profile controls
- *   4. pending-confirmation resolution
- *   5. resume / skip
- *   6. remaining substantive text continues to the existing router
+ *   4. direct human handoff and its acceptance (A23)
+ *   5. clarification exhaustion changes strategy and offers human help (A23)
+ *   6. pending-confirmation resolution
+ *   7. resume / skip
+ *   8. remaining substantive text continues to the existing router
  *
- * While a confirmation is unresolved it also gates lanes 5 and 6: ordinary
+ * While a confirmation is unresolved it also gates lanes 7 and 8: ordinary
  * substantive text is preserved rather than routed, and a queued remainder is
  * never promoted, until the confirmation is resolved or cleared by a
  * higher-priority control (CORR2-A).
@@ -42,23 +46,46 @@ import {
   type ControlToken,
 } from "./conversation-control-phrases.ts";
 import {
+  advanceRepairState,
+  detectRepairSignal,
+} from "./conversation-repair.ts";
+import {
+  detectContactPreference,
+  detectHandoffAcceptance,
+  detectHandoffRequest,
+  offerHandoff,
+  prepareHandoff,
+  composeHandoffContextText,
+  type HandoffPreparation,
+} from "./handoff.ts";
+import {
+  buildFeedbackSignal,
+} from "./failure-capture.ts";
+import {
   CLARIFICATION_BUDGET,
   applySessionFreshness,
+  appendQualitySignal,
   cancelCurrentFlow,
   closeConversation,
   composeEffectiveRouteRequest,
   createInitialConversationState,
+  isClarificationExhausted,
   reopenConversation,
   resumeSuspendedFlow,
   appendDeferredRequest,
   withActiveFlow,
   withActivity,
   withClarification,
+  withCompletedExecution,
   withCourseBinding,
+  withHandoff,
   withLastAssistant,
   withPendingConfirmation,
+  withTechnicalError,
   type ConversationFlowId,
   type ConversationState,
+  type HandoffReason,
+  type HandoffState,
   type LastAssistantAct,
 } from "./conversation-state.ts";
 import {
@@ -66,7 +93,14 @@ import {
   composeConversationCloseAnswer,
   composeDeferredCapacityRejectedAnswer,
   composeDeferredRequestAnswer,
+  composeDuplicateRequestAnswer,
   composeExpiredContextAnswer,
+  composeHandoffOfferedAnswer,
+  composeHandoffReadyAnswer,
+  composeRepairChallengeAnswer,
+  composeRepairClarifyAnswer,
+  composeRepairRestateAnswer,
+  composeRepairUnavailableAnswer,
   composeResumeFlowAnswer,
   composeRestatementUnavailableAnswer,
   composeSkipAnswer,
@@ -87,6 +121,13 @@ export type ConversationControlAct =
   | "REPEAT"
   | "REPHRASE"
   | "SIMPLIFY"
+  | "REPAIR_RESTATE"
+  | "REPAIR_CLARIFY"
+  | "REPAIR_CHALLENGE"
+  | "REPAIR_UNAVAILABLE"
+  | "HANDOFF_OFFERED"
+  | "HANDOFF_READY"
+  | "DUPLICATE_REQUEST_SUPPRESSED"
   | "PROFILE_CONTROL"
   | "ADDRESS_SETUP"
   | "UNSUPPORTED_ADDRESS_MODE"
@@ -94,6 +135,16 @@ export type ConversationControlAct =
   | "RESUME_FLOW"
   | "SKIP"
   | "DEFERRED_NOT_ACCEPTED";
+
+/**
+ * Control acts that are themselves recorded as a last-assistant action. A
+ * suppressed duplicate is deliberately not one of them: it re-presents the
+ * recorded answer instead of replacing it.
+ */
+export type RecordedControlAct = Exclude<
+  ConversationControlAct,
+  "DUPLICATE_REQUEST_SUPPRESSED"
+>;
 
 export type ConversationKernelResult =
   | {
@@ -116,6 +167,8 @@ export type ConversationKernelInput = {
   conversationState?: ConversationState;
   userText: string;
   nowMs: number;
+  /** Opaque identity of the request being served (A22). */
+  requestId?: string | null;
 };
 
 function has(controls: readonly ControlToken[], token: ControlToken): boolean {
@@ -154,7 +207,7 @@ function restatementKind(
 }
 
 /** Control acts that are not themselves last-assistant action identities. */
-function lastAssistantActFor(act: ConversationControlAct): LastAssistantAct {
+function lastAssistantActFor(act: RecordedControlAct): LastAssistantAct {
   switch (act) {
     case "PENDING_CONFIRMATION_RESOLVED":
       return "STALE_REFERENCE_CONFIRMATION";
@@ -166,20 +219,24 @@ function lastAssistantActFor(act: ConversationControlAct): LastAssistantAct {
 }
 
 function respond(
-  act: ConversationControlAct,
+  act: RecordedControlAct,
   profile: ConversationProfile,
   conversationState: ConversationState,
   message: string,
   options: { resetConversation?: boolean } = {},
 ): ConversationKernelResult {
+  // The control turn completed, so a recorded technical failure is superseded
+  // deterministically (A21).
+  const settled = withTechnicalError(conversationState, null);
+
   return {
     state: "RESPOND",
     act,
     profile,
-    conversationState: withLastAssistant(conversationState, {
+    conversationState: withLastAssistant(settled, {
       act: lastAssistantActFor(act),
       content: message,
-      courseId: conversationState.selectedCourseId,
+      courseId: settled.selectedCourseId,
     }),
     message,
     resetConversation: options.resetConversation ?? false,
@@ -196,7 +253,7 @@ function respond(
  * never be reported as saved, and an already acknowledged one stays untouched.
  */
 function respondPreservingRemainder(
-  act: ConversationControlAct,
+  act: RecordedControlAct,
   profile: ConversationProfile,
   baseState: ConversationState,
   baseMessage: string,
@@ -224,6 +281,25 @@ function capacityNoticeScope(
   state: ConversationState,
 ): DeferredCapacityNoticeScope {
   return state.deferredRequest === null ? "STANDALONE" : "ALONGSIDE_STORED";
+}
+
+/**
+ * Prepares a READY handoff and renders its summary from the same preparation,
+ * so the message and the stored context can never disagree (A23/A24).
+ */
+function readyHandoff(
+  state: ConversationState,
+  preparation: HandoffPreparation,
+): { handoff: HandoffState; contextText: string } {
+  const handoff = prepareHandoff(state, preparation);
+
+  return {
+    handoff,
+    contextText:
+      handoff.context === null
+        ? ""
+        : composeHandoffContextText(handoff.context),
+  };
 }
 
 /**
@@ -263,11 +339,12 @@ function routeResult(
   );
 }
 
-export function applyConversationControlKernel(
+function resolveConversationControl(
   input: ConversationKernelInput,
 ): ConversationKernelResult {
   const nowMs = input.nowMs;
   const profile = input.profile;
+  const requestId = input.requestId ?? null;
 
   // A28 — 24h inactivity boundary. Profile fields are not part of this state,
   // so displayName / nameDeclined / TY-VY survive expiry by construction.
@@ -286,6 +363,28 @@ export function applyConversationControlKernel(
     addressSetupOpen: setupOpen,
   });
   const { controls, remainder } = scan;
+
+  // ---------------------------------------------------------------------
+  // 0. A22 duplicate / replay protection outranks every conversational act.
+  //
+  // The state proves this identity already completed, so the turn is answered
+  // from the record instead of being executed again as a fresh action.
+  // ---------------------------------------------------------------------
+
+  if (
+    requestId !== null &&
+    state.execution.lastCompletedRequestId === requestId
+  ) {
+    return {
+      state: "RESPOND",
+      act: "DUPLICATE_REQUEST_SUPPRESSED",
+      profile,
+      conversationState: withCompletedExecution(state, requestId),
+      message:
+        state.lastAssistant?.content ?? composeDuplicateRequestAnswer(profile),
+      resetConversation: false,
+    };
+  }
 
   // ---------------------------------------------------------------------
   // 1. Session controls: restart, close, cancel, stale reference.
@@ -419,6 +518,112 @@ export function applyConversationControlKernel(
   }
 
   // ---------------------------------------------------------------------
+  // 2a. Repair, challenge and frustration signals (A05).
+  //
+  // These are signals about the previous assistant answer, not fresh business
+  // intents, so they are resolved here and never reach ordinary routing.
+  // ---------------------------------------------------------------------
+
+  const repairSignal = detectRepairSignal(text);
+
+  if (repairSignal !== null) {
+    const advance = advanceRepairState({ state, signal: repairSignal });
+
+    // A clear frustration, or the second failure for the same repair issue,
+    // offers human help instead of another attempt (A23).
+    if (repairSignal.frustration || advance.thresholdReached) {
+      const reason: HandoffReason = repairSignal.frustration
+        ? "FRUSTRATION"
+        : "REPEATED_REPAIR_FAILURE";
+
+      let nextState = advance.state;
+
+      if (nextState.handoff.status === "NONE") {
+        nextState = withHandoff(nextState, offerHandoff(reason));
+      }
+
+      nextState = appendQualitySignal(
+        nextState,
+        buildFeedbackSignal({
+          state: nextState,
+          trigger: repairSignal.kind,
+          requestId,
+          nowMs,
+          repairOffered: false,
+          handoffOffered: true,
+        }),
+      );
+
+      return respondPreservingRemainder(
+        "HANDOFF_OFFERED",
+        profile,
+        nextState,
+        composeHandoffOfferedAnswer(
+          profile,
+          nextState.handoff.reason ?? reason,
+        ),
+        repairSignal.remainder,
+      );
+    }
+
+    if (repairSignal.kind === "FRUSTRATION") {
+      // Not reachable: a frustration signal always takes the offer lane above.
+      throw new Error("Unreachable frustration lane.");
+    }
+
+    // With nothing recorded there is nothing to repair, so the honest answer
+    // says so and offers the bounded next step instead of inventing one (A05).
+    if (state.lastAssistant === null) {
+      const nextState = appendQualitySignal(
+        withHandoff(advance.state, offerHandoff("REPAIR_CONTEXT_UNAVAILABLE")),
+        buildFeedbackSignal({
+          state: advance.state,
+          trigger: repairSignal.kind,
+          requestId,
+          nowMs,
+          repairOffered: false,
+          handoffOffered: true,
+        }),
+      );
+
+      return respondPreservingRemainder(
+        "REPAIR_UNAVAILABLE",
+        profile,
+        nextState,
+        composeRepairUnavailableAnswer(profile),
+        repairSignal.remainder,
+      );
+    }
+
+    const prior = state.lastAssistant;
+
+    const message =
+      repairSignal.kind === "REPAIR_RESTATE"
+        ? composeRepairRestateAnswer(prior, profile)
+        : repairSignal.kind === "REPAIR_CLARIFY"
+          ? composeRepairClarifyAnswer(prior, profile)
+          : composeRepairChallengeAnswer(prior, profile);
+
+    return respondPreservingRemainder(
+      repairSignal.kind,
+      profile,
+      appendQualitySignal(
+        advance.state,
+        buildFeedbackSignal({
+          state: advance.state,
+          trigger: repairSignal.kind,
+          requestId,
+          nowMs,
+          repairOffered: true,
+          handoffOffered: false,
+        }),
+      ),
+      message,
+      repairSignal.remainder,
+    );
+  }
+
+  // ---------------------------------------------------------------------
   // 3. ADDRESS_SETUP and the existing profile controls.
   // ---------------------------------------------------------------------
 
@@ -486,6 +691,66 @@ export function applyConversationControlKernel(
       setup.profile,
       withClarification(state, null),
       setup.effectiveUserRequest,
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // 3a. Human handoff (A23). A direct request and the acceptance of an
+  // outstanding offer both outrank pending confirmation and ordinary routing.
+  // ---------------------------------------------------------------------
+
+  const handoffRequest = detectHandoffRequest(text);
+
+  if (handoffRequest !== null) {
+    const ready = readyHandoff(state, {
+      reason: "DIRECT_REQUEST",
+      contactPreference: detectContactPreference(text),
+    });
+
+    return respondPreservingRemainder(
+      "HANDOFF_READY",
+      profile,
+      withHandoff(state, ready.handoff),
+      composeHandoffReadyAnswer(ready.contextText),
+      handoffRequest.remainder,
+    );
+  }
+
+  // Accepting an outstanding offer is only recognised while no confirmation is
+  // pending, because a bare yes/no belongs to the confirmation when one is open.
+  if (
+    state.handoff.status === "OFFERED" &&
+    state.pendingConfirmation === null &&
+    detectHandoffAcceptance(text)
+  ) {
+    const ready = readyHandoff(state, {
+      reason: state.handoff.reason ?? "FRUSTRATION",
+    });
+
+    return respond(
+      "HANDOFF_READY",
+      profile,
+      withHandoff(state, ready.handoff),
+      composeHandoffReadyAnswer(ready.contextText),
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // 3b. Exhausted clarification changes strategy (A23/A14): offer human help
+  // once. The clarification resource itself is never reset here, and the offer
+  // is one-shot, so the user is not trapped in the offer either.
+  // ---------------------------------------------------------------------
+
+  if (
+    state.handoff.status === "NONE" &&
+    isClarificationExhausted(state.clarification)
+  ) {
+    return respondPreservingRemainder(
+      "HANDOFF_OFFERED",
+      profile,
+      withHandoff(state, offerHandoff("CLARIFICATION_EXHAUSTED")),
+      composeHandoffOfferedAnswer(profile, "CLARIFICATION_EXHAUSTED"),
+      remainder,
     );
   }
 
@@ -590,6 +855,31 @@ export function applyConversationControlKernel(
   // ---------------------------------------------------------------------
 
   return routeResult(profile, state, remainder ?? text);
+}
+
+/**
+ * Resolves one turn through the deterministic control kernel.
+ *
+ * A resolved control turn completes synchronously, so its request identity is
+ * marked completed here and the session stays idle (A22). A routed turn is
+ * deliberately left untouched: only a turn whose orchestration actually
+ * completed may claim completion, so a technical failure cannot be mistaken for
+ * a finished request and a retry of the same identity re-executes.
+ */
+export function applyConversationControlKernel(
+  input: ConversationKernelInput,
+): ConversationKernelResult {
+  const result = resolveConversationControl(input);
+
+  if (result.state !== "RESPOND") return result;
+
+  return {
+    ...result,
+    conversationState: withCompletedExecution(
+      result.conversationState,
+      input.requestId ?? null,
+    ),
+  };
 }
 
 /**

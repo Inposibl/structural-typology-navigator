@@ -698,19 +698,38 @@ test("E3: a forged stored remainder is still only untrusted user text", () => {
 test("E4: the capacity outcome is not persisted into the conversation state", () => {
   const result = turn(NEW_REMAINDER_TURN, stateWith());
 
+  // CONTRACT CORRECTION (Package B, act §8): the structured state is extended
+  // with the authorized Package-B fields — repair, execution, lastTechnicalError,
+  // handoff and qualitySignals (A05, A21, A22, A23-A25). The closed shape is
+  // still asserted exactly, so a capacity outcome still cannot leak a marker
+  // into the state.
   assert.deepEqual(Object.keys(result.conversationState).sort(), [
     "activeFlow",
     "clarification",
     "courseMatch",
     "deferredRequest",
+    "execution",
+    "handoff",
     "lastActivityAt",
     "lastAssistant",
+    "lastTechnicalError",
     "lifecycle",
     "pendingConfirmation",
+    "qualitySignals",
+    "repair",
     "selectedCourseId",
     "staleReference",
     "suspendedFlow",
   ]);
+
+  // The original intent, asserted directly: what is stored is the captured
+  // user text, not the capture outcome, and no capacity status is written into
+  // the state under any name.
+  assert.equal(typeof result.conversationState.deferredRequest, "string");
+  assert.equal(result.conversationState.deferredRequest, NEW_REMAINDER);
+  for (const key of Object.keys(result.conversationState)) {
+    assert.doesNotMatch(key, /capacity|outcome/iu);
+  }
 });
 
 test("E5: an over-long stored remainder is rejected at the state boundary", () => {

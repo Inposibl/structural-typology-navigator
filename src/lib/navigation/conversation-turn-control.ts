@@ -2,7 +2,10 @@ import type {
   ConversationMessage,
   ConversationProfile,
 } from "../chat-contract.ts";
-import { applyConversationControlKernel } from "./conversation-control-kernel.ts";
+import {
+  applyConversationControlKernel,
+  type ConversationControlAct,
+} from "./conversation-control-kernel.ts";
 import {
   createInitialConversationState,
   systemSessionClock,
@@ -13,6 +16,7 @@ import {
 export type ConversationTurnPreparation =
   | {
       state: "RESPOND";
+      act: ConversationControlAct;
       profile: ConversationProfile;
       conversationState: ConversationState;
       message: string;
@@ -30,6 +34,8 @@ export type PrepareConversationTurnOptions = {
   conversationState?: ConversationState;
   nowMs?: number;
   clock?: SessionClock;
+  /** Opaque identity of this request, for duplicate protection (A22). */
+  requestId?: string | null;
 };
 
 function lastUserMessage(
@@ -75,11 +81,13 @@ export function prepareConversationTurn(
       createInitialConversationState(nowMs),
     userText: latestUserMessage,
     nowMs,
+    requestId: options.requestId ?? null,
   });
 
   if (result.state === "RESPOND") {
     return {
       state: "RESPOND",
+      act: result.act,
       profile: result.profile,
       conversationState: result.conversationState,
       message: result.message,

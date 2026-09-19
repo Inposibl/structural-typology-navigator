@@ -1,6 +1,7 @@
 import type {
   ChatErrorResponse,
   ChatSuccessResponse,
+  ChatTechnicalErrorResponse,
   ConversationMessage,
   ConversationProfile,
   ConversationState,
@@ -14,6 +15,35 @@ import {
 
 const FALLBACK_ERROR_MESSAGE =
   "Не удалось получить ответ Навигатора. Попробуйте ещё раз.";
+
+/**
+ * A failed turn (A21).
+ *
+ * `retryable` says whether a plain retry can succeed, and `conversationState`
+ * carries the canonical state the server preserved, so the client continues
+ * from canon instead of from a locally guessed one. A malformed preserved state
+ * is ignored rather than trusted.
+ */
+export class ChatRequestError extends Error {
+  readonly code: string;
+  readonly retryable: boolean;
+  readonly conversationState: ConversationState | null;
+
+  constructor(
+    message: string,
+    options: {
+      code: string;
+      retryable: boolean;
+      conversationState: ConversationState | null;
+    },
+  ) {
+    super(message);
+    this.name = "ChatRequestError";
+    this.code = options.code;
+    this.retryable = options.retryable;
+    this.conversationState = options.conversationState;
+  }
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -74,10 +104,40 @@ function getSafeErrorMessage(value: unknown): string {
     : FALLBACK_ERROR_MESSAGE;
 }
 
+function getSafeErrorCode(value: unknown): string {
+  if (!isRecord(value) || !isRecord(value.error)) return "UNKNOWN";
+
+  const code = value.error.code;
+  return typeof code === "string" && code.trim().length > 0
+    ? code
+    : "UNKNOWN";
+}
+
+function getSafeRetryable(value: unknown): boolean {
+  if (!isRecord(value) || !isRecord(value.error)) return true;
+
+  return value.error.retryable === true;
+}
+
+/** The preserved canonical state, accepted only if it validates. */
+function getSafePreservedState(value: unknown): ConversationState | null {
+  if (!isRecord(value) || !isRecord(value.error)) return null;
+
+  const candidate = (value as ChatTechnicalErrorResponse).error
+    .conversationState;
+
+  try {
+    return normalizeConversationStatePayload(candidate, Date.now());
+  } catch {
+    return null;
+  }
+}
+
 export async function requestAssistantResponse(
   messages: ConversationMessage[],
   profile: ConversationProfile,
   conversationState: ConversationState | null,
+  requestId: string,
 ): Promise<ChatSuccessResponse> {
   let response: Response;
 
@@ -87,10 +147,14 @@ export async function requestAssistantResponse(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messages, profile, conversationState }),
+      body: JSON.stringify({ messages, profile, conversationState, requestId }),
     });
   } catch {
-    throw new Error(FALLBACK_ERROR_MESSAGE);
+    throw new ChatRequestError(FALLBACK_ERROR_MESSAGE, {
+      code: "NETWORK_UNAVAILABLE",
+      retryable: true,
+      conversationState: null,
+    });
   }
 
   let payload: unknown;
@@ -98,15 +162,27 @@ export async function requestAssistantResponse(
   try {
     payload = await response.json();
   } catch {
-    throw new Error(FALLBACK_ERROR_MESSAGE);
+    throw new ChatRequestError(FALLBACK_ERROR_MESSAGE, {
+      code: "INVALID_RESPONSE",
+      retryable: true,
+      conversationState: null,
+    });
   }
 
   if (!response.ok) {
-    throw new Error(getSafeErrorMessage(payload));
+    throw new ChatRequestError(getSafeErrorMessage(payload), {
+      code: getSafeErrorCode(payload),
+      retryable: getSafeRetryable(payload),
+      conversationState: getSafePreservedState(payload),
+    });
   }
 
   if (!isSuccessResponse(payload)) {
-    throw new Error(FALLBACK_ERROR_MESSAGE);
+    throw new ChatRequestError(FALLBACK_ERROR_MESSAGE, {
+      code: "INVALID_RESPONSE",
+      retryable: true,
+      conversationState: null,
+    });
   }
 
   return payload;

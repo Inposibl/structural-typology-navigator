@@ -54,3 +54,21 @@ export type ChatErrorResponse = {
     message: string;
   };
 };
+
+/**
+ * Structured technical-failure response (A21).
+ *
+ * The HTTP status is not 200, so the client can distinguish a technical failure
+ * from a successful assistant response; the preserved canonical state lets it
+ * continue from canon on the next attempt; and `retryable` says whether a plain
+ * retry can succeed. No internal label, provider name, stage, route, exception,
+ * or stack frame appears in the public `message`.
+ */
+export type ChatTechnicalErrorResponse = {
+  error: {
+    code: "NAVIGATOR_TECHNICAL_ERROR";
+    message: string;
+    retryable: boolean;
+    conversationState: ConversationState;
+  };
+};

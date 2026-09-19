@@ -26,7 +26,13 @@ import {
 } from "./follow-up-grounding.ts";
 import {
   composeCourseFactualCeilingAnswer,
+  composeAcademyContactAnswer,
 } from "../academy/contact-policy.ts";
+import type {
+  HandoffReason,
+  LastAssistantAction,
+} from "./conversation-state.ts";
+import { handoffOfferClause } from "./handoff.ts";
 
 /* ---------------------------------------------------------------------------
  * Package A — deterministic conversation-control responses.
@@ -293,6 +299,195 @@ type CourseFollowUpAct = Extract<
   { state: "COURSE_FOLLOW_UP" }
 >;
 
+/* ---------------------------------------------------------------------------
+ * Package B — repair, handoff, execution and technical-error responses.
+ *
+ * The same discipline as Package A applies: these are control-lane answers
+ * built from structured state and canonical entities. None of them re-routes,
+ * re-selects a course, introduces a factual or commercial claim, or exposes an
+ * internal route, state, provider, or error label.
+ * ------------------------------------------------------------------------ */
+
+const REPAIR_PRIOR_ANSWER_UNAVAILABLE_HEAD =
+  "Пока мне нечего объяснять заново: в этом разговоре я ещё ничего не отвечал.";
+
+function priorCourseTitle(prior: LastAssistantAction): string | null {
+  if (prior.courseId === null) return null;
+
+  return getAcademyCourse(prior.courseId)?.title ?? null;
+}
+
+/**
+ * "ответь нормально" (A05): a bounded re-explanation of the prior public
+ * answer. It reuses the recorded content and removes framing rather than
+ * adding new claims, so no factual authority is created.
+ */
+export function composeRepairRestateAnswer(
+  prior: LastAssistantAction,
+  profile: PackageAProfile,
+): string {
+  return [
+    "Хорошо, скажу то же самое, но по делу.",
+    restateAssistantContent(prior.content, "REPHRASE"),
+    modePick(
+      profile,
+      "Если и так непонятно — напиши, что именно смущает, и я объясню иначе.",
+      "Если и так непонятно — напишите, что именно смущает, и я объясню иначе.",
+    ),
+  ].join("\n\n");
+}
+
+/**
+ * "что ты имел в виду?" (A05): clarifies the prior assistant statement from its
+ * recorded action and content — not the user's business intent.
+ */
+export function composeRepairClarifyAnswer(
+  prior: LastAssistantAction,
+  profile: PackageAProfile,
+): string {
+  const courseTitle = priorCourseTitle(prior);
+
+  return [
+    "Поясню, что я имел в виду.",
+    ...(courseTitle !== null
+      ? [`Мой прошлый ответ относился к курсу «${courseTitle}».`]
+      : []),
+    restateAssistantContent(prior.content, "REPHRASE"),
+    modePick(
+      profile,
+      "Если ты спрашивал о чём-то другом, напиши прямо — я отвечу по существу.",
+      "Если вы спрашивали о чём-то другом, напишите прямо — я отвечу по существу.",
+    ),
+  ].join("\n\n");
+}
+
+/**
+ * "ты сам сказал, что..." (A05): a challenge is answered against the record.
+ *
+ * The recorded answer speaks for itself: the response restates what was
+ * actually returned and adds no new factual claim, so it neither invents
+ * agreement nor argues with the user about what was said.
+ */
+export function composeRepairChallengeAnswer(
+  prior: LastAssistantAction,
+  profile: PackageAProfile,
+): string {
+  const courseTitle = priorCourseTitle(prior);
+
+  return [
+    modePick(
+      profile,
+      "Давай сверимся с тем, что было в моём предыдущем ответе.",
+      "Давайте сверимся с тем, что было в моём предыдущем ответе.",
+    ),
+    ...(courseTitle !== null
+      ? [`В нём речь шла о курсе «${courseTitle}».`]
+      : []),
+    restateAssistantContent(prior.content, "REPHRASE"),
+    modePick(
+      profile,
+      "Новых утверждений я к этому не добавлю: всё, что могу подтвердить, уже сказано выше. Если расхождение осталось, скажи, в каком именно месте, — и я разберу именно его.",
+      "Новых утверждений я к этому не добавлю: всё, что могу подтвердить, уже сказано выше. Если расхождение осталось, напишите, в каком именно месте, — и я разберу именно его.",
+    ),
+  ].join("\n\n");
+}
+
+/**
+ * Repair with nothing recorded to repair (A05). The honest answer says so and
+ * offers the bounded next step instead of inventing a plausible prior reply.
+ */
+export function composeRepairUnavailableAnswer(
+  profile: PackageAProfile,
+): string {
+  return [
+    REPAIR_PRIOR_ANSWER_UNAVAILABLE_HEAD,
+    modePick(
+      profile,
+      "Опиши, пожалуйста, что нужно, — и я отвечу. Если удобнее поговорить с человеком, я подготовлю краткую сводку и дам контакты для связи.",
+      "Опишите, пожалуйста, что нужно, — и я отвечу. Если удобнее поговорить с человеком, я подготовлю краткую сводку и дам контакты для связи.",
+    ),
+  ].join("\n\n");
+}
+
+/** The canonical human contact path, read-only from the contact authority. */
+function canonicalContactPath(): string {
+  return composeAcademyContactAnswer("LIVE").message;
+}
+
+/**
+ * The Navigator can prepare a handoff and give the canonical contact path. It
+ * cannot notify anyone, so the wording says exactly that (A23).
+ */
+export function composeHandoffOfferedAnswer(
+  profile: PackageAProfile,
+  reason: HandoffReason,
+): string {
+  return [
+    handoffOfferClause(reason),
+    modePick(
+      profile,
+      "Если хочешь, подготовлю краткую сводку по нашему разговору, чтобы не пришлось пересказывать всё заново. Напиши «да» — и я её соберу. Или продолжим здесь: я никуда не пропадаю.",
+      "Если хотите, подготовлю краткую сводку по нашему разговору, чтобы не пришлось пересказывать всё заново. Напишите «да» — и я её соберу. Или продолжим здесь: я никуда не пропадаю.",
+    ),
+    "Связаться с человеком можно так:",
+    canonicalContactPath(),
+  ].join("\n\n");
+}
+
+/**
+ * A READY handoff (A23/A24): the prepared bounded summary plus the canonical
+ * contact path. It never claims that the summary was sent or that a human was
+ * notified, because no such transport exists.
+ */
+export function composeHandoffReadyAnswer(
+  contextText: string,
+): string {
+  return [
+    "Я подготовил краткую сводку по нашему разговору. Передать её человеку можно самому, чтобы не пересказывать всё заново:",
+    contextText,
+    "Связаться можно так:",
+    canonicalContactPath(),
+  ]
+    .filter((part) => part.length > 0)
+    .join("\n\n");
+}
+
+/** A replay of a completed request identity (A22): nothing is executed twice. */
+export function composeDuplicateRequestAnswer(
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "Это сообщение я уже обработал, поэтому второй раз выполнять его не буду. Напиши, пожалуйста, следующий вопрос.",
+    "Это сообщение я уже обработал, поэтому второй раз выполнять его не буду. Напишите, пожалуйста, следующий вопрос.",
+  );
+}
+
+/**
+ * Public technical-failure response (A21).
+ *
+ * It states that the failure was technical, makes clear that the user does not
+ * need to reformulate because of it, and preserves the conversation for retry.
+ * It names no provider, stage, route, error class, exception, or stack frame.
+ */
+export function composeTechnicalErrorAnswer(
+  profile: PackageAProfile,
+  retryable: boolean,
+): string {
+  if (retryable) {
+    return modePick(
+      profile,
+      "Извини, на моей стороне произошёл технический сбой — к твоему запросу это отношения не имеет. Переписывать или формулировать заново ничего не нужно: попробуй, пожалуйста, отправить сообщение ещё раз.",
+      "Извините, на моей стороне произошёл технический сбой — к вашему запросу это отношения не имеет. Переписывать или формулировать заново ничего не нужно: попробуйте, пожалуйста, отправить сообщение ещё раз.",
+    );
+  }
+
+  return modePick(
+    profile,
+    "Извини, у меня сейчас техническая проблема, из-за которой я не могу ответить. Дело не в твоём запросе — переформулировать его не нужно. Попробуй, пожалуйста, чуть позже.",
+    "Извините, у меня сейчас техническая проблема, из-за которой я не могу ответить. Дело не в вашем запросе — переформулировать его не нужно. Попробуйте, пожалуйста, чуть позже.",
+  );
+}
 export type ComposeCourseFollowUpOptions = DeepSeekClientOptions & {
   callText?: typeof callDeepSeekText;
   callJson?: typeof callDeepSeekJson;
