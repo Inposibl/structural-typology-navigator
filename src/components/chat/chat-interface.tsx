@@ -9,6 +9,7 @@ import { requestAssistantResponse } from "@/lib/chat-api";
 import type {
   ConversationMessage,
   ConversationProfile,
+  ConversationState,
 } from "@/lib/chat-contract";
 import {
   createEmptyConversationProfile,
@@ -28,6 +29,9 @@ export function ChatInterface() {
   const [profile, setProfile] = useState<ConversationProfile>(
     createEmptyConversationProfile(),
   );
+  // Null until the server returns the canonical state for this session.
+  const [conversationState, setConversationState] =
+    useState<ConversationState | null>(null);
   const [draft, setDraft] = useState("");
   const [isPending, setIsPending] = useState(false);
   const [requestError, setRequestError] = useState<string | null>(null);
@@ -72,8 +76,10 @@ export function ChatInterface() {
       const response = await requestAssistantResponse(
         conversation,
         profile,
+        conversationState,
       );
       setProfile(response.profile);
+      setConversationState(response.conversationState);
 
       const assistantMessage: ChatMessageType = {
         id: `assistant-${nextMessageId.current++}`,

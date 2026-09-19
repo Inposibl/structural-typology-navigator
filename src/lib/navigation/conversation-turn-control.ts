@@ -2,26 +2,35 @@ import type {
   ConversationMessage,
   ConversationProfile,
 } from "../chat-contract.ts";
+import { applyConversationControlKernel } from "./conversation-control-kernel.ts";
 import {
-  advanceConversationProfile,
-  isConversationProfileComplete,
-} from "./conversation-profile.ts";
-import {
-  applyConversationProfileControl,
-} from "./conversation-profile-control.ts";
+  createInitialConversationState,
+  systemSessionClock,
+  type ConversationState,
+  type SessionClock,
+} from "./conversation-state.ts";
 
 export type ConversationTurnPreparation =
   | {
       state: "RESPOND";
       profile: ConversationProfile;
+      conversationState: ConversationState;
       message: string;
       resetConversation: boolean;
     }
   | {
       state: "ROUTE";
       profile: ConversationProfile;
+      conversationState: ConversationState;
       messages: ConversationMessage[];
     };
+
+export type PrepareConversationTurnOptions = {
+  /** Last server-returned canonical state. Absent means a fresh session. */
+  conversationState?: ConversationState;
+  nowMs?: number;
+  clock?: SessionClock;
+};
 
 function lastUserMessage(
   messages: readonly ConversationMessage[],
@@ -45,56 +54,43 @@ function replaceLastUserMessage(
   );
 }
 
+/**
+ * Resolves one turn through the Package-A conversation-control kernel. A turn
+ * the kernel handles is answered deterministically and never reaches the
+ * conversation-act router; any other turn continues to ordinary routing.
+ */
 export function prepareConversationTurn(
   messages: readonly ConversationMessage[],
   profile: ConversationProfile,
+  options: PrepareConversationTurnOptions = {},
 ): ConversationTurnPreparation {
   const latestUserMessage = lastUserMessage(messages);
+  const nowMs =
+    options.nowMs ?? (options.clock ?? systemSessionClock).now();
 
-  const profileControl = applyConversationProfileControl(
+  const result = applyConversationControlKernel({
     profile,
-    latestUserMessage,
-  );
+    conversationState:
+      options.conversationState ??
+      createInitialConversationState(nowMs),
+    userText: latestUserMessage,
+    nowMs,
+  });
 
-  if (profileControl.handled) {
+  if (result.state === "RESPOND") {
     return {
       state: "RESPOND",
-      profile: profileControl.profile,
-      message: profileControl.message,
-      resetConversation: profileControl.resetConversation,
-    };
-  }
-
-  if (!isConversationProfileComplete(profile)) {
-    const setup = advanceConversationProfile(
-      profile,
-      latestUserMessage,
-    );
-
-    if (!setup.complete || setup.effectiveUserRequest === null) {
-      return {
-        state: "RESPOND",
-        profile: setup.profile,
-        message:
-          setup.response ??
-          "Скажите, пожалуйста, как к вам обращаться.",
-        resetConversation: false,
-      };
-    }
-
-    return {
-      state: "ROUTE",
-      profile: setup.profile,
-      messages: replaceLastUserMessage(
-        messages,
-        setup.effectiveUserRequest,
-      ),
+      profile: result.profile,
+      conversationState: result.conversationState,
+      message: result.message,
+      resetConversation: result.resetConversation,
     };
   }
 
   return {
     state: "ROUTE",
-    profile,
-    messages: [...messages],
+    profile: result.profile,
+    conversationState: result.conversationState,
+    messages: replaceLastUserMessage(messages, result.request),
   };
 }

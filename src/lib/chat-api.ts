@@ -3,10 +3,14 @@ import type {
   ChatSuccessResponse,
   ConversationMessage,
   ConversationProfile,
+  ConversationState,
 } from "@/lib/chat-contract";
 import {
   normalizeConversationProfilePayload,
 } from "@/lib/navigation/conversation-profile";
+import {
+  normalizeConversationStatePayload,
+} from "@/lib/navigation/conversation-state";
 
 const FALLBACK_ERROR_MESSAGE =
   "Не удалось получить ответ Навигатора. Попробуйте ещё раз.";
@@ -21,6 +25,7 @@ function isSuccessResponse(value: unknown): value is ChatSuccessResponse {
     typeof value.message !== "string" ||
     value.message.trim().length === 0 ||
     !("profile" in value) ||
+    !("conversationState" in value) ||
     !("contactCard" in value) ||
     typeof value.resetConversation !== "boolean"
   ) {
@@ -29,6 +34,7 @@ function isSuccessResponse(value: unknown): value is ChatSuccessResponse {
 
   try {
     normalizeConversationProfilePayload(value.profile);
+    normalizeConversationStatePayload(value.conversationState, Date.now());
   } catch {
     return false;
   }
@@ -71,6 +77,7 @@ function getSafeErrorMessage(value: unknown): string {
 export async function requestAssistantResponse(
   messages: ConversationMessage[],
   profile: ConversationProfile,
+  conversationState: ConversationState | null,
 ): Promise<ChatSuccessResponse> {
   let response: Response;
 
@@ -80,7 +87,7 @@ export async function requestAssistantResponse(
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ messages, profile }),
+      body: JSON.stringify({ messages, profile, conversationState }),
     });
   } catch {
     throw new Error(FALLBACK_ERROR_MESSAGE);

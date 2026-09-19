@@ -4,6 +4,12 @@ import {
   type AddressMode,
   type ConversationProfile,
 } from "../chat-contract.ts";
+import {
+  hasControlLanguage,
+  isGreetingClause,
+  splitIntoClauses,
+  stripGreetingClauses,
+} from "./conversation-control-phrases.ts";
 
 export const INITIAL_ADDRESS_PROMPT =
   "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».";
@@ -41,6 +47,21 @@ const MODE_ONLY_PATTERN =
 
 const FILLER_ONLY_PATTERN =
   /^(?:да|ок|окей|конечно|пожалуйста|можно|хорошо|спасибо)[.!?]*$/iu;
+
+/**
+ * A whole clause of the form "я <Имя>". Requires a capitalized single word that
+ * is not a pronoun or identity word, so "я оно" cannot be read as a name
+ * introduction (recovered production dialogue 12).
+ */
+const IDENTITY_NAME_CLAUSE =
+  /^(?:[Яя])\s+([A-ZА-ЯЁ][a-zа-яё]+)$/u;
+
+const NON_NAME_IDENTITY_WORDS = new Set([
+  "оно", "они", "он", "она", "оный", "оная", "оные", "это", "этот", "эта",
+  "эти", "то", "тот", "та", "те", "всё", "все", "не", "нет", "да", "тоже",
+  "так", "тут", "здесь", "там", "сам", "сама", "само", "сами", "человек",
+  "животное", "существо", "небинарное", "небинарный",
+]);
 
 export function createEmptyConversationProfile(): ConversationProfile {
   return {
@@ -82,7 +103,9 @@ export function normalizeDisplayNameCandidate(
     /https?:\/\/|www\.|@/iu.test(normalized) ||
     MODE_ONLY_PATTERN.test(normalized) ||
     FILLER_ONLY_PATTERN.test(normalized) ||
-    SUBSTANTIVE_TASK_START.test(normalized)
+    SUBSTANTIVE_TASK_START.test(normalized) ||
+    hasControlLanguage(normalized) ||
+    isGreetingClause(normalized)
   ) {
     return null;
   }
@@ -251,6 +274,10 @@ function cleanText(value: string): string {
     .trim();
 }
 
+/** Trailing discourse fillers that a name prefix may pick up, e.g. "Иван, давай". */
+const TRAILING_NAME_FILLERS =
+  /(?:\s|^)(?:и|а|но|давай|давайте|пожалуйста|пожалуй|ну|можно|тогда|вот|это|же|уж)$/iu;
+
 function splitTask(
   value: string,
 ): {
@@ -266,9 +293,12 @@ function splitTask(
   }
 
   let beforeTask = cleanText(value.slice(0, match.index));
-  beforeTask = beforeTask
-    .replace(/(?:^|\s)(?:и|а|но)$/iu, "")
-    .trim();
+
+  for (;;) {
+    const stripped = beforeTask.replace(TRAILING_NAME_FILLERS, "").trim();
+    if (stripped === beforeTask) break;
+    beforeTask = stripped;
+  }
 
   const task = cleanText(value.slice(match.index));
 
@@ -278,21 +308,40 @@ function splitTask(
   };
 }
 
+function identityNameClause(clause: string): string | null {
+  const match = clause.match(IDENTITY_NAME_CLAUSE);
+  const word = match?.[1];
+  if (!word) return null;
+
+  if (NON_NAME_IDENTITY_WORDS.has(word.toLowerCase())) {
+    return null;
+  }
+
+  return normalizeDisplayNameCandidate(word);
+}
+
+/**
+ * Clause-aware segmentation for ADDRESS_SETUP (A01).
+ *
+ * Greetings are dropped as whole clauses first, so a greeting can never be read
+ * as the user's name, and a name prefix can never swallow the substantive
+ * request that follows it in the same message.
+ */
 function parseNameAndTask(
   value: string,
 ): {
   displayName: string | null;
   task: string | null;
 } {
-  const cleaned = cleanText(value);
+  const withoutGreetings = stripGreetingClauses(value);
 
-  if (!cleaned) {
+  if (!withoutGreetings) {
     return { displayName: null, task: null };
   }
 
-  const explicitPrefix = cleaned.match(EXPLICIT_NAME_PREFIX);
+  const explicitPrefix = withoutGreetings.match(EXPLICIT_NAME_PREFIX);
   if (explicitPrefix) {
-    const rest = cleanText(cleaned.slice(explicitPrefix[0].length));
+    const rest = cleanText(withoutGreetings.slice(explicitPrefix[0].length));
     const split = splitTask(rest);
     return {
       displayName: normalizeDisplayNameCandidate(split.beforeTask),
@@ -300,7 +349,32 @@ function parseNameAndTask(
     };
   }
 
-  const split = splitTask(cleaned);
+  const clauses = splitIntoClauses(withoutGreetings);
+
+  const identityIndex = clauses.findIndex(
+    (clause) => identityNameClause(clause) !== null,
+  );
+
+  if (identityIndex !== -1) {
+    const displayName = identityNameClause(clauses[identityIndex]);
+    const rest = clauses
+      .filter((_, index) => index !== identityIndex)
+      .join(". ");
+    const split = splitTask(rest);
+    return { displayName, task: split.task };
+  }
+
+  if (clauses.length > 1) {
+    const leadingCandidate = normalizeDisplayNameCandidate(clauses[0]);
+
+    if (leadingCandidate) {
+      const rest = clauses.slice(1).join(". ");
+      const split = splitTask(rest);
+      return { displayName: leadingCandidate, task: split.task };
+    }
+  }
+
+  const split = splitTask(withoutGreetings);
 
   if (split.task && split.beforeTask) {
     return {
@@ -317,7 +391,7 @@ function parseNameAndTask(
   }
 
   return {
-    displayName: normalizeDisplayNameCandidate(cleaned),
+    displayName: normalizeDisplayNameCandidate(withoutGreetings),
     task: null,
   };
 }

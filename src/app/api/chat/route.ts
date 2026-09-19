@@ -15,9 +15,22 @@ import {
   ConversationProfileValidationError,
 } from "@/lib/navigation/conversation-profile";
 import {
+  ConversationStateValidationError,
+  applyOrchestratedTurn,
+  normalizeConversationStatePayload,
+  systemSessionClock,
+  type ConversationFlowId,
+  type ConversationState,
+  type LastAssistantAct,
+  type OrchestratedDecision,
+} from "@/lib/navigation/conversation-state";
+import {
   prepareConversationTurn,
 } from "@/lib/navigation/conversation-turn-control";
-import { orchestrateNavigatorResponse } from "@/lib/navigation/orchestrate-navigation";
+import {
+  orchestrateNavigatorResponse,
+  type NavigatorOrchestrationResult,
+} from "@/lib/navigation/orchestrate-navigation";
 import { createNavigatorFailureLog } from "@/lib/navigation/navigator-observability";
 
 const MAX_REQUEST_BYTES = 200_000;
@@ -27,6 +40,7 @@ type ValidationResult =
       ok: true;
       messages: ConversationMessage[];
       profile: ConversationProfile;
+      conversationState: ConversationState;
     }
   | { ok: false; message: string };
 
@@ -48,15 +62,18 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function hasOnlyKeys(
   value: Record<string, unknown>,
-  allowedKeys: readonly string[],
+  allowed: readonly string[],
 ): boolean {
-  return Object.keys(value).every((key) => allowedKeys.includes(key));
+  return Object.keys(value).every((key) => allowed.includes(key));
 }
 
-function validateRequestBody(value: unknown): ValidationResult {
+function validateRequestBody(
+  value: unknown,
+  nowMs: number,
+): ValidationResult {
   if (
     !isRecord(value) ||
-    !hasOnlyKeys(value, ["messages", "profile"]) ||
+    !hasOnlyKeys(value, ["messages", "profile", "conversationState"]) ||
     !Array.isArray(value.messages)
   ) {
     return { ok: false, message: "Некорректный формат запроса." };
@@ -125,10 +142,74 @@ function validateRequestBody(value: unknown): ValidationResult {
     throw error;
   }
 
-  return { ok: true, messages, profile };
+  let conversationState: ConversationState;
+  try {
+    conversationState = normalizeConversationStatePayload(
+      value.conversationState,
+      nowMs,
+    );
+  } catch (error) {
+    if (error instanceof ConversationStateValidationError) {
+      return {
+        ok: false,
+        message: "Некорректное состояние диалога.",
+      };
+    }
+    throw error;
+  }
+
+  return { ok: true, messages, profile, conversationState };
+}
+
+/** Package-A act identity for an orchestrated turn. */
+function orchestrationAct(
+  result: NavigatorOrchestrationResult,
+): { act: LastAssistantAct; flowId: ConversationFlowId | null } {
+  if (result.clarification.status === "ASKED") {
+    return { act: "CLARIFICATION", flowId: "COURSE_SELECTION" };
+  }
+
+  if (result.clarification.status === "EXHAUSTED") {
+    return { act: "CLARIFICATION_EXHAUSTED", flowId: "COURSE_SELECTION" };
+  }
+
+  if (result.contactCard !== null) {
+    return { act: "ACADEMY_CONTACT", flowId: "ACADEMY_CONTACT" };
+  }
+
+  switch (result.conversationAct.state) {
+    case "NAVIGATE":
+      return { act: "NAVIGATE", flowId: "COURSE_SELECTION" };
+    case "COURSE_FOLLOW_UP":
+      return { act: "COURSE_FOLLOW_UP", flowId: "COURSE_FOLLOW_UP" };
+    case "META":
+      return { act: "META", flowId: null };
+    default:
+      return { act: "OUT_OF_SCOPE", flowId: null };
+  }
+}
+
+function orchestrationDecision(
+  result: NavigatorOrchestrationResult,
+): OrchestratedDecision {
+  const decision = result.decision;
+
+  if (decision === null) return { kind: "NONE" };
+
+  switch (decision.state) {
+    case "RECOMMEND_COURSE":
+      return { kind: "MATCHED", courseId: decision.primaryCourseId };
+    case "NO_CURRENT_COURSE_MATCH":
+      return { kind: "NO_MATCH" };
+    case "ASK_MORE":
+      return decision.candidateCourseIds.length > 1
+        ? { kind: "AMBIGUOUS" }
+        : { kind: "NONE" };
+  }
 }
 
 export async function POST(request: Request): Promise<Response> {
+  const nowMs = systemSessionClock.now();
   const contentType = request.headers.get("content-type");
 
   if (!contentType?.toLowerCase().startsWith("application/json")) {
@@ -157,7 +238,7 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError(400, "INVALID_JSON", "Не удалось прочитать JSON-запрос.");
   }
 
-  const validation = validateRequestBody(body);
+  const validation = validateRequestBody(body, nowMs);
 
   if (validation.ok === false) {
     return jsonError(400, "INVALID_REQUEST", validation.message);
@@ -166,12 +247,17 @@ export async function POST(request: Request): Promise<Response> {
   const prepared = prepareConversationTurn(
     validation.messages,
     validation.profile,
+    {
+      conversationState: validation.conversationState,
+      nowMs,
+    },
   );
 
   if (prepared.state === "RESPOND") {
     const responseBody: ChatSuccessResponse = {
       message: prepared.message,
       profile: prepared.profile,
+      conversationState: prepared.conversationState,
       contactCard: null,
       resetConversation: prepared.resetConversation,
     };
@@ -180,6 +266,7 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const requestId = randomUUID();
+  const clarification = prepared.conversationState.clarification;
 
   try {
     const result = await orchestrateNavigatorResponse(
@@ -188,12 +275,29 @@ export async function POST(request: Request): Promise<Response> {
         signal: request.signal,
         requestId,
         profile: prepared.profile,
+        clarification: {
+          priorIssueKey: clarification?.issueKey ?? null,
+          priorAttempts: clarification?.attempts ?? 0,
+        },
       },
     );
+
+    const { act, flowId } = orchestrationAct(result);
 
     const responseBody: ChatSuccessResponse = {
       message: result.message,
       profile: prepared.profile,
+      conversationState: applyOrchestratedTurn(
+        prepared.conversationState,
+        {
+          act,
+          flowId,
+          message: result.message,
+          decision: orchestrationDecision(result),
+          clarification: result.clarification,
+        },
+        nowMs,
+      ),
       contactCard: result.contactCard,
       resetConversation: false,
     };

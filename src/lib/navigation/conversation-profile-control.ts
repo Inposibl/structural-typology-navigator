@@ -51,6 +51,14 @@ function resetRequested(text: string): boolean {
   return remainder.length === 0;
 }
 
+/**
+ * Full-dialogue restart (A17/R21). Exported so the conversation-control kernel
+ * can evaluate it in the session-control group, ahead of the other controls.
+ */
+export function isConversationResetRequest(text: string): boolean {
+  return resetRequested(text);
+}
+
 export function applyConversationProfileControl(
   profile: ConversationProfile,
   userText: string,

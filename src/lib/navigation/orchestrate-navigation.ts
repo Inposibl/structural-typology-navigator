@@ -33,10 +33,15 @@ import {
 } from "./conversation-act-router.ts";
 import {
   composeCourseFollowUpAnswer,
+  composeClarificationExhaustionAnswer,
   composeNavigatorMetaAnswer,
   composeNavigatorOutOfScopeAnswer,
   type ComposeCourseFollowUpOptions,
 } from "./conversation-response.ts";
+import {
+  CLARIFICATION_BUDGET,
+  clarificationIssueKey,
+} from "./conversation-state.ts";
 import {
   composeAcademyContactAnswer,
   detectAcademyContactIntent,
@@ -59,6 +64,23 @@ export type NavigatorOrchestrationResult = {
   courseEvidenceCount: number;
   courseHadActiveSources: boolean;
   evidenceSelectionStatus: CourseEvidenceSelection["status"] | "NOT_RUN";
+  clarification: OrchestrationClarificationOutcome;
+};
+
+/**
+ * Package-A clarification budget outcome (A14). The counter is scoped to the
+ * unresolved issue; EXHAUSTED is the structured result later packages consume.
+ */
+export type OrchestrationClarificationOutcome = {
+  status: "NOT_APPLICABLE" | "ASKED" | "EXHAUSTED";
+  issueKey: string | null;
+  attempts: number;
+  question: string | null;
+};
+
+export type ClarificationControlInput = {
+  priorIssueKey: string | null;
+  priorAttempts: number;
 };
 
 type ConversationActDependency = (
@@ -116,6 +138,8 @@ export type OrchestrateNavigatorOptions = {
   signal?: AbortSignal;
   requestId?: string;
   profile?: ConversationProfile;
+  /** Prior unresolved-clarification record, for the A14 budget. */
+  clarification?: ClarificationControlInput;
   dependencies?: OrchestrationDependencies;
 };
 
@@ -180,8 +204,16 @@ function emptyResult(
     courseEvidenceCount: 0,
     courseHadActiveSources: false,
     evidenceSelectionStatus: "NOT_RUN",
+    clarification: NOT_APPLICABLE_CLARIFICATION,
   };
 }
+
+const NOT_APPLICABLE_CLARIFICATION: OrchestrationClarificationOutcome = {
+  status: "NOT_APPLICABLE",
+  issueKey: null,
+  attempts: 0,
+  question: null,
+};
 
 export async function orchestrateNavigatorResponse(
   messages: readonly ConversationMessage[],
@@ -308,6 +340,7 @@ export async function orchestrateNavigatorResponse(
       courseHadActiveSources: courseKnowledge.hasActiveSources,
       evidenceSelectionStatus:
         evidenceSelection?.status ?? "NOT_RUN",
+      clarification: NOT_APPLICABLE_CLARIFICATION,
     };
   }
 
@@ -362,6 +395,12 @@ export async function orchestrateNavigatorResponse(
     }
   }
 
+  if (decision.state === "ASK_MORE") {
+    return withNavigatorStage("COMPOSER", () =>
+      composeClarificationTurn(messages, decision, compose, options),
+    );
+  }
+
   const message = await withNavigatorStage("COMPOSER", () =>
     compose(messages, decision, {
       courseEvidence: resolvedEvidence,
@@ -380,5 +419,79 @@ export async function orchestrateNavigatorResponse(
     courseEvidenceCount: resolvedEvidence.length,
     courseHadActiveSources: courseKnowledge?.hasActiveSources ?? false,
     evidenceSelectionStatus: evidenceSelection?.status ?? "NOT_RUN",
+    clarification: NOT_APPLICABLE_CLARIFICATION,
+  };
+}
+
+/**
+ * Bounded clarification (A14).
+ *
+ * The issue key is derived from the router's unresolved candidate set, so the
+ * counter is scoped to the issue rather than to the session lifetime. Within
+ * budget the turn asks exactly one question, selected by attempt index, so a
+ * repeated attempt asks a materially different question instead of paraphrasing
+ * the previous one. At budget exhaustion the kernel stops asking and returns a
+ * structured EXHAUSTED outcome for later packages to consume.
+ *
+ * The public wording stays entirely with the existing composer: this narrows
+ * the decision and re-composes, so no new clarification prose is introduced
+ * here.
+ */
+async function composeClarificationTurn(
+  messages: readonly ConversationMessage[],
+  decision: Extract<NavigationDecision, { state: "ASK_MORE" }>,
+  compose: ComposeDependency,
+  options: OrchestrateNavigatorOptions,
+): Promise<NavigatorOrchestrationResult> {
+  const issueKey = clarificationIssueKey(decision.candidateCourseIds);
+  const priorAttempts =
+    options.clarification?.priorIssueKey === issueKey
+      ? (options.clarification?.priorAttempts ?? 0)
+      : 0;
+
+  if (priorAttempts >= CLARIFICATION_BUDGET) {
+    return {
+      message: composeClarificationExhaustionAnswer(options.profile),
+      contactCard: null,
+      conversationAct: { state: "NAVIGATE" },
+      decision,
+      courseEvidenceCount: 0,
+      courseHadActiveSources: false,
+      evidenceSelectionStatus: "NOT_RUN",
+      clarification: {
+        status: "EXHAUSTED",
+        issueKey,
+        attempts: CLARIFICATION_BUDGET,
+        question: null,
+      },
+    };
+  }
+
+  const strategyIndex = Math.min(
+    priorAttempts,
+    decision.questions.length - 1,
+  );
+  const question = decision.questions[strategyIndex];
+
+  const message = await compose(
+    messages,
+    { ...decision, questions: [question] },
+    { showEvidence: false, profile: options.profile },
+  );
+
+  return {
+    message,
+    contactCard: null,
+    conversationAct: { state: "NAVIGATE" },
+    decision,
+    courseEvidenceCount: 0,
+    courseHadActiveSources: false,
+    evidenceSelectionStatus: "NOT_RUN",
+    clarification: {
+      status: "ASKED",
+      issueKey,
+      attempts: priorAttempts + 1,
+      question,
+    },
   };
 }

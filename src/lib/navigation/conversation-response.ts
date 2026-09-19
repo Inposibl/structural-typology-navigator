@@ -28,6 +28,266 @@ import {
   composeCourseFactualCeilingAnswer,
 } from "../academy/contact-policy.ts";
 
+/* ---------------------------------------------------------------------------
+ * Package A — deterministic conversation-control responses.
+ *
+ * These are control-lane answers: they never route through the conversation-act
+ * router, never select or re-select a course, and never introduce factual or
+ * commercial claims. Wording follows the selected TY/VY mode using the same
+ * ternary idiom as the existing deterministic composers.
+ * ------------------------------------------------------------------------ */
+
+type PackageAProfile = ConversationProfile | undefined;
+
+function modePick(
+  profile: PackageAProfile,
+  ty: string,
+  vy: string,
+): string {
+  return profile?.addressMode === "TY" ? ty : vy;
+}
+
+export function composeConversationCloseAnswer(
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "Хорошо, до связи. Если понадобится — просто напиши.",
+    "Хорошо, до связи. Если понадобится — просто напишите.",
+  );
+}
+
+export function composeCancelFlowAnswer(profile: PackageAProfile): string {
+  return modePick(
+    profile,
+    "Хорошо, текущий подбор отменён. Ничего не выбрано. Если захочешь, опиши задачу заново — и я начну с начала.",
+    "Хорошо, текущий подбор отменён. Ничего не выбрано. Если захотите, опишите задачу заново — и я начну с начала.",
+  );
+}
+
+export function composeResumeFlowAnswer(
+  pendingQuestion: string | null,
+  profile: PackageAProfile,
+): string {
+  if (pendingQuestion) {
+    return `Возвращаюсь к подбору. ${pendingQuestion}`;
+  }
+
+  return modePick(
+    profile,
+    "Возвращаюсь к тому, на чём мы остановились. Опиши, пожалуйста, что для тебя важнее всего.",
+    "Возвращаюсь к тому, на чём мы остановились. Опишите, пожалуйста, что для вас важнее всего.",
+  );
+}
+
+export function composeSkipAnswer(profile: PackageAProfile): string {
+  return modePick(
+    profile,
+    "Хорошо, пропускаем этот вопрос — повторять его не буду. Можешь описать задачу своими словами или выбрать другое направление.",
+    "Хорошо, пропускаем этот вопрос — повторять его не буду. Можете описать задачу своими словами или выбрать другое направление.",
+  );
+}
+
+export function composeStaleReferenceConfirmationAnswer(
+  courseTitle: string,
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    `Ранее мы обсуждали курс «${courseTitle}». Ты имеешь в виду его?`,
+    `Ранее мы обсуждали курс «${courseTitle}». Вы имеете в виду его?`,
+  );
+}
+
+export function composeStaleReferenceConfirmedAnswer(
+  courseTitle: string,
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    `Хорошо, продолжаем с курсом «${courseTitle}». Спрашивай, что важно.`,
+    `Хорошо, продолжаем с курсом «${courseTitle}». Спрашивайте, что важно.`,
+  );
+}
+
+export function composeStaleReferenceDeclinedAnswer(
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "Понятно. Тогда уточни, пожалуйста, о каком курсе речь.",
+    "Понятно. Тогда уточните, пожалуйста, о каком курсе речь.",
+  );
+}
+
+/**
+ * Bounded, neutral explanation for an unsupported addressing variant (A02).
+ * It states the supported modes, does not debate identity, and does not treat
+ * identity language as educational evidence. Attempt count changes the wording
+ * so repeated invalid input never re-emits the same initial prompt.
+ */
+export function composeUnsupportedAddressModeAnswer(
+  priorAttempts: number,
+  budget: number,
+): string {
+  if (priorAttempts === 0) {
+    return "Сейчас в Навигаторе поддерживаются только два варианта обращения: на «ты» и на «вы». Другие формы использовать не получится. Выберите, пожалуйста: на «ты» или на «вы».";
+  }
+
+  if (priorAttempts >= budget - 1) {
+    return "Других вариантов обращения, кроме «ты» и «вы», в Навигаторе нет. Как только напишете «на ты» или «на вы», продолжим.";
+  }
+
+  return "Чтобы продолжить, нужно выбрать один из двух вариантов обращения: на «ты» или на «вы». Напишите просто «на ты» или «на вы» — и мы продолжим.";
+}
+
+/**
+ * Structured clarification exhaustion (A14). Package A stops asking; it does
+ * not implement human handoff, which is Package B.
+ */
+export function composeClarificationExhaustionAnswer(
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "Вижу, что уточняющие вопросы здесь не помогают. Больше их задавать не буду — попробуем иначе. Опиши, пожалуйста, своими словами, что для тебя сейчас самое важное.",
+    "Вижу, что уточняющие вопросы здесь не помогают. Больше их задавать не буду — попробуем иначе. Опишите, пожалуйста, своими словами, что для вас сейчас самое важное.",
+  );
+}
+
+export function composeRestatementUnavailableAnswer(
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "Пока нечего повторять — я ещё ничего не отвечал. Опиши, пожалуйста, свою задачу.",
+    "Пока нечего повторять — я ещё ничего не отвечал. Опишите, пожалуйста, свою задачу.",
+  );
+}
+
+/**
+ * Session context expired and the user referred to something from the previous
+ * conversation without naming it. Nothing is restored; the user is asked to
+ * restate what they want.
+ */
+export function composeExpiredContextAnswer(
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "С прошлого разговора прошло больше суток, поэтому прежний контекст я не сохраняю. Напиши, пожалуйста, с чем хочешь разобраться сейчас.",
+    "С прошлого разговора прошло больше суток, поэтому прежний контекст я не сохраняю. Напишите, пожалуйста, с чем хотите разобраться сейчас.",
+  );
+}
+
+export function composeDeferredRequestAnswer(
+  deferredRequest: string,
+  profile: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    `Твой запрос я сохранил: «${deferredRequest}».`,
+    `Ваш запрос я сохранил: «${deferredRequest}».`,
+  );
+}
+
+/**
+ * What a rejected capture has to report on: whether an earlier remainder is
+ * already waiting, or the fragment stood alone.
+ */
+export type DeferredCapacityNoticeScope = "ALONGSIDE_STORED" | "STANDALONE";
+
+/**
+ * Bounded, non-technical explanation for a remainder that could not be
+ * preserved (A19). It names no internal limit, no queue and no state, and it
+ * never claims the new text was saved: an already acknowledged request stays
+ * intact and the newest fragment is asked for again.
+ */
+export function composeDeferredCapacityRejectedAnswer(
+  scope: DeferredCapacityNoticeScope,
+  profile: PackageAProfile,
+): string {
+  if (scope === "STANDALONE") {
+    return modePick(
+      profile,
+      "Этот запрос слишком длинный, чтобы я мог сохранить его целиком. Пришли его, пожалуйста, короче — и я сразу за него возьмусь.",
+      "Этот запрос слишком длинный, чтобы я мог сохранить его целиком. Пришлите его, пожалуйста, короче — и я сразу за него возьмусь.",
+    );
+  }
+
+  return modePick(
+    profile,
+    "Предыдущий запрос у меня сохранён. Этот дополнительный фрагмент слишком длинный, чтобы сохранить его вместе с ним — пришли его ещё раз после того, как разберём первый.",
+    "Предыдущий запрос у меня сохранён. Этот дополнительный фрагмент слишком длинный, чтобы сохранить его вместе с ним — пришлите его ещё раз после того, как разберём первый.",
+  );
+}
+
+export type RestatementKind = "REPEAT" | "REPHRASE" | "SIMPLIFY";
+
+/**
+ * Sentences that carry an explicit limitation or factual ceiling. Cyrillic
+ * letter lookarounds are used instead of \b, which is ASCII-only in JavaScript
+ * and therefore never matches between Cyrillic characters.
+ */
+const LIMITATION_MARKERS =
+  /(?<![а-яё])(?:не могу|не является|не подтвержд[а-яё]*|не вижу|только|лишь|не гарантир[а-яё]*|ограничен[а-яё]*|не относится|вне функции|не содержит|нельзя|без натяжки)(?![а-яё])/iu;
+
+/** Navigator self-framing sentences, i.e. meta rather than substance. */
+const SELF_FRAMING_MARKERS =
+  /^(?:навигатор(?![а-яё])|я показываю|цитаты|если вопрос|этот вопрос|для общего поиска)/iu;
+
+function toSentences(content: string): string[] {
+  return content
+    .split(/(?<=[.!?…])\s+/u)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+}
+
+/**
+ * Deterministic restatement (A20).
+ *
+ * These transforms only ever remove or re-frame the previously returned public
+ * content: no new factual claim is ever produced, no authority is consulted, no
+ * routing decision is taken and no navigation state is changed. REPHRASE and
+ * SIMPLIFY keep every sentence that carries an explicit limitation, so a
+ * factual ceiling is never compressed away.
+ */
+export function restateAssistantContent(
+  content: string,
+  kind: RestatementKind,
+): string {
+  const normalized = content.replace(/[ \t]+/gu, " ").trim();
+
+  if (kind === "REPEAT") {
+    return normalized;
+  }
+
+  const sentences = toSentences(normalized);
+  if (sentences.length <= 1) {
+    return normalized;
+  }
+
+  if (kind === "REPHRASE") {
+    const substantive = sentences.filter(
+      (sentence) => !SELF_FRAMING_MARKERS.test(sentence),
+    );
+
+    if (substantive.length === 0 || substantive.length === sentences.length) {
+      return normalized;
+    }
+
+    return ["Скажу то же самое, но без лишних пояснений.", ...substantive].join(
+      "\n\n",
+    );
+  }
+
+  const kept = sentences.filter(
+    (sentence, index) => index === 0 || LIMITATION_MARKERS.test(sentence),
+  );
+
+  return kept.join(" ");
+}
+
 type CourseFollowUpAct = Extract<
   ConversationActDecision,
   { state: "COURSE_FOLLOW_UP" }
