@@ -10,7 +10,6 @@ import {
 } from "../academy/course-catalog.ts";
 import { getPublicCourseOutcomes } from "../academy/public-course-outcomes.ts";
 import {
-  ACADEMY_COMMERCIAL_AUTHORITY,
   getAuthoritativeCoursePrice,
 } from "../academy/commercial-authority.ts";
 import type { ResolvedCourseEvidence } from "../knowledge/retrieval/authority-resolver.ts";
@@ -514,10 +513,16 @@ export function composeNavigatorMetaAnswer(): string {
   ].join("\n\n");
 }
 
-export function composeNavigatorOutOfScopeAnswer(): string {
+export function composeNavigatorOutOfScopeAnswer(
+  profile?: PackageAProfile,
+): string {
   return [
     "Этот вопрос вне функции Навигатора: здесь я помогаю выбирать и понимать учебные маршруты Академии структурной типологии.",
-    "Для общего поиска лучше использовать, например, Google или Perplexity; для диалогового разбора — универсальный ассистент вроде ChatGPT. Так ответ будет качественнее по теме, которая не относится к курсам Академии.",
+    modePick(
+      profile,
+      "Для общего поиска лучше использовать, например, Google или Perplexity; для диалогового разбора — универсальный ассистент вроде ChatGPT. Так ты получишь более качественный ответ по теме, которая не относится к курсам Академии.",
+      "Для общего поиска лучше использовать, например, Google или Perplexity; для диалогового разбора — универсальный ассистент вроде ChatGPT. Так вы получите более качественный ответ по теме, которая не относится к курсам Академии.",
+    ),
   ].join("\n\n");
 }
 
@@ -528,15 +533,35 @@ export function composeStableNoMatchAnswer(): string {
   ].join("\n\n");
 }
 
-export function composePaymentAmbiguityAnswer(): string {
-  return "В запросе указано несколько курсов. Назовите, пожалуйста, один курс для оплаты — до уточнения я не буду давать платёжную ссылку.";
+export function composePaymentAmbiguityAnswer(
+  profile?: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "В запросе указано несколько курсов. Назови, пожалуйста, один курс для оплаты — до уточнения я не буду давать платёжную ссылку.",
+    "В запросе указано несколько курсов. Назовите, пожалуйста, один курс для оплаты — до уточнения я не буду давать платёжную ссылку.",
+  );
 }
 
 export function composePaymentCourseChangeConfirmationAnswer(
   currentTitle: string,
   requestedTitle: string,
+  profile?: PackageAProfile,
 ): string {
-  return `Сейчас выбран курс «${currentTitle}», а оплатить вы просите курс «${requestedTitle}». Подтвердите, пожалуйста: переключиться на «${requestedTitle}» и открыть оплату?`;
+  // Both second-person forms in this prompt follow the mode: the statement
+  // about what the user asked for, and the request for confirmation.
+  const statement = modePick(
+    profile,
+    `Сейчас выбран курс «${currentTitle}», а оплатить ты просишь курс «${requestedTitle}».`,
+    `Сейчас выбран курс «${currentTitle}», а оплатить вы просите курс «${requestedTitle}».`,
+  );
+  const request = modePick(
+    profile,
+    "Подтверди, пожалуйста",
+    "Подтвердите, пожалуйста",
+  );
+
+  return `${statement} ${request}: переключиться на «${requestedTitle}» и открыть оплату?`;
 }
 
 export function composePaymentCourseChangeDeclinedAnswer(
@@ -545,8 +570,14 @@ export function composePaymentCourseChangeDeclinedAnswer(
   return `Хорошо, курс для оплаты не меняю. Выбранным остаётся «${currentTitle}».`;
 }
 
-export function composePaymentCourseIdentityRequiredAnswer(): string {
-  return "Перед оплатой нужно заново определить курс. Назовите, пожалуйста, точное название курса — до этого платёжную ссылку не дам.";
+export function composePaymentCourseIdentityRequiredAnswer(
+  profile?: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "Перед оплатой нужно заново определить курс. Назови, пожалуйста, точное название курса — до этого платёжную ссылку не дам.",
+    "Перед оплатой нужно заново определить курс. Назовите, пожалуйста, точное название курса — до этого платёжную ссылку не дам.",
+  );
 }
 
 export function composePaymentUnavailableAnswer(courseTitle: string): string {
@@ -572,6 +603,20 @@ export function composePsychologyBoundaryAnswer(): string {
   return "В каталоге есть темы, смежные с психологией: мотивация, личность, восприятие, взаимодействие и поведение. При этом Навигатор не утверждает, что Академия оказывает клиническую психологическую помощь, выдаёт профессиональную аккредитацию или что программы имеют подтверждённый научный статус.";
 }
 
+/**
+ * Public statement of the substantive limitation for a catalog course that is
+ * listed but not recommendable (A31).
+ *
+ * The catalog's own `routingBlockReason` is an internal note: it explains the
+ * Navigator's routing to the team rather than describing the course to the
+ * user. The public renderer therefore states the same limitation in ordinary
+ * user-facing Russian instead of printing that note. The catalog authority is
+ * unchanged and the fact is not softened — the course is listed in the current
+ * catalog, and there is no public page with a sufficient description for it.
+ */
+const LISTED_COURSE_LIMITATION =
+  "публичной страницы с достаточным описанием пока нет";
+
 export function composeCatalogListAnswer(): string {
   return [
     `Каталог Академии по состоянию на ${ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE}:`,
@@ -579,7 +624,7 @@ export function composeCatalogListAnswer(): string {
       const availability =
         course.status === "ROUTABLE"
           ? "доступен для навигации"
-          : `только указан в каталоге; ${course.routingBlockReason ?? "для рекомендации недостаточно публичных данных"}`;
+          : `только указан в каталоге; ${LISTED_COURSE_LIMITATION}`;
       return `• «${course.title}» — ${course.meetings} встреч; ${availability.replace(/[.!?]+$/u, "")}${course.url ? `; ${course.url}` : ""}.`;
     }),
   ].join("\n");
@@ -597,10 +642,15 @@ function metadataCourseIds(
 export function composeCurrentMetadataAnswer(
   intent: Extract<FactualIntent, { kind: "CURRENT_METADATA" }>,
   selectedCourseId: string | null,
+  profile?: PackageAProfile,
 ): string {
   const courseIds = metadataCourseIds(intent, selectedCourseId);
   if (courseIds.length === 0 && intent.fields.includes("PRICE")) {
-    return "Уточните, пожалуйста, название курса. Без выбранного или названного курса я не могу определить, о какой цене идёт речь.";
+    return modePick(
+      profile,
+      "Уточни, пожалуйста, название курса. Без выбранного или названного курса я не могу определить, о какой цене идёт речь.",
+      "Уточните, пожалуйста, название курса. Без выбранного или названного курса я не могу определить, о какой цене идёт речь.",
+    );
   }
 
   const lines: string[] = [];
@@ -630,7 +680,7 @@ export function composeCurrentMetadataAnswer(
   }
 
   return [
-    `Коммерческие сведения ограничены авторитетом ${ACADEMY_COMMERCIAL_AUTHORITY.authorityId}.`,
+    `Коммерческие сведения ограничены подтверждёнными данными Академии по состоянию на ${authorityDateRu()}.`,
     ...lines,
   ].join("\n");
 }
@@ -640,7 +690,7 @@ function courseComparisonBlock(course: AcademyCourse): string {
   const status =
     course.status === "ROUTABLE"
       ? "доступен для навигации"
-      : `только указан в каталоге; ${course.routingBlockReason ?? "для рекомендации недостаточно данных"}`;
+      : `только указан в каталоге; ${LISTED_COURSE_LIMITATION}`;
   return [
     `«${course.title}»`,
     `• Статус: ${status}.`,
@@ -654,16 +704,25 @@ function courseComparisonBlock(course: AcademyCourse): string {
 
 export function composeCourseComparisonAnswer(
   intent: Extract<FactualIntent, { kind: "COURSE_COMPARISON" }>,
+  profile?: PackageAProfile,
 ): string {
   if (intent.hasUnknownCourse || intent.courseIds.length !== 2) {
-    return "Не могу выполнить сравнение: один из названных курсов не найден в текущем каталоге Академии. Уточните точное название.";
+    return modePick(
+      profile,
+      "Не могу выполнить сравнение: один из названных курсов не найден в текущем каталоге Академии. Уточни точное название.",
+      "Не могу выполнить сравнение: один из названных курсов не найден в текущем каталоге Академии. Уточните точное название.",
+    );
   }
   const courses = intent.courseIds.map(getAcademyCourse);
   if (courses.some((course) => course === null)) {
     return "Не могу выполнить сравнение: один из курсов отсутствует в текущем каталоге Академии.";
   }
   return [
-    "Нейтральное сравнение по данным каталога — без выбора победителя и без вывода о том, что лучше именно для вас:",
+    modePick(
+      profile,
+      "Нейтральное сравнение по данным каталога — без выбора победителя и без вывода о том, что лучше именно для тебя:",
+      "Нейтральное сравнение по данным каталога — без выбора победителя и без вывода о том, что лучше именно для вас:",
+    ),
     ...courses.map((course) => courseComparisonBlock(course as AcademyCourse)),
   ].join("\n\n");
 }
@@ -671,6 +730,7 @@ export function composeCourseComparisonAnswer(
 export function composeFactualAnswer(
   intents: readonly FactualIntent[],
   selectedCourseId: string | null,
+  profile?: PackageAProfile,
 ): string {
   return intents.map((intent) => {
     switch (intent.kind) {
@@ -681,9 +741,9 @@ export function composeFactualAnswer(
       case "PSYCHOLOGY_BOUNDARY":
         return composePsychologyBoundaryAnswer();
       case "CURRENT_METADATA":
-        return composeCurrentMetadataAnswer(intent, selectedCourseId);
+        return composeCurrentMetadataAnswer(intent, selectedCourseId, profile);
       case "COURSE_COMPARISON":
-        return composeCourseComparisonAnswer(intent);
+        return composeCourseComparisonAnswer(intent, profile);
     }
   }).join("\n\n");
 }

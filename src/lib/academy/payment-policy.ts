@@ -1,4 +1,8 @@
 import type {
+  AddressMode,
+  ConversationProfile,
+} from "../chat-contract.ts";
+import type {
   ConversationActDecision,
 } from "../navigation/conversation-act-router.ts";
 import {
@@ -196,19 +200,53 @@ export function resolveEnrollmentPaymentDecision(
   return { kind: "NONE" };
 }
 
-export function composeEnrollmentPaymentAnswer(
+/**
+ * Opening sentence of the enrollment answer (A03).
+ *
+ * The mode is the profile's and only the profile's. An unknown mode yields
+ * address-free wording rather than an invented default, so a session that chose
+ * «ты» can never be addressed with a «вы» imperative; nothing else about the
+ * payment facts depends on it. Course titles, the payment destination and the
+ * transaction identity are never inflected.
+ */
+function enrollmentOpeningSentence(
   action: EnrollmentPaymentAction,
+  mode: AddressMode | null,
 ): string {
   if (action.courseId) {
     const course = ACADEMY_PAYMENT_POLICY.courses[action.courseId];
-    return [
-      `Отлично! Для оформления участия и оплаты курса «${course.title}» перейдите к Помощнику по оплате курсов в Telegram: ${action.paymentUrl}.`,
-      "Он за 1 минуту оформит заявку и пришлёт реквизиты или счёт для бухгалтерии.",
-    ].join("\n\n");
+
+    if (mode === null) {
+      return `Отлично! Оформление участия и оплаты курса «${course.title}» — через Помощника по оплате курсов в Telegram: ${action.paymentUrl}.`;
+    }
+
+    const verb = mode === "TY" ? "перейди" : "перейдите";
+    return `Отлично! Для оформления участия и оплаты курса «${course.title}» ${verb} к Помощнику по оплате курсов в Telegram: ${action.paymentUrl}.`;
   }
 
+  if (mode === null) {
+    return `Запись и оплата — через Помощника по оплате курсов в Telegram: ${ACADEMY_PAYMENT_POLICY.generalUrl}.`;
+  }
+
+  const verb = mode === "TY" ? "открой" : "откройте";
+  return `Для записи и оплаты ${verb} Помощника по оплате курсов в Telegram: ${ACADEMY_PAYMENT_POLICY.generalUrl}.`;
+}
+
+/**
+ * Canonical enrollment/payment answer (Package C).
+ *
+ * Wording only: the payment destination, the course identity, the payment link
+ * choice and the payment action are exactly what they were. The only thing the
+ * profile influences here is the address mode of the one user-directed verb.
+ */
+export function composeEnrollmentPaymentAnswer(
+  action: EnrollmentPaymentAction,
+  profile?: ConversationProfile,
+): string {
   return [
-    `Для записи и оплаты откройте Помощника по оплате курсов в Telegram: ${ACADEMY_PAYMENT_POLICY.generalUrl}.`,
-    "Там можно выбрать программу из каталога Академии.",
+    enrollmentOpeningSentence(action, profile?.addressMode ?? null),
+    action.courseId
+      ? "Он за 1 минуту оформит заявку и пришлёт реквизиты или счёт для бухгалтерии."
+      : "Там можно выбрать программу из каталога Академии.",
   ].join("\n\n");
 }

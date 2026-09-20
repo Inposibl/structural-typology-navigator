@@ -58,9 +58,11 @@ import {
 import {
   composeAcademyContactAnswer,
   detectAcademyContactIntent,
+  detectDeterministicAcademyContactIntent,
 } from "../academy/contact-policy.ts";
 import {
   composeEnrollmentPaymentAnswer,
+  hasEnrollmentPaymentIntent,
   resolveEnrollmentPaymentDecision,
 } from "../academy/payment-policy.ts";
 import type {
@@ -164,6 +166,12 @@ export type OrchestrateNavigatorOptions = {
   profile?: ConversationProfile;
   /** Prior unresolved-clarification record, for the A14 budget. */
   clarification?: ClarificationControlInput;
+  /**
+   * The structured state this turn's orchestration may read. A10 contact
+   * precedence is decided from it, so the queued remainder, an open
+   * confirmation and the recorded last-assistant act are visible here; all
+   * three are written by the kernel that already decided this turn routes.
+   */
   conversationState?: Pick<
     ConversationState,
     | "courseMatch"
@@ -171,6 +179,9 @@ export type OrchestrateNavigatorOptions = {
     | "staleReference"
     | "catalogAuthorityVersion"
     | "transactionalAuthorityVersion"
+    | "deferredRequest"
+    | "pendingConfirmation"
+    | "lastAssistant"
   >;
   dependencies?: OrchestrationDependencies;
 };
@@ -254,6 +265,44 @@ const NOT_APPLICABLE_CLARIFICATION: OrchestrationClarificationOutcome = {
   question: null,
 };
 
+type OrchestrationStateContext = OrchestrateNavigatorOptions["conversationState"];
+
+/**
+ * A10 deterministic contact answer, or null when the turn keeps ordinary
+ * routing.
+ *
+ * The shortcut is deliberately narrow. Contact requests are an ordinary
+ * business lane on the normal ROUTE path, so this runs only after the kernel
+ * decided the turn routes; and it is taken only when the whole effective
+ * request is a contact request. A preserved remainder promoted in front of the
+ * turn, an unresolved confirmation, and a payment request all keep ordinary
+ * routing, and with it the precedence that already governs them.
+ *
+ * Only an answer that carries the canonical manager contact card is returned:
+ * the structured act of a contact turn is derived from that card, so the
+ * card-free fast-text variant keeps its existing post-classification lane
+ * instead of being recorded under an act that does not describe it.
+ */
+function deterministicContactAnswer(
+  query: string,
+  conversationState: OrchestrationStateContext,
+  profile: ConversationProfile | undefined,
+): { message: string; contactCard: AcademyContactCard | null } | null {
+  if (conversationState?.pendingConfirmation != null) return null;
+  if (conversationState?.deferredRequest != null) return null;
+  if (hasEnrollmentPaymentIntent(query)) return null;
+
+  const intent = detectDeterministicAcademyContactIntent(query, {
+    hasContactContext: conversationState?.lastAssistant?.act === "ACADEMY_CONTACT",
+  });
+
+  if (intent === null) return null;
+
+  const answer = composeAcademyContactAnswer(intent, profile);
+
+  return answer.contactCard === null ? null : answer;
+}
+
 export async function orchestrateNavigatorResponse(
   messages: readonly ConversationMessage[],
   options: OrchestrateNavigatorOptions = {},
@@ -270,6 +319,26 @@ export async function orchestrateNavigatorResponse(
   const composeFollowUp =
     options.dependencies?.composeFollowUp ?? composeCourseFollowUpAnswer;
 
+  const query = lastUserMessage(messages);
+
+  // A10 — deterministic contact, ahead of the act classifier. The reason is
+  // stated in the act: an obvious contact/photo/Telegram/phone follow-up must
+  // not be misclassified as out of scope, and must not need a provider call to
+  // be answered. See deterministicContactAnswer for the exact preconditions.
+  const deterministicContact = deterministicContactAnswer(
+    query,
+    options.conversationState,
+    options.profile,
+  );
+
+  if (deterministicContact !== null) {
+    return emptyResult(
+      deterministicContact.message,
+      { state: "NAVIGATE" },
+      deterministicContact.contactCard,
+    );
+  }
+
   const conversationAct = await withNavigatorStage("ACT_ROUTER", () =>
     classifyAct(messages, {
       env: options.env,
@@ -278,7 +347,6 @@ export async function orchestrateNavigatorResponse(
     }),
   );
 
-  const query = lastUserMessage(messages);
   const paymentDecision = resolveEnrollmentPaymentDecision(
     query,
     conversationAct,
@@ -295,6 +363,7 @@ export async function orchestrateNavigatorResponse(
     ? composeFactualAnswer(
         conversationAct.intents,
         options.conversationState?.selectedCourseId ?? null,
+        options.profile,
       )
     : null;
   const factualUsesTransactionalAuthority =
@@ -305,7 +374,9 @@ export async function orchestrateNavigatorResponse(
 
   if (paymentDecision.kind === "ACTION") {
     return emptyResult(
-      combineFactual(composeEnrollmentPaymentAnswer(paymentDecision.action)),
+      combineFactual(
+        composeEnrollmentPaymentAnswer(paymentDecision.action, options.profile),
+      ),
       conversationAct,
       null,
       {
@@ -320,7 +391,7 @@ export async function orchestrateNavigatorResponse(
 
   if (paymentDecision.kind === "CLARIFY_MULTIPLE") {
     return emptyResult(
-      combineFactual(composePaymentAmbiguityAnswer()),
+      combineFactual(composePaymentAmbiguityAnswer(options.profile)),
       conversationAct,
     );
   }
@@ -334,6 +405,7 @@ export async function orchestrateNavigatorResponse(
     const prompt = composePaymentCourseChangeConfirmationAnswer(
       currentCourse.title,
       requestedCourse.title,
+      options.profile,
     );
     return emptyResult(combineFactual(prompt), conversationAct, null, {
       pendingConfirmation: {
@@ -350,7 +422,7 @@ export async function orchestrateNavigatorResponse(
     paymentDecision.kind === "PRESERVE_NO_MATCH"
   ) {
     return emptyResult(
-      combineFactual(composePaymentCourseIdentityRequiredAnswer()),
+      combineFactual(composePaymentCourseIdentityRequiredAnswer(options.profile)),
       conversationAct,
     );
   }
@@ -383,7 +455,7 @@ export async function orchestrateNavigatorResponse(
     contactIntent &&
     conversationAct.state !== "NAVIGATE"
   ) {
-    const contact = composeAcademyContactAnswer(contactIntent);
+    const contact = composeAcademyContactAnswer(contactIntent, options.profile);
     return emptyResult(
       contact.message,
       conversationAct,
@@ -393,7 +465,7 @@ export async function orchestrateNavigatorResponse(
 
   if (conversationAct.state === "OUT_OF_SCOPE") {
     return emptyResult(
-      composeNavigatorOutOfScopeAnswer(),
+      composeNavigatorOutOfScopeAnswer(options.profile),
       conversationAct,
     );
   }

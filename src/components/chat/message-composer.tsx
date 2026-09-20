@@ -1,10 +1,15 @@
 import type { FormEvent, KeyboardEvent } from "react";
 
-import { MAX_CHAT_MESSAGE_LENGTH } from "@/lib/chat-contract";
+import {
+  MAX_CHAT_MESSAGE_LENGTH,
+  type AddressMode,
+} from "@/lib/chat-contract";
 
 type MessageComposerProps = {
   value: string;
   isPending: boolean;
+  /** Selected mode, for the one composer string that addresses the user (A31). */
+  addressMode: AddressMode | null;
   onChange: (value: string) => void;
   onSubmit: () => void;
 };
@@ -12,10 +17,12 @@ type MessageComposerProps = {
 export function MessageComposer({
   value,
   isPending,
+  addressMode,
   onChange,
   onSubmit,
 }: MessageComposerProps) {
   const isEmpty = value.trim().length === 0;
+  const isTy = addressMode === "TY";
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -56,7 +63,11 @@ export function MessageComposer({
             value={value}
             onChange={(event) => onChange(event.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Напишите вопрос о материалах Академии"
+            placeholder={
+              isTy
+                ? "Напиши вопрос о материалах Академии"
+                : "Напишите вопрос о материалах Академии"
+            }
             aria-describedby="composer-hint"
             maxLength={MAX_CHAT_MESSAGE_LENGTH}
             rows={2}
@@ -68,7 +79,8 @@ export function MessageComposer({
         </button>
 
         <p className="composer__hint" id="composer-hint">
-          Enter — отправить · Shift+Enter — новая строка
+          Enter — отправить · Shift+Enter — новая строка. Контакты Академии и
+          помощь человека можно попросить прямо в диалоге.
         </p>
       </form>
     </footer>

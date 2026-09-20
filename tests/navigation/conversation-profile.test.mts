@@ -160,3 +160,34 @@ test("user may decline name while retaining a stable VY mode", () => {
   assert.equal(result.profile.addressMode, "VY");
   assert.equal(isConversationProfileComplete(result.profile), true);
 });
+
+test("A03: the completed setup invitation follows the selected TY/VY mode", () => {
+  const ty = advanceConversationProfile(createEmptyConversationProfile(), "Иван, на ты");
+  const vy = advanceConversationProfile(createEmptyConversationProfile(), "Анна, на вы");
+
+  assert.equal(ty.profile.addressMode, "TY");
+  assert.match(ty.response ?? "", /Буду обращаться на «ты»\. Расскажи, с чем хочешь разобраться/u);
+  assert.doesNotMatch(ty.response ?? "", /Расскажите/u);
+
+  assert.equal(vy.profile.addressMode, "VY");
+  assert.match(vy.response ?? "", /Буду обращаться на «вы»\. Расскажите, с чем хотите разобраться/u);
+  assert.doesNotMatch(vy.response ?? "", /Расскажи,/u);
+});
+
+test("A26: the dialogue-local profile carries exactly the authorised fields", () => {
+  const complete = advanceConversationProfile(
+    createEmptyConversationProfile(),
+    "Анна, на вы. Какой курс поможет лучше понимать свои реакции?",
+  ).profile;
+
+  // No durable biography field exists, so a sensitive narrative has nowhere to
+  // be stored even when it arrives in the same turn as the setup answers.
+  assert.deepEqual(Object.keys(complete).sort(), [
+    "addressMode",
+    "displayName",
+    "nameDeclined",
+    "pendingUserRequest",
+  ]);
+  assert.equal(complete.displayName, "Анна");
+  assert.equal(complete.pendingUserRequest, null);
+});

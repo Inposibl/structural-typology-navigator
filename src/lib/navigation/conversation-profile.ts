@@ -439,7 +439,14 @@ function completionMessage(profile: ConversationProfile): string {
     ? `, ${profile.displayName}`
     : "";
 
-  return `Спасибо${name}. Буду обращаться ${mode}. Расскажите, с чем хотите разобраться — я помогу сориентироваться в курсах и материалах Академии.`;
+  // ADDRESS_SETUP itself is a respectful register, but the invitation it ends
+  // with is an ordinary user-facing sentence: it follows the selected TY/VY.
+  const invitation =
+    profile.addressMode === "TY"
+      ? "Расскажи, с чем хочешь разобраться — я помогу сориентироваться в курсах и материалах Академии."
+      : "Расскажите, с чем хотите разобраться — я помогу сориентироваться в курсах и материалах Академии.";
+
+  return `Спасибо${name}. Буду обращаться ${mode}. ${invitation}`;
 }
 
 export function advanceConversationProfile(

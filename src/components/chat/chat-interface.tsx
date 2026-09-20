@@ -5,7 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import { ChatMessage } from "@/components/chat/chat-message";
 import { MessageComposer } from "@/components/chat/message-composer";
 import type { ChatMessage as ChatMessageType } from "@/components/chat/types";
-import { ChatRequestError, requestAssistantResponse } from "@/lib/chat-api";
+import {
+  ChatRequestError,
+  fallbackAssistantErrorMessage,
+  requestAssistantResponse,
+} from "@/lib/chat-api";
 import type {
   ConversationMessage,
   ConversationProfile,
@@ -121,7 +125,7 @@ export function ChatInterface() {
       setRequestError(
         error instanceof Error
           ? error.message
-          : "Не удалось получить ответ Навигатора. Попробуйте ещё раз.",
+          : fallbackAssistantErrorMessage(profile),
       );
     } finally {
       execution.current = completeExecution(
@@ -169,6 +173,7 @@ export function ChatInterface() {
       <MessageComposer
         value={draft}
         isPending={isPending}
+        addressMode={profile.addressMode}
         onChange={setDraft}
         onSubmit={sendMessage}
       />

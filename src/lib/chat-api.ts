@@ -13,8 +13,17 @@ import {
   normalizeConversationStatePayload,
 } from "@/lib/navigation/conversation-state";
 
-const FALLBACK_ERROR_MESSAGE =
-  "Не удалось получить ответ Навигатора. Попробуйте ещё раз.";
+/**
+ * Public fallback wording (A03/A31). It addresses the user directly, so the one
+ * verb in it follows the stored TY/VY mode.
+ */
+export function fallbackAssistantErrorMessage(
+  profile: ConversationProfile,
+): string {
+  return profile.addressMode === "TY"
+    ? "Не удалось получить ответ Навигатора. Попробуй ещё раз."
+    : "Не удалось получить ответ Навигатора. Попробуйте ещё раз.";
+}
 
 /**
  * A failed turn (A21).
@@ -92,16 +101,19 @@ function isSuccessResponse(value: unknown): value is ChatSuccessResponse {
   );
 }
 
-function getSafeErrorMessage(value: unknown): string {
+function getSafeErrorMessage(
+  value: unknown,
+  profile: ConversationProfile,
+): string {
   if (!isRecord(value) || !isRecord(value.error)) {
-    return FALLBACK_ERROR_MESSAGE;
+    return fallbackAssistantErrorMessage(profile);
   }
 
   const response = value as ChatErrorResponse;
   return typeof response.error.message === "string" &&
     response.error.message.trim().length > 0
     ? response.error.message
-    : FALLBACK_ERROR_MESSAGE;
+    : fallbackAssistantErrorMessage(profile);
 }
 
 function getSafeErrorCode(value: unknown): string {
@@ -150,7 +162,7 @@ export async function requestAssistantResponse(
       body: JSON.stringify({ messages, profile, conversationState, requestId }),
     });
   } catch {
-    throw new ChatRequestError(FALLBACK_ERROR_MESSAGE, {
+    throw new ChatRequestError(fallbackAssistantErrorMessage(profile), {
       code: "NETWORK_UNAVAILABLE",
       retryable: true,
       conversationState: null,
@@ -162,7 +174,7 @@ export async function requestAssistantResponse(
   try {
     payload = await response.json();
   } catch {
-    throw new ChatRequestError(FALLBACK_ERROR_MESSAGE, {
+    throw new ChatRequestError(fallbackAssistantErrorMessage(profile), {
       code: "INVALID_RESPONSE",
       retryable: true,
       conversationState: null,
@@ -170,7 +182,7 @@ export async function requestAssistantResponse(
   }
 
   if (!response.ok) {
-    throw new ChatRequestError(getSafeErrorMessage(payload), {
+    throw new ChatRequestError(getSafeErrorMessage(payload, profile), {
       code: getSafeErrorCode(payload),
       retryable: getSafeRetryable(payload),
       conversationState: getSafePreservedState(payload),
@@ -178,7 +190,7 @@ export async function requestAssistantResponse(
   }
 
   if (!isSuccessResponse(payload)) {
-    throw new ChatRequestError(FALLBACK_ERROR_MESSAGE, {
+    throw new ChatRequestError(fallbackAssistantErrorMessage(profile), {
       code: "INVALID_RESPONSE",
       retryable: true,
       conversationState: null,
