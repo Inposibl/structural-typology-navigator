@@ -32,7 +32,7 @@ import {
   type ChatRouteDependencies,
 } from "../../src/app/api/chat/route.ts";
 
-const T0 = Date.parse("2026-09-19T12:00:00.000Z");
+const T0 = Date.now();
 
 const COMPLETE_PROFILE: ConversationProfile = {
   displayName: "Иван",

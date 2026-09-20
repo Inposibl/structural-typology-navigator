@@ -76,7 +76,7 @@ import {
 } from "../../src/lib/navigation/handoff.ts";
 import type { ResolvedCourseEvidence } from "../../src/lib/knowledge/retrieval/authority-resolver.ts";
 
-const T0 = Date.parse("2026-09-19T12:00:00.000Z");
+const T0 = Date.now();
 
 /** R04/R05/R26/R36/R37 fixture profile: Иван, TY. */
 const IVAN_TY: ConversationProfile = {
