@@ -36,12 +36,53 @@ import {
   orchestrateNavigatorResponse,
   type NavigatorOrchestrationResult,
 } from "@/lib/navigation/orchestrate-navigation";
-import { createNavigatorFailureLog } from "@/lib/navigation/navigator-observability";
+import {
+  createNavigatorFailureLog,
+  createNavigatorTurnLog,
+  type NavigatorTurnDetails,
+} from "@/lib/navigation/navigator-observability";
 import { buildTechnicalErrorState } from "@/lib/navigation/technical-error";
 import { buildMaterialFailureSignal } from "@/lib/navigation/failure-capture";
 import { composeTechnicalErrorAnswer } from "@/lib/navigation/conversation-response";
 
 const MAX_REQUEST_BYTES = 200_000;
+const NAVIGATOR_REQUEST_ID_HEADER = "X-Navigator-Request-Id";
+
+const CONTROL_TURN_OBSERVABILITY: NavigatorTurnDetails = {
+  lane: "CONTROL",
+  conversationAct: null,
+  decision: null,
+  courseId: null,
+  ragInvoked: false,
+  authorityResolved: false,
+  activeBindingCount: 0,
+  bindingSourceSlugs: [],
+  retrievedMatchCount: 0,
+  resolvedEvidenceCount: 0,
+  selectedEvidence: [],
+  evidenceSelectionStatus: "NOT_RUN",
+  answerOrigin: "DETERMINISTIC_CONTROL",
+  fallback: "NONE",
+  crossCourseLeakageDetected: false,
+};
+
+function fallbackOrchestrationObservability(
+  result: NavigatorOrchestrationResult,
+): NavigatorTurnDetails {
+  return {
+    ...CONTROL_TURN_OBSERVABILITY,
+    lane: "ORCHESTRATION",
+    conversationAct: result.conversationAct.state,
+    decision: result.decision?.state ?? null,
+    courseId:
+      result.conversationAct.state === "COURSE_FOLLOW_UP"
+        ? result.conversationAct.courseId
+        : result.decision?.state === "RECOMMEND_COURSE"
+          ? result.decision.primaryCourseId
+          : null,
+    answerOrigin: "CATALOG_AUTHORITY",
+  };
+}
 
 type ValidationResult =
   | {
@@ -314,6 +355,8 @@ export async function handleChatRequest(
     return jsonError(400, "INVALID_REQUEST", validation.message);
   }
 
+  const logRequestId = randomUUID();
+
   const prepared = prepareConversationTurn(
     validation.messages,
     validation.profile,
@@ -333,10 +376,17 @@ export async function handleChatRequest(
       resetConversation: prepared.resetConversation,
     };
 
-    return Response.json(responseBody);
+    console.info(
+      JSON.stringify(
+        createNavigatorTurnLog(logRequestId, CONTROL_TURN_OBSERVABILITY),
+      ),
+    );
+
+    return Response.json(responseBody, {
+      headers: { [NAVIGATOR_REQUEST_ID_HEADER]: logRequestId },
+    });
   }
 
-  const logRequestId = randomUUID();
   const clarification = prepared.conversationState.clarification;
 
   try {
@@ -380,7 +430,18 @@ export async function handleChatRequest(
       resetConversation: false,
     };
 
-    return Response.json(responseBody);
+    console.info(
+      JSON.stringify(
+        createNavigatorTurnLog(
+          logRequestId,
+          result.observability ?? fallbackOrchestrationObservability(result),
+        ),
+      ),
+    );
+
+    return Response.json(responseBody, {
+      headers: { [NAVIGATOR_REQUEST_ID_HEADER]: logRequestId },
+    });
   } catch (error) {
     return technicalErrorResponse({
       error,
@@ -440,6 +501,7 @@ function technicalErrorResponse(input: TechnicalErrorResponseInput): Response {
 
   return Response.json(body, {
     status: technicalError.retryable ? 503 : 500,
+    headers: { [NAVIGATOR_REQUEST_ID_HEADER]: input.logRequestId },
   });
 }
 

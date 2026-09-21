@@ -502,7 +502,13 @@ export type ComposeCourseFollowUpOptions = DeepSeekClientOptions & {
   callJson?: typeof callDeepSeekJson;
   courseEvidence?: readonly ResolvedCourseEvidence[];
   evidenceSelection?: CourseEvidenceSelection;
+  onOutcome?: (outcome: CourseFollowUpOutcome) => void;
   profile?: ConversationProfile;
+};
+
+export type CourseFollowUpOutcome = {
+  answerOrigin: "CATALOG_AUTHORITY" | "FACTUAL_CEILING" | "RAG_EVIDENCE";
+  fallback: "NONE" | "CATALOG_FOLLOW_UP" | "FACTUAL_CEILING";
 };
 
 export function composeNavigatorMetaAnswer(): string {
@@ -826,12 +832,20 @@ export async function composeCourseFollowUpAnswer(
     evidence.length === 0
   ) {
     if (isCatalogAnswerableFollowUp(latestUserMessage)) {
+      options.onOutcome?.({
+        answerOrigin: "CATALOG_AUTHORITY",
+        fallback: "CATALOG_FOLLOW_UP",
+      });
       return composeCatalogFollowUpAnswer(
         course,
         latestUserMessage,
       );
     }
 
+    options.onOutcome?.({
+      answerOrigin: "FACTUAL_CEILING",
+      fallback: "FACTUAL_CEILING",
+    });
     return composeCourseFactualCeilingAnswer(course.title);
   }
 
@@ -897,8 +911,17 @@ ${addressStyleInstruction(options.profile)}
   );
 
   if (audit.status !== "PASS") {
+    options.onOutcome?.({
+      answerOrigin: "FACTUAL_CEILING",
+      fallback: "FACTUAL_CEILING",
+    });
     return composeCourseFactualCeilingAnswer(course.title);
   }
+
+  options.onOutcome?.({
+    answerOrigin: "RAG_EVIDENCE",
+    fallback: "NONE",
+  });
 
   if (!act.evidenceRequested) {
     return answer;

@@ -49,6 +49,7 @@ import {
   composePaymentCourseIdentityRequiredAnswer,
   composePaymentUnavailableAnswer,
   composeStableNoMatchAnswer,
+  type CourseFollowUpOutcome,
   type ComposeCourseFollowUpOptions,
 } from "./conversation-response.ts";
 import {
@@ -72,6 +73,8 @@ import type {
 import {
   createNavigatorDegradationLog,
   isRecoverableEvidenceSelectionFailure,
+  type NavigatorAnswerOrigin,
+  type NavigatorTurnDetails,
   withNavigatorStage,
 } from "./navigator-observability.ts";
 
@@ -83,6 +86,7 @@ export type NavigatorOrchestrationResult = {
   courseEvidenceCount: number;
   courseHadActiveSources: boolean;
   evidenceSelectionStatus: CourseEvidenceSelection["status"] | "NOT_RUN";
+  observability?: NavigatorTurnDetails;
   clarification: OrchestrationClarificationOutcome;
   stateEffects: OrchestrationStateEffects;
 };
@@ -201,9 +205,9 @@ async function selectEvidenceOrDegrade(
   resolvedEvidence: readonly ResolvedCourseEvidence[],
   selectEvidence: SelectEvidenceDependency,
   options: OrchestrateNavigatorOptions,
-): Promise<CourseEvidenceSelection> {
+): Promise<{ selection: CourseEvidenceSelection; degraded: boolean }> {
   try {
-    return await withNavigatorStage("EVIDENCE_LLM", () =>
+    const selection = await withNavigatorStage("EVIDENCE_LLM", () =>
       selectEvidence(
         query,
         resolvedEvidence,
@@ -214,6 +218,7 @@ async function selectEvidenceOrDegrade(
         },
       ),
     );
+    return { selection, degraded: false };
   } catch (error) {
     if (!isRecoverableEvidenceSelectionFailure(error)) {
       throw error;
@@ -228,8 +233,11 @@ async function selectEvidenceOrDegrade(
     }
 
     return {
-      status: "INSUFFICIENT",
-      evidence: [],
+      selection: {
+        status: "INSUFFICIENT",
+        evidence: [],
+      },
+      degraded: true,
     };
   }
 }
@@ -237,6 +245,7 @@ async function selectEvidenceOrDegrade(
 function emptyResult(
   message: string,
   conversationAct: ConversationActDecision,
+  answerOrigin: NavigatorAnswerOrigin,
   contactCard: AcademyContactCard | null = null,
   stateEffects: Partial<OrchestrationStateEffects> = {},
 ): NavigatorOrchestrationResult {
@@ -248,6 +257,23 @@ function emptyResult(
     courseEvidenceCount: 0,
     courseHadActiveSources: false,
     evidenceSelectionStatus: "NOT_RUN",
+    observability: {
+      lane: "ORCHESTRATION",
+      conversationAct: conversationAct.state,
+      decision: null,
+      courseId: null,
+      ragInvoked: false,
+      authorityResolved: false,
+      activeBindingCount: 0,
+      bindingSourceSlugs: [],
+      retrievedMatchCount: 0,
+      resolvedEvidenceCount: 0,
+      selectedEvidence: [],
+      evidenceSelectionStatus: "NOT_RUN",
+      answerOrigin,
+      fallback: "NONE",
+      crossCourseLeakageDetected: false,
+    },
     clarification: NOT_APPLICABLE_CLARIFICATION,
     stateEffects: {
       catalogAuthorityVersion: stateEffects.catalogAuthorityVersion ?? null,
@@ -255,6 +281,79 @@ function emptyResult(
         stateEffects.transactionalAuthorityVersion ?? null,
       pendingConfirmation: stateEffects.pendingConfirmation ?? null,
     },
+  };
+}
+
+function assertCourseEvidenceIsolation(
+  courseId: string,
+  resolvedEvidence: readonly ResolvedCourseEvidence[],
+  evidenceSelection: CourseEvidenceSelection | undefined,
+): void {
+  const crossCourseLeakageDetected = resolvedEvidence.some(
+    (item) => item.courseId !== courseId,
+  );
+  const selectedCourseLeakage = evidenceSelection?.status === "SUPPORTED" &&
+    evidenceSelection.evidence.some((selected) => {
+      const resolved = resolvedEvidence.find(
+        (item) => item.chunkId === selected.chunkId,
+      );
+      if (!resolved) {
+        throw new Error("Selected evidence is absent from resolved evidence.");
+      }
+      return resolved?.courseId !== courseId;
+    });
+
+  if (crossCourseLeakageDetected || selectedCourseLeakage) {
+    throw new Error("Cross-course evidence detected in navigator success path.");
+  }
+}
+
+function courseObservability(
+  conversationAct: ConversationActDecision,
+  decision: NavigationDecision | null,
+  courseId: string,
+  courseKnowledge: RetrieveCourseKnowledgeResult,
+  resolvedEvidence: readonly ResolvedCourseEvidence[],
+  evidenceSelection: CourseEvidenceSelection | undefined,
+  authorityResolved: boolean,
+  answerOrigin: NavigatorAnswerOrigin,
+  fallback: NavigatorTurnDetails["fallback"],
+): NavigatorTurnDetails {
+  assertCourseEvidenceIsolation(courseId, resolvedEvidence, evidenceSelection);
+  const selectedEvidence = evidenceSelection?.status === "SUPPORTED"
+    ? evidenceSelection.evidence.map((selected) => {
+        const resolved = resolvedEvidence.find(
+          (item) => item.chunkId === selected.chunkId,
+        );
+        if (!resolved) {
+          throw new Error("Selected evidence is absent from resolved evidence.");
+        }
+        return {
+          chunkId: resolved.chunkId,
+          sourceSlug: resolved.sourceSlug,
+          authorityRelation: resolved.authorityRelation,
+        };
+      })
+    : [];
+
+  return {
+    lane: "ORCHESTRATION",
+    conversationAct: conversationAct.state,
+    decision: decision?.state ?? null,
+    courseId,
+    ragInvoked: true,
+    authorityResolved,
+    activeBindingCount: courseKnowledge.bindings.length,
+    bindingSourceSlugs: courseKnowledge.bindings.map(
+      (binding) => binding.sourceSlug,
+    ),
+    retrievedMatchCount: courseKnowledge.matches.length,
+    resolvedEvidenceCount: resolvedEvidence.length,
+    selectedEvidence,
+    evidenceSelectionStatus: evidenceSelection?.status ?? "NOT_RUN",
+    answerOrigin,
+    fallback,
+    crossCourseLeakageDetected: false,
   };
 }
 
@@ -335,6 +434,7 @@ export async function orchestrateNavigatorResponse(
     return emptyResult(
       deterministicContact.message,
       { state: "NAVIGATE" },
+      "CONTACT_POLICY",
       deterministicContact.contactCard,
     );
   }
@@ -378,6 +478,7 @@ export async function orchestrateNavigatorResponse(
         composeEnrollmentPaymentAnswer(paymentDecision.action, options.profile),
       ),
       conversationAct,
+      "PAYMENT_POLICY",
       null,
       {
         catalogAuthorityVersion:
@@ -393,6 +494,7 @@ export async function orchestrateNavigatorResponse(
     return emptyResult(
       combineFactual(composePaymentAmbiguityAnswer(options.profile)),
       conversationAct,
+      "PAYMENT_POLICY",
     );
   }
 
@@ -407,7 +509,7 @@ export async function orchestrateNavigatorResponse(
       requestedCourse.title,
       options.profile,
     );
-    return emptyResult(combineFactual(prompt), conversationAct, null, {
+    return emptyResult(combineFactual(prompt), conversationAct, "PAYMENT_POLICY", null, {
       pendingConfirmation: {
         confirmationKey: `payment-course-change:${paymentDecision.currentCourseId}:${paymentDecision.requestedCourseId}`,
         kind: "PAYMENT_COURSE_CHANGE",
@@ -424,6 +526,7 @@ export async function orchestrateNavigatorResponse(
     return emptyResult(
       combineFactual(composePaymentCourseIdentityRequiredAnswer(options.profile)),
       conversationAct,
+      "PAYMENT_POLICY",
     );
   }
 
@@ -434,16 +537,25 @@ export async function orchestrateNavigatorResponse(
         composePaymentUnavailableAnswer(course?.title ?? paymentDecision.courseId),
       ),
       conversationAct,
+      "PAYMENT_POLICY",
     );
   }
 
   if (conversationAct.state === "FACTUAL") {
-    return emptyResult(factualMessage ?? "", conversationAct, null, {
+    return emptyResult(
+      factualMessage ?? "",
+      conversationAct,
+      factualUsesTransactionalAuthority
+        ? "COMMERCIAL_AUTHORITY"
+        : "CATALOG_AUTHORITY",
+      null,
+      {
       catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
       transactionalAuthorityVersion: factualUsesTransactionalAuthority
         ? ACADEMY_COMMERCIAL_AUTHORITY_VERSION
         : null,
-    });
+      },
+    );
   }
 
   const contactIntent = detectAcademyContactIntent(query, {
@@ -459,6 +571,7 @@ export async function orchestrateNavigatorResponse(
     return emptyResult(
       contact.message,
       conversationAct,
+      "CONTACT_POLICY",
       contact.contactCard,
     );
   }
@@ -467,6 +580,7 @@ export async function orchestrateNavigatorResponse(
     return emptyResult(
       composeNavigatorOutOfScopeAnswer(options.profile),
       conversationAct,
+      "OUT_OF_SCOPE",
     );
   }
 
@@ -474,6 +588,7 @@ export async function orchestrateNavigatorResponse(
     return emptyResult(
       composeNavigatorMetaAnswer(),
       conversationAct,
+      "META",
     );
   }
 
@@ -493,6 +608,7 @@ export async function orchestrateNavigatorResponse(
 
     let resolvedEvidence: ResolvedCourseEvidence[] = [];
     let evidenceSelection: CourseEvidenceSelection | undefined;
+    let evidenceSelectionDegraded = false;
 
     if (courseKnowledge.hasActiveSources) {
       resolvedEvidence = await withNavigatorStage("AUTHORITY", () =>
@@ -500,12 +616,14 @@ export async function orchestrateNavigatorResponse(
       );
 
       if (resolvedEvidence.length > 0) {
-        evidenceSelection = await selectEvidenceOrDegrade(
+        const selectionOutcome = await selectEvidenceOrDegrade(
           query,
           resolvedEvidence,
           selectEvidence,
           options,
         );
+        evidenceSelection = selectionOutcome.selection;
+        evidenceSelectionDegraded = selectionOutcome.degraded;
       } else {
         evidenceSelection = {
           status: "INSUFFICIENT",
@@ -514,6 +632,17 @@ export async function orchestrateNavigatorResponse(
       }
     }
 
+    let followUpOutcome: CourseFollowUpOutcome =
+      evidenceSelection?.status === "SUPPORTED"
+        ? { answerOrigin: "RAG_EVIDENCE", fallback: "NONE" }
+        : { answerOrigin: "FACTUAL_CEILING", fallback: "FACTUAL_CEILING" };
+
+    assertCourseEvidenceIsolation(
+      conversationAct.courseId,
+      resolvedEvidence,
+      evidenceSelection,
+    );
+
     const message = await withNavigatorStage("FOLLOW_UP", () =>
       composeFollowUp(messages, conversationAct, {
         env: options.env,
@@ -521,6 +650,9 @@ export async function orchestrateNavigatorResponse(
         signal: options.signal,
         courseEvidence: resolvedEvidence,
         evidenceSelection,
+        onOutcome: (outcome) => {
+          followUpOutcome = outcome;
+        },
         profile: options.profile,
       }),
     );
@@ -534,6 +666,19 @@ export async function orchestrateNavigatorResponse(
       courseHadActiveSources: courseKnowledge.hasActiveSources,
       evidenceSelectionStatus:
         evidenceSelection?.status ?? "NOT_RUN",
+      observability: courseObservability(
+        conversationAct,
+        null,
+        conversationAct.courseId,
+        courseKnowledge,
+        resolvedEvidence,
+        evidenceSelection,
+        courseKnowledge.hasActiveSources,
+        followUpOutcome.answerOrigin,
+        evidenceSelectionDegraded
+          ? "EVIDENCE_SELECTION_DEGRADED"
+          : followUpOutcome.fallback,
+      ),
       clarification: NOT_APPLICABLE_CLARIFICATION,
       stateEffects: {
         catalogAuthorityVersion: null,
@@ -558,6 +703,7 @@ export async function orchestrateNavigatorResponse(
     return emptyResult(
       composeStableNoMatchAnswer(),
       conversationAct,
+      "CATALOG_AUTHORITY",
       null,
       { catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE },
     );
@@ -575,6 +721,7 @@ export async function orchestrateNavigatorResponse(
   let courseKnowledge: RetrieveCourseKnowledgeResult | null = null;
   let resolvedEvidence: ResolvedCourseEvidence[] = [];
   let evidenceSelection: CourseEvidenceSelection | undefined;
+  let evidenceSelectionDegraded = false;
 
   if (decision.state === "RECOMMEND_COURSE") {
     const recommendationCourseKnowledge = await withNavigatorStage(
@@ -599,12 +746,14 @@ export async function orchestrateNavigatorResponse(
       );
 
       if (resolvedEvidence.length > 0) {
-        evidenceSelection = await selectEvidenceOrDegrade(
+        const selectionOutcome = await selectEvidenceOrDegrade(
           decision.learningNeed,
           resolvedEvidence,
           selectEvidence,
           options,
         );
+        evidenceSelection = selectionOutcome.selection;
+        evidenceSelectionDegraded = selectionOutcome.degraded;
       } else {
         evidenceSelection = {
           status: "INSUFFICIENT",
@@ -617,6 +766,14 @@ export async function orchestrateNavigatorResponse(
   if (decision.state === "ASK_MORE") {
     return withNavigatorStage("COMPOSER", () =>
       composeClarificationTurn(messages, decision, compose, options),
+    );
+  }
+
+  if (decision.state === "RECOMMEND_COURSE") {
+    assertCourseEvidenceIsolation(
+      decision.primaryCourseId,
+      resolvedEvidence,
+      evidenceSelection,
     );
   }
 
@@ -638,6 +795,35 @@ export async function orchestrateNavigatorResponse(
     courseEvidenceCount: resolvedEvidence.length,
     courseHadActiveSources: courseKnowledge?.hasActiveSources ?? false,
     evidenceSelectionStatus: evidenceSelection?.status ?? "NOT_RUN",
+    observability: decision.state === "RECOMMEND_COURSE"
+      ? courseObservability(
+          conversationAct,
+          decision,
+          decision.primaryCourseId,
+          courseKnowledge ?? { hasActiveSources: false, bindings: [], matches: [] },
+          resolvedEvidence,
+          evidenceSelection,
+          courseKnowledge?.hasActiveSources ?? false,
+          "CATALOG_AUTHORITY",
+          evidenceSelectionDegraded ? "EVIDENCE_SELECTION_DEGRADED" : "NONE",
+        )
+      : {
+          lane: "ORCHESTRATION",
+          conversationAct: conversationAct.state,
+          decision: "NO_CURRENT_COURSE_MATCH",
+          courseId: null,
+          ragInvoked: false,
+          authorityResolved: false,
+          activeBindingCount: 0,
+          bindingSourceSlugs: [],
+          retrievedMatchCount: 0,
+          resolvedEvidenceCount: 0,
+          selectedEvidence: [],
+          evidenceSelectionStatus: "NOT_RUN",
+          answerOrigin: "CATALOG_AUTHORITY",
+          fallback: "NONE",
+          crossCourseLeakageDetected: false,
+        },
     clarification: NOT_APPLICABLE_CLARIFICATION,
     stateEffects: {
       catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
@@ -682,6 +868,23 @@ async function composeClarificationTurn(
       courseEvidenceCount: 0,
       courseHadActiveSources: false,
       evidenceSelectionStatus: "NOT_RUN",
+      observability: {
+        lane: "ORCHESTRATION",
+        conversationAct: "NAVIGATE",
+        decision: "ASK_MORE",
+        courseId: null,
+        ragInvoked: false,
+        authorityResolved: false,
+        activeBindingCount: 0,
+        bindingSourceSlugs: [],
+        retrievedMatchCount: 0,
+        resolvedEvidenceCount: 0,
+        selectedEvidence: [],
+        evidenceSelectionStatus: "NOT_RUN",
+        answerOrigin: "CATALOG_AUTHORITY",
+        fallback: "NONE",
+        crossCourseLeakageDetected: false,
+      },
       clarification: {
         status: "EXHAUSTED",
         issueKey,
@@ -716,6 +919,23 @@ async function composeClarificationTurn(
     courseEvidenceCount: 0,
     courseHadActiveSources: false,
     evidenceSelectionStatus: "NOT_RUN",
+    observability: {
+      lane: "ORCHESTRATION",
+      conversationAct: "NAVIGATE",
+      decision: "ASK_MORE",
+      courseId: null,
+      ragInvoked: false,
+      authorityResolved: false,
+      activeBindingCount: 0,
+      bindingSourceSlugs: [],
+      retrievedMatchCount: 0,
+      resolvedEvidenceCount: 0,
+      selectedEvidence: [],
+      evidenceSelectionStatus: "NOT_RUN",
+      answerOrigin: "CATALOG_AUTHORITY",
+      fallback: "NONE",
+      crossCourseLeakageDetected: false,
+    },
     clarification: {
       status: "ASKED",
       issueKey,

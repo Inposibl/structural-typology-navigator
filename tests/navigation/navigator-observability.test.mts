@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   createNavigatorDegradationLog,
   createNavigatorFailureLog,
+  createNavigatorTurnLog,
   isRecoverableEvidenceSelectionFailure,
   NavigatorStageError,
   withNavigatorStage,
@@ -11,6 +12,99 @@ import {
 import {
   CourseEvidenceSelectionError,
 } from "../../src/lib/knowledge/retrieval/evidence-selector.ts";
+
+test("navigator success log is closed, bounded, and privacy safe", () => {
+  const secretMarker = "synthetic-secret-marker-never-log";
+  const input = {
+    lane: "ORCHESTRATION" as const,
+    conversationAct: "COURSE_FOLLOW_UP" as const,
+    decision: null,
+    courseId: "maslow",
+    ragInvoked: true,
+    authorityResolved: true,
+    activeBindingCount: 1,
+    bindingSourceSlugs: ["maslow-foundational"],
+    retrievedMatchCount: 4,
+    resolvedEvidenceCount: 2,
+    selectedEvidence: [
+      {
+        chunkId: 17,
+        sourceSlug: "maslow-foundational",
+        authorityRelation: "FOUNDATIONAL",
+      },
+    ],
+    evidenceSelectionStatus: "SUPPORTED" as const,
+    answerOrigin: "RAG_EVIDENCE" as const,
+    fallback: "NONE" as const,
+    crossCourseLeakageDetected: false,
+    rawMessage: secretMarker,
+    prompt: secretMarker,
+    quote: secretMarker,
+    chunkContent: secretMarker,
+    providerBody: secretMarker,
+  };
+
+  const log = createNavigatorTurnLog("trace-123", input);
+  assert.deepEqual(Object.keys(log).sort(), [
+    "activeBindingCount",
+    "answerOrigin",
+    "authorityResolved",
+    "bindingSourceSlugs",
+    "conversationAct",
+    "courseId",
+    "crossCourseLeakageDetected",
+    "decision",
+    "event",
+    "evidenceSelectionStatus",
+    "fallback",
+    "lane",
+    "ragInvoked",
+    "requestId",
+    "resolvedEvidenceCount",
+    "retrievedMatchCount",
+    "selectedEvidence",
+  ].sort());
+  assert.equal(JSON.stringify(log).includes(secretMarker), false);
+});
+
+test("navigator success log rejects leakage and selector overflow", () => {
+  const base = {
+    lane: "ORCHESTRATION" as const,
+    conversationAct: "COURSE_FOLLOW_UP" as const,
+    decision: null,
+    courseId: "maslow",
+    ragInvoked: true,
+    authorityResolved: true,
+    activeBindingCount: 1,
+    bindingSourceSlugs: ["source"],
+    retrievedMatchCount: 1,
+    resolvedEvidenceCount: 1,
+    selectedEvidence: [],
+    evidenceSelectionStatus: "SUPPORTED" as const,
+    answerOrigin: "RAG_EVIDENCE" as const,
+    fallback: "NONE" as const,
+    crossCourseLeakageDetected: false,
+  };
+
+  assert.throws(
+    () => createNavigatorTurnLog("trace", {
+      ...base,
+      crossCourseLeakageDetected: true,
+    }),
+    /Cross-course evidence/u,
+  );
+  assert.throws(
+    () => createNavigatorTurnLog("trace", {
+      ...base,
+      selectedEvidence: Array.from({ length: 4 }, (_, index) => ({
+        chunkId: index,
+        sourceSlug: "source",
+        authorityRelation: "FOUNDATIONAL",
+      })),
+    }),
+    /selector ceiling/u,
+  );
+});
 
 test("navigator failure log contains only bounded safe metadata", async () => {
   const secretMarker = "synthetic-sensitive-marker-never-log";

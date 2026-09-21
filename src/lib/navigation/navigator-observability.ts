@@ -41,6 +41,99 @@ export type NavigatorDegradationLog = SafeErrorMetadata & {
   fallback: "INSUFFICIENT";
 };
 
+export const NAVIGATOR_ANSWER_ORIGINS = [
+  "DETERMINISTIC_CONTROL",
+  "CONTACT_POLICY",
+  "PAYMENT_POLICY",
+  "CATALOG_AUTHORITY",
+  "COMMERCIAL_AUTHORITY",
+  "RAG_EVIDENCE",
+  "FACTUAL_CEILING",
+  "OUT_OF_SCOPE",
+  "META",
+] as const;
+
+export type NavigatorAnswerOrigin =
+  (typeof NAVIGATOR_ANSWER_ORIGINS)[number];
+
+export type NavigatorTurnFallback =
+  | "NONE"
+  | "CATALOG_FOLLOW_UP"
+  | "FACTUAL_CEILING"
+  | "EVIDENCE_SELECTION_DEGRADED";
+
+export type NavigatorSelectedEvidenceLog = {
+  chunkId: number;
+  sourceSlug: string;
+  authorityRelation: string;
+};
+
+export type NavigatorTurnDetails = {
+  lane: "CONTROL" | "ORCHESTRATION";
+  conversationAct:
+    | "NAVIGATE"
+    | "COURSE_FOLLOW_UP"
+    | "META"
+    | "OUT_OF_SCOPE"
+    | "FACTUAL"
+    | null;
+  decision: "RECOMMEND_COURSE" | "ASK_MORE" | "NO_CURRENT_COURSE_MATCH" | null;
+  courseId: string | null;
+  ragInvoked: boolean;
+  authorityResolved: boolean;
+  activeBindingCount: number;
+  bindingSourceSlugs: string[];
+  retrievedMatchCount: number;
+  resolvedEvidenceCount: number;
+  selectedEvidence: NavigatorSelectedEvidenceLog[];
+  evidenceSelectionStatus: "NOT_RUN" | "SUPPORTED" | "INSUFFICIENT";
+  answerOrigin: NavigatorAnswerOrigin;
+  fallback: NavigatorTurnFallback;
+  crossCourseLeakageDetected: boolean;
+};
+
+export type NavigatorTurnLog = NavigatorTurnDetails & {
+  event: "NAVIGATOR_TURN";
+  requestId: string;
+};
+
+export function createNavigatorTurnLog(
+  requestId: string,
+  details: NavigatorTurnDetails,
+): NavigatorTurnLog {
+  if (details.selectedEvidence.length > 3) {
+    throw new Error("Navigator success trace exceeds the evidence selector ceiling.");
+  }
+
+  if (details.crossCourseLeakageDetected) {
+    throw new Error("Cross-course evidence cannot be logged as a successful turn.");
+  }
+
+  return {
+    event: "NAVIGATOR_TURN",
+    requestId,
+    lane: details.lane,
+    conversationAct: details.conversationAct,
+    decision: details.decision,
+    courseId: details.courseId,
+    ragInvoked: details.ragInvoked,
+    authorityResolved: details.authorityResolved,
+    activeBindingCount: details.activeBindingCount,
+    bindingSourceSlugs: [...details.bindingSourceSlugs],
+    retrievedMatchCount: details.retrievedMatchCount,
+    resolvedEvidenceCount: details.resolvedEvidenceCount,
+    selectedEvidence: details.selectedEvidence.map((item) => ({
+      chunkId: item.chunkId,
+      sourceSlug: item.sourceSlug,
+      authorityRelation: item.authorityRelation,
+    })),
+    evidenceSelectionStatus: details.evidenceSelectionStatus,
+    answerOrigin: details.answerOrigin,
+    fallback: details.fallback,
+    crossCourseLeakageDetected: false,
+  };
+}
+
 const PROVIDER_BY_STAGE: Record<
   NavigatorFailureStage,
   Exclude<NavigatorFailureProvider, "UNKNOWN">
