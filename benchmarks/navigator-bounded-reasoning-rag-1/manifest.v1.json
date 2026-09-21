@@ -55,6 +55,47 @@
     "OWNER_ACCEPTANCE",
     "GIT_CLOSURE"
   ],
+  "controllingStatusClosure": {
+    "acceptedBenchmarkContentIdentitySha256": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+    "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.BENCHMARK-FREEZE-1.CONTROLLING-STATUS-CLOSURE-1",
+    "controllingAuthorityFor": "NAVIGATOR-BOUNDED-REASONING-RAG-1",
+    "date": "2026-09-21",
+    "gatesSatisfied": {
+      "GIT_CLOSURE": {
+        "commit": "778038fcb1e61d7ff4476bcc3f5c4f2567438012",
+        "ref": "refs/heads/main",
+        "verifiedAgainst": "origin/main and git ls-remote refs/heads/main"
+      },
+      "INDEPENDENT_IV": {
+        "blocking": 0,
+        "major": 0,
+        "minor": 0,
+        "notes": "Four IV1 NOTEs Owner-accepted as non-blocking; no CORR2 required.",
+        "reportPath": "docs/NAVIGATOR_BOUNDED_REASONING_RAG_1_BENCHMARK_FREEZE_1_IV1_REPORT_2026-09-21.md",
+        "reportSha256": "987dc87582c4684c83279d35223badb8e50eded14626133fa13e925ad2850345",
+        "verdict": "PASS"
+      },
+      "OWNER_ACCEPTANCE": {
+        "acceptedAct": "NAVIGATOR-BOUNDED-REASONING-RAG-1.BENCHMARK-FREEZE-1.CORR1",
+        "artifactPath": "docs/NAVIGATOR_BOUNDED_REASONING_RAG_1_BENCHMARK_FREEZE_1_OWNER_ACCEPTANCE_1_2026-09-21.md",
+        "artifactSha256": "df2d1de51344fe90d2848cb7d2faeeb4115a02d4f223f89ea16d72827a487917"
+      }
+    },
+    "identityMembersUnchanged": true,
+    "metadataOnly": "No canonical identity member, gold, question, split, evidence or holdout content was modified by this act.",
+    "notAuthorizedByThisAct": [
+      "benchmark execution",
+      "baseline execution",
+      "model/provider execution",
+      "experimental RAG implementation",
+      "benchmark mutation",
+      "CORR2",
+      "deployment"
+    ],
+    "readmeResidualStatusText": "benchmarks/navigator-bounded-reasoning-rag-1/README.md is a byte-frozen identity member and still reads 'STATUS: FREEZE CANDIDATE. NOT CONTROLLING.'. It MUST NOT be edited under this identity; manifest.v1.json is the controlling machine-readable status. Correcting that prose requires a new identity and independent IV.",
+    "retiredIdentityRule": "MUST NOT be used as controlling authority.",
+    "retiredPreCorr1IdentitySha256": "7362243c7d0fcc4639b6cb9a81a0aced9c68662ced649f7628344a3499d46c96"
+  },
   "conversationContextItems": 6,
   "corpusFreeze": {
     "activeBindings": {
@@ -386,7 +427,7 @@
     "DEVELOPMENT": 49,
     "HOLDOUT": 50
   },
-  "status": "FREEZE_CANDIDATE_NOT_CONTROLLING",
+  "status": "CONTROLLING_FROZEN_BENCHMARK_AUTHORITY",
   "totalItems": 123,
   "trapFlagCounts": {
     "abstention_required": 17,
