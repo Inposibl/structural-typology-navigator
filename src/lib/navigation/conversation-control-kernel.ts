@@ -40,10 +40,13 @@ import {
   isConversationResetRequest,
 } from "./conversation-profile-control.ts";
 import {
+  advanceAddressModeDecline,
   advanceConversationProfile,
   createEmptyConversationProfile,
+  detectAddressPreferenceDecline,
   INITIAL_ADDRESS_PROMPT,
   isConversationProfileComplete,
+  messageSelectsAddressMode,
 } from "./conversation-profile.ts";
 import {
   detectStaleReferenceLanguage,
@@ -682,6 +685,43 @@ function resolveConversationControl(
   }
 
   if (setupOpen) {
+    // CORR3.CONVERSATION-REPAIR-AND-FOLLOWUP-1 (D1) — an explicit decline to
+    // choose the address mode is resolved to the authorized neutral default (вы),
+    // never re-asks, and resumes any pending request. An explicit ты/вы in the
+    // same message always wins over a decline.
+    if (
+      profile.addressMode === null &&
+      messageSelectsAddressMode(text) === null &&
+      detectAddressPreferenceDecline(text)
+    ) {
+      const declined = advanceAddressModeDecline(profile);
+
+      if (state.pendingConfirmation !== null) {
+        return respondPreservingRemainder(
+          confirmationControlAct(state),
+          declined.profile,
+          state,
+          state.pendingConfirmation.prompt,
+          declined.effectiveUserRequest,
+        );
+      }
+
+      if (declined.effectiveUserRequest !== null) {
+        return routeResult(
+          declined.profile,
+          withClarification(state, null),
+          declined.effectiveUserRequest,
+        );
+      }
+
+      return respond(
+        "ADDRESS_SETUP",
+        declined.profile,
+        withClarification(state, null),
+        declined.response ?? INITIAL_ADDRESS_PROMPT,
+      );
+    }
+
     const setup = advanceConversationProfile(profile, text);
 
     if (!setup.complete || setup.effectiveUserRequest === null) {

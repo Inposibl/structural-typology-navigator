@@ -83,6 +83,7 @@ import {
   type NavigatorTurnDetails,
   withNavigatorStage,
 } from "./navigator-observability.ts";
+import { formulateFollowUpContentQuery } from "./follow-up-query.ts";
 
 export type NavigatorOrchestrationResult = {
   message: string;
@@ -585,6 +586,12 @@ export async function orchestrateNavigatorResponse(
 
   const query = lastUserMessage(messages);
 
+  // CORR3.CONVERSATION-REPAIR-AND-FOLLOWUP-1 (D2) — the substantive question a
+  // course-content follow-up should be retrieved and evidence-selected on. For a
+  // narrowing/correction turn this recovers the clarified question from the
+  // discourse; for an ordinary follow-up it is identical to `query`.
+  const contentQuery = formulateFollowUpContentQuery(messages);
+
   // A10 — deterministic contact, ahead of the act classifier. The reason is
   // stated in the act: an obvious contact/photo/Telegram/phone follow-up must
   // not be misclassified as out of scope, and must not need a provider call to
@@ -781,7 +788,7 @@ export async function orchestrateNavigatorResponse(
     const courseKnowledge = await withNavigatorStage("COURSE_RPC", () =>
       retrieve(
         boundCourseId,
-        query,
+        contentQuery,
         {
           env: options.env,
           fetch: options.fetch,
@@ -802,7 +809,7 @@ export async function orchestrateNavigatorResponse(
 
       if (resolvedEvidence.length > 0) {
         const selectionOutcome = await selectEvidenceOrDegrade(
-          query,
+          contentQuery,
           resolvedEvidence,
           selectEvidence,
           options,
@@ -897,7 +904,7 @@ export async function orchestrateNavigatorResponse(
     const courseKnowledge = await withNavigatorStage("COURSE_RPC", () =>
       retrieve(
         conversationAct.courseId,
-        query,
+        contentQuery,
         {
           env: options.env,
           fetch: options.fetch,
@@ -918,7 +925,7 @@ export async function orchestrateNavigatorResponse(
 
       if (resolvedEvidence.length > 0) {
         const selectionOutcome = await selectEvidenceOrDegrade(
-          query,
+          contentQuery,
           resolvedEvidence,
           selectEvidence,
           options,
