@@ -565,7 +565,8 @@ test("CORR2 F-2: payment wording implies no current cohort, stream, schedule or 
   ];
 
   for (const answer of answers) {
-    assert.match(answer, /Помощник[а-яё]* по оплате курсов/u, answer);
+    assert.match(answer, /Тихон[а-яё]*|AI-секретар[а-яё]*/u, answer);
+    assert.doesNotMatch(answer, /Помощник[а-яё]* по оплате курсов/u, answer);
     assert.doesNotMatch(
       answer,
       /поток|расписан|набор|старт|групп|окно/iu,

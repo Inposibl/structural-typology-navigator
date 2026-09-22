@@ -217,19 +217,19 @@ function enrollmentOpeningSentence(
     const course = ACADEMY_PAYMENT_POLICY.courses[action.courseId];
 
     if (mode === null) {
-      return `Отлично! Оформление участия и оплаты курса «${course.title}» — через Помощника по оплате курсов в Telegram: ${action.paymentUrl}.`;
+      return `Отлично! Оформление участия и оплаты курса «${course.title}» — через Тихона (AI-секретаря Академии) в Telegram: ${action.paymentUrl}.`;
     }
 
     const verb = mode === "TY" ? "перейди" : "перейдите";
-    return `Отлично! Для оформления участия и оплаты курса «${course.title}» ${verb} к Помощнику по оплате курсов в Telegram: ${action.paymentUrl}.`;
+    return `Отлично! Для оформления участия и оплаты курса «${course.title}» ${verb} к Тихону — AI-секретарю Академии в Telegram: ${action.paymentUrl}.`;
   }
 
   if (mode === null) {
-    return `Запись и оплата — через Помощника по оплате курсов в Telegram: ${ACADEMY_PAYMENT_POLICY.generalUrl}.`;
+    return `Запись и оплата — через Тихона (AI-секретаря Академии) в Telegram: ${ACADEMY_PAYMENT_POLICY.generalUrl}.`;
   }
 
-  const verb = mode === "TY" ? "открой" : "откройте";
-  return `Для записи и оплаты ${verb} Помощника по оплате курсов в Telegram: ${ACADEMY_PAYMENT_POLICY.generalUrl}.`;
+  const verb = mode === "TY" ? "перейди" : "перейдите";
+  return `Для записи и оплаты ${verb} к Тихону — AI-секретарю Академии в Telegram: ${ACADEMY_PAYMENT_POLICY.generalUrl}.`;
 }
 
 /**
