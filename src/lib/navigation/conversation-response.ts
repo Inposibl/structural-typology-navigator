@@ -31,8 +31,11 @@ import {
   buildFollowUpAuthorityPayload,
   composeCatalogFollowUpAnswer,
   isCatalogAnswerableFollowUp,
+  type FollowUpAuthorityPayload,
   type FollowUpEvidenceExcerpt,
+  type FollowUpGroundingAudit,
 } from "./follow-up-grounding.ts";
+import type { NavigatorGroundingDetails } from "./navigator-observability.ts";
 import {
   composeCourseFactualCeilingAnswer,
   composeAcademyContactAnswer,
@@ -504,6 +507,12 @@ export type ComposeCourseFollowUpOptions = DeepSeekClientOptions & {
   evidenceSelection?: CourseEvidenceSelection;
   onOutcome?: (outcome: CourseFollowUpOutcome) => void;
   profile?: ConversationProfile;
+  /**
+   * Bounded hybrid grounding guardrail trace. The composer reports which of the
+   * nine bounded outcomes the turn took; the caller owns the requestId and the
+   * log line, so no answer text or evidence ever leaves this function.
+   */
+  onGroundingEvent?: (details: NavigatorGroundingDetails) => void;
 };
 
 export type CourseFollowUpOutcome = {
@@ -811,6 +820,92 @@ function coursePublicPayload(
   return buildFollowUpAuthorityPayload(course, evidence);
 }
 
+/* ---------------------------------------------------------------------------
+ * Bounded hybrid grounding guardrail.
+ *
+ * AUDIT-STABILITY-REPLAY-1 measured the semantic auditor directly: 352 frozen
+ * fixed-input trials produced 333 effective PASS, zero STABLE_FAIL, a PASS
+ * majority on every item, and 12 of 32 items that flipped at least once. One
+ * fresh auditor call is therefore not a trustworthy sole authority for
+ * destroying an otherwise valid candidate answer — but it is also not something
+ * to loosen. The auditor in `follow-up-grounding.ts` is unchanged: same prompt,
+ * same model, same PASS/FAIL contract, same reasonCode enum, same validator.
+ *
+ * What changes is only what production does with a FAIL: the turn gets exactly
+ * ONE controlled repair composition over the SAME evidence, re-audited by the
+ * SAME auditor. There is no majority vote, no third cycle and no fail-open
+ * path — every terminal branch that is not an explicit PASS ends at the
+ * factual ceiling.
+ * ------------------------------------------------------------------------- */
+
+type GroundingAuditOutcome =
+  | { kind: "VERDICT"; audit: FollowUpGroundingAudit }
+  | { kind: "ERROR"; errorName: string };
+
+/**
+ * The audit-error containment boundary (§15). A transport failure, a malformed
+ * provider body, a parser failure or a validator rejection — including the
+ * measured `{"status":"PASS","reasonCode":null}` case the frozen validator
+ * correctly rejects — must never become a PASS, an unhandled 500 or a raw
+ * exception shown to the user. It becomes an ERROR outcome, and every ERROR
+ * outcome ends at the factual ceiling.
+ */
+async function runGroundingAudit(
+  answer: string,
+  latestUserMessage: string,
+  authority: FollowUpAuthorityPayload,
+  options: ComposeCourseFollowUpOptions,
+): Promise<GroundingAuditOutcome> {
+  try {
+    const audit = await auditCourseFollowUpAnswer(
+      answer,
+      latestUserMessage,
+      authority,
+      {
+        env: options.env,
+        fetch: options.fetch,
+        signal: options.signal,
+        timeoutMs: options.timeoutMs,
+        callJson: options.callJson,
+      },
+    );
+
+    return { kind: "VERDICT", audit };
+  } catch (error) {
+    return {
+      kind: "ERROR",
+      errorName: error instanceof Error ? error.name : "UnknownError",
+    };
+  }
+}
+
+/**
+ * The single repair instruction. It is deliberately narrow: no new retrieval,
+ * no new selector call, no new evidence, no new source, no world knowledge and
+ * no course change — the same authority payload, rewritten to drop what the
+ * audit rejected.
+ */
+function groundingRepairInstruction(reasonCode: string): string {
+  return `РЕЖИМ ИСПРАВЛЕНИЯ ОБОСНОВАННОСТИ.
+
+Предыдущий вариант ответа отклонён независимым аудитом обоснованности с кодом причины ${reasonCode}. Он передан тебе как rejectedAnswer и НЕ является источником фактов.
+
+Перепиши ответ так, чтобы КАЖДОЕ содержательное утверждение опиралось на переданный authorityPayload. Убери то утверждение или вывод, которое аудит не смог подтвердить переданным материалом.
+
+ЗАПРЕЩЕНО при исправлении:
+- вводить новые факты, термины, сравнения, примеры, источники;
+- добавлять утверждения о структуре, составе или полноте курса;
+- использовать общие знания модели;
+- предполагать материал, который не передан в authorityPayload.
+
+СОХРАНИ:
+- содержание, которое подтверждается evidence;
+- оговорки и ограничения источника;
+- прямое указание на то, чего в переданных материалах нет.
+
+Верни только исправленный текст ответа.`;
+}
+
 export async function composeCourseFollowUpAnswer(
   messages: readonly ConversationMessage[],
   act: CourseFollowUpAct,
@@ -842,6 +937,17 @@ export async function composeCourseFollowUpAnswer(
       );
     }
 
+    // A structural failure is a hard failure: there is nothing to repair,
+    // because there is no authority to repair against. No composition runs and
+    // no repair is attempted.
+    options.onGroundingEvent?.({
+      stage: "FACTUAL_CEILING_STRUCTURAL",
+      courseId: act.courseId,
+      reasonCode: null,
+      errorName: null,
+      selectedEvidenceCount: evidence.length,
+      repairAttempted: false,
+    });
     options.onOutcome?.({
       answerOrigin: "FACTUAL_CEILING",
       fallback: "FACTUAL_CEILING",
@@ -855,11 +961,7 @@ export async function composeCourseFollowUpAnswer(
     .filter((message) => message.role === "user")
     .map((message) => message.content);
 
-  const answer = await callText(
-    [
-      {
-        role: "system",
-        content: `Ты — публичный Навигатор Академии структурной типологии.
+  const composerSystemPrompt = `Ты — публичный Навигатор Академии структурной типологии.
 
 Ответь ТОЛЬКО на последнюю реплику пользователя как на follow-up по уже обсуждаемому курсу.
 Не выбирай курс заново и не повторяй полный recommendation template.
@@ -873,65 +975,229 @@ export async function composeCourseFollowUpAnswer(
 - не придумывай формат курса, упражнения, психологическую безопасность, эффективность, поддержку, преподавателей, контакты или гарантии;
 - если делаешь практический вывод, явно обозначь его словами "из этого следует", "это может означать" или аналогично и не добавляй новых фактов.
 
+ЗАПРЕЩЁННЫЕ ПАТТЕРНЫ ВЫХОДА ЗА ГРАНИЦУ АВТОРИТЕТА:
+- НЕ строй отрицательные сравнения вида "это X, а не Y", если Y отсутствует в evidence — не привноси из общих знаний то, чем понятие НЕ является;
+- НЕ делай утверждений о структуре, составе или полноте материалов курса ("это отдельный слой курса", "подтверждается тремя местами", "в другом занятии") — ты не знаешь структуру курса за пределами переданного evidence;
+- НЕ вводи терминологию или категории, которых нет в evidence, для организации ответа — используй только ту лексику, которая присутствует в переданных цитатах и полях course;
+- НЕ делай педагогических рекомендаций, предложений к действию или мета-комментариев, не подтверждённых evidence ("можно разобрать на примере", "стоит обратить внимание");
+- НЕ утверждай количество источников, подтверждений или мест в материалах.
+
+ОБЯЗАТЕЛЬНЫЕ ПРАВИЛА ФОРМУЛИРОВКИ:
+- отвечай строго из переданного evidence и полей course;
+- сохраняй контринтуитивные утверждения источника в точности — не смягчай и не переформулируй;
+- сохраняй оговорки и ограничения, присутствующие в evidence;
+- если evidence не поддерживает запрошенное утверждение — скажи это прямо, а не заполняй из общих знаний;
+- чётко отличай прямые утверждения источника от своих выводов.
+
 ${addressStyleInstruction(options.profile)}
 
 Если evidenceRequested=false, не показывай пользователю сырые цитаты, названия внутренних документов, страницы и provenance.
 Если evidenceRequested=true, список точных цитат и provenance будет добавлен системой после твоего ответа.
 Не раскрывай внутренние формулы, служебные labels или технические обозначения, если пользователь сам прямо о них не спрашивает.
-Пиши по-русски, коротко и по существу.`,
-      },
-      {
-        role: "user",
-        content: JSON.stringify(
-          {
-            latestUserMessage,
-            userContext,
-            evidenceRequested: act.evidenceRequested,
-            authorityPayload: authority,
-          },
-          null,
-          2,
-        ),
-      },
+Пиши по-русски, коротко и по существу.`;
+
+  const composerUserPayload = JSON.stringify(
+    {
+      latestUserMessage,
+      userContext,
+      evidenceRequested: act.evidenceRequested,
+      authorityPayload: authority,
+    },
+    null,
+    2,
+  );
+
+  const answer = await callText(
+    [
+      { role: "system", content: composerSystemPrompt },
+      { role: "user", content: composerUserPayload },
     ],
     options,
   );
 
-  const audit = await auditCourseFollowUpAnswer(
-    answer,
-    latestUserMessage,
-    authority,
-    {
-      env: options.env,
-      fetch: options.fetch,
-      signal: options.signal,
-      timeoutMs: options.timeoutMs,
-      callJson: options.callJson,
-    },
-  );
+  const deliver = (delivered: string): string => {
+    options.onOutcome?.({
+      answerOrigin: "RAG_EVIDENCE",
+      fallback: "NONE",
+    });
 
-  if (audit.status !== "PASS") {
+    if (!act.evidenceRequested) {
+      return delivered;
+    }
+
+    return [
+      delivered,
+      "Основание в подключённых материалах:",
+      ...evidence.map(
+        (item) => `• «${item.quote}» — ${item.source}`,
+      ),
+    ].join("\n\n");
+  };
+
+  // The rejected candidate is never returned to the user on any failing branch:
+  // it is only ever an input to the single repair composition.
+  const factualCeiling = (
+    stage: "FACTUAL_CEILING_AUDIT",
+    reasonCode: NavigatorGroundingDetails["reasonCode"],
+    errorName: string | null,
+    repairAttempted: boolean,
+  ): string => {
+    options.onGroundingEvent?.({
+      stage,
+      courseId: act.courseId,
+      reasonCode,
+      errorName,
+      selectedEvidenceCount: evidence.length,
+      repairAttempted,
+    });
     options.onOutcome?.({
       answerOrigin: "FACTUAL_CEILING",
       fallback: "FACTUAL_CEILING",
     });
     return composeCourseFactualCeilingAnswer(course.title);
+  };
+
+  const primary = await runGroundingAudit(
+    answer,
+    latestUserMessage,
+    authority,
+    options,
+  );
+
+  if (primary.kind === "ERROR") {
+    // Malformed or failed audit state is fail-closed and is NOT repaired:
+    // there is no valid verdict to repair against.
+    options.onGroundingEvent?.({
+      stage: "PRIMARY_AUDIT_ERROR",
+      courseId: act.courseId,
+      reasonCode: null,
+      errorName: primary.errorName,
+      selectedEvidenceCount: evidence.length,
+      repairAttempted: false,
+    });
+    return factualCeiling("FACTUAL_CEILING_AUDIT", null, primary.errorName, false);
   }
 
-  options.onOutcome?.({
-    answerOrigin: "RAG_EVIDENCE",
-    fallback: "NONE",
+  if (primary.audit.status === "PASS") {
+    options.onGroundingEvent?.({
+      stage: "PRIMARY_AUDIT_PASS",
+      courseId: act.courseId,
+      reasonCode: null,
+      errorName: null,
+      selectedEvidenceCount: evidence.length,
+      repairAttempted: false,
+    });
+    return deliver(answer);
+  }
+
+  const primaryReasonCode = primary.audit.reasonCode;
+  options.onGroundingEvent?.({
+    stage: "PRIMARY_AUDIT_FAIL",
+    courseId: act.courseId,
+    reasonCode: primaryReasonCode,
+    errorName: null,
+    selectedEvidenceCount: evidence.length,
+    repairAttempted: false,
   });
 
-  if (!act.evidenceRequested) {
-    return answer;
+  // Exactly ONE repair opportunity. Straight-line code, no loop: there is no
+  // second repair and no third audit anywhere below this point.
+  options.onGroundingEvent?.({
+    stage: "REPAIR_ATTEMPTED",
+    courseId: act.courseId,
+    reasonCode: primaryReasonCode,
+    errorName: null,
+    selectedEvidenceCount: evidence.length,
+    repairAttempted: true,
+  });
+
+  let repaired: string;
+  try {
+    repaired = await callText(
+      [
+        { role: "system", content: composerSystemPrompt },
+        {
+          role: "system",
+          content: groundingRepairInstruction(primaryReasonCode),
+        },
+        {
+          role: "user",
+          content: JSON.stringify(
+            {
+              latestUserMessage,
+              userContext,
+              evidenceRequested: act.evidenceRequested,
+              // Identical authority: no new retrieval, no new selector call,
+              // no new evidence, no new source, no course change.
+              authorityPayload: authority,
+              rejectedAnswer: answer,
+              auditReasonCode: primaryReasonCode,
+            },
+            null,
+            2,
+          ),
+        },
+      ],
+      options,
+    );
+  } catch (error) {
+    return factualCeiling(
+      "FACTUAL_CEILING_AUDIT",
+      primaryReasonCode,
+      error instanceof Error ? error.name : "UnknownError",
+      true,
+    );
   }
 
-  return [
-    answer,
-    "Основание в подключённых материалах:",
-    ...evidence.map(
-      (item) => `• «${item.quote}» — ${item.source}`,
-    ),
-  ].join("\n\n");
+  const second = await runGroundingAudit(
+    repaired,
+    latestUserMessage,
+    authority,
+    options,
+  );
+
+  if (second.kind === "ERROR") {
+    options.onGroundingEvent?.({
+      stage: "REPAIR_AUDIT_ERROR",
+      courseId: act.courseId,
+      reasonCode: primaryReasonCode,
+      errorName: second.errorName,
+      selectedEvidenceCount: evidence.length,
+      repairAttempted: true,
+    });
+    return factualCeiling(
+      "FACTUAL_CEILING_AUDIT",
+      primaryReasonCode,
+      second.errorName,
+      true,
+    );
+  }
+
+  if (second.audit.status !== "PASS") {
+    options.onGroundingEvent?.({
+      stage: "REPAIR_AUDIT_FAIL",
+      courseId: act.courseId,
+      reasonCode: second.audit.reasonCode,
+      errorName: null,
+      selectedEvidenceCount: evidence.length,
+      repairAttempted: true,
+    });
+    return factualCeiling(
+      "FACTUAL_CEILING_AUDIT",
+      second.audit.reasonCode,
+      null,
+      true,
+    );
+  }
+
+  options.onGroundingEvent?.({
+    stage: "REPAIR_AUDIT_PASS",
+    courseId: act.courseId,
+    reasonCode: primaryReasonCode,
+    errorName: null,
+    selectedEvidenceCount: evidence.length,
+    repairAttempted: true,
+  });
+
+  return deliver(repaired);
 }

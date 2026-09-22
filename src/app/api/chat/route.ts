@@ -75,7 +75,8 @@ function fallbackOrchestrationObservability(
     conversationAct: result.conversationAct.state,
     decision: result.decision?.state ?? null,
     courseId:
-      result.conversationAct.state === "COURSE_FOLLOW_UP"
+      result.conversationAct.state === "COURSE_FOLLOW_UP" ||
+      result.conversationAct.state === "COURSE_CONTENT"
         ? result.conversationAct.courseId
         : result.decision?.state === "RECOMMEND_COURSE"
           ? result.decision.primaryCourseId
@@ -280,6 +281,15 @@ function orchestrationAct(
       return { act: "NAVIGATE", flowId: "COURSE_SELECTION" };
     case "COURSE_FOLLOW_UP":
       return { act: "COURSE_FOLLOW_UP", flowId: "COURSE_FOLLOW_UP" };
+    // EXPERIMENT-1.ROUTER-ACCESS-1: an evidential turn about a course's
+    // material is the same conversation act as a follow-up about that course,
+    // so the existing Package-A act identity is reused rather than extended.
+    case "COURSE_CONTENT":
+      return { act: "COURSE_FOLLOW_UP", flowId: "COURSE_FOLLOW_UP" };
+    // The degrade lane is a technical failure that reached the user as a turn,
+    // so it records the act the project already uses for that situation.
+    case "ROUTER_DEGRADED":
+      return { act: "TECHNICAL_ERROR", flowId: null };
     case "META":
       return { act: "META", flowId: null };
     default:

@@ -36,9 +36,9 @@ export type NavigatorFailureLog = SafeErrorMetadata & {
 export type NavigatorDegradationLog = SafeErrorMetadata & {
   event: "NAVIGATOR_DEGRADATION";
   requestId: string;
-  stage: "EVIDENCE_LLM";
+  stage: "EVIDENCE_LLM" | "ACT_ROUTER";
   provider: "DEEPSEEK";
-  fallback: "INSUFFICIENT";
+  fallback: "INSUFFICIENT" | "ROUTER_VALIDATION_DEGRADED";
 };
 
 export const NAVIGATOR_ANSWER_ORIGINS = [
@@ -60,7 +60,9 @@ export type NavigatorTurnFallback =
   | "NONE"
   | "CATALOG_FOLLOW_UP"
   | "FACTUAL_CEILING"
-  | "EVIDENCE_SELECTION_DEGRADED";
+  | "EVIDENCE_SELECTION_DEGRADED"
+  /** EXPERIMENT-1.ROUTER-ACCESS-1 — the act router's validation failure lane. */
+  | "ROUTER_VALIDATION_DEGRADED";
 
 export type NavigatorSelectedEvidenceLog = {
   chunkId: number;
@@ -73,9 +75,11 @@ export type NavigatorTurnDetails = {
   conversationAct:
     | "NAVIGATE"
     | "COURSE_FOLLOW_UP"
+    | "COURSE_CONTENT"
     | "META"
     | "OUT_OF_SCOPE"
     | "FACTUAL"
+    | "ROUTER_DEGRADED"
     | null;
   decision: "RECOMMEND_COURSE" | "ASK_MORE" | "NO_CURRENT_COURSE_MATCH" | null;
   courseId: string | null;
@@ -220,6 +224,26 @@ export function isRecoverableEvidenceSelectionFailure(
   );
 }
 
+/**
+ * EXPERIMENT-1.ROUTER-ACCESS-1 — the router's sibling of the selector guard
+ * above. The selector has always degraded on a structured-output validation
+ * failure; the router threw, and the turn became a 503. This predicate is the
+ * exact same narrow shape — one error name, one code, no upstream status — so
+ * only a semantic validator rejection degrades, while transport, timeout and
+ * provider failures keep the technical-error lane they have today.
+ */
+export function isRecoverableConversationActFailure(
+  error: unknown,
+): error is NavigatorStageError {
+  return (
+    error instanceof NavigatorStageError &&
+    error.stage === "ACT_ROUTER" &&
+    error.errorName === "ConversationActDecisionValidationError" &&
+    error.errorCode === "INVALID_CONVERSATION_ACT_DECISION" &&
+    error.status === null
+  );
+}
+
 export function createNavigatorDegradationLog(
   error: unknown,
   requestId: string,
@@ -239,6 +263,117 @@ export function createNavigatorDegradationLog(
     errorName: error.errorName,
     errorCode: error.errorCode,
     status: error.status,
+  };
+}
+
+/**
+ * EXPERIMENT-1.ROUTER-ACCESS-1 — the act router's degradation record. It is a
+ * separate builder rather than a widened one so the guard stays exact: only the
+ * validator-rejection class reaches this lane, and the fallback it names is the
+ * only fallback this class produces.
+ */
+export function createNavigatorRouterDegradationLog(
+  error: unknown,
+  requestId: string,
+): NavigatorDegradationLog {
+  if (!isRecoverableConversationActFailure(error)) {
+    throw new Error(
+      "Only invalid conversation act decisions may degrade the act router.",
+    );
+  }
+
+  return {
+    event: "NAVIGATOR_DEGRADATION",
+    requestId,
+    stage: "ACT_ROUTER",
+    provider: "DEEPSEEK",
+    fallback: "ROUTER_VALIDATION_DEGRADED",
+    errorName: error.errorName,
+    errorCode: error.errorCode,
+    status: error.status,
+  };
+}
+
+/* ---------------------------------------------------------------------------
+ * Bounded hybrid grounding guardrail observability.
+ *
+ * The guardrail has exactly one repair opportunity, so the question production
+ * has to be able to answer from logs is *which* of the nine bounded outcomes a
+ * turn took — not what was said. Every field below is re-derived through a
+ * whitelist or a sanitiser, so a candidate answer, an evidence quote, an
+ * authority payload or a user message cannot reach a log line even if a caller
+ * passes one: free text fails `safeIdentifier` and collapses to `UNKNOWN`, and
+ * no field carries provider output verbatim.
+ * ------------------------------------------------------------------------- */
+
+export const NAVIGATOR_GROUNDING_STAGES = [
+  "PRIMARY_AUDIT_PASS",
+  "PRIMARY_AUDIT_FAIL",
+  "PRIMARY_AUDIT_ERROR",
+  "REPAIR_ATTEMPTED",
+  "REPAIR_AUDIT_PASS",
+  "REPAIR_AUDIT_FAIL",
+  "REPAIR_AUDIT_ERROR",
+  "FACTUAL_CEILING_STRUCTURAL",
+  "FACTUAL_CEILING_AUDIT",
+] as const;
+
+export type NavigatorGroundingStage =
+  (typeof NAVIGATOR_GROUNDING_STAGES)[number];
+
+/** The frozen auditor's reasonCode enum, mirrored for logging only. */
+export const NAVIGATOR_GROUNDING_REASON_CODES = [
+  "UNSUPPORTED_CLAIM",
+  "AUTHORITY_SCOPE",
+  "UNMARKED_INFERENCE",
+] as const;
+
+export type NavigatorGroundingReasonCode =
+  (typeof NAVIGATOR_GROUNDING_REASON_CODES)[number];
+
+export type NavigatorGroundingDetails = {
+  stage: NavigatorGroundingStage;
+  courseId: string;
+  /** The frozen auditor's verdict code; null when there is no valid FAIL. */
+  reasonCode: NavigatorGroundingReasonCode | null;
+  /** Safe error identity at the audit boundary; never a payload or a message. */
+  errorName: string | null;
+  selectedEvidenceCount: number;
+  repairAttempted: boolean;
+};
+
+export type NavigatorGroundingLog = NavigatorGroundingDetails & {
+  event: "NAVIGATOR_GROUNDING";
+  requestId: string;
+};
+
+export function createNavigatorGroundingLog(
+  requestId: string,
+  details: NavigatorGroundingDetails,
+): NavigatorGroundingLog {
+  if (!NAVIGATOR_GROUNDING_STAGES.includes(details.stage)) {
+    throw new Error("Unsupported navigator grounding stage.");
+  }
+
+  const reasonCode =
+    details.reasonCode !== null &&
+    NAVIGATOR_GROUNDING_REASON_CODES.includes(details.reasonCode)
+      ? details.reasonCode
+      : null;
+
+  return {
+    event: "NAVIGATOR_GROUNDING",
+    requestId,
+    stage: details.stage,
+    courseId: safeIdentifier(details.courseId, null) ?? "UNKNOWN",
+    reasonCode,
+    errorName: safeIdentifier(details.errorName, null),
+    selectedEvidenceCount:
+      Number.isInteger(details.selectedEvidenceCount) &&
+      details.selectedEvidenceCount >= 0
+        ? details.selectedEvidenceCount
+        : 0,
+    repairAttempted: details.repairAttempted === true,
   };
 }
 

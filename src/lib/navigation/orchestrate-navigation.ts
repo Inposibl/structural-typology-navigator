@@ -49,6 +49,7 @@ import {
   composePaymentCourseIdentityRequiredAnswer,
   composePaymentUnavailableAnswer,
   composeStableNoMatchAnswer,
+  composeTechnicalErrorAnswer,
   type CourseFollowUpOutcome,
   type ComposeCourseFollowUpOptions,
 } from "./conversation-response.ts";
@@ -58,6 +59,7 @@ import {
 } from "./conversation-state.ts";
 import {
   composeAcademyContactAnswer,
+  composeCourseFactualCeilingAnswer,
   detectAcademyContactIntent,
   detectDeterministicAcademyContactIntent,
 } from "../academy/contact-policy.ts";
@@ -72,8 +74,12 @@ import type {
 } from "./conversation-state.ts";
 import {
   createNavigatorDegradationLog,
+  createNavigatorGroundingLog,
+  createNavigatorRouterDegradationLog,
+  isRecoverableConversationActFailure,
   isRecoverableEvidenceSelectionFailure,
   type NavigatorAnswerOrigin,
+  type NavigatorGroundingDetails,
   type NavigatorTurnDetails,
   withNavigatorStage,
 } from "./navigator-observability.ts";
@@ -242,6 +248,65 @@ async function selectEvidenceOrDegrade(
   }
 }
 
+/**
+ * EXPERIMENT-1.ROUTER-ACCESS-1 — the act router's degrade lane.
+ *
+ * Structurally identical to selectEvidenceOrDegrade one layer down: when the
+ * provider's structured output fails the validator, the turn continues on a
+ * bounded, non-semantic lane instead of becoming a user-visible 503. What the
+ * degrade must NOT do is pick a course: a rejected act decision carries no
+ * trust, so ROUTER_DEGRADED binds no course, resolves no evidence and invokes
+ * no retrieval. Only the validator-rejection class degrades; every transport,
+ * timeout and provider failure still reaches the technical-error lane.
+ */
+async function classifyActOrDegrade(
+  messages: readonly ConversationMessage[],
+  classifyAct: ConversationActDependency,
+  options: OrchestrateNavigatorOptions,
+): Promise<ConversationActDecision> {
+  try {
+    return await withNavigatorStage("ACT_ROUTER", () =>
+      classifyAct(messages, {
+        env: options.env,
+        fetch: options.fetch,
+        signal: options.signal,
+      }),
+    );
+  } catch (error) {
+    if (!isRecoverableConversationActFailure(error)) {
+      throw error;
+    }
+
+    if (options.requestId) {
+      console.warn(
+        JSON.stringify(
+          createNavigatorRouterDegradationLog(error, options.requestId),
+        ),
+      );
+    }
+
+    return { state: "ROUTER_DEGRADED" };
+  }
+}
+
+/**
+ * The production sink for the bounded hybrid grounding guardrail. The log
+ * builder re-derives every field through a whitelist, so no candidate answer,
+ * evidence quote, authority payload or user message can reach a log line.
+ */
+function groundingEventSink(
+  options: OrchestrateNavigatorOptions,
+): ((details: NavigatorGroundingDetails) => void) | undefined {
+  const requestId = options.requestId;
+  if (!requestId) return undefined;
+
+  return (details) => {
+    console.info(
+      JSON.stringify(createNavigatorGroundingLog(requestId, details)),
+    );
+  };
+}
+
 function emptyResult(
   message: string,
   conversationAct: ConversationActDecision,
@@ -306,6 +371,106 @@ function assertCourseEvidenceIsolation(
   if (crossCourseLeakageDetected || selectedCourseLeakage) {
     throw new Error("Cross-course evidence detected in navigator success path.");
   }
+}
+
+/**
+ * PRODUCTION-IMPLEMENTATION-1.CORR1 F-2 — the same invariants as
+ * `assertCourseEvidenceIsolation`, evaluated WITHOUT throwing.
+ *
+ * A bounded-RAG turn whose evidence is structurally invalid is not a technical
+ * error and is not something a semantic repair may rescue: it is exactly the
+ * condition the structural factual ceiling exists for. The orchestrator therefore
+ * needs to ask the question rather than be thrown at, so the turn can take the
+ * controlled ceiling before any composition, audit or repair happens.
+ *
+ * The three conditions are identical to the throwing guard, which is left in place
+ * as a defence-in-depth backstop for the lanes that still rely on it:
+ *   1. resolved evidence belonging to another course;
+ *   2. selected evidence whose chunk is absent from resolved evidence;
+ *   3. selected evidence whose chunk resolves to another course.
+ */
+function courseEvidenceStructurallyInvalid(
+  courseId: string,
+  resolvedEvidence: readonly ResolvedCourseEvidence[],
+  evidenceSelection: CourseEvidenceSelection | undefined,
+): boolean {
+  if (resolvedEvidence.some((item) => item.courseId !== courseId)) {
+    return true;
+  }
+
+  if (evidenceSelection?.status !== "SUPPORTED") {
+    return false;
+  }
+
+  return evidenceSelection.evidence.some((selected) => {
+    const resolved = resolvedEvidence.find(
+      (item) => item.chunkId === selected.chunkId,
+    );
+    return resolved === undefined || resolved.courseId !== courseId;
+  });
+}
+
+/**
+ * CORR1 F-2 — the controlled structural ceiling for a bounded-RAG turn.
+ *
+ * Zero composition, zero audit, zero repair, no rejected promise. The structurally
+ * invalid evidence is discarded rather than reported: none of it reaches the
+ * answer, the turn log or the user, so the turn is logged as a factual ceiling
+ * carrying no evidence. The structural violation itself stays observable through
+ * the FACTUAL_CEILING_STRUCTURAL grounding event, which is why the turn record
+ * does not need — and must not claim — a successful-turn leakage flag.
+ */
+function structuralCeilingResult(
+  courseId: string,
+  conversationAct: ConversationActDecision,
+  courseKnowledge: RetrieveCourseKnowledgeResult,
+  options: OrchestrateNavigatorOptions,
+): NavigatorOrchestrationResult {
+  groundingEventSink(options)?.({
+    stage: "FACTUAL_CEILING_STRUCTURAL",
+    courseId,
+    reasonCode: null,
+    errorName: null,
+    selectedEvidenceCount: 0,
+    repairAttempted: false,
+  });
+
+  const course = getAcademyCourse(courseId);
+
+  return {
+    message: composeCourseFactualCeilingAnswer(course?.title ?? courseId),
+    contactCard: null,
+    conversationAct,
+    decision: null,
+    courseEvidenceCount: 0,
+    courseHadActiveSources: courseKnowledge.hasActiveSources,
+    evidenceSelectionStatus: "INSUFFICIENT",
+    observability: {
+      lane: "ORCHESTRATION",
+      conversationAct: conversationAct.state,
+      decision: null,
+      courseId,
+      ragInvoked: true,
+      authorityResolved: courseKnowledge.hasActiveSources,
+      activeBindingCount: courseKnowledge.bindings.length,
+      bindingSourceSlugs: courseKnowledge.bindings.map(
+        (binding) => binding.sourceSlug,
+      ),
+      retrievedMatchCount: courseKnowledge.matches.length,
+      resolvedEvidenceCount: 0,
+      selectedEvidence: [],
+      evidenceSelectionStatus: "INSUFFICIENT",
+      answerOrigin: "FACTUAL_CEILING",
+      fallback: "FACTUAL_CEILING",
+      crossCourseLeakageDetected: false,
+    },
+    clarification: NOT_APPLICABLE_CLARIFICATION,
+    stateEffects: {
+      catalogAuthorityVersion: null,
+      transactionalAuthorityVersion: null,
+      pendingConfirmation: null,
+    },
+  };
 }
 
 function courseObservability(
@@ -439,12 +604,10 @@ export async function orchestrateNavigatorResponse(
     );
   }
 
-  const conversationAct = await withNavigatorStage("ACT_ROUTER", () =>
-    classifyAct(messages, {
-      env: options.env,
-      fetch: options.fetch,
-      signal: options.signal,
-    }),
+  const conversationAct = await classifyActOrDegrade(
+    messages,
+    classifyAct,
+    options,
   );
 
   const paymentDecision = resolveEnrollmentPaymentDecision(
@@ -560,7 +723,8 @@ export async function orchestrateNavigatorResponse(
 
   const contactIntent = detectAcademyContactIntent(query, {
     hasCourseContext:
-      conversationAct.state === "COURSE_FOLLOW_UP",
+      conversationAct.state === "COURSE_FOLLOW_UP" ||
+      conversationAct.state === "COURSE_CONTENT",
   });
 
   if (
@@ -590,6 +754,143 @@ export async function orchestrateNavigatorResponse(
       conversationAct,
       "META",
     );
+  }
+
+  // EXPERIMENT-1.ROUTER-ACCESS-1 — the fail-closed lane. The provider's act
+  // decision was rejected, so nothing about it is trusted: no course is bound,
+  // no retrieval runs, no evidence is resolved. The user gets the project's
+  // existing technical-failure wording as an ordinary turn rather than a 503,
+  // and the turn is recorded as degraded so the rate stays measurable.
+  if (conversationAct.state === "ROUTER_DEGRADED") {
+    return emptyResult(
+      composeTechnicalErrorAnswer(options.profile, true),
+      conversationAct,
+      "DETERMINISTIC_CONTROL",
+    );
+  }
+
+  // EXPERIMENT-1.ROUTER-ACCESS-1 — the route the taxonomy was missing. A
+  // question answerable from course material, asked without the material having
+  // been named, now has a path into the unchanged RAG stack: the same
+  // matchCount 12 / matchThreshold -1 retrieval, the same authority resolution
+  // at 8, the same selector, and the same follow-up composer and answer audit
+  // fed the same way. Only the entry into that stack is new.
+  if (conversationAct.state === "COURSE_CONTENT") {
+    const boundCourseId = conversationAct.courseId;
+
+    const courseKnowledge = await withNavigatorStage("COURSE_RPC", () =>
+      retrieve(
+        boundCourseId,
+        query,
+        {
+          env: options.env,
+          fetch: options.fetch,
+          signal: options.signal,
+          matchCount: 12,
+        },
+      ),
+    );
+
+    let resolvedEvidence: ResolvedCourseEvidence[] = [];
+    let evidenceSelection: CourseEvidenceSelection | undefined;
+    let evidenceSelectionDegraded = false;
+
+    if (courseKnowledge.hasActiveSources) {
+      resolvedEvidence = await withNavigatorStage("AUTHORITY", () =>
+        resolve(courseKnowledge.matches, 8),
+      );
+
+      if (resolvedEvidence.length > 0) {
+        const selectionOutcome = await selectEvidenceOrDegrade(
+          query,
+          resolvedEvidence,
+          selectEvidence,
+          options,
+        );
+        evidenceSelection = selectionOutcome.selection;
+        evidenceSelectionDegraded = selectionOutcome.degraded;
+      } else {
+        evidenceSelection = {
+          status: "INSUFFICIENT",
+          evidence: [],
+        };
+      }
+    }
+
+    let contentOutcome: CourseFollowUpOutcome =
+      evidenceSelection?.status === "SUPPORTED"
+        ? { answerOrigin: "RAG_EVIDENCE", fallback: "NONE" }
+        : { answerOrigin: "FACTUAL_CEILING", fallback: "FACTUAL_CEILING" };
+
+    // CORR1 F-2: a structural invariant failure is a hard failure. It takes the
+    // controlled ceiling here — before composition — so no composer, auditor or
+    // repair ever sees structurally invalid evidence.
+    if (
+      courseEvidenceStructurallyInvalid(
+        boundCourseId,
+        resolvedEvidence,
+        evidenceSelection,
+      )
+    ) {
+      return structuralCeilingResult(
+        boundCourseId,
+        conversationAct,
+        courseKnowledge,
+        options,
+      );
+    }
+
+    const message = await withNavigatorStage("FOLLOW_UP", () =>
+      composeFollowUp(
+        messages,
+        {
+          state: "COURSE_FOLLOW_UP",
+          courseId: boundCourseId,
+          evidenceRequested: conversationAct.evidenceRequested,
+        },
+        {
+          env: options.env,
+          fetch: options.fetch,
+          signal: options.signal,
+          courseEvidence: resolvedEvidence,
+          evidenceSelection,
+          onOutcome: (outcome) => {
+            contentOutcome = outcome;
+          },
+          profile: options.profile,
+          onGroundingEvent: groundingEventSink(options),
+        },
+      ),
+    );
+
+    return {
+      message,
+      contactCard: null,
+      conversationAct,
+      decision: null,
+      courseEvidenceCount: resolvedEvidence.length,
+      courseHadActiveSources: courseKnowledge.hasActiveSources,
+      evidenceSelectionStatus: evidenceSelection?.status ?? "NOT_RUN",
+      observability: courseObservability(
+        conversationAct,
+        null,
+        boundCourseId,
+        courseKnowledge,
+        resolvedEvidence,
+        evidenceSelection,
+        courseKnowledge.hasActiveSources,
+        contentOutcome.answerOrigin,
+        evidenceSelectionDegraded
+          ? "EVIDENCE_SELECTION_DEGRADED"
+          : contentOutcome.fallback,
+      ),
+      clarification: NOT_APPLICABLE_CLARIFICATION,
+      stateEffects: {
+        catalogAuthorityVersion: null,
+        transactionalAuthorityVersion: null,
+        pendingConfirmation: null,
+      },
+    };
   }
 
   if (conversationAct.state === "COURSE_FOLLOW_UP") {
@@ -637,11 +938,22 @@ export async function orchestrateNavigatorResponse(
         ? { answerOrigin: "RAG_EVIDENCE", fallback: "NONE" }
         : { answerOrigin: "FACTUAL_CEILING", fallback: "FACTUAL_CEILING" };
 
-    assertCourseEvidenceIsolation(
-      conversationAct.courseId,
-      resolvedEvidence,
-      evidenceSelection,
-    );
+    // CORR1 F-2: same controlled structural ceiling as the COURSE_CONTENT lane —
+    // zero composition, zero audit, zero repair.
+    if (
+      courseEvidenceStructurallyInvalid(
+        conversationAct.courseId,
+        resolvedEvidence,
+        evidenceSelection,
+      )
+    ) {
+      return structuralCeilingResult(
+        conversationAct.courseId,
+        conversationAct,
+        courseKnowledge,
+        options,
+      );
+    }
 
     const message = await withNavigatorStage("FOLLOW_UP", () =>
       composeFollowUp(messages, conversationAct, {
@@ -654,6 +966,7 @@ export async function orchestrateNavigatorResponse(
           followUpOutcome = outcome;
         },
         profile: options.profile,
+        onGroundingEvent: groundingEventSink(options),
       }),
     );
 
