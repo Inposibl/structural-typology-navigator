@@ -36,6 +36,24 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+/**
+ * EXPERIMENT-4.SELECTOR-QUOTE-CONTRACT-1: formatting-only canonicalisation.
+ *
+ * The corpus stores chunks with the source document's own line breaks. A model
+ * that quotes across one of those breaks returns the same characters re-flowed,
+ * and the byte-exact substring guard rejected it as fabricated. This collapses
+ * formatting and nothing else: line endings are normalised, runs of whitespace
+ * become one ordinary space, and the ends are trimmed. Letters, case,
+ * punctuation and word order are untouched, so a quote that survives this and
+ * still fails to match its chunk differs from the source in substance.
+ */
+function canonicalWhitespace(value: string): string {
+  return value
+    .replace(/\r\n?/gu, "\n")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
+
 function validateSelection(
   value: unknown,
   available: readonly ResolvedCourseEvidence[],
@@ -96,9 +114,10 @@ function validateSelection(
     }
 
     const quote = item.quote.trim();
-    if (quote.length < 8 || quote.length > 320) {
+    const canonicalQuote = canonicalWhitespace(quote);
+    if (canonicalQuote.length < 8) {
       throw new CourseEvidenceSelectionError(
-        "Evidence quotes must contain between 8 and 320 characters.",
+        "Evidence quotes must contain at least 8 characters.",
       );
     }
 
@@ -109,7 +128,14 @@ function validateSelection(
       );
     }
 
-    if (!source.content.includes(quote)) {
+    // EXPERIMENT-4.SELECTOR-QUOTE-CONTRACT-1: the upper bound on a quote is the
+    // survivor chunk that must contain it, not a character count. A quote still
+    // has to sit wholly inside one authoritative chunk, so it cannot be stitched
+    // across chunks, drawn from an unknown chunk or taken from another course.
+    if (
+      !source.content.includes(quote) &&
+      !canonicalWhitespace(source.content).includes(canonicalQuote)
+    ) {
       throw new CourseEvidenceSelectionError(
         `Evidence quote is not verbatim grounded in chunk ${String(
           item.chunkId,
@@ -117,7 +143,7 @@ function validateSelection(
       );
     }
 
-    const identity = `${String(item.chunkId)}:${quote}`;
+    const identity = `${String(item.chunkId)}:${canonicalQuote}`;
     if (identities.has(identity)) {
       throw new CourseEvidenceSelectionError(
         "Evidence selection must not contain duplicates.",

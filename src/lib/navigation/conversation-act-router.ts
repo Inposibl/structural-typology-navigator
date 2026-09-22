@@ -8,6 +8,7 @@ import {
   isAcademyCourseId,
   type AcademyCourseId,
 } from "../academy/course-reference.ts";
+import { getCourseIdentityScope } from "../academy/course-identity-scope.ts";
 import {
   callDeepSeekJson,
   type DeepSeekClientOptions,
@@ -44,7 +45,29 @@ export type ConversationActDecision =
       state: "COURSE_FOLLOW_UP";
       courseId: string;
       evidenceRequested: boolean;
-    };
+    }
+  /**
+   * EXPERIMENT-1.ROUTER-ACCESS-1 — the act the taxonomy was missing: the user
+   * asks a question that is answerable from Academy course material, without
+   * that material having been named in the conversation. `contentIntentEvidence`
+   * is the structural anti-hallucination guard, identical in discipline to
+   * NAVIGATE.newTaskEvidence: the decision must be anchored in verbatim user
+   * text, while the course binding is the router's own inference and is
+   * measured, not assumed.
+   */
+  | {
+      state: "COURSE_CONTENT";
+      courseId: string;
+      evidenceRequested: boolean;
+      contentIntentEvidence: string;
+    }
+  /**
+   * EXPERIMENT-1.ROUTER-ACCESS-1 — the fail-closed lane. Produced only by the
+   * orchestrator when the provider's act decision fails validation; the model
+   * can never select it, because validation rejects the state outright. It
+   * carries no course, no evidence and no RAG authority.
+   */
+  | { state: "ROUTER_DEGRADED" };
 
 export class ConversationActDecisionValidationError extends Error {
   readonly code = "INVALID_CONVERSATION_ACT_DECISION";
@@ -81,6 +104,29 @@ function courseWasActuallyInConversation(
     (message) =>
       message.content.includes(course.title) ||
       (course.url !== null && message.content.includes(course.url)),
+  );
+}
+
+/**
+ * PRODUCTION-IMPLEMENTATION-1.CORR1 F-1 — the COURSE_CONTENT precondition.
+ *
+ * COURSE_CONTENT exists for exactly one case: a substantive question about course
+ * material asked when NO catalog course has been named. The moment any catalog
+ * course is present in the conversation, the stricter COURSE_FOLLOW_UP binding
+ * semantics govern, and COURSE_CONTENT must not be able to bypass them by binding
+ * some other course.
+ *
+ * This deliberately reuses `courseWasActuallyInConversation` — the same title/URL
+ * presence semantics COURSE_FOLLOW_UP already binds on — rather than introducing a
+ * second, inconsistent detector. The whole catalog is scanned, including
+ * LISTED_UNROUTABLE entries, so naming an unroutable course cannot open a rebinding
+ * path to a routable one.
+ */
+function anyCourseWasActuallyInConversation(
+  messages: readonly ConversationMessage[],
+): boolean {
+  return getRoutingCourseSummaries().some((course) =>
+    courseWasActuallyInConversation(course.id, messages),
   );
 }
 
@@ -307,6 +353,69 @@ export function validateConversationActDecision(
     };
   }
 
+  if (value.state === "COURSE_CONTENT") {
+    if (
+      !onlyKeys(value, [
+        "state",
+        "courseId",
+        "evidenceRequested",
+        "contentIntentEvidence",
+      ])
+    ) {
+      throw new ConversationActDecisionValidationError(
+        "COURSE_CONTENT contains unsupported fields.",
+      );
+    }
+
+    // CORR1 F-1: the act's precondition. A conversation that has already named a
+    // catalog course belongs to the existing follow-up/dialogue paths, never to
+    // COURSE_CONTENT — otherwise the act becomes a rebinding bypass around the
+    // stricter COURSE_FOLLOW_UP course-presence guard.
+    if (anyCourseWasActuallyInConversation(messages)) {
+      throw new ConversationActDecisionValidationError(
+        "COURSE_CONTENT cannot be used once a catalog course is present in the conversation.",
+      );
+    }
+
+    if (
+      typeof value.courseId !== "string" ||
+      !isRecommendableCourseId(value.courseId)
+    ) {
+      throw new ConversationActDecisionValidationError(
+        "COURSE_CONTENT courseId must be a current routable course.",
+      );
+    }
+
+    if (typeof value.evidenceRequested !== "boolean") {
+      throw new ConversationActDecisionValidationError(
+        "COURSE_CONTENT evidenceRequested must be boolean.",
+      );
+    }
+
+    // The one anti-hallucination guard this act keeps. A course question that
+    // was never named in the conversation is exactly the case this act exists
+    // for, so the course title cannot be required here; what IS required is
+    // that the decision be anchored in the user's own words.
+    const latestUserMessage = messages.at(-1)?.content ?? "";
+    if (
+      typeof value.contentIntentEvidence !== "string" ||
+      value.contentIntentEvidence.trim().length < 3 ||
+      value.contentIntentEvidence.length > 240 ||
+      !latestUserMessage.includes(value.contentIntentEvidence)
+    ) {
+      throw new ConversationActDecisionValidationError(
+        "COURSE_CONTENT.contentIntentEvidence must be a bounded verbatim fragment of the latest user message.",
+      );
+    }
+
+    return {
+      state: "COURSE_CONTENT",
+      courseId: value.courseId,
+      evidenceRequested: value.evidenceRequested,
+      contentIntentEvidence: value.contentIntentEvidence,
+    };
+  }
+
   throw new ConversationActDecisionValidationError(
     `Unsupported conversation act: ${String(value.state)}.`,
   );
@@ -316,7 +425,7 @@ function conversationActSystemPrompt(): string {
   return `Ты — внутренний диспетчер диалога образовательного Навигатора Академии структурной типологии.
 
 ТВОЯ ЗАДАЧА:
-определить, что означает ИМЕННО ПОСЛЕДНЯЯ реплика пользователя в текущем разговоре, и вернуть только JSON. Ты не выбираешь курс и не пишешь пользователю ответ.
+определить, что означает ИМЕННО ПОСЛЕДНЯЯ реплика пользователя в текущем разговоре, и вернуть только JSON. Ты не пишешь пользователю ответ. Курс каталога ты называешь только в COURSE_FOLLOW_UP и COURSE_CONTENT, и только чтобы указать, о материалах какого курса идёт речь.
 
 КРИТИЧЕСКОЕ ПРАВИЛО ПОСЛЕДНЕГО ХОДА:
 - последняя USER-реплика имеет решающий приоритет при определении текущего conversational act;
@@ -324,7 +433,7 @@ function conversationActSystemPrompt(): string {
 - если пользователь сменил тему на общий вопрос вне функций Академии, это OUT_OF_SCOPE, даже если раньше уже был рекомендован курс;
 - если пользователь отвечает на уточняющий вопрос Навигатора или продолжает описывать свою учебную задачу, это NAVIGATE.
 
-РАЗРЕШЕНЫ РОВНО ПЯТЬ state:
+РАЗРЕШЕНЫ РОВНО ШЕСТЬ state:
 
 1. NAVIGATE
 Используй, когда последняя реплика:
@@ -354,10 +463,26 @@ evidenceRequested=true ТОЛЬКО если пользователь явно �
 - {"kind":"COURSE_COMPARISON","courseIds":["id-1","id-2"],"hasUnknownCourse":false}
 Для всех курсов используй scope=ALL. Для названных — REFERENCED. Не выдумывай ID. Если в сравнении одно название неизвестно каталогу, передай только известный ID и hasUnknownCourse=true. Вопрос "какой лучше мне" — NAVIGATE, не FACTUAL.
 
+6. COURSE_CONTENT
+Используй, когда последняя реплика — содержательный вопрос по МАТЕРИАЛУ курса Академии: определение понятия, механизм, факт из материалов, таблица, различение терминов, "почему/как это работает" по предмету курса. Решающее условие: НИ ОДИН курс каталога не назван в разговоре. Если курс уже назван в разговоре — это COURSE_FOLLOW_UP, а не COURSE_CONTENT.
+courseId — тот единственный курс, к материалам которого относится вопрос. Выбирай только из catalog, бери только курсы со status "ROUTABLE". Если вопрос относится к курсу со status "LISTED_UNROUTABLE", верни не COURSE_CONTENT, а NAVIGATE.
+contentIntentEvidence — точная цитата (3–240 символов) из ПОСЛЕДНЕЙ реплики пользователя, которая показывает, что это вопрос по материалу курса. Цитата обязана быть дословной подстрокой последней реплики.
+evidenceRequested=true ТОЛЬКО если пользователь явно просит источники, цитаты, документы, страницы, доказательство из материалов.
+
+COURSE_CONTENT — НЕ для:
+- цены, расписания, потока, окна набора, состава каталога, обзора Академии, психологической границы — это FACTUAL;
+- просьбы подобрать/порекомендовать курс — это NAVIGATE;
+- оплаты, записи, стоимости участия как действия — это не COURSE_CONTENT;
+- просьбы связаться с менеджером, телефона, Telegram — это не COURSE_CONTENT;
+- приветствий, благодарностей, болтовни, вопросов о самом Навигаторе — это META или OUT_OF_SCOPE;
+- посторонних тем — это OUT_OF_SCOPE.
+Не отправляй в COURSE_CONTENT вопрос, который можно закрыть каталогом или ценой.
+
 JSON FORMAT:
 {"state":"NAVIGATE"}
 {"state":"NAVIGATE","newTaskEvidence":"точная цитата нового факта"}
 {"state":"COURSE_FOLLOW_UP","courseId":"course-id","evidenceRequested":false}
+{"state":"COURSE_CONTENT","courseId":"course-id","evidenceRequested":false,"contentIntentEvidence":"точная цитата из последней реплики"}
 {"state":"META"}
 {"state":"OUT_OF_SCOPE"}
 {"state":"FACTUAL","intents":[{"kind":"CATALOG_LIST"}]}
@@ -370,10 +495,23 @@ export async function routeConversationAct(
   options: RouteConversationActOptions = {},
 ): Promise<ConversationActDecision> {
   const callJson = options.callJson ?? callDeepSeekJson;
+  // EXPERIMENT-3.COURSE-IDENTITY-SURFACE-1.
+  //
+  // The router previously saw `{id, title, status}`. A title is an entry point,
+  // not a corpus description, and COURSE_BINDING-ROOT-CAUSE-1 attributed 11 of
+  // its 12 wrong bindings to exactly that: no router-visible identity signal
+  // adequate to the question. Each course now additionally carries ONE governed,
+  // corpus-derived subject-matter descriptor.
+  //
+  // Nothing else is added: no aliases, no learningNeeds, no siteOutcomes, no
+  // audienceSignals, no source slugs, no document list, no embedding or RAG
+  // metadata. A course without a descriptor keeps its title and status exactly
+  // as before, so this field can enrich an identity but never gates one.
   const catalog = getRoutingCourseSummaries().map((course) => ({
     id: course.id,
     title: course.title,
     status: course.status,
+    scope: getCourseIdentityScope(course.id),
   }));
 
   const latestUserMessageIndex = messages.length - 1;

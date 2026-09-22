@@ -206,24 +206,27 @@ test("Package E: recommendation reports routing separately from catalog origin",
   assert.equal(result.observability?.answerOrigin, "CATALOG_AUTHORITY");
 });
 
-test("Package E: cross-course resolved evidence fails instead of logging clean success", async () => {
+test("Package E: cross-course resolved evidence returns a controlled structural ceiling", async () => {
   let composerCalled = false;
-  await assert.rejects(
-    () => orchestrateNavigatorResponse(
-      [{ role: "user", content: "Как устроены переходы?" }],
-      {
-        dependencies: followUpDependencies({
-          resolve: () => [resolvedEvidence("levels-of-consciousness")],
-          composeFollowUp: async () => {
-            composerCalled = true;
-            return "must not compose";
-          },
-        }),
-      },
-    ),
-    /Cross-course evidence/u,
+  const result = await orchestrateNavigatorResponse(
+    [{ role: "user", content: "Как устроены переходы?" }],
+    {
+      dependencies: followUpDependencies({
+        resolve: () => [resolvedEvidence("levels-of-consciousness")],
+        composeFollowUp: async () => {
+          composerCalled = true;
+          return "must not compose";
+        },
+      }),
+    },
   );
+
   assert.equal(composerCalled, false);
+  assert.equal(result.observability?.answerOrigin, "FACTUAL_CEILING");
+  assert.equal(result.observability?.fallback, "FACTUAL_CEILING");
+  assert.equal(result.evidenceSelectionStatus, "INSUFFICIENT");
+  assert.deepEqual(result.observability?.selectedEvidence, []);
+  assert.equal(result.observability?.resolvedEvidenceCount, 0);
 });
 
 async function chatRequest(
