@@ -86,6 +86,13 @@ test("A11: payment matrix blocks conflict, ambiguity, stale and no-match paths",
       "Как оплатить курс Маслоу?",
       { state: "OUT_OF_SCOPE" },
     ).kind,
+    "ACTION",
+  );
+  assert.equal(
+    resolveEnrollmentPaymentDecision(
+      "Как записаться к врачу?",
+      { state: "OUT_OF_SCOPE" },
+    ).kind,
     "NONE",
   );
 });
@@ -640,6 +647,13 @@ test("CORR2.CORR1: narrative payment mentions and protected lanes stay non-trans
   assert.equal(
     resolveEnrollmentPaymentDecision(
       "Оплатить Маслоу и Уровни сознания",
+      { state: "OUT_OF_SCOPE" },
+    ).kind,
+    "CLARIFY_MULTIPLE",
+  );
+  assert.equal(
+    resolveEnrollmentPaymentDecision(
+      "Куда перевести деньги за квартиру?",
       { state: "OUT_OF_SCOPE" },
     ).kind,
     "NONE",

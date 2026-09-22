@@ -128,6 +128,19 @@ export function paymentActionForCourse(
   };
 }
 
+export function hasAcademyIdentity(
+  query: string,
+  context: PaymentResolutionContext = {},
+): boolean {
+  if (resolveCourseReferences(query).kind !== "ZERO") {
+    return true;
+  }
+  if (Boolean(context.selectedCourseId)) {
+    return true;
+  }
+  return false;
+}
+
 export function resolveEnrollmentPaymentDecision(
   query: string,
   act: ConversationActDecision,
@@ -137,7 +150,7 @@ export function resolveEnrollmentPaymentDecision(
     return { kind: "NONE" };
   }
 
-  if (act.state === "OUT_OF_SCOPE") {
+  if (act.state === "OUT_OF_SCOPE" && !hasAcademyIdentity(query, context)) {
     return { kind: "NONE" };
   }
 
