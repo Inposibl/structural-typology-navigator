@@ -906,6 +906,19 @@ function groundingRepairInstruction(reasonCode: string): string {
 Верни только исправленный текст ответа.`;
 }
 
+/**
+ * CORR3.CONVERSATION-REPAIR-AND-FOLLOWUP-1 (D3) — an explicit request for what
+ * the source/course itself says. Source attribution is appropriate here; for an
+ * ordinary content question the grounded composer prefers a direct teaching
+ * voice instead of repeatedly narrating "курс говорит / заявляет".
+ */
+const EXPLICIT_SOURCE_ATTRIBUTION_PATTERN =
+  /(?:что\s+(?:именно\s+)?(?:говор(?:ит|ится)|сказано|написано|указано|пишут|пишется)\s+(?:в\s+)?(?:материал|курс|источник|тексте|занят)|что\s+(?:курс|материалы?|источник|автор)\s+(?:говор|заявл|утвержд|пиш)|как\s+(?:это\s+)?(?:описан|сформулирован|подан|назван)[оаы]?\s+(?:в\s+)?(?:материал|курс)|(?:покажи|приведи|дай|процитируй|цитир)\w*\s+(?:мне\s+)?(?:цитат|источник|выдержк|фрагмент|дослов)|на\s+ч[её]м\s+(?:это\s+)?основан|дослов(?:но|ная\s+цитата)|прям(?:ая|ую)\s+цитат)/iu;
+
+export function isExplicitSourceAttributionRequest(query: string): boolean {
+  return EXPLICIT_SOURCE_ATTRIBUTION_PATTERN.test(query);
+}
+
 export async function composeCourseFollowUpAnswer(
   messages: readonly ConversationMessage[],
   act: CourseFollowUpAct,
@@ -961,6 +974,23 @@ export async function composeCourseFollowUpAnswer(
     .filter((message) => message.role === "user")
     .map((message) => message.content);
 
+  // CORR3.CONVERSATION-REPAIR-AND-FOLLOWUP-1 (D3) — voice selection. An ordinary
+  // grounded content question is answered in a direct teaching voice; source
+  // attribution is reserved for an explicit source request (or evidenceRequested).
+  const preferDirectVoice =
+    !act.evidenceRequested &&
+    !isExplicitSourceAttributionRequest(latestUserMessage);
+
+  const voiceInstruction = preferDirectVoice
+    ? `ГОЛОС ОТВЕТА — по умолчанию прямой обучающий:
+- объясняй понятие напрямую («S–O активность — это ...»), а не через рамку внешнего пересказа;
+- НЕ обрамляй обычный содержательный ответ повторяющейся атрибуцией «курс говорит», «курс заявляет», «курс также заявляет», «в материалах курса это описывается/поясняется как ...»;
+- атрибуцию к источнику оставляй только там, где она несёт смысл: спор или противоречие в evidence, обозначение неопределённости, утверждение, специфичное именно для источника, или фактический потолок;
+- содержательная граница авторитета при этом НЕ меняется: по-прежнему отвечай строго из evidence и полей course, без общих знаний.`
+    : `ГОЛОС ОТВЕТА — пользователь спрашивает про источник:
+- пользователь прямо просит показать или назвать, что именно сказано в материалах курса, поэтому атрибуция к источнику здесь уместна и ожидаема;
+- всё равно отвечай строго из переданного evidence и полей course, без общих знаний.`;
+
   const composerSystemPrompt = `Ты — публичный Навигатор Академии структурной типологии.
 
 Ответь ТОЛЬКО на последнюю реплику пользователя как на follow-up по уже обсуждаемому курсу.
@@ -988,6 +1018,8 @@ export async function composeCourseFollowUpAnswer(
 - сохраняй оговорки и ограничения, присутствующие в evidence;
 - если evidence не поддерживает запрошенное утверждение — скажи это прямо, а не заполняй из общих знаний;
 - чётко отличай прямые утверждения источника от своих выводов.
+
+${voiceInstruction}
 
 ${addressStyleInstruction(options.profile)}
 

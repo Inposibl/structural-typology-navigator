@@ -531,6 +531,82 @@ export function advanceConversationProfile(
   };
 }
 
+/**
+ * CORR3.CONVERSATION-REPAIR-AND-FOLLOWUP-1 (D1) — explicit decline to choose an
+ * address mode.
+ *
+ * While the Navigator is waiting for the TY/VY selection, an explicit refusal,
+ * indifference or skip ("не важно", "мне всё равно", "пропусти этот вопрос",
+ * "проигнорируй этот вопрос") is a decision not to choose — not an unsupported
+ * variant and not an error. The authorized resolution
+ * (NAVIGATOR_CONVERSATION_CONTACT_GROUNDING_CONTROL_v1.3: "If the user declines
+ * both, default to respectful вы") is to apply the neutral default вы, stop
+ * asking, and continue the substantive conversation.
+ */
+export const DEFAULT_ADDRESS_MODE: AddressMode = "VY";
+
+/**
+ * Whole-message anchored so a substantive request that merely contains "всё
+ * равно" ("мне всё равно какой курс, подбери что-нибудь") stays a request and
+ * keeps its pending-task handling instead of being read as a decline.
+ *
+ * CORR3.CONVERSATION-REPAIR-AND-FOLLOWUP-1.CORR1 (IV1) — the controlling D1
+ * requirement is explicit refusal/indifference semantics, not a fixed literal
+ * phrase list. The bounded prefix therefore also admits a leading demonstrative
+ * and dative in either order ("это не важно", "это мне всё равно", "да это не
+ * важно", "ну это мне всё равно"). It stays a bounded whole-turn form: the `^…$`
+ * anchoring plus the narrow tail keep "это не важно для выбора курса" and "мне
+ * всё равно какой курс, покажи варианты" substantive, and the caller only
+ * consults this while ADDRESS_SETUP is open and no mode was selected.
+ */
+const ADDRESS_PREFERENCE_DECLINE_PATTERN =
+  /^(?:(?:да|ну|ой)[,!.\s]+)*(?:(?:это|мне)\s+){0,2}(?:не\s*важно|вс[её]\s+равно|без\s+разницы|как\s+(?:угодно|удобно|хочешь|хотите|вам\s+удобно|тебе\s+удобно)|на\s+(?:ваше|тво[ёе])\s+усмотрение|любой(?:\s+вариант)?|любое|реши(?:те)?\s+сам[аи]?|не\s+хочу\s+выбирать|не\s+буду\s+выбирать|не\s+хочу\s+отвечать|пропусти(?:те|м)?|проигнорируй(?:те)?)(?:\s+(?:этот|это|такой)\s+(?:вопрос|пункт|выбор|момент))?(?:[,\s]+(?:пожалуйста|как\s+(?:ко\s+мне\s+)?обращаться|про\s+обращени[ея]|с\s+обращением))?[.!?…]*$/iu;
+
+export function detectAddressPreferenceDecline(text: string): boolean {
+  return ADDRESS_PREFERENCE_DECLINE_PATTERN.test(text.trim());
+}
+
+/** Whether the message explicitly selects a supported address mode (ты/вы). */
+export function messageSelectsAddressMode(text: string): AddressMode | null {
+  return detectAddressMode(text.trim());
+}
+
+/**
+ * Completes ADDRESS_SETUP on an explicit decline to choose. The neutral default
+ * вы is applied, a still-unknown name is treated as declined (so the name
+ * question is not reopened either), and any pending substantive request is
+ * resumed exactly as the ordinary completion path resumes it.
+ */
+export function advanceAddressModeDecline(
+  incoming: ConversationProfile,
+): AddressSetupAdvance {
+  const completed: ConversationProfile = {
+    displayName: incoming.displayName,
+    addressMode: incoming.addressMode ?? DEFAULT_ADDRESS_MODE,
+    nameDeclined:
+      incoming.displayName === null ? true : incoming.nameDeclined,
+    pendingUserRequest: null,
+  };
+
+  const pending = incoming.pendingUserRequest;
+
+  if (pending) {
+    return {
+      profile: completed,
+      complete: true,
+      effectiveUserRequest: pending,
+      response: null,
+    };
+  }
+
+  return {
+    profile: completed,
+    complete: true,
+    effectiveUserRequest: null,
+    response: completionMessage(completed),
+  };
+}
+
 export function addressStyleInstruction(
   profile: ConversationProfile | undefined,
 ): string {
