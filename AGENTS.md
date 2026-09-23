@@ -303,8 +303,8 @@ Owner Appointment Phrase                          → Active Role
 
    | Actor | Coder Role |
    | --- | --- |
-   | Antigravity | PRIMARY CODER (separately retains the Git Agent role, §7.4) |
-   | Claude | ELIGIBLE / RESERVE CODER |
+   | Antigravity | PRIMARY CODER |
+   | Claude | ELIGIBLE / RESERVE CODER (designated current Git Agent, §7.4) |
    | Z-Ai | RESERVE CODER |
    | Kimi K3 Extra | RESERVE CODER |
 
@@ -312,7 +312,7 @@ Owner Appointment Phrase                          → Active Role
    - **Fallback:** If Antigravity is unavailable, rate-limited, or explicitly bypassed by the Owner, fallback routing may use Claude, Z-Ai, or Kimi K3 Extra, as specified by the specific Owner act.
    - **No silent transfer:** An active act is never silently transferred between models.
    - **Single-Writer Rule (ONE ACTIVE CODING ACT = ONE AUTHORIZED WRITER):** While one agent is authorized to modify an active act's files, all other coding agents are READ-ONLY unless the Owner explicitly authorizes concurrent writing. No second agent may edit the same active source files, rewrite tests for the same act, produce competing implementation candidates, or self-designate as coder for the same act without explicit Owner authorization.
-   - **Antigravity dual capability:** Primary coder role and Git Agent authority are separate capabilities, each act-scoped. Primary coder authorization does not authorize automatic commit or push after coding; Git commit/push requires a separately authorized Git act (§5.3, §7.4) unless the specific Owner mandate explicitly combines those authorities.
+   - **Claude Git Agent role:** Claude is designated as the current Git Agent (§7.4). Git authority remains act-specific: Claude may stage, commit, or push only when explicitly authorized for a Git act. Claude's Git role does not authorize product, source, or test changes.
    - **No standing authority:** Coder routing grants no standing authorization for Git commit/push, database/Supabase mutation, payment or other financial actions, production deployment, or scope expansion; each requires its own act-specific Owner authorization.
    - **Audit:** Audit roles are act-specific. Tikhon UX work proceeds without mandatory independent audit unless the Owner requests it; where independent audit is required, §6.2 applies (author ≠ auditor).
    - **Precedence:** Current explicit Owner instruction supersedes any stale routing text in this document (§2.1).
@@ -320,7 +320,7 @@ Owner Appointment Phrase                          → Active Role
 ---
 
 ### 7.4 ROLE 4: GIT AGENT
-**Eligible Actor:** Antigravity<br>
+**Eligible Actor:** Claude<br>
 **Terminal States:** `GIT_CLOSED_LOCAL`, `BLOCKED`, `FAILED`, `CONTAMINATED_WORKTREE`
 
 1. **Identity & Boundaries:**
