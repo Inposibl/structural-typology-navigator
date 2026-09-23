@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Публичная оферта — Академия структурной типологии</title>
+  <meta name="description" content="Публичная оферта на заключение договора об оказании информационно-консультационных услуг. Академия структурной типологии (авторская методология Николая Петяева).">
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --primary-hover: #6d28d9;
+      --text: #1f2937;
+      --text-muted: #4b5563;
+      --bg: #ffffff;
+      --bg-alt: #f9fafb;
+      --border: #e5e7eb;
+      --card-bg: #ffffff;
+      --accent: #f5f3ff;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: var(--text);
+      background-color: var(--bg-alt);
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .logo-badge {
+      background: var(--primary);
+      color: white;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+    }
+
+    .header-links a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      margin-left: 16px;
+      transition: color 0.2s;
+    }
+
+    .header-links a:hover {
+      color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 32px auto 64px auto;
+      padding: 0 24px;
+    }
+
+    .document-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px 48px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    @media (max-width: 640px) {
+      .document-card {
+        padding: 24px 20px;
+      }
+    }
+
+    .doc-meta {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #111827;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 24px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .important-notice {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 16px 20px;
+      border-radius: 4px;
+      margin-bottom: 32px;
+      font-size: 0.95rem;
+      color: #1e40af;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #111827;
+      margin-top: 36px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #374151;
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    ul, ol {
+      margin-left: 24px;
+      margin-bottom: 16px;
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    .requisites-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-top: 20px;
+      font-size: 0.92rem;
+    }
+
+    .req-group h4 {
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .req-row {
+      margin-bottom: 6px;
+    }
+
+    .req-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: block;
+    }
+
+    .req-value {
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    footer {
+      text-align: center;
+      padding: 32px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .btn-return {
+      display: inline-block;
+      background: var(--primary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 24px;
+      transition: background 0.2s;
+    }
+
+    .btn-return:hover {
+      background: var(--primary-hover);
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-container">
+    <a href="https://structural-typology.academy" class="logo-area">
+      <span class="logo-badge">AST</span>
+      <span>Академия структурной типологии</span>
+    </a>
+    <div class="header-links">
+      <a href="https://structural-typology.academy">На сайт</a>
+      <a href="https://t.me/AST_payment_course_bot">Бот оплаты</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="document-card">
+    <div class="doc-meta">Редакция от 20 сентября 2026 г. • Действующий нормативный документ</div>
+    <h1>Публичная оферта</h1>
+    <div class="subtitle">на заключение договора об оказании информационно-консультационных услуг</div>
+
+    <div class="important-notice">
+      <strong>Внимание:</strong> В соответствии со статьями 437 и 438 Гражданского кодекса РФ совершение действий по оформлению заявки и/или оплате услуг в Telegram-боте <code>@AST_payment_course_bot</code> или на официальном сайте является полным и безоговорочным акцептом настоящей Оферты.
+    </div>
+
+    <p>Настоящий документ представляет собой официальное публичное безотзывное предложение <strong>Индивидуального предпринимателя Опилкина Максима Юрьевича</strong> (далее — «Исполнитель»), адресованное любому дееспособному физическому лицу, индивидуальному предпринимателю или юридическому лицу (далее — «Заказчик»), заключить договор об оказании информационно-консультационных услуг по авторским программам <strong>Академии структурной типологии (автор методологии — Николай Петяев)</strong> на условиях, изложенных ниже.</p>
+
+    <h2>1. Термины и определения</h2>
+    <ul>
+      <li><strong>Оферта</strong> — настоящий документ, опубликованный в сети Интернет по сетевому адресу <code>https://structural-typology.academy/offer</code> и доступный в официальном Telegram-боте <code>@AST_payment_course_bot</code>.</li>
+      <li><strong>Акцепт Оферты</strong> — полное и безоговорочное принятие Заказчиком условий Оферты путем заполнения формы регистрации и/или внесения оплаты.</li>
+      <li><strong>Исполнитель</strong> — Индивидуальный предприниматель Опилкин Максим Юрьевич (ОГРНИП 322784700036707, ИНН 781451999355), администрирующий платежные и организационные процессы Академии.</li>
+      <li><strong>Автор методологии</strong> — Николай Петяев, автор динамической модели структурной типологии, авторских концепций «Иерархия уровней сознания», «Новая парадигма Маслоу», «Нормативная ситуация» и сопутствующих обучающих программ.</li>
+      <li><strong>Заказчик</strong> — дееспособное физическое лицо, индивидуальный предприниматель или юридическое лицо, совершившее Акцепт.</li>
+      <li><strong>Курс / Программа</strong> — структурированный комплекс занятий («Иерархия уровней сознания», «Структурная типология личности», «Пирамида Маслоу: Новая парадигма», «Концепция нормативной ситуации», «Игра и творчество»), описание и график которого представлены на Сайте и в Telegram-боте.</li>
+      <li><strong>Telegram-бот оплаты</strong> — официальный бот <code>@AST_payment_course_bot</code>.</li>
+    </ul>
+
+    <h2>2. Предмет договора</h2>
+    <p>2.1. Исполнитель обязуется оказать Заказчику информационно-консультационные услуги по выбранной Программе Академии структурной типологии, а Заказчик обязуется принять и оплатить данные Услуги.</p>
+    <p>2.2. Услуги носят информационно-консультационный характер, не являются образовательной деятельностью, подлежащей лицензированию (согласно Федеральному закону № 273-ФЗ «Об образовании в РФ»), не сопровождаются итоговой аттестацией и выдачей документов государственного образца.</p>
+    <p>2.3. Услуги оказываются дистанционно через сеть Интернет с использованием сторонних платформ видеоконференцсвязи (Zoom) и мессенджеров (Telegram).</p>
+
+    <h2>3. Порядок акцепта оферты и заключение договора</h2>
+    <p>3.1. Акцептом признается совершение Заказчиком одного или совокупности следующих конклюдентных действий (ст. 438 ГК РФ):</p>
+    <ul>
+      <li>Оформление заявки в Telegram-боте <code>@AST_payment_course_bot</code> или на Сайте;</li>
+      <li>Проставление отметки / клик по кнопке «Подтвердить согласие с офертой»;</li>
+      <li>Внесение полной или частичной оплаты услуг (СБП, банковская карта, безналичный расчет по счету).</li>
+    </ul>
+    <p>3.2. Договор считается заключенным с момента зачисления денежных средств на расчетный счет Исполнителя.</p>
+
+    <h2>4. Стоимость услуг и порядок расчетов</h2>
+    <p>4.1. Стоимость Услуг указывается в рублях РФ на Сайте и в Telegram-боте. В связи с применением Исполнителем УСН (п. 2 ст. 346.11 НК РФ) услуги <strong>не облагаются НДС</strong>.</p>
+    <p>4.2. Оплата осуществляется на условиях 100% предоплаты через СБП, по банковским картам либо безналичным расчетом по счету для юридических лиц и ИП.</p>
+    <p>4.3. В соответствии с Федеральным законом № 54-ФЗ электронный кассовый чек направляется физическому лицу на указанный при регистрации email или телефон.</p>
+    <p>4.4. Услуги признаются оказанными в полном объеме по завершении финальной встречи Потока при отсутствии мотивированной письменной претензии в течение 3 (трех) календарных дней.</p>
+
+    <h2>5. Интеллектуальная собственность и авторские права</h2>
+    <p>5.1. Все учебные материалы, авторские концепции уровней сознания, видеозаписи, тексты и презентации являются исключительной интеллектуальной собственностью <strong>Автора — Николая Петяева</strong> (Часть IV ГК РФ).</p>
+    <p>5.2. Заказчику предоставляется ограниченная персональная лицензия для использования материалов <strong>исключительно в личных некоммерческих целях</strong>.</p>
+    <p>5.3. <strong>Категорически запрещено:</strong> осуществлять запись онлайн-встреч, публиковать материалы в открытом доступе, торрентах, складчинах, передавать третьим лицам или использовать для создания производных тренингов и курсов. Штраф за каждый факт нарушения составляет <strong>500 000 руб.</strong>, а также компенсация по ст. 1301 ГК РФ в размере до <strong>5 000 000 руб.</strong></p>
+
+    <h2>6. Порядок возврата денежных средств</h2>
+    <p>6.1. Заказчик вправе отказаться от исполнения Договора в любое время при условии оплаты Исполнителю фактически понесенных расходов (ст. 782 ГК РФ, ст. 32 ЗоЗПП).</p>
+    <p>6.2. К фактически понесенным расходам относятся: комиссии банков и эквайринга, стоимость открытого доступа к методическим материалам (не менее 30% стоимости курса) и стоимость фактически проведенных на момент обращения встреч.</p>
+    <p>6.3. При отказе после проведения 50% и более объема встреч возврат не производится в связи с 100% покрытием стоимости фактически понесенными расходами.</p>
+    <p>6.4. Заявление на возврат направляется в письменном виде с личной подписью на email: <code>info@structural-typology.academy</code>. Срок рассмотрения — до 10 рабочих дней.</p>
+
+    <h2>7. Защита персональных данных (152-ФЗ РФ)</h2>
+    <p>7.1. Акцептуя оферту, Заказчик дает согласие Исполнителю на обработку своих персональных данных (ФИО, телефон, email, Telegram ID, реквизиты) в целях исполнения настоящего Договора, направления чеков и организационной коммуникации.</p>
+    <p>7.2. Данные охраняются законом, передача третьим лицам не осуществляется (за исключением банков и операторов фискальных данных для проведения расчетов).</p>
+
+    <h2>8. Реквизиты и контакты Исполнителя</h2>
+    
+    <div class="requisites-grid">
+      <div class="req-group">
+        <h4>Исполнитель</h4>
+        <div class="req-row">
+          <span class="req-label">Наименование:</span>
+          <span class="req-value">ИП Опилкин Максим Юрьевич</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">ИНН:</span>
+          <span class="req-value">781451999355</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">ОГРНИП:</span>
+          <span class="req-value">322784700036707</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">Адрес:</span>
+          <span class="req-value">192241, Россия, г. Санкт-Петербург, пр-кт Славы, д. 51, лит. А, кв. 552</span>
+        </div>
+      </div>
+
+      <div class="req-group">
+        <h4>Банковские реквизиты</h4>
+        <div class="req-row">
+          <span class="req-label">Расчетный счет:</span>
+          <span class="req-value">40802810100003037685</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">Банк:</span>
+          <span class="req-value">АО «ТБанк»</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">БИК:</span>
+          <span class="req-value">044525974</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">Корр. счет:</span>
+          <span class="req-value">30101810145250000974</span>
+        </div>
+      </div>
+
+      <div class="req-group">
+        <h4>Контакты и каналы</h4>
+        <div class="req-row">
+          <span class="req-label">Email поддержки:</span>
+          <span class="req-value">info@structural-typology.academy</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">Telegram-бот:</span>
+          <span class="req-value">@AST_payment_course_bot</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">Куратор в Telegram:</span>
+          <span class="req-value">@Lebedev_AST</span>
+        </div>
+        <div class="req-row">
+          <span class="req-label">Сайт Академии:</span>
+          <span class="req-value">structural-typology.academy</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 32px;">
+      <a href="https://t.me/AST_payment_course_bot" class="btn-return">Вернуться к оформлению в Telegram-боте</a>
+    </div>
+
+  </div>
+</main>
+
+<footer>
+  <p>© 2026 Академия структурной типологии. Автор методологии: Николай Петяев. Все права защищены.</p>
+  <p style="margin-top: 8px;">ИП Опилкин Максим Юрьевич • ИНН 781451999355 • ОГРНИП 322784700036707</p>
+</footer>
+
+</body>
+</html>

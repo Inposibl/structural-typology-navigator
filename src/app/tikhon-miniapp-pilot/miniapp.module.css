@@ -1,0 +1,977 @@
+/* Controlling Visual System: Very light lavender / white base + restrained violet accents */
+
+.container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #f8f7fc;
+  color: #0f172a;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)) 16px;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle Top Brand Header */
+.topHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 14px 4px;
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.subtleAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid #ede9fe;
+  box-shadow: 0 1px 3px rgba(124, 58, 237, 0.08);
+}
+
+.brandInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.brandTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0;
+  line-height: 1.25;
+}
+
+.brandSubtitle {
+  font-size: 11px;
+  color: #64748b;
+  margin: 1px 0 0 0;
+  font-weight: 500;
+}
+
+/* Welcome Card (§5: Simplified functional capability only) */
+.welcomeCard {
+  background: #ffffff;
+  border: 1px solid #ede9fe;
+  border-radius: 20px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px -2px rgba(124, 58, 237, 0.04), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+}
+
+.welcomeHeading {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px 0;
+}
+
+.welcomeText {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #475569;
+  margin: 0;
+}
+
+/* Section Header */
+.sectionHeader {
+  margin: 0 4px 14px 4px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+/* Course Cards List */
+.courseList {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.courseCard {
+  background: #ffffff;
+  border: 1px solid #ede9fe;
+  border-radius: 20px;
+  padding: 18px 18px 16px 18px;
+  box-shadow: 0 4px 16px -2px rgba(124, 58, 237, 0.03), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.courseCardActive {
+  cursor: pointer;
+  border-color: #ddd6fe;
+}
+
+.courseCardActive:active {
+  transform: scale(0.985);
+  background-color: #fbfbfe;
+  border-color: #7c3aed;
+  box-shadow: 0 6px 20px -2px rgba(124, 58, 237, 0.08);
+}
+
+/* Header row inside Card */
+.cardMetaTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* Status Badge: Soft lavender-violet tint (Restrained visual system) */
+.statusBadge {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: #ede9fe;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: 0.01em;
+}
+
+.flagshipBadge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: #f5f3ff;
+  color: #5b21b6;
+  border: 1px solid #c4b5fd;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.meetingsCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.courseTitle {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+  margin: 0 0 4px 0;
+  letter-spacing: -0.01em;
+}
+
+.courseSubtitle {
+  font-size: 12px;
+  color: #7c3aed;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.courseDesc {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #475569;
+  margin: 0 0 12px 0;
+}
+
+/* Factual Specs inside Card */
+.specsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #fbfbfe;
+  border: 1px solid #f1f0f7;
+  border-radius: 12px;
+  padding: 9px 12px;
+  margin-bottom: 12px;
+}
+
+.specItem {
+  font-size: 12px;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.specBullet {
+  color: #7c3aed;
+  font-weight: 700;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #f5f3ff;
+}
+
+.priceTag {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.openAction {
+  font-size: 13px;
+  font-weight: 700;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* SCREEN 2: COURSE DETAIL */
+.navBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 16px 0;
+}
+
+.backBtn {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 700;
+  color: #7c3aed;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0;
+}
+
+.backBtn:active {
+  opacity: 0.7;
+}
+
+.navTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.detailCard {
+  background: #ffffff;
+  border: 1px solid #ede9fe;
+  border-radius: 24px;
+  padding: 22px 20px;
+  box-shadow: 0 4px 24px -2px rgba(124, 58, 237, 0.05), 0 1px 3px 0 rgba(0, 0, 0, 0.02);
+  margin-bottom: 20px;
+}
+
+.detailBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.detailTitle {
+  font-size: 21px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.25;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.02em;
+}
+
+.detailAuthor {
+  font-size: 13px;
+  color: #7c3aed;
+  font-weight: 700;
+  margin: 0 0 14px 0;
+}
+
+.detailDesc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #334155;
+  margin: 0 0 20px 0;
+}
+
+.metaGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fbfbfe;
+  border: 1px solid #ede9fe;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.metaItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metaLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.metaValue {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.priceBox {
+  margin-top: 18px;
+  padding: 16px;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.priceLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: #5b21b6;
+}
+
+.priceNote {
+  font-size: 11px;
+  color: #6d28d9;
+  margin-top: 2px;
+}
+
+.priceValue {
+  font-size: 21px;
+  font-weight: 800;
+  color: #4c1d95;
+  letter-spacing: -0.01em;
+}
+
+/* Primary CTA in Detail */
+.ctaBox {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.primaryBtn {
+  background: #7c3aed;
+  color: #ffffff;
+  border: none;
+  border-radius: 16px;
+  padding: 15px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  width: 100%;
+  min-height: 48px;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.3);
+  transition: background 0.15s ease, transform 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.primaryBtn:active {
+  transform: scale(0.985);
+  background: #6d28d9;
+}
+
+.pilotNotice {
+  font-size: 12px;
+  line-height: 1.45;
+  color: #64748b;
+  text-align: center;
+  margin: 4px 0 0 0;
+}
+
+/* Pilot Informational Modal */
+.pilotModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 999;
+}
+
+.pilotModal {
+  background: #ffffff;
+  border-radius: 24px 24px 0 0;
+  max-width: 480px;
+  width: 100%;
+  padding: 24px 20px max(24px, env(safe-area-inset-bottom)) 20px;
+  box-sizing: border-box;
+  animation: slideUp 0.2s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px 0;
+}
+
+.modalText {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #475569;
+  margin: 0 0 18px 0;
+}
+
+.modalCloseBtn {
+  background: #ede9fe;
+  color: #5b21b6;
+  border: 1px solid #ddd6fe;
+  border-radius: 14px;
+  padding: 13px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  width: 100%;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.footer {
+  margin-top: auto;
+  padding: 16px 4px 4px 4px;
+  text-align: center;
+}
+
+.footerText {
+  font-size: 11px;
+  color: #94a3b8;
+  margin: 0;
+}
+
+/* Loading and Error states */
+.loadingBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #ffffff;
+  border: 1px solid #ede9fe;
+  border-radius: 20px;
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 600;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #ede9fe;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.errorBox {
+  padding: 24px 20px;
+  background: #ffffff;
+  border: 1px solid #fed7aa;
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.errorTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #9a3412;
+  margin: 0 0 6px 0;
+}
+
+.errorText {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 16px 0;
+}
+
+.retryBtn {
+  background: #7c3aed;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+
+/* Cohort Selector (Batch 1: Screen 2) */
+.cohortSection {
+  margin-top: 20px;
+}
+
+.cohortSectionTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px 0;
+}
+
+.cohortSectionSubtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0 0 12px 0;
+}
+
+.cohortList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.cohortCard {
+  background: #ffffff;
+  border: 1.5px solid #ede9fe;
+  border-radius: 16px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cohortCard:hover:not(.cohortCardDisabled) {
+  border-color: #c4b5fd;
+  background-color: #fbfbfe;
+}
+
+.cohortCardSelected {
+  border-color: #7c3aed !important;
+  background-color: #fdfcff !important;
+  box-shadow: 0 0 0 1px #7c3aed, 0 4px 14px rgba(124, 58, 237, 0.08);
+}
+
+.cohortCardDisabled {
+  opacity: 0.65;
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+.cohortCardWaitingList {
+  border-style: dashed;
+}
+
+.cohortTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cohortRadioGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cohortRadioIndicator {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  background: #ffffff;
+}
+
+.cohortCardSelected .cohortRadioIndicator {
+  border-color: #7c3aed;
+}
+
+.cohortRadioDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #7c3aed;
+}
+
+.cohortTitleText {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cohortBadge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2.5px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.badgeOpen {
+  background: #ede9fe;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+.badgeWaiting {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.badgeClosed {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+}
+
+.cohortMetaList {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 28px;
+}
+
+.cohortMetaLine {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.cohortMetaSeats {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #6d28d9;
+}
+
+.cohortCardDisabled .cohortMetaSeats {
+  color: #94a3b8;
+}
+
+.selectedStatusInfo {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 12px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #4c1d95;
+}
+
+/* Pricing and Payment Progression (Batch 1 CORR1) */
+.pricingSection {
+  margin-top: 20px;
+}
+
+.pricingSectionTitle {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0 0 4px 0;
+}
+
+.pricingSectionSubtitle {
+  font-size: 12px;
+  color: #64748b;
+  margin: 0 0 12px 0;
+}
+
+.pricingList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.pricingCard {
+  background: #ffffff;
+  border: 1.5px solid #ede9fe;
+  border-radius: 16px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pricingCard:hover:not(.pricingCardDisabled):not(.pricingCardPaid) {
+  border-color: #c4b5fd;
+  background-color: #fbfbfe;
+}
+
+.pricingCardSelected {
+  border-color: #7c3aed !important;
+  background-color: #fdfcff !important;
+  box-shadow: 0 0 0 1px #7c3aed, 0 4px 14px rgba(124, 58, 237, 0.08);
+}
+
+.pricingCardPaid {
+  background: #f0fdf4 !important;
+  border-color: #bbf7d0 !important;
+  cursor: default;
+}
+
+.pricingCardDisabled {
+  opacity: 0.65;
+  background: #f8fafc !important;
+  border-color: #e2e8f0 !important;
+  cursor: not-allowed;
+}
+
+.pricingTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pricingTitleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pricingPriceGroup {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.basePriceStrikethrough {
+  font-size: 13px;
+  color: #94a3b8;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.pricingPriceText {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.pricingOptionTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.discountBadge {
+  font-size: 11px;
+  font-weight: 800;
+  background: #ede9fe;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-left: 6px;
+}
+
+.paidBadge {
+  font-size: 11px;
+  font-weight: 700;
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.lockedBadge {
+  font-size: 11px;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.pricingOptionDesc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+  padding-left: 28px;
+}
+
+.pricingLockReason {
+  font-size: 11.5px;
+  color: #94a3b8;
+  line-height: 1.4;
+  padding-left: 28px;
+  font-style: italic;
+}
+
+.legacyWarningBox {
+  background: #fffbeb;
+  border: 1.5px solid #fde68a;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-top: 14px;
+  margin-bottom: 12px;
+}
+
+.legacyWarningTitle {
+  font-size: 13.5px;
+  font-weight: 750;
+  color: #92400e;
+  margin-bottom: 4px;
+}
+
+.legacyWarningText {
+  font-size: 12.5px;
+  color: #b45309;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.curatorLink {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #7c3aed;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.offerNoticeBox {
+  margin: 12px 0 16px 0;
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.offerLink {
+  color: #7c3aed;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.coursePageBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  border: 1.5px solid #ede9fe;
+  background: #ffffff;
+  color: #6d28d9;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  box-sizing: border-box;
+  min-height: 46px;
+  transition: all 0.15s ease;
+  margin-top: 8px;
+}
+
+.coursePageBtn:hover {
+  background-color: #fbfbfe;
+  border-color: #c4b5fd;
+}
+
+/* Responsive adjustments */
+@media (max-width: 390px) {
+  .container {
+    padding: max(12px, env(safe-area-inset-top)) 12px max(20px, env(safe-area-inset-bottom)) 12px;
+  }
+  .welcomeCard, .detailCard {
+    padding: 16px 14px;
+  }
+  .detailTitle {
+    font-size: 19px;
+  }
+}
+
+@media (max-width: 320px) {
+  .container {
+    padding: max(10px, env(safe-area-inset-top)) 8px max(16px, env(safe-area-inset-bottom)) 8px;
+  }
+  .cohortTopRow {
+    flex-wrap: wrap;
+  }
+  .cardMetaTop {
+    flex-wrap: wrap;
+  }
+  .priceBox {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
