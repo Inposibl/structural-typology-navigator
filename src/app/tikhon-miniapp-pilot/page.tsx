@@ -11,7 +11,14 @@ import {
   StudentCourseStatus,
   StudentStatusResponse,
   OptionState,
+  MiniAppScreen,
+  PayerType,
+  PAYER_TYPE_OPTIONS,
   getOptionEligibility,
+  getPublicAwareOptionEligibility,
+  getSingleAutoPricingOption,
+  canProceedToPayerSelection,
+  getNextStageLabel,
   getMeetingWord,
   extractCadence,
   resolveDeepLinkCourseId,
@@ -21,9 +28,14 @@ import {
   getCohortBadgeText,
 } from "./helpers";
 
-export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState };
+export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState, MiniAppScreen, PayerType };
 export {
+  PAYER_TYPE_OPTIONS,
   getOptionEligibility,
+  getPublicAwareOptionEligibility,
+  getSingleAutoPricingOption,
+  canProceedToPayerSelection,
+  getNextStageLabel,
   getMeetingWord,
   extractCadence,
   resolveDeepLinkCourseId,
@@ -64,12 +76,27 @@ declare global {
   }
 }
 
+// CORR1: bounded retry for transient upstream entitlement-lookup failures
+type StudentStatusCheck = "idle" | "ok" | "unauthorized" | "unavailable";
+const STUDENT_STATUS_MAX_ATTEMPTS = 3;
+const STUDENT_STATUS_RETRY_DELAY_MS = 700;
+
 export default function TikhonMiniAppPilotPage() {
-  const [screen, setScreen] = useState<"catalog" | "detail">("catalog");
+  const [screen, setScreen] = useState<MiniAppScreen>("catalog");
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
   const [selectedCohortId, setSelectedCohortId] = useState<string | null>(null);
   const [selectedPricingOptionId, setSelectedPricingOptionId] = useState<string | null>(null);
-  const [showNoticeModal, setShowNoticeModal] = useState(false);
+  // Batch 2: payer type is navigational client state only (never commercial,
+  // entitlement, or payment authority)
+  const [selectedPayerType, setSelectedPayerType] = useState<PayerType | null>(null);
+  const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
+  const [hasTelegramInitData, setHasTelegramInitData] = useState(false);
+  const [studentStatusResolved, setStudentStatusResolved] = useState(false);
+  // CORR1: outcome of the student-status check for a Telegram session.
+  // "unavailable" (5xx / network) must never be reported as a missing Telegram
+  // login; access stays fail-closed until the server confirms the session.
+  const [studentStatusCheck, setStudentStatusCheck] = useState<StudentStatusCheck>("idle");
+  const [showStatusUnavailableModal, setShowStatusUnavailableModal] = useState(false);
 
   // Live data state from authoritative Supabase-backed API
   const [courses, setCourses] = useState<Course[]>([]);
@@ -107,11 +134,21 @@ export default function TikhonMiniAppPilotPage() {
   }, [fetchCourses]);
 
   // Load student authenticated status via Telegram WebApp initData HMAC
-  useEffect(() => {
-    async function loadStudentStatus() {
-      if (typeof window === "undefined") return;
-      const initData = window.Telegram?.WebApp?.initData;
-      if (!initData) return;
+  const loadStudentStatus = useCallback(async () => {
+    if (typeof window === "undefined") return;
+    const initData = window.Telegram?.WebApp?.initData;
+    setHasTelegramInitData(Boolean(initData));
+    if (!initData) {
+      // Public-browser mode: no identity is fabricated (Batch 2 §10)
+      setStudentStatusResolved(true);
+      return;
+    }
+    setStudentStatusResolved(false);
+    let outcome: StudentStatusCheck = "unavailable";
+    for (let attempt = 0; attempt < STUDENT_STATUS_MAX_ATTEMPTS; attempt++) {
+      if (attempt > 0) {
+        await new Promise((resolve) => setTimeout(resolve, STUDENT_STATUS_RETRY_DELAY_MS * attempt));
+      }
       try {
         const res = await fetch("/api/tikhon/student-status", {
           headers: {
@@ -121,13 +158,26 @@ export default function TikhonMiniAppPilotPage() {
         if (res.ok) {
           const data: StudentStatusResponse = await res.json();
           setStudentStatus(data);
+          outcome = "ok";
+          break;
         }
+        if (res.status === 401) {
+          // Signature rejected by the server: genuinely unauthenticated
+          outcome = "unauthorized";
+          break;
+        }
+        // 5xx: entitlement lookup failed upstream; retry (CORR1)
       } catch (e) {
         console.error("Failed to load student status:", e);
       }
     }
-    loadStudentStatus();
+    setStudentStatusCheck(outcome);
+    setStudentStatusResolved(true);
   }, []);
+
+  useEffect(() => {
+    loadStudentStatus();
+  }, [loadStudentStatus]);
 
   // Deep linking resolution on initial mount and when courses arrive
   useEffect(() => {
@@ -153,9 +203,13 @@ export default function TikhonMiniAppPilotPage() {
         tg.ready();
         tg.expand?.();
 
-        if (screen === "detail") {
+        if (screen !== "catalog") {
           tg.BackButton?.show();
-          const handleBack = () => setScreen("catalog");
+          const handleBack = () => {
+            if (screen === "detail") setScreen("catalog");
+            else if (screen === "payer") setScreen("detail");
+            else if (screen === "next_stage_stub") setScreen("payer");
+          };
           tg.BackButton?.onClick(handleBack);
           return () => {
             tg.BackButton?.offClick(handleBack);
@@ -203,28 +257,50 @@ export default function TikhonMiniAppPilotPage() {
     }
   }, [selectedCourse]);
 
-  // Auto-select initial eligible pricing option when course or student status changes
+  // Batch 2 §7/§8: single-option courses auto-select their only source-provided
+  // pricing option; multi-option courses (Structural Typology) require an
+  // explicit user choice and are never auto-selected
   useEffect(() => {
     if (!selectedCourse?.pricing_options || selectedCourse.pricing_options.length === 0) {
       setSelectedPricingOptionId(null);
       return;
     }
 
-    const firstEligible = selectedCourse.pricing_options.find((opt) => {
-      const { state } = getOptionEligibility(
-        selectedCourse.id,
-        opt.id,
-        currentStudentCourseStatus
-      );
-      return state === "ELIGIBLE";
-    });
-
-    if (firstEligible) {
-      setSelectedPricingOptionId(firstEligible.id);
-    } else {
-      setSelectedPricingOptionId(selectedCourse.pricing_options[0].id);
+    const singleAuto = getSingleAutoPricingOption(selectedCourse);
+    if (singleAuto) {
+      setSelectedPricingOptionId(singleAuto.id);
+      return;
     }
-  }, [selectedCourse, currentStudentCourseStatus]);
+
+    setSelectedPricingOptionId((prev) =>
+      prev && selectedCourse.pricing_options.some((opt) => opt.id === prev)
+        ? prev
+        : null
+    );
+  }, [selectedCourse]);
+
+  // Authenticated identity is strictly server-derived (Batch 2 §10)
+  const isAuthenticated = studentStatus?.is_authenticated === true;
+
+  // Batch 2 §12: a selected pricing option that is not currently ELIGIBLE can
+  // never be carried into payer selection (PAID / LOCKED / staged-disabled)
+  useEffect(() => {
+    if (!selectedCourse || !selectedPricingOptionId) return;
+    const { state } = getPublicAwareOptionEligibility(
+      selectedCourse.id,
+      selectedPricingOptionId,
+      currentStudentCourseStatus,
+      isAuthenticated
+    );
+    if (state !== "ELIGIBLE") {
+      setSelectedPricingOptionId(null);
+    }
+  }, [selectedCourse, selectedPricingOptionId, currentStudentCourseStatus, isAuthenticated]);
+
+  // Payer choice belongs to a single course context
+  useEffect(() => {
+    setSelectedPayerType(null);
+  }, [selectedCourseId]);
 
   const selectedCohort = useMemo(() => {
     if (!selectedCourse?.cohorts) return null;
@@ -235,6 +311,34 @@ export default function TikhonMiniAppPilotPage() {
     if (!selectedCourse?.pricing_options) return null;
     return selectedCourse.pricing_options.find((opt) => opt.id === selectedPricingOptionId) || selectedCourse.pricing_options[0] || null;
   }, [selectedCourse, selectedPricingOptionId]);
+
+  const selectedPayerOption = useMemo(() => {
+    if (!selectedPayerType) return null;
+    return PAYER_TYPE_OPTIONS.find((opt) => opt.value === selectedPayerType) || null;
+  }, [selectedPayerType]);
+
+  // Batch 2 §12: Screen 2 -> Screen 3 transition gate. Local-only navigation;
+  // unauthenticated public-browser mode receives a bounded Telegram-auth state
+  // instead of a fabricated personalized enrollment session (§10).
+  const handleProceedToPayer = () => {
+    if (hasTelegramInitData && !studentStatusResolved) return;
+    if (hasTelegramInitData && studentStatusCheck === "unavailable") {
+      setShowStatusUnavailableModal(true);
+      return;
+    }
+    const gate = canProceedToPayerSelection({
+      course: selectedCourse,
+      cohort: selectedCohort,
+      pricingOption: selectedPricingOption,
+      studentCourseStatus: currentStudentCourseStatus,
+      isAuthenticated,
+    });
+    if (gate.allowed) {
+      setScreen("payer");
+    } else if (gate.reason === "auth_required") {
+      setShowAuthRequiredModal(true);
+    }
+  };
 
   return (
     <main className={styles.container}>
@@ -388,7 +492,7 @@ export default function TikhonMiniAppPilotPage() {
             </p>
           </footer>
         </>
-      ) : (
+      ) : screen === "detail" ? (
         /* SCREEN 2: COURSE DETAIL, COHORT SELECTION & PRICING PROGRESSION */
         <>
           <nav className={styles.navBar}>
@@ -575,10 +679,11 @@ export default function TikhonMiniAppPilotPage() {
 
                 <div className={styles.pricingList} role="radiogroup" aria-label="Варианты оплаты">
                   {selectedCourse.pricing_options?.map((opt) => {
-                    const eligibility = getOptionEligibility(
+                    const eligibility = getPublicAwareOptionEligibility(
                       selectedCourse.id,
                       opt.id,
-                      currentStudentCourseStatus
+                      currentStudentCourseStatus,
+                      isAuthenticated
                     );
                     const isSelected = selectedPricingOptionId === opt.id;
                     const isEligible = eligibility.state === "ELIGIBLE";
@@ -684,13 +789,14 @@ export default function TikhonMiniAppPilotPage() {
                   className={styles.primaryBtn}
                   disabled={
                     !selectedPricingOptionId ||
-                    getOptionEligibility(
+                    getPublicAwareOptionEligibility(
                       selectedCourse.id,
                       selectedPricingOptionId,
-                      currentStudentCourseStatus
+                      currentStudentCourseStatus,
+                      isAuthenticated
                     ).state !== "ELIGIBLE"
                   }
-                  onClick={() => setShowNoticeModal(true)}
+                  onClick={handleProceedToPayer}
                 >
                   Оформить участие
                 </button>
@@ -713,7 +819,7 @@ export default function TikhonMiniAppPilotPage() {
                 )}
 
                 <p className={styles.pilotNotice}>
-                  Выбор тарифа и потока фиксируется в Mini App · Завершение оформления в Telegram-боте
+                  Далее — выбор типа плательщика · Данные и оплата оформляются на следующих шагах
                 </p>
               </div>
             </article>
@@ -725,51 +831,280 @@ export default function TikhonMiniAppPilotPage() {
             </p>
           </footer>
         </>
+      ) : screen === "payer" ? (
+        /* SCREEN 3: PAYER SELECTION (Batch 2 — UI only, zero persistence) */
+        <>
+          <nav className={styles.navBar}>
+            <button
+              type="button"
+              className={styles.backBtn}
+              onClick={() => setScreen("detail")}
+            >
+              ← Тарифы и поток
+            </button>
+            <span className={styles.navTitle}>Оформление участия</span>
+          </nav>
+
+          <article className={styles.detailCard}>
+            <h1 className={styles.payerHeading}>Кто будет оплачивать?</h1>
+            <p className={styles.payerSubheading}>Выберите тип плательщика</p>
+
+            {/* Source-backed selection summary — no hardcoded commercial facts (§19) */}
+            {selectedCourse && selectedCohort && selectedPricingOption && (
+              <div className={styles.payerSummaryCard}>
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Программа</span>
+                  <span className={styles.payerSummaryValue}>
+                    {selectedCourse.title}
+                  </span>
+                </div>
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Поток</span>
+                  <span className={styles.payerSummaryValue}>
+                    {selectedCohort.title}
+                    {selectedCohort.start_date
+                      ? ` · Старт: ${selectedCohort.start_date}`
+                      : ""}
+                  </span>
+                </div>
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Тариф</span>
+                  <span className={styles.payerSummaryValue}>
+                    {selectedPricingOption.title}
+                  </span>
+                </div>
+                <div className={styles.payerSummaryTotal}>
+                  {typeof selectedPricingOption.base_price === "number" && (
+                    <span className={styles.basePriceStrikethrough}>
+                      {selectedPricingOption.base_price.toLocaleString("ru-RU")} ₽
+                    </span>
+                  )}
+                  <span className={styles.payerSummaryPrice}>
+                    {selectedPricingOption.price.toLocaleString("ru-RU")} ₽
+                  </span>
+                  {typeof selectedPricingOption.discount_percent === "number" && (
+                    <span className={styles.discountBadge}>
+                      -{selectedPricingOption.discount_percent}%
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <div
+              className={styles.payerList}
+              role="radiogroup"
+              aria-label="Тип плательщика"
+            >
+              {PAYER_TYPE_OPTIONS.map((opt) => {
+                const isSelected = selectedPayerType === opt.value;
+                return (
+                  <div
+                    key={opt.value}
+                    role="radio"
+                    aria-checked={isSelected}
+                    tabIndex={0}
+                    className={`${styles.payerCard} ${
+                      isSelected ? styles.payerCardSelected : ""
+                    }`}
+                    onClick={() => setSelectedPayerType(opt.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelectedPayerType(opt.value);
+                      }
+                    }}
+                  >
+                    <div className={styles.cohortRadioGroup}>
+                      <div className={styles.cohortRadioIndicator}>
+                        {isSelected && <div className={styles.cohortRadioDot} />}
+                      </div>
+                      <span className={styles.payerCardTitle}>{opt.title}</span>
+                    </div>
+                    <div className={styles.payerCardDesc}>{opt.description}</div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Canonical Public Offer Notice (Batch 2 §18) */}
+            <div className={styles.offerNoticeBox}>
+              Условия оплаты и возврата указаны в{" "}
+              <a
+                href="/offer"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.offerLink}
+                onClick={(e) => {
+                  if (window.Telegram?.WebApp?.openLink) {
+                    e.preventDefault();
+                    window.Telegram.WebApp.openLink(
+                      `${window.location.origin}/offer`
+                    );
+                  }
+                }}
+              >
+                Публичной оферте
+              </a>
+            </div>
+
+            <div className={styles.ctaBox}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                disabled={!selectedPayerType}
+                onClick={() => {
+                  if (selectedPayerType) setScreen("next_stage_stub");
+                }}
+              >
+                Продолжить
+              </button>
+            </div>
+          </article>
+
+          <footer className={styles.footer}>
+            <p className={styles.footerText}>
+              Академия структурной типологии · Официальный Telegram-сервис
+            </p>
+          </footer>
+        </>
+      ) : (
+        /* LOCAL-ONLY NEXT-STAGE STUB (Batch 2 §16 — no forms, no persistence) */
+        <>
+          <nav className={styles.navBar}>
+            <button
+              type="button"
+              className={styles.backBtn}
+              onClick={() => setScreen("payer")}
+            >
+              ← Тип плательщика
+            </button>
+            <span className={styles.navTitle}>Оформление участия</span>
+          </nav>
+
+          <article className={styles.detailCard}>
+            <h1 className={styles.payerHeading}>Следующий этап</h1>
+            <p className={styles.payerSubheading}>
+              Локальный предпросмотр перехода — данные не отправляются
+            </p>
+
+            {selectedPayerOption && (
+              <div className={styles.stubStageCard}>
+                <div className={styles.stubStageLabel}>
+                  {getNextStageLabel(selectedPayerOption.value)}
+                </div>
+                <p className={styles.stubStageText}>
+                  Форма подключается на следующем этапе. На этом шаге заявка не
+                  создаётся, оплата не инициируется и никакие данные не
+                  сохраняются.
+                </p>
+              </div>
+            )}
+
+            {selectedCourse &&
+              selectedCohort &&
+              selectedPricingOption &&
+              selectedPayerOption && (
+                <div className={styles.payerSummaryCard}>
+                  <div className={styles.payerSummaryRow}>
+                    <span className={styles.payerSummaryLabel}>Программа</span>
+                    <span className={styles.payerSummaryValue}>
+                      {selectedCourse.title}
+                    </span>
+                  </div>
+                  <div className={styles.payerSummaryRow}>
+                    <span className={styles.payerSummaryLabel}>Поток</span>
+                    <span className={styles.payerSummaryValue}>
+                      {selectedCohort.title}
+                    </span>
+                  </div>
+                  <div className={styles.payerSummaryRow}>
+                    <span className={styles.payerSummaryLabel}>Тариф</span>
+                    <span className={styles.payerSummaryValue}>
+                      {selectedPricingOption.title} ·{" "}
+                      {selectedPricingOption.price.toLocaleString("ru-RU")} ₽
+                    </span>
+                  </div>
+                  <div className={styles.payerSummaryRow}>
+                    <span className={styles.payerSummaryLabel}>Плательщик</span>
+                    <span className={styles.payerSummaryValue}>
+                      {selectedPayerOption.title}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+            <div className={styles.ctaBox}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={() => setScreen("payer")}
+              >
+                Вернуться к выбору плательщика
+              </button>
+            </div>
+          </article>
+
+          <footer className={styles.footer}>
+            <p className={styles.footerText}>
+              Академия структурной типологии · Официальный Telegram-сервис
+            </p>
+          </footer>
+        </>
       )}
 
-      {/* Non-trapping informational bottom sheet for Batch 1 */}
-      {showNoticeModal && (
+      {/* Bounded Telegram-auth-required state (Batch 2 §10) */}
+      {showAuthRequiredModal && (
         <div
           className={styles.pilotModalOverlay}
-          onClick={() => setShowNoticeModal(false)}
+          onClick={() => setShowAuthRequiredModal(false)}
         >
           <div
             className={styles.pilotModal}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={styles.modalTitle}>Выбор зафиксирован</div>
+            <div className={styles.modalTitle}>Требуется вход через Telegram</div>
             <p className={styles.modalText}>
-              Вы выбрали курс <strong>«{selectedCourse?.title}»</strong>
-              {selectedCohort ? `, поток: «${selectedCohort.title}»` : ""}
-              {selectedPricingOption
-                ? `, тариф: «${selectedPricingOption.title}» (${selectedPricingOption.price.toLocaleString("ru-RU")} ₽)`
-                : ""}.
-              <br />
-              <br />
-              Онлайн-оплата (Screen 3) подключается на следующем этапе.
-              Чтобы получить ссылку на оплату прямо сейчас, перейдите в чат с секретарем Тихоном.
+              Каталог, потоки и тарифы доступны для просмотра. Чтобы продолжить
+              оформление участия и выбрать плательщика, откройте Mini App внутри
+              Telegram — это необходимо для безопасной персональной проверки.
+            </p>
+            <button
+              type="button"
+              className={styles.primaryBtn}
+              onClick={() => setShowAuthRequiredModal(false)}
+            >
+              Понятно
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* CORR1: Telegram session present, but participation status could not be loaded */}
+      {showStatusUnavailableModal && (
+        <div
+          className={styles.pilotModalOverlay}
+          onClick={() => setShowStatusUnavailableModal(false)}
+        >
+          <div
+            className={styles.pilotModal}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className={styles.modalTitle}>Не удалось проверить статус участия</div>
+            <p className={styles.modalText}>
+              Сервис проверки временно не ответил. Каталог, потоки и тарифы
+              доступны для просмотра. Чтобы продолжить оформление участия,
+              повторите проверку.
             </p>
             <button
               type="button"
               className={styles.primaryBtn}
               onClick={() => {
-                setShowNoticeModal(false);
-                if (window.Telegram?.WebApp?.close) {
-                  window.Telegram.WebApp.close();
-                } else {
-                  setScreen("catalog");
-                }
+                setShowStatusUnavailableModal(false);
+                loadStudentStatus();
               }}
             >
-              Перейти в диалог бота
-            </button>
-            <button
-              type="button"
-              className={styles.modalCloseBtn}
-              style={{ marginTop: "8px" }}
-              onClick={() => setShowNoticeModal(false)}
-            >
-              Закрыть
+              Повторить проверку
             </button>
           </div>
         </div>

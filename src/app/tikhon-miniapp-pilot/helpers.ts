@@ -181,3 +181,132 @@ export function getOptionEligibility(
 
   return { state: "ELIGIBLE" };
 }
+
+/* ------------------------------------------------------------------ */
+/* Batch 2: Pricing & Payer Selection                                  */
+/* ------------------------------------------------------------------ */
+
+export type MiniAppScreen = "catalog" | "detail" | "payer" | "next_stage_stub";
+
+export type PayerType = "individual" | "legal_entity";
+
+export interface PayerTypeOption {
+  value: PayerType;
+  title: string;
+  description: string;
+}
+
+/**
+ * Canonical payer types (exactly two; IP remains within legal_entity).
+ * Presentation copy only — carries no commercial or payment authority.
+ */
+export const PAYER_TYPE_OPTIONS: readonly PayerTypeOption[] = [
+  {
+    value: "individual",
+    title: "Физическое лицо",
+    description: "Оплата от физического лица.",
+  },
+  {
+    value: "legal_entity",
+    title: "ИП или юридическое лицо",
+    description: "Оплата от ИП или организации с оформлением документов.",
+  },
+];
+
+export function isValidPayerType(value: unknown): value is PayerType {
+  return value === "individual" || value === "legal_entity";
+}
+
+/**
+ * Local-only next-stage label for the Batch-2 bounded transition stub.
+ * Does not create an application, invoice, or any persistence record.
+ */
+export function getNextStageLabel(payerType: PayerType): string {
+  return payerType === "individual"
+    ? "Данные участника"
+    : "Реквизиты ИП или организации";
+}
+
+/**
+ * Batch 2 §7: a course with exactly one source-provided pricing option
+ * is auto-selected from the course object. Multi-option courses (Structural
+ * Typology) return null — explicit user choice is required (§8).
+ */
+export function getSingleAutoPricingOption(
+  course: Course | null | undefined
+): PricingOption | null {
+  if (!course || !Array.isArray(course.pricing_options)) return null;
+  if (course.pricing_options.length === 1) return course.pricing_options[0];
+  return null;
+}
+
+/**
+ * Batch 2 §10: display-level eligibility that never infers personalized
+ * entitlement without an authenticated identity. Structural Typology gated
+ * stages (level_2 / level_3) remain locked in public-browser mode while
+ * public pricing stays viewable. Authenticated evaluation is delegated
+ * unchanged to the Batch-1 helper (no progression recomputation).
+ */
+export function getPublicAwareOptionEligibility(
+  courseId: string,
+  optionId: string,
+  studentStatus: StudentCourseStatus | null | undefined,
+  isAuthenticated: boolean
+): { state: OptionState; lockReason?: string } {
+  const base = getOptionEligibility(courseId, optionId, studentStatus);
+  if (
+    !isAuthenticated &&
+    courseId === "structural_typology" &&
+    (optionId === "level_2" || optionId === "level_3") &&
+    base.state === "ELIGIBLE"
+  ) {
+    return {
+      state: "LOCKED",
+      lockReason:
+        optionId === "level_2"
+          ? "Доступно после оплаты 1-го уровня"
+          : "Доступно после оплаты 2-го уровня",
+    };
+  }
+  return base;
+}
+
+export type PayerGateReason =
+  | "missing_selection"
+  | "auth_required"
+  | "not_eligible";
+
+export type PayerGateResult =
+  | { allowed: true }
+  | { allowed: false; reason: PayerGateReason };
+
+/**
+ * Batch 2 §12: Screen 2 -> Screen 3 gate. Requires a selected course, a
+ * selected cohort, a selected pricing option, an authenticated identity
+ * (public-browser mode is public pricing only), and — for Structural
+ * Typology — a currently ELIGIBLE pricing option. Navigational only:
+ * performs zero persistence, payment, or mutation side effects.
+ */
+export function canProceedToPayerSelection(input: {
+  course: Course | null;
+  cohort: Cohort | null;
+  pricingOption: PricingOption | null;
+  studentCourseStatus?: StudentCourseStatus | null;
+  isAuthenticated: boolean;
+}): PayerGateResult {
+  if (!input.course || !input.cohort || !input.pricingOption) {
+    return { allowed: false, reason: "missing_selection" };
+  }
+  if (!input.isAuthenticated) {
+    return { allowed: false, reason: "auth_required" };
+  }
+  const eligibility = getOptionEligibility(
+    input.course.id,
+    input.pricingOption.id,
+    input.studentCourseStatus ?? null
+  );
+  if (eligibility.state !== "ELIGIBLE") {
+    return { allowed: false, reason: "not_eligible" };
+  }
+  return { allowed: true };
+}
