@@ -186,7 +186,14 @@ export function getOptionEligibility(
 /* Batch 2: Pricing & Payer Selection                                  */
 /* ------------------------------------------------------------------ */
 
-export type MiniAppScreen = "catalog" | "detail" | "payer" | "next_stage_stub";
+export type MiniAppScreen =
+  | "catalog"
+  | "detail"
+  | "payer"
+  | "next_stage_stub"
+  | "individual_form"
+  | "individual_confirmation"
+  | "individual_next_stage";
 
 export type PayerType = "individual" | "legal_entity";
 
@@ -309,4 +316,133 @@ export function canProceedToPayerSelection(input: {
     return { allowed: false, reason: "not_eligible" };
   }
   return { allowed: true };
+}
+
+/* ------------------------------------------------------------------ */
+/* Batch 3: Individual enrollment (UI + local validation only)         */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Raw values of the individual form. Held in React memory only: never
+ * persisted, logged, or transmitted (Batch 3 is CASE A, no persistence).
+ */
+export interface IndividualFormValues {
+  full_name: string;
+  phone: string;
+  email: string;
+}
+
+export type IndividualFormField = keyof IndividualFormValues;
+
+export const EMPTY_INDIVIDUAL_FORM: IndividualFormValues = {
+  full_name: "",
+  phone: "",
+  email: "",
+};
+
+export const INDIVIDUAL_FULL_NAME_ERROR =
+  "Пожалуйста, укажите как минимум Имя и Фамилию через пробел.";
+export const INDIVIDUAL_PHONE_ERROR =
+  "Укажите российский номер (+7XXXXXXXXXX) или оставьте поле пустым.";
+export const INDIVIDUAL_EMAIL_ERROR =
+  "Пожалуйста, введите корректный адрес электронной почты (например: name@mail.ru).";
+
+/**
+ * Native parity (chatbot client.py msg_ind_full_name): at least two
+ * whitespace-separated parts after trimming. No charset, length or
+ * patronymic rule. Returns the trimmed value, or null when invalid.
+ */
+export function validateIndividualFullName(value: string): string | null {
+  const trimmed = value.trim();
+  return trimmed.split(/\s+/).length >= 2 ? trimmed : null;
+}
+
+/**
+ * Owner policy: Russia +7 only; international numbers are not supported.
+ * Native parity (chatbot validators.normalize_phone): strip everything except
+ * digits and "+", then accept +7XXXXXXXXXX, 8XXXXXXXXXX, 7XXXXXXXXXX or
+ * 9XXXXXXXXX. Output is always canonical +7XXXXXXXXXX; otherwise null.
+ */
+export function normalizeIndividualPhone(value: string): string | null {
+  const cleaned = value.trim().replace(/[^0-9+]/g, "");
+  let m = /^\+7(\d{10})$/.exec(cleaned);
+  if (m) return `+7${m[1]}`;
+  m = /^[78](\d{10})$/.exec(cleaned);
+  if (m) return `+7${m[1]}`;
+  m = /^(9\d{9})$/.exec(cleaned);
+  if (m) return `+7${m[1]}`;
+  return null;
+}
+
+/** Native parity (chatbot validators.validate_email) after trim; case preserved. */
+export function validateIndividualEmail(value: string): string | null {
+  const trimmed = value.trim();
+  return /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/.test(trimmed)
+    ? trimmed
+    : null;
+}
+
+export interface IndividualFormValidation {
+  valid: boolean;
+  errors: Partial<Record<IndividualFormField, string>>;
+  normalized: { full_name: string; phone: string | null; email: string } | null;
+}
+
+/**
+ * Form validity: full_name and email required; phone optional. An empty
+ * phone is valid and stays null (never a fabricated value); a non-empty
+ * phone must satisfy the Russia +7-only rule.
+ */
+export function validateIndividualForm(
+  values: IndividualFormValues
+): IndividualFormValidation {
+  const errors: Partial<Record<IndividualFormField, string>> = {};
+  const fullName = validateIndividualFullName(values.full_name);
+  if (!fullName) errors.full_name = INDIVIDUAL_FULL_NAME_ERROR;
+
+  const phoneProvided = values.phone.trim() !== "";
+  const phone = phoneProvided ? normalizeIndividualPhone(values.phone) : null;
+  if (phoneProvided && !phone) errors.phone = INDIVIDUAL_PHONE_ERROR;
+
+  const email = validateIndividualEmail(values.email);
+  if (!email) errors.email = INDIVIDUAL_EMAIL_ERROR;
+
+  if (!fullName || !email || (phoneProvided && !phone)) {
+    return { valid: false, errors, normalized: null };
+  }
+  return { valid: true, errors, normalized: { full_name: fullName, phone, email } };
+}
+
+/**
+ * Local, non-authoritative Batch-3 → Batch-5 handoff draft. Never transmitted
+ * or persisted in Batch 3; Batch 5 must revalidate every field server-side.
+ */
+export interface IndividualEnrollmentDraft {
+  course_id: string;
+  cohort_id: string;
+  pricing_option_id: string;
+  payer_type: "individual";
+  full_name: string;
+  phone: string | null;
+  email: string;
+}
+
+export function buildIndividualEnrollmentDraft(input: {
+  course: Course | null;
+  cohort: Cohort | null;
+  pricingOption: PricingOption | null;
+  values: IndividualFormValues;
+}): IndividualEnrollmentDraft | null {
+  if (!input.course || !input.cohort || !input.pricingOption) return null;
+  const { normalized } = validateIndividualForm(input.values);
+  if (!normalized) return null;
+  return {
+    course_id: input.course.id,
+    cohort_id: input.cohort.id,
+    pricing_option_id: input.pricingOption.id,
+    payer_type: "individual",
+    full_name: normalized.full_name,
+    phone: normalized.phone,
+    email: normalized.email,
+  };
 }

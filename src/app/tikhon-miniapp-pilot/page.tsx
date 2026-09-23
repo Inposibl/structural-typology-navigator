@@ -26,6 +26,11 @@ import {
   isCohortWaitingList,
   isCohortUnavailable,
   getCohortBadgeText,
+  IndividualFormValues,
+  IndividualFormField,
+  EMPTY_INDIVIDUAL_FORM,
+  validateIndividualForm,
+  buildIndividualEnrollmentDraft,
 } from "./helpers";
 
 export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState, MiniAppScreen, PayerType };
@@ -89,6 +94,14 @@ export default function TikhonMiniAppPilotPage() {
   // Batch 2: payer type is navigational client state only (never commercial,
   // entitlement, or payment authority)
   const [selectedPayerType, setSelectedPayerType] = useState<PayerType | null>(null);
+  // Batch 3: individual form values live in React memory only — never
+  // persisted, logged, or transmitted; lost on refresh or Mini App close
+  const [individualForm, setIndividualForm] =
+    useState<IndividualFormValues>(EMPTY_INDIVIDUAL_FORM);
+  const [individualTouched, setIndividualTouched] = useState<
+    Partial<Record<IndividualFormField, boolean>>
+  >({});
+  const [individualContinueAttempted, setIndividualContinueAttempted] = useState(false);
   const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
   const [hasTelegramInitData, setHasTelegramInitData] = useState(false);
   const [studentStatusResolved, setStudentStatusResolved] = useState(false);
@@ -209,6 +222,9 @@ export default function TikhonMiniAppPilotPage() {
             if (screen === "detail") setScreen("catalog");
             else if (screen === "payer") setScreen("detail");
             else if (screen === "next_stage_stub") setScreen("payer");
+            else if (screen === "individual_form") setScreen("payer");
+            else if (screen === "individual_confirmation") setScreen("individual_form");
+            else if (screen === "individual_next_stage") setScreen("individual_confirmation");
           };
           tg.BackButton?.onClick(handleBack);
           return () => {
@@ -316,6 +332,45 @@ export default function TikhonMiniAppPilotPage() {
     if (!selectedPayerType) return null;
     return PAYER_TYPE_OPTIONS.find((opt) => opt.value === selectedPayerType) || null;
   }, [selectedPayerType]);
+
+  // Batch 3: local validation and non-authoritative draft (never transmitted)
+  const individualValidation = useMemo(
+    () => validateIndividualForm(individualForm),
+    [individualForm]
+  );
+  const individualDraft = useMemo(
+    () =>
+      buildIndividualEnrollmentDraft({
+        course: selectedCourse,
+        cohort: selectedCohort,
+        pricingOption: selectedPricingOption,
+        values: individualForm,
+      }),
+    [selectedCourse, selectedCohort, selectedPricingOption, individualForm]
+  );
+
+  const updateIndividualField = (field: IndividualFormField, value: string) => {
+    setIndividualForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const markIndividualFieldTouched = (field: IndividualFormField) => {
+    setIndividualTouched((prev) => ({ ...prev, [field]: true }));
+    setIndividualForm((prev) => ({ ...prev, [field]: prev[field].trim() }));
+  };
+
+  // Errors appear only after the field was left or Continue was attempted
+  const individualFieldError = (field: IndividualFormField): string | undefined =>
+    individualTouched[field] || individualContinueAttempted
+      ? individualValidation.errors[field]
+      : undefined;
+
+  const handleIndividualFormContinue = () => {
+    if (!individualValidation.valid || !individualDraft) {
+      setIndividualContinueAttempted(true);
+      return;
+    }
+    setScreen("individual_confirmation");
+  };
 
   // Batch 2 §12: Screen 2 -> Screen 3 transition gate. Local-only navigation;
   // unauthenticated public-browser mode receives a bounded Telegram-auth state
@@ -954,7 +1009,10 @@ export default function TikhonMiniAppPilotPage() {
                 className={styles.primaryBtn}
                 disabled={!selectedPayerType}
                 onClick={() => {
-                  if (selectedPayerType) setScreen("next_stage_stub");
+                  // Batch 3: individual continues to the participant form;
+                  // legal_entity keeps the Batch-2 local stub (Batch 4 scope)
+                  if (selectedPayerType === "individual") setScreen("individual_form");
+                  else if (selectedPayerType) setScreen("next_stage_stub");
                 }}
               >
                 Продолжить
@@ -968,7 +1026,7 @@ export default function TikhonMiniAppPilotPage() {
             </p>
           </footer>
         </>
-      ) : (
+      ) : screen === "next_stage_stub" ? (
         /* LOCAL-ONLY NEXT-STAGE STUB (Batch 2 §16 — no forms, no persistence) */
         <>
           <nav className={styles.navBar}>
@@ -1041,6 +1099,308 @@ export default function TikhonMiniAppPilotPage() {
                 onClick={() => setScreen("payer")}
               >
                 Вернуться к выбору плательщика
+              </button>
+            </div>
+          </article>
+
+          <footer className={styles.footer}>
+            <p className={styles.footerText}>
+              Академия структурной типологии · Официальный Telegram-сервис
+            </p>
+          </footer>
+        </>
+      ) : screen === "individual_form" ? (
+        /* BATCH 3 — SCREEN 4: INDIVIDUAL PARTICIPANT FORM
+           Local-only: values live in React memory; no network, no persistence. */
+        <>
+          <nav className={styles.navBar}>
+            <button
+              type="button"
+              className={styles.backBtn}
+              onClick={() => setScreen("payer")}
+            >
+              ← Тип плательщика
+            </button>
+            <span className={styles.navTitle}>Оформление участия</span>
+          </nav>
+
+          <article className={styles.detailCard}>
+            <h1 className={styles.payerHeading}>Данные участника</h1>
+            <p className={styles.payerSubheading}>
+              Физическое лицо · для договора-оферты и списка группы
+            </p>
+
+            <div className={styles.formFields}>
+              <div className={styles.formField}>
+                <label htmlFor="individual-full-name" className={styles.formLabel}>
+                  Фамилия и имя
+                </label>
+                <input
+                  id="individual-full-name"
+                  type="text"
+                  autoComplete="name"
+                  autoCapitalize="words"
+                  enterKeyHint="next"
+                  placeholder="Иванова Анна"
+                  className={`${styles.formInput} ${
+                    individualFieldError("full_name") ? styles.formInputInvalid : ""
+                  }`}
+                  value={individualForm.full_name}
+                  onChange={(e) => updateIndividualField("full_name", e.target.value)}
+                  onBlur={() => markIndividualFieldTouched("full_name")}
+                  aria-invalid={Boolean(individualFieldError("full_name"))}
+                  aria-describedby="individual-full-name-error"
+                />
+                {individualFieldError("full_name") && (
+                  <p id="individual-full-name-error" className={styles.formError} role="alert">
+                    {individualFieldError("full_name")}
+                  </p>
+                )}
+              </div>
+
+              <div className={styles.formField}>
+                <label htmlFor="individual-phone" className={styles.formLabel}>
+                  Телефон <span className={styles.formOptional}>(необязательно)</span>
+                </label>
+                <input
+                  id="individual-phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  enterKeyHint="next"
+                  placeholder="+7 999 123-45-67"
+                  className={`${styles.formInput} ${
+                    individualFieldError("phone") ? styles.formInputInvalid : ""
+                  }`}
+                  value={individualForm.phone}
+                  onChange={(e) => updateIndividualField("phone", e.target.value)}
+                  onBlur={() => markIndividualFieldTouched("phone")}
+                  aria-invalid={Boolean(individualFieldError("phone"))}
+                  aria-describedby="individual-phone-hint individual-phone-error"
+                />
+                <p id="individual-phone-hint" className={styles.formHint}>
+                  Только российские номера, формат +7XXXXXXXXXX
+                </p>
+                {individualFieldError("phone") && (
+                  <p id="individual-phone-error" className={styles.formError} role="alert">
+                    {individualFieldError("phone")}
+                  </p>
+                )}
+              </div>
+
+              <div className={styles.formField}>
+                <label htmlFor="individual-email" className={styles.formLabel}>
+                  Email
+                </label>
+                <input
+                  id="individual-email"
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  enterKeyHint="done"
+                  placeholder="name@mail.ru"
+                  className={`${styles.formInput} ${
+                    individualFieldError("email") ? styles.formInputInvalid : ""
+                  }`}
+                  value={individualForm.email}
+                  onChange={(e) => updateIndividualField("email", e.target.value)}
+                  onBlur={() => markIndividualFieldTouched("email")}
+                  aria-invalid={Boolean(individualFieldError("email"))}
+                  aria-describedby="individual-email-hint individual-email-error"
+                />
+                <p id="individual-email-hint" className={styles.formHint}>
+                  Для чека и ссылки на онлайн-встречи
+                </p>
+                {individualFieldError("email") && (
+                  <p id="individual-email-error" className={styles.formError} role="alert">
+                    {individualFieldError("email")}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.ctaBox}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={handleIndividualFormContinue}
+              >
+                Продолжить
+              </button>
+            </div>
+          </article>
+
+          <footer className={styles.footer}>
+            <p className={styles.footerText}>
+              Академия структурной типологии · Официальный Telegram-сервис
+            </p>
+          </footer>
+        </>
+      ) : screen === "individual_confirmation" ? (
+        /* BATCH 3 — SCREEN 5: INDIVIDUAL CONFIRMATION (local-only; no consent act) */
+        <>
+          <nav className={styles.navBar}>
+            <button
+              type="button"
+              className={styles.backBtn}
+              onClick={() => setScreen("individual_form")}
+            >
+              ← Данные участника
+            </button>
+            <span className={styles.navTitle}>Оформление участия</span>
+          </nav>
+
+          <article className={styles.detailCard}>
+            <h1 className={styles.payerHeading}>Проверьте данные</h1>
+            <p className={styles.payerSubheading}>Убедитесь, что всё указано верно</p>
+
+            {selectedCourse && selectedCohort && selectedPricingOption && individualDraft && (
+              <div className={`${styles.payerSummaryCard} ${styles.confirmCard}`}>
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Программа</span>
+                  <span className={styles.payerSummaryValue}>{selectedCourse.title}</span>
+                </div>
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Тариф</span>
+                  <span className={styles.payerSummaryValue}>
+                    {selectedPricingOption.title}
+                  </span>
+                </div>
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Поток</span>
+                  <span className={styles.payerSummaryValue}>{selectedCohort.title}</span>
+                </div>
+                {(selectedCohort.schedule || selectedCohort.start_date) && (
+                  <div className={styles.payerSummaryRow}>
+                    <span className={styles.payerSummaryLabel}>Расписание</span>
+                    <span className={styles.payerSummaryValue}>
+                      {[
+                        selectedCohort.schedule,
+                        selectedCohort.start_date ? `Старт: ${selectedCohort.start_date}` : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </span>
+                  </div>
+                )}
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Плательщик</span>
+                  <span className={styles.payerSummaryValue}>
+                    {selectedPayerOption?.title}
+                  </span>
+                </div>
+
+                <div className={styles.confirmDivider} />
+
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Участник</span>
+                  <span className={styles.payerSummaryValue}>{individualDraft.full_name}</span>
+                </div>
+                {individualDraft.phone && (
+                  <div className={styles.payerSummaryRow}>
+                    <span className={styles.payerSummaryLabel}>Телефон</span>
+                    <span className={styles.payerSummaryValue}>{individualDraft.phone}</span>
+                  </div>
+                )}
+                <div className={styles.payerSummaryRow}>
+                  <span className={styles.payerSummaryLabel}>Email</span>
+                  <span className={styles.payerSummaryValue}>{individualDraft.email}</span>
+                </div>
+
+                <div className={styles.payerSummaryTotal}>
+                  <span className={styles.payerSummaryPrice}>
+                    {selectedPricingOption.price.toLocaleString("ru-RU")} ₽
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Informational only (Offer §7) — no consent is captured at this step */}
+            <div className={styles.personalDataNotice}>
+              Указанные данные будут обрабатываться в соответствии с разделом 7{" "}
+              <a
+                href="/offer"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.offerLink}
+                onClick={(e) => {
+                  if (window.Telegram?.WebApp?.openLink) {
+                    e.preventDefault();
+                    window.Telegram.WebApp.openLink(
+                      `${window.location.origin}/offer`
+                    );
+                  }
+                }}
+              >
+                Публичной оферты
+              </a>{" "}
+              после отправки заявки на следующем этапе. Сейчас данные никуда не
+              передаются.
+            </div>
+
+            <div className={styles.ctaBox}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                disabled={!individualDraft}
+                onClick={() => {
+                  if (individualDraft) setScreen("individual_next_stage");
+                }}
+              >
+                Продолжить
+              </button>
+              <button
+                type="button"
+                className={styles.secondaryBtn}
+                onClick={() => setScreen("individual_form")}
+              >
+                Изменить данные
+              </button>
+            </div>
+          </article>
+
+          <footer className={styles.footer}>
+            <p className={styles.footerText}>
+              Академия структурной типологии · Официальный Telegram-сервис
+            </p>
+          </footer>
+        </>
+      ) : (
+        /* BATCH 3 — INDIVIDUAL LOCAL NEXT-STAGE STUB (future submission/payment stage) */
+        <>
+          <nav className={styles.navBar}>
+            <button
+              type="button"
+              className={styles.backBtn}
+              onClick={() => setScreen("individual_confirmation")}
+            >
+              ← Проверка данных
+            </button>
+            <span className={styles.navTitle}>Оформление участия</span>
+          </nav>
+
+          <article className={styles.detailCard}>
+            <h1 className={styles.payerHeading}>Оформление заявки</h1>
+            <p className={styles.payerSubheading}>Следующий этап</p>
+
+            <div className={styles.stubStageCard}>
+              <div className={styles.stubStageLabel}>Скоро будет доступно</div>
+              <p className={styles.stubStageText}>
+                Следующий шаг оформления станет доступен на следующем этапе.
+                Введённые данные хранятся только на этом экране и никуда не
+                передаются.
+              </p>
+            </div>
+
+            <div className={styles.ctaBox}>
+              <button
+                type="button"
+                className={styles.primaryBtn}
+                onClick={() => setScreen("individual_confirmation")}
+              >
+                Вернуться к проверке данных
               </button>
             </div>
           </article>
