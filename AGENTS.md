@@ -285,7 +285,7 @@ Owner Appointment Phrase                          → Active Role
 ---
 
 ### 7.3 ROLE 3: CODER
-**Eligible Actors:** Claude, Antigravity, Z-Ai, Kimi K3 Extra, Grok, Codex (current routing priority: item 4 below)<br>
+**Eligible Actors:** Antigravity, Claude, Z-Ai, Kimi K3 Extra, Grok, Codex (current routing priority: item 4 below)<br>
 **Terminal States:** `COMPLETE`, `FAILED`, `BLOCKED`, `BLOCKED_METHOD_DECISION_REQUIRED`
 
 1. **Identity & Closed Write Allowlist:**
@@ -303,15 +303,16 @@ Owner Appointment Phrase                          → Active Role
 
    | Actor | Coder Role |
    | --- | --- |
-   | Claude | PRIMARY CODER |
-   | Antigravity | ELIGIBLE CODER (separately retains the Git Agent role, §7.4) |
+   | Antigravity | PRIMARY CODER (separately retains the Git Agent role, §7.4) |
+   | Claude | ELIGIBLE / RESERVE CODER |
    | Z-Ai | RESERVE CODER |
    | Kimi K3 Extra | RESERVE CODER |
 
-   - **First choice:** Normal new implementation work is routed to Claude.
-   - **Fallback:** If Claude is unavailable, rate-limited, or explicitly bypassed by the Owner, fallback routing may use Antigravity, Z-Ai, or Kimi K3 Extra, as specified by the specific Owner act.
+   - **First choice:** Normal new implementation work is routed to Antigravity.
+   - **Fallback:** If Antigravity is unavailable, rate-limited, or explicitly bypassed by the Owner, fallback routing may use Claude, Z-Ai, or Kimi K3 Extra, as specified by the specific Owner act.
    - **No silent transfer:** An active act is never silently transferred between models.
-   - **Antigravity dual capability:** Coder eligibility and Git Agent authority are separate capabilities, each act-scoped. Coder eligibility does not authorize automatic commit or push after coding; Git commit/push requires a separately authorized Git act (§5.3, §7.4) unless the specific Owner mandate explicitly combines those authorities.
+   - **Single-Writer Rule (ONE ACTIVE CODING ACT = ONE AUTHORIZED WRITER):** While one agent is authorized to modify an active act's files, all other coding agents are READ-ONLY unless the Owner explicitly authorizes concurrent writing. No second agent may edit the same active source files, rewrite tests for the same act, produce competing implementation candidates, or self-designate as coder for the same act without explicit Owner authorization.
+   - **Antigravity dual capability:** Primary coder role and Git Agent authority are separate capabilities, each act-scoped. Primary coder authorization does not authorize automatic commit or push after coding; Git commit/push requires a separately authorized Git act (§5.3, §7.4) unless the specific Owner mandate explicitly combines those authorities.
    - **No standing authority:** Coder routing grants no standing authorization for Git commit/push, database/Supabase mutation, payment or other financial actions, production deployment, or scope expansion; each requires its own act-specific Owner authorization.
    - **Audit:** Audit roles are act-specific. Tikhon UX work proceeds without mandatory independent audit unless the Owner requests it; where independent audit is required, §6.2 applies (author ≠ auditor).
    - **Precedence:** Current explicit Owner instruction supersedes any stale routing text in this document (§2.1).
