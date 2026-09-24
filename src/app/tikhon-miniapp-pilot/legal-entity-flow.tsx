@@ -5,6 +5,8 @@ import {
   Cohort,
   PricingOption,
   PayerTypeOption,
+  MiniAppScreen,
+  SubmissionState,
 } from "./helpers.ts";
 import {
   LegalEntityFormValues,
@@ -16,7 +18,7 @@ import {
 
 export interface LegalEntityFlowProps {
   screen: "legal_entity_form" | "legal_entity_confirmation" | "legal_entity_next_stage";
-  setScreen: (screen: "catalog" | "detail" | "payer" | "next_stage_stub" | "individual_form" | "individual_confirmation" | "individual_next_stage" | "legal_entity_form" | "legal_entity_confirmation" | "legal_entity_next_stage") => void;
+  setScreen: (screen: MiniAppScreen) => void;
   legalEntityStep: 1 | 2 | 3 | 4;
   setLegalEntityStep: (step: 1 | 2 | 3 | 4) => void;
   legalEntityForm: LegalEntityFormValues;
@@ -35,6 +37,8 @@ export interface LegalEntityFlowProps {
   handleStep2Continue: () => void;
   handleStep3Continue: () => void;
   handleStep4Continue: () => void;
+  submissionState?: SubmissionState;
+  onSubmitApplication?: () => void;
 }
 
 export function LegalEntityFlow({
@@ -58,6 +62,8 @@ export function LegalEntityFlow({
   handleStep2Continue,
   handleStep3Continue,
   handleStep4Continue,
+  submissionState,
+  onSubmitApplication,
 }: LegalEntityFlowProps) {
   const legalEntityFieldError = (
     field: LegalEntityFormField,
@@ -614,12 +620,18 @@ export function LegalEntityFlow({
             <button
               type="button"
               className={styles.primaryBtn}
-              disabled={!legalEntityDraft}
+              disabled={!legalEntityDraft || submissionState === "submitting"}
               onClick={() => {
-                if (legalEntityDraft) setScreen("legal_entity_next_stage");
+                if (legalEntityDraft) {
+                  if (onSubmitApplication) {
+                    onSubmitApplication();
+                  } else {
+                    setScreen("legal_entity_next_stage");
+                  }
+                }
               }}
             >
-              Продолжить
+              Оформить заявку
             </button>
             <button
               type="button"

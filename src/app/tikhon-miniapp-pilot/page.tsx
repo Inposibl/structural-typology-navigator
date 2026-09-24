@@ -31,6 +31,8 @@ import {
   EMPTY_INDIVIDUAL_FORM,
   validateIndividualForm,
   buildIndividualEnrollmentDraft,
+  IndividualEnrollmentDraft,
+  SubmissionState,
 } from "./helpers";
 import {
   LegalEntityFormValues,
@@ -38,10 +40,13 @@ import {
   EMPTY_LEGAL_ENTITY_FORM,
   validateLegalEntityForm,
   buildLegalEntityEnrollmentDraft,
+  LegalEntityEnrollmentDraft,
 } from "./legal-entity-helpers";
 import { LegalEntityFlow } from "./legal-entity-flow";
+import { submitTikhonApplication } from "./submission";
+import { SubmissionResultScreen } from "./submission-screen";
 
-export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState, MiniAppScreen, PayerType };
+export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState, MiniAppScreen, PayerType, SubmissionState };
 export {
   PAYER_TYPE_OPTIONS,
   getOptionEligibility,
@@ -141,6 +146,38 @@ export default function TikhonMiniAppPilotPage() {
 
   // Student authenticated status (Batch 1 CORR1: Private Entitlements)
   const [studentStatus, setStudentStatus] = useState<StudentStatusResponse | null>(null);
+
+  // Batch 5: Application submission state
+  const [submissionState, setSubmissionState] = useState<SubmissionState>("idle");
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [submissionAppId, setSubmissionAppId] = useState<number | null>(null);
+
+  const handleExecuteSubmission = useCallback(
+    async (
+      draft: IndividualEnrollmentDraft | LegalEntityEnrollmentDraft,
+      payerType: "individual" | "legal_entity"
+    ) => {
+      setSubmissionState("submitting");
+      setSubmissionError(null);
+      setScreen("submission_result");
+
+      const result = await submitTikhonApplication(draft, payerType);
+      if (result.ok && result.status === "SUCCESS") {
+        setSubmissionState("success");
+        setSubmissionAppId(result.application_id ?? null);
+      } else {
+        setSubmissionState("error");
+        setSubmissionError(
+          result.message ||
+            "Не удалось завершить оформление заявки. Пожалуйста, повторите попытку."
+        );
+        if (result.application_id) {
+          setSubmissionAppId(result.application_id);
+        }
+      }
+    },
+    []
+  );
 
   const fetchCourses = useCallback(async () => {
     setLoading(true);
@@ -258,6 +295,14 @@ export default function TikhonMiniAppPilotPage() {
               setLegalEntityStep(4);
             } else if (screen === "legal_entity_next_stage") {
               setScreen("legal_entity_confirmation");
+            } else if (screen === "submission_result") {
+              if (submissionState === "success") {
+                setScreen("catalog");
+              } else if (selectedPayerType === "legal_entity") {
+                setScreen("legal_entity_confirmation");
+              } else {
+                setScreen("individual_confirmation");
+              }
             }
           };
           tg.BackButton?.onClick(handleBack);
@@ -271,7 +316,7 @@ export default function TikhonMiniAppPilotPage() {
         console.error("Telegram WebApp initialization error:", err);
       }
     }
-  }, [screen, legalEntityStep]);
+  }, [screen, legalEntityStep, selectedPayerType, submissionState]);
 
   // Active course resolution
   const selectedCourse = useMemo(() => {
@@ -1438,12 +1483,14 @@ export default function TikhonMiniAppPilotPage() {
               <button
                 type="button"
                 className={styles.primaryBtn}
-                disabled={!individualDraft}
+                disabled={!individualDraft || submissionState === "submitting"}
                 onClick={() => {
-                  if (individualDraft) setScreen("individual_next_stage");
+                  if (individualDraft) {
+                    handleExecuteSubmission(individualDraft, "individual");
+                  }
                 }}
               >
-                Продолжить
+                Оформить заявку
               </button>
               <button
                 type="button"
@@ -1585,7 +1632,40 @@ export default function TikhonMiniAppPilotPage() {
         handleStep2Continue={handleLegalEntityStep2Continue}
         handleStep3Continue={handleLegalEntityStep3Continue}
         handleStep4Continue={handleLegalEntityStep4Continue}
+        submissionState={submissionState}
+        onSubmitApplication={() => {
+          if (legalEntityDraft) {
+            handleExecuteSubmission(legalEntityDraft, "legal_entity");
+          }
+        }}
       />
+
+      {/* BATCH 5 — SUBMISSION RESULT & SUCCESS SCREEN */}
+      {screen === "submission_result" && (
+        <SubmissionResultScreen
+          submissionState={submissionState}
+          submissionError={submissionError}
+          submissionAppId={submissionAppId}
+          onRetry={() => {
+            if (selectedPayerType === "legal_entity" && legalEntityDraft) {
+              handleExecuteSubmission(legalEntityDraft, "legal_entity");
+            } else if (individualDraft) {
+              handleExecuteSubmission(individualDraft, "individual");
+            }
+          }}
+          onBack={() => {
+            if (selectedPayerType === "legal_entity") {
+              setScreen("legal_entity_confirmation");
+            } else {
+              setScreen("individual_confirmation");
+            }
+          }}
+          onGoCatalog={() => {
+            setScreen("catalog");
+            setSubmissionState("idle");
+          }}
+        />
+      )}
 
     </main>
   );

@@ -196,7 +196,24 @@ export type MiniAppScreen =
   | "individual_next_stage"
   | "legal_entity_form"
   | "legal_entity_confirmation"
-  | "legal_entity_next_stage";
+  | "legal_entity_next_stage"
+  | "submission_result";
+
+export const SUCCESS_COPY_VERBATIM =
+  "Для выполнения оплаты свяжитесь с куратором курса Алексеем Лебедевым @Lebedev_AST. Спасибо";
+
+export const CANONICAL_CURATOR_USERNAME = "Lebedev_AST";
+export const CANONICAL_CURATOR_TG_LINK = "https://t.me/Lebedev_AST";
+
+export type SubmissionState = "idle" | "submitting" | "success" | "error";
+
+export interface SubmissionResponse {
+  status: "SUCCESS" | "FAILED" | "PARTIAL_OR_FAILED";
+  application_id?: number;
+  deliveries?: Record<string, string>;
+  message?: string;
+  error?: string;
+}
 
 export type PayerType = "individual" | "legal_entity";
 
