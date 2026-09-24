@@ -32,6 +32,14 @@ import {
   validateIndividualForm,
   buildIndividualEnrollmentDraft,
 } from "./helpers";
+import {
+  LegalEntityFormValues,
+  LegalEntityFormField,
+  EMPTY_LEGAL_ENTITY_FORM,
+  validateLegalEntityForm,
+  buildLegalEntityEnrollmentDraft,
+} from "./legal-entity-helpers";
+import { LegalEntityFlow } from "./legal-entity-flow";
 
 export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState, MiniAppScreen, PayerType };
 export {
@@ -102,6 +110,21 @@ export default function TikhonMiniAppPilotPage() {
     Partial<Record<IndividualFormField, boolean>>
   >({});
   const [individualContinueAttempted, setIndividualContinueAttempted] = useState(false);
+  // Batch 4: Legal entity & IP form state (React memory only, never persisted)
+  const [legalEntityStep, setLegalEntityStep] = useState<1 | 2 | 3 | 4>(1);
+  const [legalEntityForm, setLegalEntityForm] =
+    useState<LegalEntityFormValues>(EMPTY_LEGAL_ENTITY_FORM);
+  const [legalEntityTouched, setLegalEntityTouched] = useState<
+    Partial<Record<LegalEntityFormField, boolean>>
+  >({});
+  const [legalEntityContinueAttempted, setLegalEntityContinueAttempted] = useState<
+    Record<1 | 2 | 3 | 4, boolean>
+  >({
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+  });
   const [showAuthRequiredModal, setShowAuthRequiredModal] = useState(false);
   const [hasTelegramInitData, setHasTelegramInitData] = useState(false);
   const [studentStatusResolved, setStudentStatusResolved] = useState(false);
@@ -225,6 +248,17 @@ export default function TikhonMiniAppPilotPage() {
             else if (screen === "individual_form") setScreen("payer");
             else if (screen === "individual_confirmation") setScreen("individual_form");
             else if (screen === "individual_next_stage") setScreen("individual_confirmation");
+            else if (screen === "legal_entity_form") {
+              if (legalEntityStep === 4) setLegalEntityStep(3);
+              else if (legalEntityStep === 3) setLegalEntityStep(2);
+              else if (legalEntityStep === 2) setLegalEntityStep(1);
+              else setScreen("payer");
+            } else if (screen === "legal_entity_confirmation") {
+              setScreen("legal_entity_form");
+              setLegalEntityStep(4);
+            } else if (screen === "legal_entity_next_stage") {
+              setScreen("legal_entity_confirmation");
+            }
           };
           tg.BackButton?.onClick(handleBack);
           return () => {
@@ -237,7 +271,7 @@ export default function TikhonMiniAppPilotPage() {
         console.error("Telegram WebApp initialization error:", err);
       }
     }
-  }, [screen]);
+  }, [screen, legalEntityStep]);
 
   // Active course resolution
   const selectedCourse = useMemo(() => {
@@ -370,6 +404,63 @@ export default function TikhonMiniAppPilotPage() {
       return;
     }
     setScreen("individual_confirmation");
+  };
+
+  // Batch 4: local validation and non-authoritative draft (never transmitted)
+  const legalEntityValidation = useMemo(
+    () => validateLegalEntityForm(legalEntityForm),
+    [legalEntityForm]
+  );
+  const legalEntityDraft = useMemo(
+    () =>
+      buildLegalEntityEnrollmentDraft({
+        course: selectedCourse,
+        cohort: selectedCohort,
+        pricingOption: selectedPricingOption,
+        values: legalEntityForm,
+      }),
+    [selectedCourse, selectedCohort, selectedPricingOption, legalEntityForm]
+  );
+
+  const updateLegalEntityField = (field: LegalEntityFormField, value: string) => {
+    setLegalEntityForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const markLegalEntityFieldTouched = (field: LegalEntityFormField) => {
+    setLegalEntityTouched((prev) => ({ ...prev, [field]: true }));
+    setLegalEntityForm((prev) => ({ ...prev, [field]: prev[field].trim() }));
+  };
+
+  const handleLegalEntityStep1Continue = () => {
+    if (!legalEntityValidation.step1Valid) {
+      setLegalEntityContinueAttempted((prev) => ({ ...prev, 1: true }));
+      return;
+    }
+    setLegalEntityStep(2);
+  };
+
+  const handleLegalEntityStep2Continue = () => {
+    if (!legalEntityValidation.step2Valid) {
+      setLegalEntityContinueAttempted((prev) => ({ ...prev, 2: true }));
+      return;
+    }
+    setLegalEntityStep(3);
+  };
+
+  const handleLegalEntityStep3Continue = () => {
+    if (!legalEntityValidation.step3Valid) {
+      setLegalEntityContinueAttempted((prev) => ({ ...prev, 3: true }));
+      return;
+    }
+    setLegalEntityStep(4);
+  };
+
+  const handleLegalEntityStep4Continue = () => {
+    if (!legalEntityValidation.step4Valid || !legalEntityDraft) {
+      setLegalEntityContinueAttempted((prev) => ({ ...prev, 4: true }));
+      return;
+    }
+    setScreen("legal_entity_confirmation");
   };
 
   // Batch 2 §12: Screen 2 -> Screen 3 transition gate. Local-only navigation;
@@ -1009,8 +1100,11 @@ export default function TikhonMiniAppPilotPage() {
                 className={styles.primaryBtn}
                 disabled={!selectedPayerType}
                 onClick={() => {
-                  // Batch 3: individual continues to the participant form;
-                  // legal_entity keeps the Batch-2 local stub (Batch 4 scope)
+                  if (selectedPayerType === "legal_entity") {
+                    setScreen("legal_entity_form");
+                    setLegalEntityStep(1);
+                    return;
+                  }
                   if (selectedPayerType === "individual") setScreen("individual_form");
                   else if (selectedPayerType) setScreen("next_stage_stub");
                 }}
@@ -1367,7 +1461,7 @@ export default function TikhonMiniAppPilotPage() {
             </p>
           </footer>
         </>
-      ) : (
+      ) : screen === "individual_next_stage" ? (
         /* BATCH 3 — INDIVIDUAL LOCAL NEXT-STAGE STUB (future submission/payment stage) */
         <>
           <nav className={styles.navBar}>
@@ -1411,7 +1505,7 @@ export default function TikhonMiniAppPilotPage() {
             </p>
           </footer>
         </>
-      )}
+      ) : null}
 
       {/* Bounded Telegram-auth-required state (Batch 2 §10) */}
       {showAuthRequiredModal && (
@@ -1469,6 +1563,30 @@ export default function TikhonMiniAppPilotPage() {
           </div>
         </div>
       )}
+      {/* BATCH 4 — LEGAL ENTITY / IP FLOW */}
+      <LegalEntityFlow
+        screen={screen as "legal_entity_form" | "legal_entity_confirmation" | "legal_entity_next_stage"}
+        setScreen={setScreen}
+        legalEntityStep={legalEntityStep}
+        setLegalEntityStep={setLegalEntityStep}
+        legalEntityForm={legalEntityForm}
+        updateLegalEntityField={updateLegalEntityField}
+        markLegalEntityFieldTouched={markLegalEntityFieldTouched}
+        legalEntityTouched={legalEntityTouched}
+        setLegalEntityTouched={setLegalEntityTouched}
+        legalEntityContinueAttempted={legalEntityContinueAttempted}
+        legalEntityValidation={legalEntityValidation}
+        legalEntityDraft={legalEntityDraft}
+        selectedCourse={selectedCourse}
+        selectedCohort={selectedCohort}
+        selectedPricingOption={selectedPricingOption}
+        selectedPayerOption={selectedPayerOption}
+        handleStep1Continue={handleLegalEntityStep1Continue}
+        handleStep2Continue={handleLegalEntityStep2Continue}
+        handleStep3Continue={handleLegalEntityStep3Continue}
+        handleStep4Continue={handleLegalEntityStep4Continue}
+      />
+
     </main>
   );
 }

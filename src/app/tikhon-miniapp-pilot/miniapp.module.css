@@ -1266,3 +1266,80 @@
     padding: 10px 12px;
   }
 }
+
+/* Batch 4: Legal entity & IP form styles */
+.stepperHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.stepBadge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #7c3aed;
+  background: #f3e8ff;
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.entityTypeBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #065f46;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.edoGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edoButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 48px;
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1.5px solid #ede9fe;
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.edoButton:hover {
+  border-color: #c4b5fd;
+  background: #faf8ff;
+}
+
+.edoButtonSelected {
+  border-color: #7c3aed;
+  background: #f5f3ff;
+  color: #5b21b6;
+  box-shadow: 0 0 0 1px #7c3aed;
+}
+
+.edoCheck {
+  font-size: 14px;
+  color: #7c3aed;
+  font-weight: 700;
+}

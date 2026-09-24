@@ -193,7 +193,10 @@ export type MiniAppScreen =
   | "next_stage_stub"
   | "individual_form"
   | "individual_confirmation"
-  | "individual_next_stage";
+  | "individual_next_stage"
+  | "legal_entity_form"
+  | "legal_entity_confirmation"
+  | "legal_entity_next_stage";
 
 export type PayerType = "individual" | "legal_entity";
 

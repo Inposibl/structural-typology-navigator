@@ -1,0 +1,485 @@
+{
+  "timestamp": "2026-09-24T02:47:07.625Z",
+  "executor": "Gemini 3.8",
+  "act": "TIKHON-MINIAPP-FULL-UX-MIGRATION-1.BATCH-4.LEGAL-ENTITY-AND-IP-1.IMPLEMENTATION-1.CORR4.FINAL-EVIDENCE-CLOSURE-1",
+  "target_url": "http://127.0.0.1:3009/tikhon-miniapp-pilot",
+  "summary": {
+    "allPassed": true,
+    "viewportsTested": [
+      320,
+      390,
+      430,
+      768
+    ],
+    "stepsVerified": [
+      "Step 1",
+      "Step 2",
+      "Step 3",
+      "Step 4",
+      "Review screen"
+    ],
+    "noHorizontalOverflow": true,
+    "noClippedInputs": true,
+    "edoControlsUsable": true,
+    "backCtaAccessible": true,
+    "summaryCardUsable": true
+  },
+  "viewports": {
+    "320px": {
+      "viewport": {
+        "width": 320,
+        "height": 668,
+        "name": "320px",
+        "mobile": true
+      },
+      "step1": {
+        "step": "Step 1 (Организация)",
+        "viewportWidth": 320,
+        "scrollWidth": 320,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "step2": {
+        "step": "Step 2 (Банковские реквизиты)",
+        "viewportWidth": 320,
+        "scrollWidth": 320,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "step3": {
+        "step": "Step 3 (Документы и ЭДО)",
+        "viewportWidth": 320,
+        "scrollWidth": 320,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false,
+        "edoControls": {
+          "count": 3,
+          "buttons": [
+            {
+              "text": "Диадок (Контур)",
+              "width": 274,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            },
+            {
+              "text": "СБИС (Тензор)",
+              "width": 274,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            },
+            {
+              "text": "Скан по Email (без ЭДО)",
+              "width": 274,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            }
+          ],
+          "allUsable": true
+        }
+      },
+      "step4": {
+        "step": "Step 4 (Контактное лицо)",
+        "viewportWidth": 320,
+        "scrollWidth": 320,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "reviewScreen": {
+        "screen": "legal_entity_confirmation",
+        "viewportWidth": 320,
+        "viewportHeight": 668,
+        "scrollWidth": 320,
+        "hasHorizontalOverflow": false,
+        "horizontalOverflowDelta": 0,
+        "summaryCard": {
+          "present": true,
+          "width": 274,
+          "height": 790,
+          "fitsViewport": true,
+          "rowsCount": 15,
+          "usable": true
+        },
+        "controls": {
+          "backButtonAccessible": true,
+          "primaryButtonAccessible": true,
+          "secondaryButtonAccessible": true,
+          "allAccessible": true
+        }
+      },
+      "screenshot": {
+        "filename": "responsive_batch4_review_320px.png",
+        "sizeBytes": 110863,
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/docs/reports/evidence/TIKHON_BATCH4_CORR4/responsive_batch4_review_320px.png"
+      }
+    },
+    "390px": {
+      "viewport": {
+        "width": 390,
+        "height": 844,
+        "name": "390px",
+        "mobile": true
+      },
+      "step1": {
+        "step": "Step 1 (Организация)",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "step2": {
+        "step": "Step 2 (Банковские реквизиты)",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "step3": {
+        "step": "Step 3 (Документы и ЭДО)",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false,
+        "edoControls": {
+          "count": 3,
+          "buttons": [
+            {
+              "text": "Диадок (Контур)",
+              "width": 336,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            },
+            {
+              "text": "СБИС (Тензор)",
+              "width": 336,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            },
+            {
+              "text": "Скан по Email (без ЭДО)",
+              "width": 336,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            }
+          ],
+          "allUsable": true
+        }
+      },
+      "step4": {
+        "step": "Step 4 (Контактное лицо)",
+        "viewportWidth": 390,
+        "scrollWidth": 390,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "reviewScreen": {
+        "screen": "legal_entity_confirmation",
+        "viewportWidth": 390,
+        "viewportHeight": 844,
+        "scrollWidth": 390,
+        "hasHorizontalOverflow": false,
+        "horizontalOverflowDelta": 0,
+        "summaryCard": {
+          "present": true,
+          "width": 336,
+          "height": 588,
+          "fitsViewport": true,
+          "rowsCount": 15,
+          "usable": true
+        },
+        "controls": {
+          "backButtonAccessible": true,
+          "primaryButtonAccessible": true,
+          "secondaryButtonAccessible": true,
+          "allAccessible": true
+        }
+      },
+      "screenshot": {
+        "filename": "responsive_batch4_review_390px.png",
+        "sizeBytes": 196941,
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/docs/reports/evidence/TIKHON_BATCH4_CORR4/responsive_batch4_review_390px.png"
+      }
+    },
+    "430px": {
+      "viewport": {
+        "width": 430,
+        "height": 932,
+        "name": "430px",
+        "mobile": true
+      },
+      "step1": {
+        "step": "Step 1 (Организация)",
+        "viewportWidth": 430,
+        "scrollWidth": 430,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "step2": {
+        "step": "Step 2 (Банковские реквизиты)",
+        "viewportWidth": 430,
+        "scrollWidth": 430,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "step3": {
+        "step": "Step 3 (Документы и ЭДО)",
+        "viewportWidth": 430,
+        "scrollWidth": 430,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false,
+        "edoControls": {
+          "count": 3,
+          "buttons": [
+            {
+              "text": "Диадок (Контур)",
+              "width": 356,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            },
+            {
+              "text": "СБИС (Тензор)",
+              "width": 356,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            },
+            {
+              "text": "Скан по Email (без ЭДО)",
+              "width": 356,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            }
+          ],
+          "allUsable": true
+        }
+      },
+      "step4": {
+        "step": "Step 4 (Контактное лицо)",
+        "viewportWidth": 430,
+        "scrollWidth": 430,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "reviewScreen": {
+        "screen": "legal_entity_confirmation",
+        "viewportWidth": 430,
+        "viewportHeight": 932,
+        "scrollWidth": 430,
+        "hasHorizontalOverflow": false,
+        "horizontalOverflowDelta": 0,
+        "summaryCard": {
+          "present": true,
+          "width": 356,
+          "height": 553,
+          "fitsViewport": true,
+          "rowsCount": 15,
+          "usable": true
+        },
+        "controls": {
+          "backButtonAccessible": true,
+          "primaryButtonAccessible": true,
+          "secondaryButtonAccessible": true,
+          "allAccessible": true
+        }
+      },
+      "screenshot": {
+        "filename": "responsive_batch4_review_430px.png",
+        "sizeBytes": 213525,
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/docs/reports/evidence/TIKHON_BATCH4_CORR4/responsive_batch4_review_430px.png"
+      }
+    },
+    "768px": {
+      "viewport": {
+        "width": 768,
+        "height": 1024,
+        "name": "768px",
+        "mobile": false
+      },
+      "step1": {
+        "step": "Step 1 (Организация)",
+        "viewportWidth": 768,
+        "scrollWidth": 768,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "step2": {
+        "step": "Step 2 (Банковские реквизиты)",
+        "viewportWidth": 768,
+        "scrollWidth": 768,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "step3": {
+        "step": "Step 3 (Документы и ЭДО)",
+        "viewportWidth": 768,
+        "scrollWidth": 768,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false,
+        "edoControls": {
+          "count": 3,
+          "buttons": [
+            {
+              "text": "Диадок (Контур)",
+              "width": 406,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            },
+            {
+              "text": "СБИС (Тензор)",
+              "width": 406,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            },
+            {
+              "text": "Скан по Email (без ЭДО)",
+              "width": 406,
+              "height": 48,
+              "visible": true,
+              "fitsViewport": true
+            }
+          ],
+          "allUsable": true
+        }
+      },
+      "step4": {
+        "step": "Step 4 (Контактное лицо)",
+        "viewportWidth": 768,
+        "scrollWidth": 768,
+        "hasHorizontalOverflow": false,
+        "overflowDelta": 0,
+        "clippedInputsCount": 0,
+        "clippedInputs": [],
+        "backBtnAccessible": true,
+        "primaryBtnAccessible": true,
+        "secondaryBtnAccessible": false,
+        "summaryCardUsable": false
+      },
+      "reviewScreen": {
+        "screen": "legal_entity_confirmation",
+        "viewportWidth": 768,
+        "viewportHeight": 1024,
+        "scrollWidth": 768,
+        "hasHorizontalOverflow": false,
+        "horizontalOverflowDelta": 0,
+        "summaryCard": {
+          "present": true,
+          "width": 406,
+          "height": 518,
+          "fitsViewport": true,
+          "rowsCount": 15,
+          "usable": true
+        },
+        "controls": {
+          "backButtonAccessible": true,
+          "primaryButtonAccessible": true,
+          "secondaryButtonAccessible": true,
+          "allAccessible": true
+        }
+      },
+      "screenshot": {
+        "filename": "responsive_batch4_review_768px.png",
+        "sizeBytes": 241332,
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/docs/reports/evidence/TIKHON_BATCH4_CORR4/responsive_batch4_review_768px.png"
+      }
+    }
+  }
+}
