@@ -1657,6 +1657,8 @@ export default function TikhonMiniAppPilotPage() {
           submissionState={submissionState}
           submissionError={submissionError}
           submissionAppId={submissionAppId}
+          selectedCourse={selectedCourse}
+          selectedCohort={selectedCohort}
           onRetry={() => {
             if (selectedPayerType === "legal_entity" && legalEntityDraft) {
               handleExecuteSubmission(legalEntityDraft, "legal_entity");

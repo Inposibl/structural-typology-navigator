@@ -13,6 +13,7 @@ export interface Cohort {
   start_date: string;
   schedule: string;
   is_active: boolean;
+  has_canonical_sessions?: boolean;
   enrollment_status: string;
   is_enrollment_open: boolean;
   capacity?: number;

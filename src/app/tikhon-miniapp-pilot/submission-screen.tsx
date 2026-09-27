@@ -4,12 +4,17 @@ import {
   SubmissionState,
   SUCCESS_COPY_VERBATIM,
   CANONICAL_CURATOR_TG_LINK,
+  Cohort,
+  Course,
 } from "./helpers.ts";
+import { CalendarHub } from "./calendar-hub.tsx";
 
 export interface SubmissionResultScreenProps {
   submissionState: SubmissionState;
   submissionError: string | null;
   submissionAppId: number | null;
+  selectedCourse?: Course | null;
+  selectedCohort?: Cohort | null;
   onRetry: () => void;
   onBack: () => void;
   onGoCatalog: () => void;
@@ -19,6 +24,8 @@ export function SubmissionResultScreen({
   submissionState,
   submissionError,
   submissionAppId,
+  selectedCourse,
+  selectedCohort,
   onRetry,
   onBack,
   onGoCatalog,
@@ -97,6 +104,10 @@ export function SubmissionResultScreen({
                 {SUCCESS_COPY_VERBATIM}
               </p>
             </div>
+
+            {selectedCourse && selectedCohort && (
+              <CalendarHub course={selectedCourse} cohort={selectedCohort} />
+            )}
 
             <div className={styles.ctaBox}>
               <button
