@@ -631,7 +631,7 @@ export function LegalEntityFlow({
                 }
               }}
             >
-              Оформить заявку
+              Отправить заявку
             </button>
             <button
               type="button"

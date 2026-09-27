@@ -297,6 +297,10 @@ describe("Tikhon Mini App Batch 3 — Individual Enrollment (UI + local validati
 
   test("K: no consent checkbox or consent acceptance action", () => {
     assert.ok(!/type="checkbox"/.test(batch3Region));
+    // Batch-6 note: "Отправить заявку" was forbidden while the flow was local-only;
+    // it is now the Owner-mandated canonical CTA on the confirmation screen, so it
+    // no longer belongs in this forbidden list. All other acceptance/submit copy
+    // remains forbidden outside the single canonical CTA.
     for (const phrase of [
       "Согласен",
       "Согласна",
@@ -304,7 +308,6 @@ describe("Tikhon Mini App Batch 3 — Individual Enrollment (UI + local validati
       "Я принимаю",
       "Подтвердить согласие",
       "Подать заявку",
-      "Отправить заявку",
       "Оплатить",
       "Получить реквизиты",
     ]) {

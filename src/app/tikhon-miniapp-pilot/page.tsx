@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import Image from "next/image";
 import styles from "./miniapp.module.css";
 import {
@@ -152,28 +152,39 @@ export default function TikhonMiniAppPilotPage() {
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [submissionAppId, setSubmissionAppId] = useState<number | null>(null);
 
+  // Batch 6: in-flight guard — a repeated click or retry while a submission
+  // request is in flight must never create a second submission request.
+  // Canonical duplicate authority remains the server-side active_application_key.
+  const submissionInFlightRef = useRef(false);
+
   const handleExecuteSubmission = useCallback(
     async (
       draft: IndividualEnrollmentDraft | LegalEntityEnrollmentDraft,
       payerType: "individual" | "legal_entity"
     ) => {
+      if (submissionInFlightRef.current) return;
+      submissionInFlightRef.current = true;
       setSubmissionState("submitting");
       setSubmissionError(null);
       setScreen("submission_result");
 
-      const result = await submitTikhonApplication(draft, payerType);
-      if (result.ok && result.status === "SUCCESS") {
-        setSubmissionState("success");
-        setSubmissionAppId(result.application_id ?? null);
-      } else {
-        setSubmissionState("error");
-        setSubmissionError(
-          result.message ||
-            "Не удалось завершить оформление заявки. Пожалуйста, повторите попытку."
-        );
-        if (result.application_id) {
-          setSubmissionAppId(result.application_id);
+      try {
+        const result = await submitTikhonApplication(draft, payerType);
+        if (result.ok && result.status === "SUCCESS") {
+          setSubmissionState("success");
+          setSubmissionAppId(result.application_id ?? null);
+        } else {
+          setSubmissionState("error");
+          setSubmissionError(
+            result.message ||
+              "Не удалось завершить оформление заявки. Пожалуйста, повторите попытку."
+          );
+          if (result.application_id) {
+            setSubmissionAppId(result.application_id);
+          }
         }
+      } finally {
+        submissionInFlightRef.current = false;
       }
     },
     []
@@ -1490,7 +1501,7 @@ export default function TikhonMiniAppPilotPage() {
                   }
                 }}
               >
-                Оформить заявку
+                Отправить заявку
               </button>
               <button
                 type="button"

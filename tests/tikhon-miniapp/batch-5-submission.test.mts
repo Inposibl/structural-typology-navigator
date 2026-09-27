@@ -406,8 +406,8 @@ describe("TIKHON-MINIAPP BATCH 5: Application Submission & Dual Handoff", () => 
       "individual_confirmation CTA must call handleExecuteSubmission"
     );
     assert.ok(
-      confirmSection.includes("Оформить заявку"),
-      "individual_confirmation CTA must be labeled 'Оформить заявку'"
+      confirmSection.includes("Отправить заявку"),
+      "individual_confirmation CTA must be labeled 'Отправить заявку' (Batch-6 canonical CTA)"
     );
   });
 
@@ -417,8 +417,8 @@ describe("TIKHON-MINIAPP BATCH 5: Application Submission & Dual Handoff", () => 
       "legal-entity-flow.tsx must support onSubmitApplication prop"
     );
     assert.ok(
-      flowSource.includes("Оформить заявку"),
-      "legal_entity_confirmation CTA must be labeled 'Оформить заявку'"
+      flowSource.includes("Отправить заявку"),
+      "legal_entity_confirmation CTA must be labeled 'Отправить заявку' (Batch-6 canonical CTA)"
     );
   });
 
@@ -875,7 +875,7 @@ describe("TIKHON-MINIAPP BATCH 5: Application Submission & Dual Handoff", () => 
     // Strongest deterministic proof available in this lightweight harness (node:test
     // has no DOM renderer): page.tsx keeps submissionState in internal useState, so a
     // full behavioral render cannot reach individual_confirmation. The exact
-    // `disabled={...}` expression bound to the actual 'Оформить заявку' button is
+    // `disabled={...}` expression bound to the actual 'Отправить заявку' button is
     // extracted from the individual_confirmation branch and evaluated under every
     // submission state. The legal-entity flow (11.4) gets a full behavioral render.
     const confirmIdx = pageSource.indexOf('screen === "individual_confirmation" ? (');
@@ -884,8 +884,8 @@ describe("TIKHON-MINIAPP BATCH 5: Application Submission & Dual Handoff", () => 
     assert.ok(nextIdx !== -1 && nextIdx > confirmIdx, "individual_confirmation section must be bounded");
     const confirmSection = pageSource.slice(confirmIdx, nextIdx);
 
-    const ctaLabelIdx = confirmSection.indexOf("Оформить заявку");
-    assert.ok(ctaLabelIdx !== -1, "individual confirmation CTA must be labeled 'Оформить заявку'");
+    const ctaLabelIdx = confirmSection.indexOf("Отправить заявку");
+    assert.ok(ctaLabelIdx !== -1, "individual confirmation CTA must be labeled 'Отправить заявку'");
     const disabledIdx = confirmSection.lastIndexOf("disabled={", ctaLabelIdx);
     assert.ok(disabledIdx !== -1, "CTA button must bind a disabled condition");
     const exprStart = disabledIdx + "disabled={".length;
@@ -1014,14 +1014,14 @@ describe("TIKHON-MINIAPP BATCH 5: Application Submission & Dual Handoff", () => 
     assert.ok(htmlSubmitting.includes("ООО Корр2 47"), "legal_entity_confirmation screen must render the draft summary");
     assert.match(
       htmlSubmitting,
-      /<button[^>]*disabled[^>]*>\s*Оформить заявку<\/button>/,
-      "the 'Оформить заявку' CTA must render disabled while submissionState === 'submitting'"
+      /<button[^>]*disabled[^>]*>\s*Отправить заявку<\/button>/,
+      "the 'Отправить заявку' CTA must render disabled while submissionState === 'submitting'"
     );
 
     const htmlIdle = renderToStaticMarkup(
       createElement(LegalEntityFlow, { ...baseProps, submissionState: "idle" })
     );
-    assert.ok(htmlIdle.includes(">Оформить заявку</button>"), "idle render must contain the CTA");
+    assert.ok(htmlIdle.includes(">Отправить заявку</button>"), "idle render must contain the CTA");
     assert.ok(!htmlIdle.includes("disabled"), "no control may be disabled when idle with a valid draft");
   });
 });
