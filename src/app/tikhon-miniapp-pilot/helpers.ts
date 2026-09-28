@@ -10,8 +10,10 @@ export interface PricingOption {
 export interface Cohort {
   id: string;
   title: string;
-  start_date: string;
-  schedule: string;
+  // PRODUCTION-SMOKE-1.CORR1.CORR1: запись листа ожидания — не поток;
+  // публичная проекция легально опускает дату/расписание/емкость/места.
+  start_date?: string | null;
+  schedule?: string | null;
   is_active: boolean;
   has_canonical_sessions?: boolean;
   enrollment_status: string;

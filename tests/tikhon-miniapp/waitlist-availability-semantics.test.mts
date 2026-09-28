@@ -379,4 +379,44 @@ describe("TIKHON-MINIAPP: Enrollment Availability & Waitlist Semantics", () => {
     assert.ok(pageSource.includes("Старт: {cohort.start_date}"), "start date context preserved");
     assert.ok(pageSource.includes("График: {cohort.schedule}"), "schedule context preserved");
   });
+
+  /* ---------------- CORR1.CORR1 ISSUE 1: WAITLIST FABRICATES NOTHING ---------------- */
+
+  const productionShapedWaitlist = {
+    id: "waiting_list",
+    title: "Лист ожидания",
+    is_active: true,
+    has_canonical_sessions: false,
+    enrollment_status: "WAITING_LIST",
+    is_enrollment_open: true,
+  } as any;
+
+  test("C1x2-1: public contract legally omits waitlist date/schedule (interface)", () => {
+    assert.ok(
+      helpersSource.includes("start_date?: string | null"),
+      "Cohort.start_date must be optional/null in the public contract"
+    );
+    assert.ok(
+      helpersSource.includes("schedule?: string | null"),
+      "Cohort.schedule must be optional/null in the public contract"
+    );
+  });
+
+  test("C1x2-2: chip renders a schedule-less waitlist without dates or counter (source)", () => {
+    // Truthy guards already skip Старт/График for absent fields…
+    assert.ok(pageSource.includes("{cohort.start_date && ("));
+    assert.ok(pageSource.includes("{cohort.schedule && ("));
+    // …and the counter is gated off for waitlist cohorts regardless of seats.
+    assert.ok(pageSource.includes("{!waitingList &&"));
+  });
+
+  test("C1x2-3: waitlist panel renders the production-shaped waitlist cleanly (behavioral)", async () => {
+    const { WaitlistPanel } = await import("../../src/app/tikhon-miniapp-pilot/waitlist-panel.tsx");
+    const html = renderToStaticMarkup(createElement(WaitlistPanel, { course: courseFixture }));
+    assert.ok(!html.includes("undefined"));
+    assert.ok(!html.includes("По согласованию"), "no fabricated start date");
+    assert.ok(!html.includes("Индивидуально"), "no fabricated schedule");
+    assert.ok(!html.includes("Свободно"), "no seat counter");
+    assert.ok(!html.includes("₽"), "no payment");
+  });
 });
