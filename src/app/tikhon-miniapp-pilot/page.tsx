@@ -46,6 +46,7 @@ import { LegalEntityFlow } from "./legal-entity-flow";
 import { submitTikhonApplication } from "./submission";
 import { SubmissionResultScreen } from "./submission-screen";
 import { WaitlistPanel } from "./waitlist-panel";
+import { SchedulePanel } from "./schedule-panel";
 
 export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState, MiniAppScreen, PayerType, SubmissionState };
 export {
@@ -588,6 +589,10 @@ export default function TikhonMiniAppPilotPage() {
               СБП или для юрлиц/ИП с закрывающими документами).
             </p>
           </section>
+
+          {/* B6-F: РАСПИСАНИЕ — поверхность расписания оплаченных потоков
+              (контент строится только сервером из реконсиляции B6-D) */}
+          {isAuthenticated ? <SchedulePanel /> : null}
 
           {/* Section Header */}
           <div className={styles.sectionHeader}>
