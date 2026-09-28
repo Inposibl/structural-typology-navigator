@@ -60,6 +60,26 @@ export function WaitlistPanel({ course }: WaitlistPanelProps) {
     }
   }, [course.id, draft, phase]);
 
+  // COURSE-DETAILS-CTA-WAITLIST-CARDS-1: каноническая ссылка «Подробнее о курсе»
+  // не зависит от состояния набора — режим листа ожидания показывает её тем же
+  // механизмом (course_page_url), что и карты открытых курсов.
+  const coursePageLink = course.course_page_url ? (
+    <a
+      href={course.course_page_url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={styles.coursePageBtn}
+      onClick={(e) => {
+        if (window.Telegram?.WebApp?.openLink) {
+          e.preventDefault();
+          window.Telegram.WebApp.openLink(course.course_page_url!);
+        }
+      }}
+    >
+      Подробнее о курсе ↗
+    </a>
+  ) : null;
+
   if (phase === "success") {
     return (
       <section className={styles.waitlistPanel} data-testid="waitlist-panel">
@@ -69,6 +89,7 @@ export function WaitlistPanel({ course }: WaitlistPanelProps) {
             {WAITLIST_SUCCESS_COPY}
           </p>
         </div>
+        {coursePageLink}
       </section>
     );
   }
@@ -155,6 +176,8 @@ export function WaitlistPanel({ course }: WaitlistPanelProps) {
       >
         {phase === "sending" ? WAITLIST_SENDING_COPY : WAITLIST_CTA_COPY}
       </button>
+
+      {coursePageLink}
     </section>
   );
 }
