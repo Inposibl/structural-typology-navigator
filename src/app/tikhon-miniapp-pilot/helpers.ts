@@ -203,6 +203,20 @@ export type MiniAppScreen =
 export const SUCCESS_COPY_VERBATIM =
   "Для выполнения оплаты свяжитесь с куратором курса Алексеем Лебедевым @Lebedev_AST. Спасибо";
 
+// ENROLLMENT-AVAILABILITY-AND-WAITLIST-SEMANTICS-1 §4: канонический текст успеха
+// листа ожидания. Точная формулировка Owner — не менять, не показывать вместо
+// нее обычный enrollment/payment-текст успеха.
+export const WAITLIST_SUCCESS_COPY = `Заявка в лист ожидания принята.
+
+Как только откроется набор на следующий поток,
+наш специалист свяжется с вами по указанным контактам
+и сообщит условия участия.`;
+
+export const WAITLIST_CTA_COPY = "Записаться в лист ожидания";
+export const WAITLIST_SENDING_COPY = "Отправляем…";
+export const WAITLIST_ERROR_COPY = "Не удалось отправить заявку. Попробуйте ещё раз.";
+export const WAITLIST_RETRY_COPY = "Повторить отправку";
+
 export const CANONICAL_CURATOR_USERNAME = "Lebedev_AST";
 export const CANONICAL_CURATOR_TG_LINK = "https://t.me/Lebedev_AST";
 

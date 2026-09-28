@@ -45,6 +45,7 @@ import {
 import { LegalEntityFlow } from "./legal-entity-flow";
 import { submitTikhonApplication } from "./submission";
 import { SubmissionResultScreen } from "./submission-screen";
+import { WaitlistPanel } from "./waitlist-panel";
 
 export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState, MiniAppScreen, PayerType, SubmissionState };
 export {
@@ -358,8 +359,17 @@ export default function TikhonMiniAppPilotPage() {
     if (openAvailable) {
       setSelectedCohortId(openAvailable.id);
     } else {
-      const firstActive = selectedCourse.cohorts.find((ch) => ch.is_active && ch.id !== "waiting_list");
-      setSelectedCohortId(firstActive ? firstActive.id : selectedCourse.cohorts[0].id);
+      // ENROLLMENT-AVAILABILITY-AND-WAITLIST-SEMANTICS-1 §5/§6: без записываемого
+      // потока выбираем лист ожидания, а не закрытый поток.
+      const waitlistCohort = selectedCourse.cohorts.find(
+        (ch) => ch.id === "waiting_list" || ch.enrollment_status === "WAITING_LIST"
+      );
+      if (waitlistCohort) {
+        setSelectedCohortId(waitlistCohort.id);
+      } else {
+        const firstActive = selectedCourse.cohorts.find((ch) => ch.is_active && ch.id !== "waiting_list");
+        setSelectedCohortId(firstActive ? firstActive.id : selectedCourse.cohorts[0].id);
+      }
     }
   }, [selectedCourse]);
 
@@ -829,13 +839,17 @@ export default function TikhonMiniAppPilotPage() {
                               График: {cohort.schedule}
                             </div>
                           )}
-                          {typeof cohort.available_seats === "number" && typeof cohort.capacity === "number" && (
-                            <div className={styles.cohortMetaSeats}>
-                              {available
-                                ? `Свободных мест: ${cohort.available_seats} из ${cohort.capacity}`
-                                : `Свободных мест: 0 из ${cohort.capacity}`}
-                            </div>
-                          )}
+                          {/* §2/§3: счетчик мест — только для открытых потоков конечной
+                              емкости; лист ожидания счетчика мест не показывает */}
+                          {!waitingList &&
+                            typeof cohort.available_seats === "number" &&
+                            typeof cohort.capacity === "number" && (
+                              <div className={styles.cohortMetaSeats}>
+                                {available
+                                  ? `Свободно ${cohort.available_seats} из ${cohort.capacity}`
+                                  : `Свободно 0 из ${cohort.capacity}`}
+                              </div>
+                            )}
                         </div>
                       </div>
                     );
@@ -843,6 +857,12 @@ export default function TikhonMiniAppPilotPage() {
                 </div>
               </section>
 
+              {/* ENROLLMENT-AVAILABILITY-AND-WAITLIST-SEMANTICS-1 §3: в режиме
+                  листа ожидания платежная секция и CTA оплаты не показываются */}
+              {selectedCohort && isCohortWaitingList(selectedCohort) ? (
+                <WaitlistPanel course={selectedCourse} />
+              ) : (
+                <>
               {/* STAGED PRICING & PAYMENT PROGRESSION (Batch 1 CORR1) */}
               <section className={styles.pricingSection}>
                 <h2 className={styles.pricingSectionTitle}>Тарифы и этапы оплаты</h2>
@@ -991,6 +1011,8 @@ export default function TikhonMiniAppPilotPage() {
                   className={styles.primaryBtn}
                   disabled={
                     !selectedPricingOptionId ||
+                    !selectedCohort ||
+                    !isCohortAvailable(selectedCohort) ||
                     getPublicAwareOptionEligibility(
                       selectedCourse.id,
                       selectedPricingOptionId,
@@ -1024,6 +1046,8 @@ export default function TikhonMiniAppPilotPage() {
                   Далее — выбор типа плательщика · Данные и оплата оформляются на следующих шагах
                 </p>
               </div>
+                </>
+              )}
             </article>
           )}
 

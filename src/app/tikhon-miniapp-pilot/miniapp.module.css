@@ -1502,3 +1502,95 @@
   margin: 0;
   line-height: 1.5;
 }
+
+/* ENROLLMENT-AVAILABILITY-AND-WAITLIST-SEMANTICS-1 — WAITLIST MODE */
+.waitlistPanel {
+  background: #f5f3ff;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 16px;
+  padding: 16px 20px;
+  margin: 4px 0 12px;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+}
+
+.waitlistTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e1b4b;
+  margin: 0;
+}
+
+.waitlistSubtitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6d28d9;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.waitlistNote {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.waitlistForm {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+}
+
+.waitlistFieldLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: #4b5563;
+  margin-top: 6px;
+}
+
+.waitlistInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1.5px solid #ddd6fe;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #1e1b4b;
+}
+
+.waitlistSuccessCard {
+  background: #ecfdf5;
+  border: 1.5px solid #a7f3d0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.waitlistSuccessText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #065f46;
+  line-height: 1.55;
+  margin: 0;
+  white-space: pre-line;
+  text-align: left;
+}
+
+.waitlistErrorText {
+  font-size: 13px;
+  font-weight: 600;
+  color: #b91c1c;
+  margin: 0;
+  line-height: 1.5;
+}
