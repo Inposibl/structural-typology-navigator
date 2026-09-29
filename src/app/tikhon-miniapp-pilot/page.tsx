@@ -33,6 +33,9 @@ import {
   buildIndividualEnrollmentDraft,
   IndividualEnrollmentDraft,
   SubmissionState,
+  NAVIGATOR_ASK_LABEL,
+  NAVIGATOR_UNAVAILABLE_COPY,
+  decideNavigatorEntry,
 } from "./helpers";
 import {
   LegalEntityFormValues,
@@ -47,6 +50,7 @@ import { submitTikhonApplication } from "./submission";
 import { SubmissionResultScreen } from "./submission-screen";
 import { WaitlistPanel } from "./waitlist-panel";
 import { SchedulePanel } from "./schedule-panel";
+import { NavigatorDialogue } from "./navigator-dialogue";
 
 export type { Course, Cohort, PricingOption, ApiResponse, StudentCourseStatus, StudentStatusResponse, OptionState, MiniAppScreen, PayerType, SubmissionState };
 export {
@@ -153,6 +157,7 @@ export default function TikhonMiniAppPilotPage() {
   const [submissionState, setSubmissionState] = useState<SubmissionState>("idle");
   const [submissionError, setSubmissionError] = useState<string | null>(null);
   const [submissionAppId, setSubmissionAppId] = useState<number | null>(null);
+  const [navigatorUnavailableFor, setNavigatorUnavailableFor] = useState<string | null>(null);
 
   // Batch 6: in-flight guard — a repeated click or retry while a submission
   // request is in flight must never create a second submission request.
@@ -308,7 +313,8 @@ export default function TikhonMiniAppPilotPage() {
               setLegalEntityStep(4);
             } else if (screen === "legal_entity_next_stage") {
               setScreen("legal_entity_confirmation");
-            } else if (screen === "submission_result") {
+            } else if (screen === "navigator_dialogue") setScreen("detail");
+            else if (screen === "submission_result") {
               if (submissionState === "success") {
                 setScreen("catalog");
               } else if (selectedPayerType === "legal_entity") {
@@ -553,6 +559,16 @@ export default function TikhonMiniAppPilotPage() {
     }
   };
 
+  const openNavigatorDialogue = () => {
+    if (!selectedCourse) return;
+    if (decideNavigatorEntry(selectedCourse.id) === "unavailable") {
+      setNavigatorUnavailableFor(selectedCourse.id);
+      return;
+    }
+    setNavigatorUnavailableFor(null);
+    setScreen("navigator_dialogue");
+  };
+
   return (
     <main className={styles.container}>
       {screen === "catalog" ? (
@@ -764,6 +780,26 @@ export default function TikhonMiniAppPilotPage() {
                     Лимит группы · {selectedCourse.max_participants} человек
                   </span>
                 </div>
+              </div>
+
+              <div className={styles.navigatorEntry}>
+                <button
+                  type="button"
+                  className={styles.navigatorAskBtn}
+                  onClick={openNavigatorDialogue}
+                >
+                  {NAVIGATOR_ASK_LABEL}
+                </button>
+                {navigatorUnavailableFor === selectedCourse.id &&
+                decideNavigatorEntry(selectedCourse.id) === "unavailable" ? (
+                  <p
+                    id="navigator-unavailable"
+                    className={styles.navigatorUnavailable}
+                    role="status"
+                  >
+                    {NAVIGATOR_UNAVAILABLE_COPY}
+                  </p>
+                ) : null}
               </div>
 
               {/* COHORT SELECTOR (§9, §10, §11) */}
@@ -1708,6 +1744,13 @@ export default function TikhonMiniAppPilotPage() {
           }}
         />
       )}
+
+      {screen === "navigator_dialogue" && selectedCourse ? (
+        <NavigatorDialogue
+          tikhonCourseId={selectedCourse.id}
+          onExit={() => setScreen("detail")}
+        />
+      ) : null}
 
     </main>
   );

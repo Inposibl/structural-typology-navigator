@@ -1,3 +1,21 @@
+import {
+  MAX_CHAT_MESSAGE_LENGTH,
+  MAX_CONVERSATION_MESSAGES,
+  type AcademyContactCard,
+  type ConversationMessage,
+  type ConversationProfile,
+} from "../../lib/chat-contract.ts";
+import { getAcademyCourse } from "../../lib/academy/course-catalog.ts";
+import {
+  isConversationProfileComplete,
+  normalizeConversationProfilePayload,
+} from "../../lib/navigation/conversation-profile.ts";
+import {
+  isValidRequestId,
+  normalizeConversationStatePayload,
+  type ConversationState,
+} from "../../lib/navigation/conversation-state.ts";
+
 export interface PricingOption {
   id: string;
   title: string;
@@ -200,7 +218,8 @@ export type MiniAppScreen =
   | "legal_entity_form"
   | "legal_entity_confirmation"
   | "legal_entity_next_stage"
-  | "submission_result";
+  | "submission_result"
+  | "navigator_dialogue";
 
 export const SUCCESS_COPY_VERBATIM =
   "Для выполнения оплаты свяжитесь с куратором курса Алексеем Лебедевым @Lebedev_AST. Спасибо";
@@ -481,5 +500,605 @@ export function buildIndividualEnrollmentDraft(input: {
     full_name: normalized.full_name,
     phone: normalized.phone,
     email: normalized.email,
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Embedded Navigator dialogue                                        */
+/* Explicit Tikhon course ids only. Canonical titles come from the    */
+/* current Academy catalog. Underscores are not rewritten in general. */
+/* ------------------------------------------------------------------ */
+
+export const NAVIGATOR_ASK_LABEL = "Задать вопрос Навигатору";
+export const NAVIGATOR_EXIT_LABEL = "Завершить диалог";
+export const NAVIGATOR_RETRY_LABEL = "Повторить";
+export const NAVIGATOR_SEND_LABEL = "Отправить";
+export const NAVIGATOR_PENDING_LABEL = "Навигатор отвечает…";
+export const NAVIGATOR_UNAVAILABLE_COPY =
+  "Диалог с Навигатором для этого курса недоступен.";
+export const NAVIGATOR_DIALOGUE_HEADING = "Навигатор";
+
+/** Same declared limit as POST /api/chat (MAX_REQUEST_BYTES). */
+export const EMBEDDED_NAVIGATOR_MAX_BODY_BYTES = 200_000;
+
+/**
+ * Client ceiling for one hung same-origin turn. A content turn can outlast
+ * a single provider call, so this is not that call's own timeout.
+ */
+export const EMBEDDED_NAVIGATOR_TIMEOUT_MS = 120_000;
+
+export const TIKHON_NAVIGATOR_COURSE_IDS = {
+  structural_typology: "structural-typology",
+  levels_of_consciousness: "levels-of-consciousness",
+  maslow: "maslow",
+  normative_situation: "normative-situation",
+  play_and_creativity: "play-and-creativity",
+} as const;
+
+export type TikhonNavigatorCourse = {
+  tikhonCourseId: keyof typeof TIKHON_NAVIGATOR_COURSE_IDS;
+  navigatorCourseId: string;
+  title: string;
+  url: string;
+};
+
+export function listMappedTikhonCourseIds(): readonly string[] {
+  return Object.keys(TIKHON_NAVIGATOR_COURSE_IDS);
+}
+
+export function resolveTikhonNavigatorCourse(
+  tikhonCourseId: string,
+): TikhonNavigatorCourse | null {
+  if (
+    !Object.prototype.hasOwnProperty.call(
+      TIKHON_NAVIGATOR_COURSE_IDS,
+      tikhonCourseId,
+    )
+  ) {
+    return null;
+  }
+
+  const navigatorCourseId =
+    TIKHON_NAVIGATOR_COURSE_IDS[
+      tikhonCourseId as keyof typeof TIKHON_NAVIGATOR_COURSE_IDS
+    ];
+  const course = getAcademyCourse(navigatorCourseId);
+  if (
+    course === null ||
+    course.id !== navigatorCourseId ||
+    course.status !== "ROUTABLE" ||
+    course.url === null ||
+    course.title.length === 0
+  ) {
+    return null;
+  }
+
+  return {
+    tikhonCourseId: tikhonCourseId as keyof typeof TIKHON_NAVIGATOR_COURSE_IDS,
+    navigatorCourseId: course.id,
+    title: course.title,
+    url: course.url,
+  };
+}
+
+export function decideNavigatorEntry(
+  tikhonCourseId: string,
+): "open" | "unavailable" {
+  return resolveTikhonNavigatorCourse(tikhonCourseId) === null
+    ? "unavailable"
+    : "open";
+}
+
+export function createEmbeddedNavigatorProfile(): ConversationProfile {
+  return normalizeConversationProfilePayload({
+    displayName: null,
+    addressMode: "VY",
+    nameDeclined: true,
+    pendingUserRequest: null,
+  });
+}
+
+export function buildNavigatorCourseOpening(canonicalTitle: string): string {
+  return `Я готов ответить на ваши вопросы по курсу «${canonicalTitle}».`;
+}
+
+export function buildEmbeddedResetOpening(canonicalTitle: string): string {
+  return `Диалог начат заново. ${buildNavigatorCourseOpening(canonicalTitle)}`;
+}
+
+export type EmbeddedDialogueMessage = {
+  id: string;
+  role: "assistant" | "user";
+  content: string;
+};
+
+export type EmbeddedDialoguePhase = "ready" | "pending" | "error";
+
+export type EmbeddedNavigatorFailureKind =
+  | "network"
+  | "timeout"
+  | "http"
+  | "malformed";
+
+export type EmbeddedDialogueSession = {
+  generation: number;
+  tikhonCourseId: string;
+  navigatorCourseId: string;
+  canonicalTitle: string;
+  messages: EmbeddedDialogueMessage[];
+  profile: ConversationProfile;
+  conversationState: ConversationState | null;
+  phase: EmbeddedDialoguePhase;
+  pendingRequestId: string | null;
+  errorMessage: string | null;
+  errorKind: EmbeddedNavigatorFailureKind | null;
+  errorRetryable: boolean;
+  nextId: number;
+};
+
+export type EmbeddedNavigatorChatBody = {
+  messages: ConversationMessage[];
+  profile: ConversationProfile;
+  requestId: string;
+  conversationState?: ConversationState;
+};
+
+export type EmbeddedTurnRejectReason =
+  | "pending"
+  | "empty"
+  | "too_long"
+  | "too_large"
+  | "invalid_request"
+  | "not_retryable";
+
+export type EmbeddedTurnDecision =
+  | {
+      status: "ACCEPTED";
+      session: EmbeddedDialogueSession;
+      body: EmbeddedNavigatorChatBody;
+      requestId: string;
+    }
+  | {
+      status: "REJECTED";
+      reason: EmbeddedTurnRejectReason;
+    };
+
+export type EmbeddedNavigatorSuccess = {
+  message: string;
+  profile: ConversationProfile;
+  conversationState: ConversationState;
+  resetConversation: boolean;
+};
+
+export type EmbeddedNavigatorFailure = {
+  kind: EmbeddedNavigatorFailureKind;
+  message: string;
+  retryable: boolean;
+  conversationState: ConversationState | null;
+};
+
+export type EmbeddedTurnToken = {
+  generation: number;
+  requestId: string;
+};
+
+export type EmbeddedNavigatorChatResult =
+  | { ok: true; success: EmbeddedNavigatorSuccess }
+  | { ok: false; failure: EmbeddedNavigatorFailure };
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function addressRetry(profile: ConversationProfile, lead: string): string {
+  return profile.addressMode === "TY"
+    ? `${lead} Попробуй ещё раз.`
+    : `${lead} Попробуйте ещё раз.`;
+}
+
+function technicalRetryMessage(profile: ConversationProfile): string {
+  return addressRetry(profile, "Не удалось получить ответ Навигатора.");
+}
+
+export function navigatorTransportFailure(
+  kind: "network" | "timeout",
+  profile: ConversationProfile,
+): EmbeddedNavigatorFailure {
+  const message =
+    kind === "timeout"
+      ? addressRetry(profile, "Навигатор не ответил вовремя.")
+      : technicalRetryMessage(profile);
+  return {
+    kind,
+    message,
+    retryable: true,
+    conversationState: null,
+  };
+}
+
+export function malformedNavigatorFailure(
+  profile: ConversationProfile,
+): EmbeddedNavigatorFailure {
+  return {
+    kind: "malformed",
+    message: technicalRetryMessage(profile),
+    retryable: true,
+    conversationState: null,
+  };
+}
+
+export function openEmbeddedNavigatorDialogue(
+  tikhonCourseId: string,
+): EmbeddedDialogueSession | null {
+  const course = resolveTikhonNavigatorCourse(tikhonCourseId);
+  if (course === null) return null;
+
+  const profile = createEmbeddedNavigatorProfile();
+  if (!isConversationProfileComplete(profile) || profile.pendingUserRequest !== null) {
+    return null;
+  }
+
+  return {
+    generation: 1,
+    tikhonCourseId: course.tikhonCourseId,
+    navigatorCourseId: course.navigatorCourseId,
+    canonicalTitle: course.title,
+    messages: [
+      {
+        id: "opening",
+        role: "assistant",
+        content: buildNavigatorCourseOpening(course.title),
+      },
+    ],
+    profile,
+    conversationState: null,
+    phase: "ready",
+    pendingRequestId: null,
+    errorMessage: null,
+    errorKind: null,
+    errorRetryable: false,
+    nextId: 1,
+  };
+}
+
+export function embeddedNavigatorExitGeneration(liveGeneration: number): number {
+  return liveGeneration + 1;
+}
+
+function toContractMessages(
+  messages: readonly EmbeddedDialogueMessage[],
+): ConversationMessage[] {
+  return messages.map((message) => ({
+    role: message.role,
+    content: message.content,
+  }));
+}
+
+export function boundDialogueMessages<T>(messages: readonly T[]): T[] {
+  if (messages.length <= MAX_CONVERSATION_MESSAGES) {
+    return [...messages];
+  }
+  const head = messages[0];
+  if (head === undefined) return [];
+  const tailCount = MAX_CONVERSATION_MESSAGES - 1;
+  return [head, ...messages.slice(messages.length - tailCount)];
+}
+
+function assembleChatBody(
+  messages: readonly EmbeddedDialogueMessage[],
+  profile: ConversationProfile,
+  conversationState: ConversationState | null,
+  requestId: string,
+): EmbeddedNavigatorChatBody {
+  const body: EmbeddedNavigatorChatBody = {
+    messages: toContractMessages(messages),
+    profile,
+    requestId,
+  };
+  if (conversationState !== null) {
+    body.conversationState = conversationState;
+  }
+  return body;
+}
+
+export function navigatorChatBodyByteLength(
+  body: EmbeddedNavigatorChatBody,
+): number {
+  return new TextEncoder().encode(JSON.stringify(body)).length;
+}
+
+function fitDialogueMessages(
+  messages: readonly EmbeddedDialogueMessage[],
+  profile: ConversationProfile,
+  conversationState: ConversationState | null,
+  requestId: string,
+): { messages: EmbeddedDialogueMessage[]; body: EmbeddedNavigatorChatBody } | null {
+  let current = boundDialogueMessages(messages);
+  while (current.length > 0) {
+    const body = assembleChatBody(
+      current,
+      profile,
+      conversationState,
+      requestId,
+    );
+    if (navigatorChatBodyByteLength(body) <= EMBEDDED_NAVIGATOR_MAX_BODY_BYTES) {
+      const last = body.messages.at(-1);
+      if (last === undefined || last.role !== "user") return null;
+      if (
+        body.messages.some(
+          (message) => message.content.length > MAX_CHAT_MESSAGE_LENGTH,
+        )
+      ) {
+        return null;
+      }
+      return { messages: current, body };
+    }
+    if (current.length <= 2) return null;
+    const head = current[0];
+    if (head === undefined) return null;
+    current = [head, ...current.slice(2)];
+  }
+  return null;
+}
+
+function rejectRequestId(requestId: string): EmbeddedTurnDecision | null {
+  if (!isValidRequestId(requestId)) {
+    return { status: "REJECTED", reason: "invalid_request" };
+  }
+  return null;
+}
+
+export function submitEmbeddedNavigatorTurn(
+  session: EmbeddedDialogueSession,
+  draft: string,
+  requestId: string,
+): EmbeddedTurnDecision {
+  if (session.phase === "pending") {
+    return { status: "REJECTED", reason: "pending" };
+  }
+  const invalid = rejectRequestId(requestId);
+  if (invalid) return invalid;
+
+  const text = draft.trim();
+  if (text.length === 0) return { status: "REJECTED", reason: "empty" };
+  if (text.length > MAX_CHAT_MESSAGE_LENGTH) {
+    return { status: "REJECTED", reason: "too_long" };
+  }
+
+  const fitted = fitDialogueMessages(
+    [
+      ...session.messages,
+      { id: `m${session.nextId}`, role: "user", content: text },
+    ],
+    session.profile,
+    session.conversationState,
+    requestId,
+  );
+  if (fitted === null) return { status: "REJECTED", reason: "too_large" };
+
+  return {
+    status: "ACCEPTED",
+    requestId,
+    body: fitted.body,
+    session: {
+      ...session,
+      messages: fitted.messages,
+      nextId: session.nextId + 1,
+      phase: "pending",
+      pendingRequestId: requestId,
+      errorMessage: null,
+      errorKind: null,
+      errorRetryable: false,
+    },
+  };
+}
+
+export function retryEmbeddedNavigatorTurn(
+  session: EmbeddedDialogueSession,
+  requestId: string,
+): EmbeddedTurnDecision {
+  if (session.phase !== "error" || !session.errorRetryable) {
+    return { status: "REJECTED", reason: "not_retryable" };
+  }
+  const last = session.messages.at(-1);
+  if (last === undefined || last.role !== "user") {
+    return { status: "REJECTED", reason: "not_retryable" };
+  }
+  const invalid = rejectRequestId(requestId);
+  if (invalid) return invalid;
+
+  const fitted = fitDialogueMessages(
+    session.messages,
+    session.profile,
+    session.conversationState,
+    requestId,
+  );
+  if (fitted === null) return { status: "REJECTED", reason: "too_large" };
+
+  return {
+    status: "ACCEPTED",
+    requestId,
+    body: fitted.body,
+    session: {
+      ...session,
+      messages: fitted.messages,
+      phase: "pending",
+      pendingRequestId: requestId,
+      errorMessage: null,
+      errorKind: null,
+      errorRetryable: false,
+    },
+  };
+}
+
+function isContactCard(value: unknown): value is AcademyContactCard | null {
+  if (value === null) return true;
+  if (!isRecord(value)) return false;
+  return (
+    value.kind === "ACADEMY_MANAGER" &&
+    typeof value.name === "string" &&
+    typeof value.role === "string" &&
+    typeof value.availability === "string" &&
+    typeof value.imageUrl === "string" &&
+    isRecord(value.telegram) &&
+    typeof value.telegram.label === "string" &&
+    typeof value.telegram.href === "string" &&
+    isRecord(value.phone) &&
+    typeof value.phone.label === "string" &&
+    typeof value.phone.href === "string"
+  );
+}
+
+function isPublicErrorText(text: string): boolean {
+  if (text.length === 0 || text.length > 500) return false;
+  if (/[\r\n]/u.test(text)) return false;
+  if (text.includes("node_modules")) return false;
+  if (/\bat\s+\S+\s+\(/u.test(text)) return false;
+  if (/^(?:Error|TypeError|ReferenceError|SyntaxError)\b/u.test(text)) {
+    return false;
+  }
+  return true;
+}
+
+function readPreservedState(
+  payload: unknown,
+  nowMs: number,
+): ConversationState | null {
+  if (!isRecord(payload) || !isRecord(payload.error)) return null;
+  if (!Object.prototype.hasOwnProperty.call(payload.error, "conversationState")) {
+    return null;
+  }
+  const candidate = payload.error.conversationState;
+  if (candidate === null || candidate === undefined) return null;
+  try {
+    return normalizeConversationStatePayload(candidate, nowMs);
+  } catch {
+    return null;
+  }
+}
+
+export function interpretNavigatorChatResponse(
+  httpOk: boolean,
+  payload: unknown,
+  profile: ConversationProfile,
+  nowMs: number,
+): EmbeddedNavigatorChatResult {
+  if (!httpOk) {
+    const httpMessage =
+      isRecord(payload) &&
+      isRecord(payload.error) &&
+      typeof payload.error.message === "string" &&
+      isPublicErrorText(payload.error.message.trim())
+        ? payload.error.message.trim()
+        : technicalRetryMessage(profile);
+    const retryable =
+      !isRecord(payload) ||
+      !isRecord(payload.error) ||
+      payload.error.retryable !== false;
+    return {
+      ok: false,
+      failure: {
+        kind: "http",
+        message: httpMessage,
+        retryable,
+        conversationState: readPreservedState(payload, nowMs),
+      },
+    };
+  }
+
+  if (
+    !isRecord(payload) ||
+    typeof payload.message !== "string" ||
+    payload.message.trim().length === 0 ||
+    typeof payload.resetConversation !== "boolean" ||
+    !isContactCard(payload.contactCard)
+  ) {
+    return { ok: false, failure: malformedNavigatorFailure(profile) };
+  }
+
+  let nextProfile: ConversationProfile;
+  let nextState: ConversationState;
+  try {
+    nextProfile = normalizeConversationProfilePayload(payload.profile);
+    nextState = normalizeConversationStatePayload(payload.conversationState, nowMs);
+  } catch {
+    return { ok: false, failure: malformedNavigatorFailure(profile) };
+  }
+
+  return {
+    ok: true,
+    success: {
+      message: payload.message,
+      profile: nextProfile,
+      conversationState: nextState,
+      resetConversation: payload.resetConversation,
+    },
+  };
+}
+
+function turnIsCurrent(
+  session: EmbeddedDialogueSession,
+  liveGeneration: number,
+  turn: EmbeddedTurnToken,
+): boolean {
+  return (
+    liveGeneration === turn.generation &&
+    session.generation === turn.generation &&
+    session.phase === "pending" &&
+    session.pendingRequestId === turn.requestId
+  );
+}
+
+export function applyEmbeddedNavigatorSuccess(
+  session: EmbeddedDialogueSession,
+  liveGeneration: number,
+  turn: EmbeddedTurnToken,
+  success: EmbeddedNavigatorSuccess,
+): EmbeddedDialogueSession | "IGNORED" {
+  if (!turnIsCurrent(session, liveGeneration, turn)) return "IGNORED";
+
+  const reset = success.resetConversation;
+  const assistant: EmbeddedDialogueMessage = {
+    id: `m${session.nextId}`,
+    role: "assistant",
+    content: reset
+      ? buildEmbeddedResetOpening(session.canonicalTitle)
+      : success.message,
+  };
+  const messages = reset
+    ? [assistant]
+    : boundDialogueMessages([...session.messages, assistant]);
+
+  return {
+    ...session,
+    messages,
+    profile: reset ? createEmbeddedNavigatorProfile() : success.profile,
+    conversationState: success.conversationState,
+    phase: "ready",
+    pendingRequestId: null,
+    errorMessage: null,
+    errorKind: null,
+    errorRetryable: false,
+    nextId: session.nextId + 1,
+  };
+}
+
+export function applyEmbeddedNavigatorFailure(
+  session: EmbeddedDialogueSession,
+  liveGeneration: number,
+  turn: EmbeddedTurnToken,
+  failure: EmbeddedNavigatorFailure,
+): EmbeddedDialogueSession | "IGNORED" {
+  if (!turnIsCurrent(session, liveGeneration, turn)) return "IGNORED";
+
+  return {
+    ...session,
+    profile: session.profile,
+    conversationState: failure.conversationState ?? session.conversationState,
+    phase: "error",
+    pendingRequestId: null,
+    errorMessage: failure.message,
+    errorKind: failure.kind,
+    errorRetryable: failure.retryable,
   };
 }
