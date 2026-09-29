@@ -462,7 +462,7 @@ export default function TikhonMiniAppPilotPage() {
 
   const markIndividualFieldTouched = (field: IndividualFormField) => {
     setIndividualTouched((prev) => ({ ...prev, [field]: true }));
-    setIndividualForm((prev) => ({ ...prev, [field]: prev[field].trim() }));
+    setIndividualForm((prev) => ({ ...prev, [field]: (prev[field] ?? "").trim() }));
   };
 
   // Errors appear only after the field was left or Continue was attempted
@@ -1434,6 +1434,32 @@ export default function TikhonMiniAppPilotPage() {
                   </p>
                 )}
               </div>
+
+              <div className={styles.formField}>
+                <label htmlFor="individual-promo-code" className={styles.formLabel}>
+                  Введите промокод на скидку:
+                </label>
+                <input
+                  id="individual-promo-code"
+                  type="text"
+                  autoComplete="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  enterKeyHint="done"
+                  maxLength={16}
+                  className={styles.formInput}
+                  value={individualForm.promo_code ?? ""}
+                  onChange={(e) => updateIndividualField("promo_code", e.target.value)}
+                  onBlur={() => markIndividualFieldTouched("promo_code")}
+                  aria-invalid={Boolean(individualFieldError("promo_code"))}
+                  aria-describedby="individual-promo-code-error"
+                />
+                {individualFieldError("promo_code") && (
+                  <p id="individual-promo-code-error" className={styles.formError} role="alert">
+                    {individualFieldError("promo_code")}
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className={styles.ctaBox}>
@@ -1523,6 +1549,12 @@ export default function TikhonMiniAppPilotPage() {
                   <span className={styles.payerSummaryLabel}>Email</span>
                   <span className={styles.payerSummaryValue}>{individualDraft.email}</span>
                 </div>
+                {individualDraft.promo_code && (
+                  <div className={styles.payerSummaryRow}>
+                    <span className={styles.payerSummaryLabel}>Промокод</span>
+                    <span className={styles.payerSummaryValue}>{individualDraft.promo_code}</span>
+                  </div>
+                )}
 
                 <div className={styles.payerSummaryTotal}>
                   <span className={styles.payerSummaryPrice}>

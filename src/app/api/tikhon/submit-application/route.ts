@@ -6,6 +6,16 @@ export const runtime = "nodejs";
 
 const MAX_PAYLOAD_BYTES = 65536; // 64 KB
 
+const PROMO_CODE_MAX_LENGTH = 16;
+
+export function readOptionalPromoCode(value: unknown): { code: string | null; tooLong: boolean } {
+  if (typeof value !== "string") return { code: null, tooLong: false };
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return { code: null, tooLong: false };
+  if (trimmed.length > PROMO_CODE_MAX_LENGTH) return { code: null, tooLong: true };
+  return { code: trimmed, tooLong: false };
+}
+
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
@@ -130,6 +140,17 @@ export async function POST(request: NextRequest) {
         email: email,
         phone: phone,
       };
+      const promo = readOptionalPromoCode(body.promo_code);
+      if (promo.tooLong) {
+        return NextResponse.json(
+          { error: "INVALID_PROMO_CODE", message: "Promo code must be at most 16 characters" },
+          { status: 400 }
+        );
+      }
+      const promoCode = promo.code;
+      if (promoCode) {
+        forwardPayload.promo_code = promoCode;
+      }
     } else {
       const inn = typeof body.inn === "string" ? body.inn.trim() : "";
       const companyName = typeof body.company_name === "string" ? body.company_name.trim() : "";

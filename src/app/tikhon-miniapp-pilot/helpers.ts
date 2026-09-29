@@ -386,6 +386,8 @@ export interface IndividualFormValues {
   full_name: string;
   phone: string;
   email: string;
+  /** Optional informational code. Empty means the customer entered none. */
+  promo_code?: string;
 }
 
 export type IndividualFormField = keyof IndividualFormValues;
@@ -394,6 +396,7 @@ export const EMPTY_INDIVIDUAL_FORM: IndividualFormValues = {
   full_name: "",
   phone: "",
   email: "",
+  promo_code: "",
 };
 
 export const INDIVIDUAL_FULL_NAME_ERROR =
@@ -402,6 +405,10 @@ export const INDIVIDUAL_PHONE_ERROR =
   "Укажите российский номер (+7XXXXXXXXXX) или оставьте поле пустым.";
 export const INDIVIDUAL_EMAIL_ERROR =
   "Пожалуйста, введите корректный адрес электронной почты (например: name@mail.ru).";
+export const INDIVIDUAL_PROMO_CODE_ERROR =
+  "Промокод не должен быть длиннее 16 символов.";
+/** Owner maximum after edge trim. Count is JavaScript String.length (UTF-16 code units). */
+export const PROMO_CODE_MAX_LENGTH = 16;
 
 /**
  * Native parity (chatbot client.py msg_ind_full_name): at least two
@@ -428,6 +435,19 @@ export function normalizeIndividualPhone(value: string): string | null {
   m = /^(9\d{9})$/.exec(cleaned);
   if (m) return `+7${m[1]}`;
   return null;
+}
+
+/**
+ * Informational only. Surrounding whitespace decides emptiness.
+ * A non-empty value keeps its case and internal spaces.
+ * This function does not truncate. Length is enforced separately with
+ * String.length of the trimmed value (UTF-16 code units). Ordinary ASCII
+ * matches the chatbot gate, which uses Python len() (Unicode code points).
+ */
+export function normalizePromoCode(value: string | null | undefined): string | null {
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 /** Native parity (chatbot validators.validate_email) after trim; case preserved. */
@@ -463,7 +483,12 @@ export function validateIndividualForm(
   const email = validateIndividualEmail(values.email);
   if (!email) errors.email = INDIVIDUAL_EMAIL_ERROR;
 
-  if (!fullName || !email || (phoneProvided && !phone)) {
+  const promoCode = normalizePromoCode(values.promo_code);
+  if (promoCode && promoCode.length > PROMO_CODE_MAX_LENGTH) {
+    errors.promo_code = INDIVIDUAL_PROMO_CODE_ERROR;
+  }
+
+  if (!fullName || !email || (phoneProvided && !phone) || errors.promo_code) {
     return { valid: false, errors, normalized: null };
   }
   return { valid: true, errors, normalized: { full_name: fullName, phone, email } };
@@ -481,6 +506,7 @@ export interface IndividualEnrollmentDraft {
   full_name: string;
   phone: string | null;
   email: string;
+  promo_code?: string;
 }
 
 export function buildIndividualEnrollmentDraft(input: {
@@ -492,6 +518,7 @@ export function buildIndividualEnrollmentDraft(input: {
   if (!input.course || !input.cohort || !input.pricingOption) return null;
   const { normalized } = validateIndividualForm(input.values);
   if (!normalized) return null;
+  const promoCode = normalizePromoCode(input.values.promo_code);
   return {
     course_id: input.course.id,
     cohort_id: input.cohort.id,
@@ -500,6 +527,7 @@ export function buildIndividualEnrollmentDraft(input: {
     full_name: normalized.full_name,
     phone: normalized.phone,
     email: normalized.email,
+    ...(promoCode ? { promo_code: promoCode } : {}),
   };
 }
 

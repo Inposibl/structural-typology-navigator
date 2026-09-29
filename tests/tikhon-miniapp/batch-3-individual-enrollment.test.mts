@@ -84,10 +84,15 @@ describe("Tikhon Mini App Batch 3 — Individual Enrollment (UI + local validati
 
   /* ---------------- FIELDS ---------------- */
 
-  test("A: exact field set is full_name / phone / email only", () => {
-    assert.deepStrictEqual(Object.keys(EMPTY_INDIVIDUAL_FORM), ["full_name", "phone", "email"]);
+  test("A: participant fields are full_name / phone / email plus optional promo_code", () => {
+    assert.deepStrictEqual(Object.keys(EMPTY_INDIVIDUAL_FORM), [
+      "full_name",
+      "phone",
+      "email",
+      "promo_code",
+    ]);
     const inputs = formRegion.match(/<input\b/g) || [];
-    assert.strictEqual(inputs.length, 3, "Screen 4 must render exactly three inputs");
+    assert.strictEqual(inputs.length, 4, "Screen 4 renders the three participant inputs plus promo code");
     for (const id of ["individual-full-name", "individual-phone", "individual-email"]) {
       assert.ok(formRegion.includes(`id="${id}"`), `missing input ${id}`);
     }
