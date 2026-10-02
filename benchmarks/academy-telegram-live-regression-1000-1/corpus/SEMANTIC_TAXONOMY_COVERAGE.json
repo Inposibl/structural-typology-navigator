@@ -1,0 +1,739 @@
+{
+  "schema": "SEMANTIC_TAXONOMY_COVERAGE_V3",
+  "target_classes": 84,
+  "status_counts": {
+    "SEMANTICALLY_BOUND_NO_SEAM": 23,
+    "SEMANTICALLY_BOUND_STATIC": 4,
+    "SEMANTICALLY_BOUND_RUNTIME": 46,
+    "SEMANTICALLY_BOUND_SEMANTIC_ONLY": 11
+  },
+  "runtime_bound": 46,
+  "static_bound": 4,
+  "no_seam_bound": 23,
+  "semantic_only_bound": 11,
+  "not_proven": 0,
+  "classes": {
+    "TG-01": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "C-0002",
+        "B-0008",
+        "B-0009"
+      ]
+    },
+    "TG-02": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "B-0010",
+        "B-0011"
+      ]
+    },
+    "TG-03": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "B-0012",
+        "B-0013"
+      ]
+    },
+    "TG-04": {
+      "status": "SEMANTICALLY_BOUND_STATIC",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "B-0024",
+        "B-0025",
+        "B-0026"
+      ]
+    },
+    "TG-05": {
+      "status": "SEMANTICALLY_BOUND_STATIC",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "B-0027",
+        "B-0028",
+        "B-0029"
+      ]
+    },
+    "TG-06": {
+      "status": "SEMANTICALLY_BOUND_STATIC",
+      "scenario_count": 5,
+      "representative_scenarios": [
+        "B-0030",
+        "B-0031",
+        "B-0032"
+      ]
+    },
+    "TG-07": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 7,
+      "representative_scenarios": [
+        "A-0052",
+        "A-0053",
+        "A-0054"
+      ]
+    },
+    "TG-08": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "A-0062",
+        "A-0063"
+      ]
+    },
+    "TG-09": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 90,
+      "representative_scenarios": [
+        "A-0359",
+        "A-0365",
+        "A-0371"
+      ]
+    },
+    "TG-10": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "B-0014",
+        "B-0015"
+      ]
+    },
+    "TG-11": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "B-0016",
+        "B-0017"
+      ]
+    },
+    "TG-12": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 9,
+      "representative_scenarios": [
+        "D-0092",
+        "D-0093",
+        "D-0119"
+      ]
+    },
+    "TG-13": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 92,
+      "representative_scenarios": [
+        "B-0001",
+        "B-0003",
+        "A-0155"
+      ]
+    },
+    "TG-14": {
+      "status": "SEMANTICALLY_BOUND_STATIC",
+      "scenario_count": 6,
+      "representative_scenarios": [
+        "B-0033",
+        "B-0034",
+        "B-0035"
+      ]
+    },
+    "TG-15": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "B-0018",
+        "B-0019"
+      ]
+    },
+    "TG-16": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "B-0020",
+        "B-0021"
+      ]
+    },
+    "TG-17": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 18,
+      "representative_scenarios": [
+        "A-0012",
+        "A-0013",
+        "A-0043"
+      ]
+    },
+    "TG-18": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 14,
+      "representative_scenarios": [
+        "A-0011",
+        "A-0114",
+        "A-0146"
+      ]
+    },
+    "TG-19": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "A-0056",
+        "A-0057"
+      ]
+    },
+    "TG-20": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "A-0058",
+        "A-0059"
+      ]
+    },
+    "TG-21": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "A-0060",
+        "A-0061"
+      ]
+    },
+    "TG-22": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "B-0004",
+        "B-0022",
+        "B-0023"
+      ]
+    },
+    "ST-01": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 5,
+      "representative_scenarios": [
+        "A-0064",
+        "A-0065",
+        "B-0184"
+      ]
+    },
+    "ST-02": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 54,
+      "representative_scenarios": [
+        "A-0006",
+        "A-0035",
+        "A-0036"
+      ]
+    },
+    "ST-03": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "A-0299",
+        "A-0300",
+        "A-0301"
+      ]
+    },
+    "ST-04": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 11,
+      "representative_scenarios": [
+        "A-0117",
+        "B-0112",
+        "B-0113"
+      ]
+    },
+    "ST-05": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 12,
+      "representative_scenarios": [
+        "C-0003",
+        "B-0061",
+        "B-0102"
+      ]
+    },
+    "ST-06": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 4,
+      "representative_scenarios": [
+        "A-0066",
+        "A-0067",
+        "A-0296"
+      ]
+    },
+    "ST-07": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "A-0068"
+      ]
+    },
+    "ST-08": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 7,
+      "representative_scenarios": [
+        "A-0134",
+        "A-0135",
+        "A-0136"
+      ]
+    },
+    "ST-09": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "A-0072",
+        "A-0073",
+        "A-0074"
+      ]
+    },
+    "ST-10": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "A-0302",
+        "A-0303",
+        "A-0304"
+      ]
+    },
+    "ST-11": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "A-0305",
+        "A-0306"
+      ]
+    },
+    "ST-12": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 4,
+      "representative_scenarios": [
+        "A-0069",
+        "A-0070",
+        "A-0071"
+      ]
+    },
+    "ST-13": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "C-0041"
+      ]
+    },
+    "ST-14": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 22,
+      "representative_scenarios": [
+        "A-0077",
+        "A-0078",
+        "A-0079"
+      ]
+    },
+    "ST-15": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "A-0075",
+        "A-0076",
+        "C-0042"
+      ]
+    },
+    "ST-16": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 27,
+      "representative_scenarios": [
+        "A-0007",
+        "A-0047",
+        "A-0116"
+      ]
+    },
+    "ST-17": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 18,
+      "representative_scenarios": [
+        "A-0005",
+        "A-0048",
+        "A-0049"
+      ]
+    },
+    "ST-18": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 34,
+      "representative_scenarios": [
+        "B-0007",
+        "B-0057",
+        "B-0090"
+      ]
+    },
+    "AG-01": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 35,
+      "representative_scenarios": [
+        "A-0008",
+        "A-0009",
+        "A-0081"
+      ]
+    },
+    "AG-02": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 8,
+      "representative_scenarios": [
+        "A-0010",
+        "A-0273",
+        "A-0274"
+      ]
+    },
+    "AG-03": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 4,
+      "representative_scenarios": [
+        "A-0112",
+        "A-0113",
+        "C-0045"
+      ]
+    },
+    "AG-04": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 8,
+      "representative_scenarios": [
+        "A-0084",
+        "A-0137",
+        "A-0138"
+      ]
+    },
+    "AG-05": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 34,
+      "representative_scenarios": [
+        "A-0091",
+        "A-0092",
+        "A-0093"
+      ]
+    },
+    "AG-06": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 42,
+      "representative_scenarios": [
+        "A-0014",
+        "A-0015",
+        "A-0085"
+      ]
+    },
+    "AG-07": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 6,
+      "representative_scenarios": [
+        "A-0096",
+        "A-0097",
+        "A-0098"
+      ]
+    },
+    "AG-08": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 7,
+      "representative_scenarios": [
+        "A-0100",
+        "A-0101",
+        "A-0102"
+      ]
+    },
+    "AG-09": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "A-0307",
+        "A-0308"
+      ]
+    },
+    "AG-10": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 4,
+      "representative_scenarios": [
+        "A-0104",
+        "A-0297",
+        "A-0298"
+      ]
+    },
+    "AG-11": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 4,
+      "representative_scenarios": [
+        "A-0105",
+        "A-0106",
+        "C-0037"
+      ]
+    },
+    "AG-12": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "A-0107",
+        "A-0108"
+      ]
+    },
+    "AG-13": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 4,
+      "representative_scenarios": [
+        "A-0109",
+        "A-0110",
+        "C-0038"
+      ]
+    },
+    "AG-14": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 5,
+      "representative_scenarios": [
+        "C-0005",
+        "C-0006",
+        "C-0078"
+      ]
+    },
+    "AG-15": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "A-0309"
+      ]
+    },
+    "AG-16": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "A-0111",
+        "C-0039"
+      ]
+    },
+    "AG-17": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "C-0004"
+      ]
+    },
+    "AG-18": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 7,
+      "representative_scenarios": [
+        "A-0118",
+        "A-0119",
+        "A-0120"
+      ]
+    },
+    "AG-19": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 12,
+      "representative_scenarios": [
+        "A-0124",
+        "A-0125",
+        "A-0126"
+      ]
+    },
+    "AG-20": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 5,
+      "representative_scenarios": [
+        "A-0310",
+        "A-0311",
+        "B-0246"
+      ]
+    },
+    "PAY-01": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 5,
+      "representative_scenarios": [
+        "B-0041",
+        "B-0058",
+        "B-0095"
+      ]
+    },
+    "PAY-02": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 22,
+      "representative_scenarios": [
+        "B-0005",
+        "C-0001",
+        "B-0044"
+      ]
+    },
+    "PAY-03": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "B-0042"
+      ]
+    },
+    "PAY-04": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "B-0043"
+      ]
+    },
+    "PAY-05": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "B-0187"
+      ]
+    },
+    "PAY-06": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "B-0062"
+      ]
+    },
+    "PAY-07": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "B-0054",
+        "B-0271",
+        "B-0272"
+      ]
+    },
+    "PAY-08": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "B-0055",
+        "B-0273",
+        "B-0274"
+      ]
+    },
+    "PAY-09": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "B-0056",
+        "B-0275",
+        "B-0276"
+      ]
+    },
+    "PAY-10": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "B-0063",
+        "B-0277",
+        "B-0278"
+      ]
+    },
+    "PAY-11": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 8,
+      "representative_scenarios": [
+        "B-0006",
+        "B-0060",
+        "B-0096"
+      ]
+    },
+    "PAY-12": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "C-0120",
+        "C-0121",
+        "C-0122"
+      ]
+    },
+    "PAY-13": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 126,
+      "representative_scenarios": [
+        "A-0001",
+        "A-0002",
+        "A-0003"
+      ]
+    },
+    "PAY-14": {
+      "status": "SEMANTICALLY_BOUND_NO_SEAM",
+      "scenario_count": 3,
+      "representative_scenarios": [
+        "B-0064",
+        "B-0279",
+        "B-0280"
+      ]
+    },
+    "OUT-01": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 13,
+      "representative_scenarios": [
+        "D-0006",
+        "D-0007",
+        "D-0026"
+      ]
+    },
+    "OUT-02": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 29,
+      "representative_scenarios": [
+        "D-0001",
+        "D-0002",
+        "D-0031"
+      ]
+    },
+    "OUT-03": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "D-0008",
+        "D-0090"
+      ]
+    },
+    "OUT-04": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 2,
+      "representative_scenarios": [
+        "D-0009",
+        "D-0075"
+      ]
+    },
+    "OUT-05": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 5,
+      "representative_scenarios": [
+        "D-0036",
+        "D-0037",
+        "D-0038"
+      ]
+    },
+    "OUT-06": {
+      "status": "SEMANTICALLY_BOUND_SEMANTIC_ONLY",
+      "scenario_count": 17,
+      "representative_scenarios": [
+        "D-0010",
+        "D-0011",
+        "D-0018"
+      ]
+    },
+    "OUT-07": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 17,
+      "representative_scenarios": [
+        "D-0003",
+        "D-0012",
+        "D-0013"
+      ]
+    },
+    "OUT-08": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 42,
+      "representative_scenarios": [
+        "D-0004",
+        "D-0005",
+        "D-0014"
+      ]
+    },
+    "AG-21": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 5,
+      "representative_scenarios": [
+        "A-0156",
+        "A-0350",
+        "A-0351"
+      ]
+    },
+    "AG-22": {
+      "status": "SEMANTICALLY_BOUND_RUNTIME",
+      "scenario_count": 1,
+      "representative_scenarios": [
+        "A-0157"
+      ]
+    }
+  }
+}

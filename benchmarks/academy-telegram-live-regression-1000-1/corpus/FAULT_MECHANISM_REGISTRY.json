@@ -1,0 +1,135 @@
+{
+  "schema": "MECHANISM_REGISTRY_V1",
+  "concurrency_mechanisms": {
+    "ALEXEY.SAME_USER_SERIALIZATION": {
+      "mechanism_id": "ALEXEY.SAME_USER_SERIALIZATION",
+      "mechanism": "SAME_USER_SERIALIZATION",
+      "physical_seam": "LebedevNavigatorAdapter.get_user_lock",
+      "supported_adapter": "alexey_user_turn",
+      "proof_contract": [
+        "REQUIRED PARTICIPANTS: two or more same-loop tasks attempting the SAME user",
+        "LOCK RELATION: every task records the SAME actual lock identity",
+        "SCHEDULE CONTRACT: a deterministic benchmark-controlled async pause at the awaited provider boundary (contention_schedule.provider_pause_s) holds the first task inside the critical section while the later task attempts the lock — a scheduling fixture only, never a product claim",
+        "REQUIRED EVIDENCE: a later task began waiting while the earlier holder was active (contention evidence) and acquired strictly after its release",
+        "STATE INVARIANT: critical sections do NOT overlap; each task completes release; the declared state invariant holds after completion",
+        "SUCCESS CONDITION: contention + serialization + invariant proven (simultaneous critical-section overlap is NOT required and NOT valid proof for same-user serialization)"
+      ],
+      "oracle": "same_user_serialization_proven",
+      "evidence_fields": [
+        "workers",
+        "worker_ids",
+        "task_records",
+        "lock_user_ids",
+        "same_user_shared_lock",
+        "lock_identity",
+        "contention_evidence",
+        "critical_sections_non_overlapping",
+        "lock_release_completed_all",
+        "controlled_schedule",
+        "target_seam",
+        "schedule_id"
+      ]
+    },
+    "ALEXEY.DIFFERENT_USER_INDEPENDENCE": {
+      "mechanism_id": "ALEXEY.DIFFERENT_USER_INDEPENDENCE",
+      "mechanism": "DIFFERENT_USER_INDEPENDENCE",
+      "physical_seam": "LebedevNavigatorAdapter.get_user_lock",
+      "supported_adapter": "alexey_user_turn",
+      "proof_contract": [
+        "REQUIRED PARTICIPANTS: two or more same-loop tasks addressing DISTINCT users",
+        "LOCK RELATION: per-task ACTUAL lock identities are recorded and DISTINCT (user IDs, labels and interval counts alone are not proof)",
+        "SCHEDULE CONTRACT: the controlled schedule permits simultaneous progress (benchmark-controlled provider pause at the awaited boundary)",
+        "REQUIRED EVIDENCE: each native operation invoked with per-task records bound to their actual tasks; native-operation intervals OVERLAP",
+        "STATE INVARIANT: per-user state remains independent after completion",
+        "SUCCESS CONDITION: distinct locks + overlapping native operations + full release + per-user state independence"
+      ],
+      "oracle": "different_user_independence_proven",
+      "evidence_fields": [
+        "workers",
+        "worker_ids",
+        "task_records",
+        "lock_user_ids",
+        "same_user_shared_lock",
+        "lock_identity",
+        "lock_identities_by_task",
+        "native_operation_intervals",
+        "lock_release_completed_all",
+        "controlled_schedule",
+        "target_seam",
+        "schedule_id"
+      ]
+    }
+  },
+  "fault_mechanisms": {
+    "ALEXEY.LOST_RESPONSE.AFTER_PERSISTENCE": {
+      "mechanism_id": "ALEXEY.LOST_RESPONSE.AFTER_PERSISTENCE",
+      "kind": "LOST_RESPONSE",
+      "physical_fixture_seam": "alexey_process_user_turn_response_delivery",
+      "point": "after_persistence_before_delivery",
+      "implementation": "wraps the native process_user_turn: the original operation runs to completion (its normal store.save_session persistence observed by a counting wrapper), then the wrapper suppresses the returned reply",
+      "supported_adapter": "alexey_user_turn",
+      "evidence_schema": [
+        "durable_write_proven",
+        "persisted_state_present",
+        "processing_completed",
+        "response_dropped"
+      ]
+    },
+    "ALEXEY.DEPENDENCY_500.NAVIGATOR_TRANSPORT": {
+      "mechanism_id": "ALEXEY.DEPENDENCY_500.NAVIGATOR_TRANSPORT",
+      "kind": "DEPENDENCY_500",
+      "physical_fixture_seam": "navigator_transport",
+      "point": "before_response",
+      "implementation": "replaces the transport callable and raises a 500 dependency error",
+      "supported_adapter": "alexey_user_turn",
+      "evidence_schema": [
+        "raised"
+      ]
+    },
+    "ALEXEY.DEPENDENCY_429.NAVIGATOR_TRANSPORT": {
+      "mechanism_id": "ALEXEY.DEPENDENCY_429.NAVIGATOR_TRANSPORT",
+      "kind": "DEPENDENCY_429",
+      "physical_fixture_seam": "navigator_transport",
+      "point": "before_response",
+      "implementation": "replaces the transport callable and raises a 429 dependency error",
+      "supported_adapter": "alexey_user_turn",
+      "evidence_schema": [
+        "raised"
+      ]
+    },
+    "ALEXEY.TIMEOUT_BEFORE_PROCESSING.NAVIGATOR_TRANSPORT": {
+      "mechanism_id": "ALEXEY.TIMEOUT_BEFORE_PROCESSING.NAVIGATOR_TRANSPORT",
+      "kind": "TIMEOUT_BEFORE_PROCESSING",
+      "physical_fixture_seam": "navigator_transport",
+      "point": "before_processing",
+      "implementation": "replaces the transport callable and raises TimeoutError before processing",
+      "supported_adapter": "alexey_user_turn",
+      "evidence_schema": [
+        "raised"
+      ]
+    },
+    "ALEXEY.TIMEOUT_AFTER_PROCESSING.NAVIGATOR_TRANSPORT": {
+      "mechanism_id": "ALEXEY.TIMEOUT_AFTER_PROCESSING.NAVIGATOR_TRANSPORT",
+      "kind": "TIMEOUT_AFTER_PROCESSING",
+      "physical_fixture_seam": "navigator_transport",
+      "point": "after_processing",
+      "implementation": "replaces the transport callable; delays the response past the deadline",
+      "supported_adapter": "alexey_user_turn",
+      "evidence_schema": [
+        "deadline_exceeded"
+      ]
+    },
+    "ALEXEY.MALFORMED_PAYLOAD.NAVIGATOR_TRANSPORT": {
+      "mechanism_id": "ALEXEY.MALFORMED_PAYLOAD.NAVIGATOR_TRANSPORT",
+      "kind": "MALFORMED_DEPENDENCY_PAYLOAD",
+      "physical_fixture_seam": "navigator_transport",
+      "point": "before_response",
+      "implementation": "replaces the transport callable and returns a malformed payload",
+      "supported_adapter": "alexey_user_turn",
+      "evidence_schema": [
+        "payload"
+      ]
+    }
+  },
+  "schema_fault": "FAULT_MECHANISM_REGISTRY_V1"
+}

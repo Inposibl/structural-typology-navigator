@@ -1,0 +1,642 @@
+{
+  "schema": "CORPUS_924_COVERAGE_RETENTION_REPORT_V1",
+  "comparison": "996 SOURCE vs 924 FINAL",
+  "failure_classes": {
+    "AG-01": {
+      "SOURCE_COUNT": 35,
+      "FINAL_COUNT": 30,
+      "LOSS": 5,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-02": {
+      "SOURCE_COUNT": 8,
+      "FINAL_COUNT": 8,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-03": {
+      "SOURCE_COUNT": 4,
+      "FINAL_COUNT": 4,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-04": {
+      "SOURCE_COUNT": 8,
+      "FINAL_COUNT": 8,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-05": {
+      "SOURCE_COUNT": 34,
+      "FINAL_COUNT": 33,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-06": {
+      "SOURCE_COUNT": 42,
+      "FINAL_COUNT": 42,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-07": {
+      "SOURCE_COUNT": 6,
+      "FINAL_COUNT": 6,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-08": {
+      "SOURCE_COUNT": 7,
+      "FINAL_COUNT": 7,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-09": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-10": {
+      "SOURCE_COUNT": 4,
+      "FINAL_COUNT": 4,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-11": {
+      "SOURCE_COUNT": 4,
+      "FINAL_COUNT": 3,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-12": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-13": {
+      "SOURCE_COUNT": 4,
+      "FINAL_COUNT": 4,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-14": {
+      "SOURCE_COUNT": 5,
+      "FINAL_COUNT": 1,
+      "LOSS": 4,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-15": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-16": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-17": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-18": {
+      "SOURCE_COUNT": 7,
+      "FINAL_COUNT": 7,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-19": {
+      "SOURCE_COUNT": 12,
+      "FINAL_COUNT": 12,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-20": {
+      "SOURCE_COUNT": 5,
+      "FINAL_COUNT": 5,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-21": {
+      "SOURCE_COUNT": 5,
+      "FINAL_COUNT": 5,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "AG-22": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "OUT-01": {
+      "SOURCE_COUNT": 13,
+      "FINAL_COUNT": 13,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "OUT-02": {
+      "SOURCE_COUNT": 29,
+      "FINAL_COUNT": 29,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "OUT-03": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "OUT-04": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "OUT-05": {
+      "SOURCE_COUNT": 5,
+      "FINAL_COUNT": 5,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "OUT-06": {
+      "SOURCE_COUNT": 17,
+      "FINAL_COUNT": 17,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "OUT-07": {
+      "SOURCE_COUNT": 17,
+      "FINAL_COUNT": 17,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "OUT-08": {
+      "SOURCE_COUNT": 42,
+      "FINAL_COUNT": 42,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-01": {
+      "SOURCE_COUNT": 5,
+      "FINAL_COUNT": 1,
+      "LOSS": 4,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-02": {
+      "SOURCE_COUNT": 22,
+      "FINAL_COUNT": 22,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-03": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-04": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-05": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-06": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-07": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-08": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-09": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-10": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-11": {
+      "SOURCE_COUNT": 8,
+      "FINAL_COUNT": 8,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-12": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-13": {
+      "SOURCE_COUNT": 126,
+      "FINAL_COUNT": 126,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "PAY-14": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-01": {
+      "SOURCE_COUNT": 5,
+      "FINAL_COUNT": 5,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-02": {
+      "SOURCE_COUNT": 54,
+      "FINAL_COUNT": 54,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-03": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 1,
+      "LOSS": 2,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-04": {
+      "SOURCE_COUNT": 11,
+      "FINAL_COUNT": 5,
+      "LOSS": 6,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-05": {
+      "SOURCE_COUNT": 12,
+      "FINAL_COUNT": 7,
+      "LOSS": 5,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-06": {
+      "SOURCE_COUNT": 4,
+      "FINAL_COUNT": 4,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-07": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-08": {
+      "SOURCE_COUNT": 7,
+      "FINAL_COUNT": 7,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-09": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-10": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-11": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-12": {
+      "SOURCE_COUNT": 4,
+      "FINAL_COUNT": 4,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-13": {
+      "SOURCE_COUNT": 1,
+      "FINAL_COUNT": 1,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-14": {
+      "SOURCE_COUNT": 22,
+      "FINAL_COUNT": 21,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-15": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-16": {
+      "SOURCE_COUNT": 27,
+      "FINAL_COUNT": 26,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-17": {
+      "SOURCE_COUNT": 18,
+      "FINAL_COUNT": 18,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ST-18": {
+      "SOURCE_COUNT": 34,
+      "FINAL_COUNT": 16,
+      "LOSS": 18,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-01": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-02": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-03": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-04": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 1,
+      "LOSS": 2,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-05": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 1,
+      "LOSS": 2,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-06": {
+      "SOURCE_COUNT": 5,
+      "FINAL_COUNT": 1,
+      "LOSS": 4,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-07": {
+      "SOURCE_COUNT": 7,
+      "FINAL_COUNT": 2,
+      "LOSS": 5,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-08": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-09": {
+      "SOURCE_COUNT": 90,
+      "FINAL_COUNT": 90,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-10": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-11": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 1,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-12": {
+      "SOURCE_COUNT": 9,
+      "FINAL_COUNT": 9,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-13": {
+      "SOURCE_COUNT": 92,
+      "FINAL_COUNT": 92,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-14": {
+      "SOURCE_COUNT": 6,
+      "FINAL_COUNT": 1,
+      "LOSS": 5,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-15": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 1,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-16": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 1,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-17": {
+      "SOURCE_COUNT": 18,
+      "FINAL_COUNT": 18,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-18": {
+      "SOURCE_COUNT": 14,
+      "FINAL_COUNT": 13,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-19": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 1,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-20": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 1,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-21": {
+      "SOURCE_COUNT": 2,
+      "FINAL_COUNT": 2,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "TG-22": {
+      "SOURCE_COUNT": 3,
+      "FINAL_COUNT": 3,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    }
+  },
+  "adapter_families": {
+    "alexey_user_turn": {
+      "SOURCE_COUNT": 91,
+      "FINAL_COUNT": 60,
+      "LOSS": 31,
+      "LOSS_MATERIAL": "NO"
+    },
+    "chatbot_l3_callback_registry": {
+      "SOURCE_COUNT": 96,
+      "FINAL_COUNT": 95,
+      "LOSS": 1,
+      "LOSS_MATERIAL": "NO"
+    },
+    "chatbot_l3_deep_link_start": {
+      "SOURCE_COUNT": 82,
+      "FINAL_COUNT": 82,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "chatbot_l3_parser_bounds": {
+      "SOURCE_COUNT": 16,
+      "FINAL_COUNT": 16,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "harness_gate_selftest": {
+      "SOURCE_COUNT": 6,
+      "FINAL_COUNT": 6,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "live_telegram_transport": {
+      "SOURCE_COUNT": 159,
+      "FINAL_COUNT": 145,
+      "LOSS": 14,
+      "LOSS_MATERIAL": "NO"
+    },
+    "navigator_l1_commercial_authority": {
+      "SOURCE_COUNT": 21,
+      "FINAL_COUNT": 21,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "navigator_l1_course_reference": {
+      "SOURCE_COUNT": 47,
+      "FINAL_COUNT": 47,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "navigator_l1_payment_policy": {
+      "SOURCE_COUNT": 40,
+      "FINAL_COUNT": 40,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "navigator_l2_chat_api": {
+      "SOURCE_COUNT": 285,
+      "FINAL_COUNT": 281,
+      "LOSS": 4,
+      "LOSS_MATERIAL": "NO"
+    },
+    "outbound_dispatcher": {
+      "SOURCE_COUNT": 50,
+      "FINAL_COUNT": 50,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "outbound_lead_lifecycle": {
+      "SOURCE_COUNT": 28,
+      "FINAL_COUNT": 28,
+      "LOSS": 0,
+      "LOSS_MATERIAL": "NO"
+    },
+    "static_source_inventory": {
+      "SOURCE_COUNT": 75,
+      "FINAL_COUNT": 53,
+      "LOSS": 22,
+      "LOSS_MATERIAL": "NO"
+    }
+  },
+  "measurement_kinds": {
+    "static_source_inventory": {
+      "SOURCE_COUNT": 75,
+      "FINAL_COUNT": 53,
+      "LOSS_MATERIAL": "NO"
+    },
+    "concurrency_set_c": {
+      "SOURCE_COUNT": 31,
+      "FINAL_COUNT": 4,
+      "LOSS_MATERIAL": "NO",
+      "note": "retained C rows all carry valid typed mechanism contracts (was 31 invalid under IV6-F12A/F12B)"
+    },
+    "fault_set_f": {
+      "SOURCE_COUNT": 10,
+      "FINAL_COUNT": 10,
+      "LOSS_MATERIAL": "NO"
+    },
+    "set_s": {
+      "SOURCE_COUNT": 44,
+      "FINAL_COUNT": 43,
+      "LOSS_MATERIAL": "NO",
+      "note": "A-0140 legitimately pruned: its manager-request control turn cannot reach orchestration (IV6-F15 §35)"
+    }
+  },
+  "mandatory_seeds": {
+    "SOURCE_COUNT": 30,
+    "FINAL_COUNT": 30,
+    "LOSS": 0
+  },
+  "semantic_required": {
+    "SOURCE_COUNT": 150,
+    "FINAL_COUNT": 147,
+    "LOSS_MATERIAL": "NO"
+  },
+  "concurrency_mechanisms": {
+    "ALEXEY.SAME_USER_SERIALIZATION": {
+      "FINAL_COUNT": 2,
+      "LOSS_MATERIAL": "NO"
+    },
+    "ALEXEY.DIFFERENT_USER_INDEPENDENCE": {
+      "FINAL_COUNT": 2,
+      "LOSS_MATERIAL": "NO"
+    }
+  },
+  "fault_mechanisms": {
+    "ALEXEY.LOST_RESPONSE.AFTER_PERSISTENCE": {
+      "FINAL_COUNT": 17,
+      "LOSS_MATERIAL": "NO"
+    }
+  },
+  "UNIQUE_REQUIRED_MECHANISM_LOSS": 0,
+  "MATERIAL_MEASUREMENT_CLASS_LOSS": 0
+}

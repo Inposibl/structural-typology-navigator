@@ -1,0 +1,88 @@
+{
+  "schema": "PROVIDER_FIXTURE_REGISTRY_V1",
+  "fixtures": [
+    {
+      "scenario_id": "A-0011",
+      "schema": "NAVIGATOR_RESPONSE_FIXTURE_V2",
+      "fixture_id": "PF-A-0011-MASLOW",
+      "fixture_by_user": null,
+      "registered_response_ids": [
+        "PF-A-0011-MASLOW"
+      ],
+      "contention_schedule": {
+        "provider_pause_s": 0.05,
+        "pause_point": "awaited provider boundary (call_navigator_core)",
+        "fixture_kind": "benchmark-controlled scheduling fixture (not a product claim)"
+      },
+      "selection_rule": "explicit identity (IV6-F06A); never text heuristics"
+    },
+    {
+      "scenario_id": "B-0005",
+      "schema": "NAVIGATOR_RESPONSE_FIXTURE_V2",
+      "fixture_id": "PF-B-0005-MASLOW",
+      "fixture_by_user": null,
+      "registered_response_ids": [
+        "PF-B-0005-MASLOW"
+      ],
+      "contention_schedule": {
+        "provider_pause_s": 0.05,
+        "pause_point": "awaited provider boundary (call_navigator_core)",
+        "fixture_kind": "benchmark-controlled scheduling fixture (not a product claim)"
+      },
+      "selection_rule": "explicit identity (IV6-F06A); never text heuristics"
+    },
+    {
+      "scenario_id": "B-0007",
+      "schema": "NAVIGATOR_RESPONSE_FIXTURE_V2",
+      "fixture_id": null,
+      "fixture_by_user": {
+        "701001": "PF-B-0007-MASLOW",
+        "701002": "PF-B-0007-STRUCT"
+      },
+      "registered_response_ids": [
+        "PF-B-0007-MASLOW",
+        "PF-B-0007-STRUCT"
+      ],
+      "contention_schedule": {
+        "provider_pause_s": 0.05,
+        "pause_point": "awaited provider boundary (call_navigator_core)",
+        "fixture_kind": "benchmark-controlled scheduling fixture (not a product claim)"
+      },
+      "selection_rule": "explicit identity (IV6-F06A); never text heuristics"
+    },
+    {
+      "scenario_id": "C-0001",
+      "schema": "NAVIGATOR_RESPONSE_FIXTURE_V2",
+      "fixture_id": "PF-C-0001-MASLOW",
+      "fixture_by_user": null,
+      "registered_response_ids": [
+        "PF-C-0001-MASLOW"
+      ],
+      "contention_schedule": {
+        "provider_pause_s": 0.05,
+        "pause_point": "awaited provider boundary (call_navigator_core)",
+        "fixture_kind": "benchmark-controlled scheduling fixture (not a product claim)"
+      },
+      "selection_rule": "explicit identity (IV6-F06A); never text heuristics"
+    },
+    {
+      "scenario_id": "C-0003",
+      "schema": "NAVIGATOR_RESPONSE_FIXTURE_V2",
+      "fixture_id": null,
+      "fixture_by_user": {
+        "703001": "PF-C-0003-RESET",
+        "703002": "PF-C-0003-STRUCT"
+      },
+      "registered_response_ids": [
+        "PF-C-0003-RESET",
+        "PF-C-0003-STRUCT"
+      ],
+      "contention_schedule": {
+        "provider_pause_s": 0.05,
+        "pause_point": "awaited provider boundary (call_navigator_core)",
+        "fixture_kind": "benchmark-controlled scheduling fixture (not a product claim)"
+      },
+      "selection_rule": "explicit identity (IV6-F06A); never text heuristics"
+    }
+  ]
+}

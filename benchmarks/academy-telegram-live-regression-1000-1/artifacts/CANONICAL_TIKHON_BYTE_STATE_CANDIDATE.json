@@ -1,0 +1,447 @@
+{
+  "branch": "feat/telegram-shared-brain-integration-1",
+  "candidate_status": "CANDIDATE — pending IV5/Owner acceptance",
+  "counts": {
+    "clean_tracked": 70,
+    "controlled_untracked_overlay": 66,
+    "explicit_excluded_untracked": 4798,
+    "head": "3adbb9f1d16c299c5b42f1dccad0966c4e7eeecd",
+    "tracked_deleted": 17,
+    "tracked_modified": 16
+  },
+  "deleted_paths": [
+    ".python-version",
+    "docs/reports/TIKHON_0C2D_BOUNDED_RELIABILITY_CLEANUP_1_REPORT_20260925T235500Z.md",
+    "requirements/lebedev.in",
+    "requirements/lebedev.lock",
+    "requirements/tikhon.in",
+    "requirements/tikhon.lock",
+    "tests/__init__.py",
+    "tests/support/__init__.py",
+    "tests/support/db.py",
+    "tests/support/network.py",
+    "tests/support/outbound.py",
+    "tests/test_d1_privileged_id_grammar.py",
+    "tests/test_d2_outbound_recorder.py",
+    "tests/test_d2_payment_callback_strictness.py",
+    "tests/test_e_sqlite_concurrency.py",
+    "tests_lebedev/__init__.py",
+    "tests_lebedev/test_lebedev_adapter.py"
+  ],
+  "derived_from": "physical policy traversal of the live Tikhon tree (read-only; excluded sensitive classes never read)",
+  "excluded_classes": [
+    "**/.DS_Store",
+    "*.docx",
+    "*.doc",
+    "*.pdf",
+    "*.zip",
+    "credentials/*",
+    ".env*",
+    "*.env",
+    "*.db",
+    "*.sqlite*",
+    "*.session",
+    "__pycache__/*",
+    "venv/*",
+    ".git/*",
+    "*.pyc",
+    "nohup.out",
+    "*.log"
+  ],
+  "head": "3adbb9f1d16c299c5b42f1dccad0966c4e7eeecd",
+  "iv4_discrepancy_resolution": "IV4 M-02: published rule docs/* was rule-eligible for 71 physical files while 68 were listed. The explicit policy retires the blanket docs/* rule; docs/.DS_Store and the two .docx methodology documents are EXCLUDED classes (non-runtime), so the policy and the physical inventory now agree by construction",
+  "manifest_sha256": "dbe494af1aaf47df8409ba9b570c250022e310c9f89e8cfae92a98675b5b92b4",
+  "manifest_version": "1.0",
+  "overlay_included_classes": [
+    "*.py",
+    "*.mjs",
+    "*.js",
+    "*.ts",
+    "*.json",
+    "*.yml",
+    "*.yaml",
+    "*.toml",
+    "*.sql",
+    "*.sh",
+    "*.md",
+    "*.txt",
+    "Dockerfile",
+    "docker-compose.yml",
+    ".dockerignore",
+    "requirements*",
+    "docs/**/*.md",
+    "docs/**/*.txt",
+    "deploy/**",
+    "scripts/**",
+    "tests/**"
+  ],
+  "overlay_policy": "EXPLICIT controlled-overlay policy (CORR4 M-02): untracked files with controlled source/config/text extensions anywhere in the tree, plus Dockerfile/docker-compose.yml/.dockerignore/requirements*.txt; documents are controlled ONLY as runtime-syncable text (docs/**/*.md, docs/**/*.txt) — the ambiguous blanket docs/* rule is RETIRED; non-runtime binary documents (.docx/.doc/.pdf), .DS_Store and sensitive classes are explicitly excluded and never read",
+  "tracked_clean_inventory": [
+    {
+      "path": ".gitignore",
+      "sha256": "74848239d204ddd7a3b29b04abdb7363fa5e4820e0b1fd6cb32e446b0fa177ce"
+    },
+    {
+      "path": "application_formatter.py",
+      "sha256": "a2c9c7568e71066bab4c5b1a6614271511613e32a598f1545e074915a929ebe0"
+    },
+    {
+      "path": "assets/Tikhon_avatar.jpg",
+      "sha256": "6af38fd4873f310f61a0c292001248be3f2cce94bf02e9a574a6393bdf3e64aa"
+    },
+    {
+      "path": "assets/logo.jpg",
+      "sha256": "360351107fd7e34fbee08ee611dbc556e6acefb765454dc2c0d24772e5902200"
+    },
+    {
+      "path": "calendar_service.py",
+      "sha256": "dc52f2a9cb1271d3b686aa5b93c6735576df0a3711c472fda2f0cef240d47b34"
+    },
+    {
+      "path": "calendar_state.py",
+      "sha256": "66c36c497f507e2abfe86001bad5efa174ac117ae50aaa65ce82b69fec7ff040"
+    },
+    {
+      "path": "dadata_service.py",
+      "sha256": "e7d70672edc9a6ee58065f8ce248ac4e6d0f87692e8d16ac59ed9c322e81c46b"
+    },
+    {
+      "path": "data/calendar_cache.json",
+      "sha256": "bc0598060e2fd751c3bb19627ccb6936fb6c9a13537ddf245897e5c12b5426ae"
+    },
+    {
+      "path": "data_engine/config.py",
+      "sha256": "a02cee57fa21c93360f19ea9a53c4a5b13533c592f251bfe9f08d4aea53d4234"
+    },
+    {
+      "path": "data_engine/schedule_sheets_sync.py",
+      "sha256": "300ff51b2eab2d658871109a9e32ae3c23468f0d4c36c077b086338795b2226e"
+    },
+    {
+      "path": "data_engine/session_store.py",
+      "sha256": "497bee51902597abb1e25dfa1719e344cfcd12639c08ed149f9a748e353b1ffb"
+    },
+    {
+      "path": "delivery_service.py",
+      "sha256": "166e5446706d1905a53001358fd9b63a6b59e97555e970abe7de8995d4a42c76"
+    },
+    {
+      "path": "design_preview.html",
+      "sha256": "f0396e094a1cd28c17b356351c699d42f2120a5ec08c24ff31fc9e3c94eb7587"
+    },
+    {
+      "path": "docs/SESSION_TRANSCRIPT.md",
+      "sha256": "e75d42058fdca3d9cbcb41ef562ff96a0db89a769ad6c3072248746605d769e9"
+    },
+    {
+      "path": "docs/reports/TIKHON_B6F_SURFACE_ACCOUNTING_CORR1_20260928.md",
+      "sha256": "adcfe126fadf776cf3f01832bf521147bccc58d678ca0dfb86a22b13d5436a66"
+    },
+    {
+      "path": "docs/reports/TIKHON_B6F_SURFACE_ACCOUNTING_CORR2_20260928.md",
+      "sha256": "163922fbc06b6056979a55d814ba558bc680fc2f66c15585ce582899544bbbb0"
+    },
+    {
+      "path": "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_0_CORR1_EVENT_DRIVEN_PROJECTION_SYNC_CLOSURE_20260923T170033Z.md",
+      "sha256": "d9d0b54b094ef47ea3e5654b95632edcb8cc27f8fe2922bb66db913725e433f6"
+    },
+    {
+      "path": "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_0_SECURE_DATA_TRANSPORT_CLOSURE_1_REPORT_20260923T163926Z.md",
+      "sha256": "70ecd26ee26419c11414704877320f7aabeafb178493b6aa12e6c2d462f0fb12"
+    },
+    {
+      "path": "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_1_CATALOG_AND_COHORT_SELECTION_1_REPORT_20260923T173200Z.md",
+      "sha256": "54a3e4767177a964e86488d62de8fdac3e7cdb86be2fcd3953a49e400454d716"
+    },
+    {
+      "path": "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_1_CORR1_CORR2_CREDENTIAL_ROTATION_FINAL_CLOSURE_1_20260923T194800Z.md",
+      "sha256": "4ff4a236136ccb1a8c4a24396022f2c73fe9b50a6cbe3875e80c6f9c93712462"
+    },
+    {
+      "path": "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_1_CORR1_CORR2_CREDENTIAL_ROTATION_FINAL_CLOSURE_1_REVOCATION_VERIFY_1_20260923T195900Z.md",
+      "sha256": "01c400643fb51540755896c2396af5726ef83555c80952fb048047b8a20262c8"
+    },
+    {
+      "path": "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_1_CORR1_CORR2_SECRET_ROTATION_AND_ENTITLEMENT_RECONCILIATION_CLOSURE_20260923T192500Z.md",
+      "sha256": "dfe9e0d8fa17006c58e61ef9e3060544bc2a156c48c8b8564e319ac786f7dd03"
+    },
+    {
+      "path": "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_1_CORR1_PAYMENT_HISTORY_MODEL_AND_PRIVATE_ENTITLEMENT_CLOSURE_1_REPORT_20260923T185500Z.md",
+      "sha256": "411ebe6a0609a01c199a09bbeaad0f123e8d9cf6a29832ca67eb5c81f87a5770"
+    },
+    {
+      "path": "enrollment_readiness.py",
+      "sha256": "661d1837b44a1a2fddf7a870e57865a528547542dfd00afce0b6cbd934a611f1"
+    },
+    {
+      "path": "framer_calendar.py",
+      "sha256": "6efd60262d19b86607da0c5f664db3b6f636badfbab7e8812372818389c6c5e6"
+    },
+    {
+      "path": "handlers/__init__.py",
+      "sha256": "af61b07e45a21725ec3ca6545e6c3f5e0fe24d186fc78dab7c923454af58e86c"
+    },
+    {
+      "path": "handlers/group_binding.py",
+      "sha256": "f9f0ce6c4483b4d1fd88e611731129b4220955fe9ed55292ffbbdc48af990482"
+    },
+    {
+      "path": "handlers/supplemental_meeting.py",
+      "sha256": "a5bc441efbb78fb98a57bc7aa499a7bcb7042a0523cb65df36ccde92e80148c4"
+    },
+    {
+      "path": "keyboards.py",
+      "sha256": "4a3d92c9007f88bc868fa314561cf7eab374a7a3725f77d3717de77f1fdf66e9"
+    },
+    {
+      "path": "main.py",
+      "sha256": "76b67aa426729149d12f250881c9ac171f397117490d2ba1af0aae475bbef1db"
+    },
+    {
+      "path": "meeting_model.py",
+      "sha256": "5002cae43e8358ddfecd8fca5ecc982571c81de90d37ab5777df8fe1d536f350"
+    },
+    {
+      "path": "projection_service.py",
+      "sha256": "36d05b8808f2ce5c04c2c3e0c68b134a22629d728efb57fa13cc56427ed872c1"
+    },
+    {
+      "path": "reminder_scheduler.py",
+      "sha256": "4bbcb03a9ae11ec8558662dfc6118f5cec662d51007a702a8f6c7be3e7f82b10"
+    },
+    {
+      "path": "schedule_reconciliation.py",
+      "sha256": "b508bc2e0653227e8e78e787f33766e2a632b7d6d45eebf3d93aa4e53010237b"
+    },
+    {
+      "path": "schedule_surface.py",
+      "sha256": "cde82e500a9542ecde03b0d5ec8f11d5e9f1b214185a82bfcbedb5ac0884d966"
+    },
+    {
+      "path": "states.py",
+      "sha256": "8d3afcc5f537e1132eb99a483bf2fae08be85f4f0a8538c3058efc271339a908"
+    },
+    {
+      "path": "telegram_bindings.py",
+      "sha256": "c6c47b6308e95b78417cf19ccd6b11add7b90f047f3c7e9bddef061af186863f"
+    },
+    {
+      "path": "tests/test_b6b_supplemental_meeting.py",
+      "sha256": "fac4d58c38893e5ddfd94b9630d805cdace815403f48cd175b2e1f9e4933562e"
+    },
+    {
+      "path": "tests/test_b6e_bind_command.py",
+      "sha256": "72e45cbc5bb8fa414cfa688c8d900fac40824c121af086da760c1b967e050b44"
+    },
+    {
+      "path": "tests/test_b6e_cohort_authority_corr1.py",
+      "sha256": "161d5fd224ce87fd818bd7739ce59aa211912c5e978e6f11fb79ec094d0b7341"
+    },
+    {
+      "path": "tests/test_b6e_group_bindings.py",
+      "sha256": "12f655adf385a3f9882d0a8026bd9e63ff70cc8f0fe3b54e09d2ed22588eb94c"
+    },
+    {
+      "path": "tests/test_b6e_supplemental_ux.py",
+      "sha256": "6d37a29fa3352e52798ec73bdb5d4951a39be4bb071421ecffde5e05d3ca45c4"
+    },
+    {
+      "path": "tests/test_batch5_submission.py",
+      "sha256": "0b5882e6ee2b37a3152134efd24c63e1916a1e7875118e577ee96836cad5fade"
+    },
+    {
+      "path": "tests/test_batch6_accounting_delivery.py",
+      "sha256": "646c9242bb2572b28e659291b7ae80c3d07e176c915fb80dc0e6560a15da04ad"
+    },
+    {
+      "path": "tests/test_calendar_sync_enrollment_merge.py",
+      "sha256": "1cd633e73dc1df728e8f824cfade72a1086bb03e23c11ee5c32063f03946b01a"
+    },
+    {
+      "path": "tests/test_cohort_registry_corr2.py",
+      "sha256": "c06750603a7489d0bf647d80f05536ef0ced5212963e648f4ab3e4e70084a11b"
+    },
+    {
+      "path": "tests/test_corr2_unified_calendar_authority.py",
+      "sha256": "f05cfd92935d7135ee5257aede0e63a86329cc7d94855358fd0644a9ab241444"
+    },
+    {
+      "path": "tests/test_course_data_corr1.py",
+      "sha256": "c7c6a2681f2a3e22dba884cb4ecaabbaaa0b66755b398e52dab78e5732bcb463"
+    },
+    {
+      "path": "tests/test_enrollment_readiness_b6d_corr1.py",
+      "sha256": "4c3b84e132b5b3f983aeadb1039dfa57de64f9cbe43e7ce3f3c0d51d008f09cb"
+    },
+    {
+      "path": "tests/test_enrollment_waitlist_semantics.py",
+      "sha256": "286cf37c5fe3c7089bf79d9a0126f5e48e55fa173678266d3020426d8968084a"
+    },
+    {
+      "path": "tests/test_f04_supplemental_collision_preflight.py",
+      "sha256": "90dd704873e42bd3a25093e3845e5b224971261e7324fb20e180a706e9e6586b"
+    },
+    {
+      "path": "tests/test_f06_b6d_display_authority.py",
+      "sha256": "22c6eb573808bed084e84a32ceca1ca853dfdf70652ff6a234ed503a536a6d2d"
+    },
+    {
+      "path": "tests/test_f08_cancel_semantics.py",
+      "sha256": "864ebb3a033a145b96d5cb2618a7b2f640210a18947106f37eb59957a780f2df"
+    },
+    {
+      "path": "tests/test_framer_calendar.py",
+      "sha256": "cc184084b9b0737f254e9059d72b5459f175ce32d7e0b7b59903b66171d55743"
+    },
+    {
+      "path": "tests/test_legacy_enrollment_retirement.py",
+      "sha256": "cf6ba3844bf55cd7919a3f4bca27c911c247eee644a0d67312fa6e0c80640a73"
+    },
+    {
+      "path": "tests/test_meeting_model.py",
+      "sha256": "73f9a75178665cfc18d0a69aa5dcfc33ecc08b7ae2129da9990b6851dbb6fc70"
+    },
+    {
+      "path": "tests/test_operator_autobind_guard.py",
+      "sha256": "f74a1b4927607fe1c621e3be77da7d2226f87ebb7fac0fb20c0134b442363779"
+    },
+    {
+      "path": "tests/test_operator_zoom.py",
+      "sha256": "ac9772093a8fd1d69db83c97300078342415277aaff8e6934d0cdac0dea711c8"
+    },
+    {
+      "path": "tests/test_projection_service.py",
+      "sha256": "1634218537c45e272786ed6835ad075c7247c8329090a4b0ee675b9ff97f43d3"
+    },
+    {
+      "path": "tests/test_promo_code_capture.py",
+      "sha256": "c780d936480ea738e7e85739315028affcbf1446dd29c89b4812b38e151861cc"
+    },
+    {
+      "path": "tests/test_public_enrollment_two_state.py",
+      "sha256": "91d4cbb8c63d8c462bf125c61fcde41909f90bb87eec149e973e91fd06db4f2d"
+    },
+    {
+      "path": "tests/test_reminder_scheduler.py",
+      "sha256": "0995fd990631ba56899c670c2f03e9068cfcd1f91348e44a39d1397cbd2a62ac"
+    },
+    {
+      "path": "tests/test_schedule_reconciliation.py",
+      "sha256": "8f4bd026170b0da83cad0d98f7659e202132ab341b8336e190a4087c3c72e454"
+    },
+    {
+      "path": "tests/test_schedule_send_api.py",
+      "sha256": "83c50d1b921e467577daf0abd044d2f1e1ac9b61e0b38cc99f554f8a7d4ead04"
+    },
+    {
+      "path": "tests/test_schedule_sheets_sync.py",
+      "sha256": "2d2869a758060f9a9660318ddf6bfc79f40e4a5d877586ab90627628f6c42754"
+    },
+    {
+      "path": "tests/test_schedule_surface.py",
+      "sha256": "1bed8c97734807fc29bc6bde39918bb826713e9bdb79bbfef919bff590e7c07a"
+    },
+    {
+      "path": "tests/test_schedule_surface_api.py",
+      "sha256": "7eefa02d726ac799b604e43fc996cac1351d159570d384aef74b37c442b0cf73"
+    },
+    {
+      "path": "tests/test_zoom_service.py",
+      "sha256": "7b06d4209b4e77abfb29204bc6ddd492600a2fe1e6e350f39c7ed61d4a697b0d"
+    },
+    {
+      "path": "validators.py",
+      "sha256": "9cd6222b797cf3b6f3fcea4343da234fa5f1cb57d3cbf09aefc64afc1d0aa8d7"
+    },
+    {
+      "path": "zoom_service.py",
+      "sha256": "335d4a94e65743b3cc9b93beafca7f0371d72223b6662cf4085caa7bbfdc3517"
+    }
+  ],
+  "tracked_modified": {
+    "README.md": "c1f0bed7851f92878c6dea4a05e55dc1a789d18b9afdd8ee2a0e4e42cffa0226",
+    "api_service.py": "4359b68f15c301acc85e5f7bacba375184c873f01d80cb38f17833c42a04f8aa",
+    "auth_service.py": "7f36ce9ee0959b1d7b26f5721858702475d531daf5939390d28d2577ac1a7466",
+    "config.py": "25314aab8bd0bbd9bb5ab21b5b265e922933ac36ea73819fc0283ecec3037165",
+    "data_engine/lebedev_adapter.py": "11b8e7a36719a2130b0c803fd8f97a886e3a32b10362f25712dc1d1bac7c64da",
+    "data_engine/sheets_sync.py": "e7c7feb71d261beaa4fc8332a7c864b65c1a2ac152ed9ceec660b9d047ac328d",
+    "database.py": "76b6247188eb29123310ed94d2e146ece5b2f6f8bdd165fb66e723eb0e06e7bc",
+    "handlers/client.py": "9d7d360bde0b8c7c371baa182d6c6bb6584ebd79a8f9269d0cde1ed1932b98ba",
+    "handlers/operator.py": "74eb88f34ebbaed99e81b45982dd1b2f5eb6ba7df7a7c1a05f162c3bd5516cd4",
+    "requirements.txt": "94696aa76dcaaef89a5a1483a01b4361fafe7df8b3f546aab6a4707f1db3c752",
+    "tests/test_auth_service.py": "43c2dd99b8aa5df4c1aff19c3ce3c2709fa7b8689d74c6c3d8315e949053b054",
+    "tests/test_calendar_provider.py": "49bab134aca3ebb50cfa4b2041ab4ef084d3692fb555c52c72d50189dfd26d5c",
+    "tests/test_cohort_limits.py": "3e2650a69cd3789342ab5c231cb4d7f728357314991a40e2e05a34ce2aa4280c",
+    "tests/test_dispatcher_authority.py": "9a3c196b5e334549e6341dcef5076116d932c90438e0d4c71940568bad67d276",
+    "tests/test_runtime_state.py": "b233c66877fcc3eab18935e91ea022f9692b6df79932273334e4b07874b670f8",
+    "tests/test_welcome_flow.py": "8d7ec74481bdc9bbf920a5cd7258eddb2b6a87b7d0e20db7fd62b3f85f296c38"
+  },
+  "untracked_overlay": {
+    "AGENTS.md": "ead71cead274fd0e96ecb20b21db18a73f5e0382191ef9a57c0ba669a0491219",
+    "AGENTS_A.md": "3c73d681c25d9ed751e9b8298dd3772c15f99fc5095cc177b763416f655baa9d",
+    "AGENTS_C.md": "9e43d2976cb2e4791185ed3be64a127348c59b0f268a7b91b6694e398dc6f910",
+    "AGENTS_G.md": "826d8fda2e0fc03101e8dde85fe77ca6f66eadf3e991c271471598cd1336f0fa",
+    "AGENTS_O.md": "5880b2f30bdad100c64f34d941fcb232b693c24d9754ca153ba5d2437a1dcc1c",
+    "ANTIGRAVITY_CONTROLLER_PROMPT.md": "495ed014008aeed7ac97f78de6290ce9a5681e7b76c10f74c547766829371b1c",
+    "Antigravity_Antigallucination.md": "609f719516d2fa2dea232544b6716d7b43a6b47cd02aedb5289d0f13cb753a45",
+    "Dockerfile": "da53a54f159fc2ac783f0d1fe801ece3e6dcf1393c19d08931bd7129e6b0cd6f",
+    "SKILL.md": "c80d3aa92ec16cde41eec0a7c3e22d6b6cd1767a910d5e26e40cee59615dacdb",
+    "data_engine/README.md": "17138431f06dafda062de45cfcd14875b8d80fc454ce1e7acf2d7c41e7a1fa77",
+    "data_engine/__init__.py": "bea32913c2b0c4ed30fe7e37203e2bc2c535cb14164e734173304237da078a74",
+    "data_engine/auth_helper.py": "e44e8bd9a695fcaea3267b3fdded79829f3ac7b052bf74872158fb425dd17528",
+    "data_engine/chat_finder.py": "6c10ba29c4cbe5f3e5ba25c15894778e440fc6e924556fd71f60b8d6a28f7d52",
+    "data_engine/cli.py": "56ec437812776d0746e46e2fab0e833c1b1d5ec95fc0ba598fc8d6afb75ffca1",
+    "data_engine/course_matcher.py": "8abad16914a873054b6debb9a2d547d58f63ef27321b18f2ca69b098161ff619",
+    "data_engine/exporters.py": "14b68f97e200a38ce4a06cd045bacee29d3154db2fc1d20589a6345705bdff31",
+    "data_engine/external_lead_pipeline.py": "0447a558acc18c129b12f72bd711d6288fc0c215bb531e7097a3a8c9d4e35d32",
+    "data_engine/habr_enrichment.py": "1bc4c0add850411aaefa5663ff1009a3a1b4127acf658a26f5c0c68de9d27d2a",
+    "data_engine/multi_bundle_runner.py": "6027458a093156493b4487955a0529cc1380acaa6e98e18608c73068dc1dccff",
+    "data_engine/outreach.py": "1e853af264f5ab96be948cd59ff1f7a5ae80bd8d0db3bbe52dd98e01870efda0",
+    "data_engine/outreach_cli.py": "3d3d858633a2f998681faced82a60b7b98c8ea8adb097b252fe46221385e0834",
+    "data_engine/parser.py": "37180cf055c33f3965636d94e6a392fc9d30b32eb00e73b2bc8698c72af0876b",
+    "data_engine/rb_enrichment.py": "f0298933c45a83486edac222582892e7bd510861fab486ebeb732287cab70d4f",
+    "data_engine/tenchat_enrichment.py": "1f9b7d3f62e9b5a2641bdfaa219cf1e80ab17f4188fdcdf481f8e9d0305f8e8b",
+    "data_engine/vc_enrichment.py": "bdadd88b88042ea6b461301c7ccb38b440f5412287c9dd50159f24a240d0861d",
+    "data_engine/vk_enrichment.py": "363d5b37d48b8a8693c7f7e60db0b2a64a73eeb3af9b3f4d7a94053498a5d9d8",
+    "data_engine/youtube_enrichment.py": "dc1eecf5721906510e0cb6eaa44c818aec9157940af4887647a2d963e223cb6f",
+    "deploy/ast_bot.service": "9f8afc27bffdaeb127fe2083497fe8a78f0e91bd6448852393b9ef6cfc3a70fc",
+    "deploy/connect_timeweb.command": "b9d5478f52bca23eb87ee6195c3431c74c9aebb61b408883bf0b41cf4f07ce5b",
+    "deploy/input_zoom_keys.command": "47913bd45a9cee4c52229812df775484238bdbba7ce36a501253b103f64073c4",
+    "deploy/lebedev_adapter.service": "d3b81b8c29d71259a62fc2ce474a770674e35927f1111334fcbadfcf12e54bd3",
+    "deploy/mac_connect.sh": "68b3f9215b887f9f27d528e6cd3d88c2d85e95c18d7829d4b0fe70bd530ebf54",
+    "deploy/setup_server.sh": "5fc75f5e2f802d0262871e278bc22503c2e0db37189fabcdd5960a2514e5a0be",
+    "docker-compose.yml": "4e5f5fd9cbc190f00ed0d6d9bc6c15434e182dd981b30f1721fbac0744d85d15",
+    "docs/ORCHESTRATOR_HANDOFF_LEBEDEV_PAYMENT_BOT_2026-09-21.md": "4ccaff787db70ccdecd24192df04cdc9e1f3a8d93d847638bfaf9e076fe0a070",
+    "docs/legal/AST_PERSONAL_DATA_CONSENT_2026-09-24_SYNC.md": "fde7804943d0a84c07e65534ee5a3a306fc5f18f25c3b7eff4740a1263a0c421",
+    "docs/legal/AST_PRIVACY_POLICY_2026-09-24_SYNC.md": "a469200124e62b4743923bf45ca073d42c8c1b58a826c990c36fc25a76c12b25",
+    "docs/legal/PUBLIC_OFFER_AST_2026-09-24_SYNC.md": "caecee9f2a83fddda9a065df4ec91322e6a07940156b3e01e0f6bd291b63c645",
+    "docs/reports/TIKHON_MASLOW_SCHEDULE_AUTHORITY_CORR1_REPORT_20260923T122500Z.md": "662c632ac897365b678fe6d2f8620b136e045beb3b683591bfd67843e08b5052",
+    "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_1_CORR1_STRUCTURAL_TYPOLOGY_SHEETS_PAYMENT_HISTORY_PREFLIGHT_1_20260923T182000Z.md": "3e3851f2311daf49a2ca6412dd316f3b62082617d704c410db48407f86d4fa01",
+    "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_2_PRICING_AND_PAYER_SELECTION_1_PREFLIGHT_1_20260923T202405Z.md": "f97ca505ebe71aaf6ffe5537f420a883bc8ff837343afe30de1c1ae803dc99df",
+    "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_6_0B2_CORR3_PRIVATE_CONTEXT_CLOSURE_1_REPORT_20260924T230235Z.md": "4d181953fd33b5352e3b537a93e15ff2243977beab02985bafdf926cd0fe4011",
+    "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_6_0B2_PRIVILEGED_AUTHORITY_CORR2_REPORT_20260924T223359Z.md": "ec039dad4f5719f48305c5b68878f8e60732051d095302592bcccbae8f5b0625",
+    "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_BATCH_6_0B2_PRIVILEGED_AUTHORITY_IMPLEMENTATION_1_REPORT_20260924T214317Z.md": "5279192208aeadd38af9fd15a9b25dd7f23fbe54ee04716092f079ede0ec3433",
+    "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_PREFLIGHT_1_20260923T130500Z.md": "2fa0fcba0c2eafc91070bafa5bc719e2604365e6bdc81160ea5a4fb28f1a1a64",
+    "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_PREFLIGHT_1_CORR1_20260923T161237Z.md": "826186c3848f9160c46f3079c2322b4fd11b2e5de82154286c8ab22b553530b5",
+    "docs/reports/TIKHON_MINIAPP_FULL_UX_MIGRATION_1_PREFLIGHT_1_CORR2_20260923T161812Z.md": "c0ec505d970a940fdfc8166b88292a4323f04a8101575b9d9db822f947de0a3a",
+    "docs/reports/TIKHON_MINIAPP_LIVE_DATA_BINDING_1_REPORT_20260923T114300Z.md": "27827441cead00e476c50c6ced902eea2c6c4371b28fdcc4ea42631622e8d502",
+    "docs/reports/TIKHON_MINIAPP_VISUAL_PILOT_1_CORR1_REPORT_20260923T102600Z.md": "6cfde419915f98204fa8c09c7d39a399d595aafaa59f047f342ee50e3655a8dd",
+    "docs/reports/TIKHON_MINIAPP_VISUAL_PILOT_1_REPORT_20260923T100230Z.md": "2b41876645521b39f66c9bffcee3be22fb4e1d2dabbf6c9113cfb0183476006f",
+    "docs/reports/TIKHON_RESPONSE_UX_A1_IMPLEMENTATION_1_REPORT_20260923T092108Z.md": "12190c4b344271134f9e7a6b9bb0caaef8e6f7328bcebe491589861970baeebb",
+    "docs/reports/TIKHON_RESPONSE_UX_DESIGN_CONTRACT_1_20260923T085340Z.md": "3e369e0327c8eccda859773feb3e3c99dd74f208474358bf653504b978ed17f0",
+    "docs/reports/TIKHON_RESPONSE_UX_DESIGN_CONTRACT_1_CORR1_20260923T090249Z.md": "4c3484e6399f698843e6fbc692e052a60e2902f0de27e343d6b43f0f58846b47",
+    "docs/reports/TIKHON_RESPONSE_UX_SURFACE_INVENTORY_1_20260923T083148Z.md": "c4034c77eaf5d7fc3a8033f22aabaa5d2bbf3ed68c2302fb3d96277f2d0a353c",
+    "scripts/rotate_bot_token.sh": "72567a14f780b8aad736b4d5803f1b4900311be0c6964c03370610822ffcb811",
+    "scripts/rotate_supabase_key.sh": "44000c50a0eb9dfb07057282bf1800e7728a370421ccc50d6c69d1e27744d7ff",
+    "tests/test_external_lead_pipeline.py": "2a744924feb89414263684e07eca15c3d453df416ffb85db376df6314f743f09",
+    "tests/test_habr_enrichment.py": "6e4e3d32042630060aeb1093071237244f8f37d502a694a0280233bf5c6cb742",
+    "tests/test_lebedev_adapter.py": "c81c13fa90d1fda7f89311582d9b7d518716377e012b78eca619ee7a26795ee0",
+    "tests/test_outreach_state_machine.py": "5a800fd3d0faa75a9ae3399febd25d90aa197e3031230a526cdb610a64036a1f",
+    "tests/test_rb_enrichment.py": "8f8fa573d14afa56d77b7ad75cab7cad5579d161325e92288d3d93d09077f110",
+    "tests/test_sheets_sync.py": "c1788dcd1d77376fbc0861be5f506d88e9a5e0810cac050e50d8a04fca400640",
+    "tests/test_tenchat_enrichment.py": "5b247072442e41f6162bbb259cf74f9050301d180343ea5420536bfb10bab65f",
+    "tests/test_vc_enrichment.py": "3f43c140d8b1b9ff5530f94fdd925dbe991858f5794584c7e66d99d3e2a7c086",
+    "tests/test_vk_enrichment.py": "c6ba64c7c15ec97b443cda9cfd3cc55aa55469c8803f972f8eaab9e63868b11d",
+    "tests/test_youtube_enrichment.py": "f71fda284a18433bfcc1c41edbff4e014911af0e3db7dc4a5bd322491592dd5a"
+  }
+}

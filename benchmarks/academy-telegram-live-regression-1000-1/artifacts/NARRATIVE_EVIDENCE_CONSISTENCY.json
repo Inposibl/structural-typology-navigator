@@ -1,0 +1,23 @@
+{
+  "schema": "NARRATIVE_EVIDENCE_CONSISTENCY_V3",
+  "generated_at": "2026-09-30T23:33:17Z",
+  "machine_totals": {
+    "total_observations": 0,
+    "candidate_scenario_count": 996,
+    "verdict_counts": {},
+    "l4": {
+      "executed_count": 0
+    },
+    "concurrency": {
+      "overlap_proven_count": 0,
+      "fail_count": 0
+    },
+    "fault": {
+      "confirmed_count": 0
+    }
+  },
+  "contradictions": [],
+  "contradictions_count": 0,
+  "pass": true,
+  "required_condition": "CONTRADICTIONS = 0"
+}

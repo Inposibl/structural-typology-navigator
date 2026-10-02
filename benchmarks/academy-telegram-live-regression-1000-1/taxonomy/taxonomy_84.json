@@ -1,0 +1,626 @@
+{
+  "schema": "CORR1_TAXONOMY_V1",
+  "benchmark": "ACADEMY-TELEGRAM-LIVE-REGRESSION-1000-1",
+  "target_class_count": 84,
+  "base_authority": "02_FAILED_NIGHT_RUN_ORCHESTRATOR_BUNDLE.zip/scripts/taxonomy_def.py (82 classes, verbatim)",
+  "added_authority": "06_NEW_SESSION_HANDOFF.md S4 + 05_BENCHMARK_HARNESS_CORR1_GEMINI_HARD_PROMPT.md S1 (AG-21, AG-22 exact)",
+  "historical_corpus_sha256_unchanged": "7977a778623f1f6d27b6a394f24a260b7a39175059ca18ad78b088790282beb1",
+  "classes": [
+    {
+      "id": "TG-01",
+      "name": "Webhook duplicate redelivery",
+      "category": "TELEGRAM",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-02",
+      "name": "Polling offset duplicate",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-03",
+      "name": "Multiple polling consumers",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-04",
+      "name": "Polling/webhook mode collision",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-05",
+      "name": "Pending-update accidental discard",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-06",
+      "name": "Wrong allowed_updates persistence",
+      "category": "TELEGRAM",
+      "risk": "MODERATE",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-07",
+      "name": "Stateful update reordering",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-08",
+      "name": "HTTP connection-pool exhaustion",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-09",
+      "name": "Stale/tampered callback data",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-10",
+      "name": "Callback not acknowledged",
+      "category": "TELEGRAM",
+      "risk": "MODERATE",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-11",
+      "name": "Expired callback query",
+      "category": "TELEGRAM",
+      "risk": "MODERATE",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-12",
+      "name": "FloodWait/retry mismanagement",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-13",
+      "name": "Invalid deep-link payload",
+      "category": "TELEGRAM",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-14",
+      "name": "Telegram ID truncation",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-15",
+      "name": "Webhook origin not authenticated",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-16",
+      "name": "Webhook crash → replay storm",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-17",
+      "name": "Poison-pill parser/validation denial-of-service",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-18",
+      "name": "Burst messages consume same FSM state",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-19",
+      "name": "Shared Telethon session database lock",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-20",
+      "name": "Shared Telethon session update starvation",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-21",
+      "name": "Reconnect/catch-up gap",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "TG-22",
+      "name": "Near-simultaneous callback/message race",
+      "category": "TELEGRAM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-01",
+      "name": "Fallback loop",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-02",
+      "name": "Ambiguity threshold misfire",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-03",
+      "name": "Premature slot/state fill",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-04",
+      "name": "Stale slot/state reuse",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-05",
+      "name": "Session restart retains unexpected state",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-06",
+      "name": "Reset rule fails after state mutation",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-07",
+      "name": "Initial/default state poisons routing",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-08",
+      "name": "Form/repair deadlock",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-09",
+      "name": "Interruption loses pending question",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-10",
+      "name": "State scope too narrow",
+      "category": "STATE",
+      "risk": "MODERATE",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-11",
+      "name": "State scope too broad",
+      "category": "STATE",
+      "risk": "MODERATE",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-12",
+      "name": "Timeout resets active workflow",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-13",
+      "name": "Delayed reply attaches to new session",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-14",
+      "name": "Handoff loses conversation context",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-15",
+      "name": "Resume repeats pre-interrupt action",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-16",
+      "name": "Selected course remains stale after topic switch",
+      "category": "STATE",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-17",
+      "name": "Anaphora resolves against stale referent",
+      "category": "STATE",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "ST-18",
+      "name": "Cross-user state collision",
+      "category": "STATE",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-01",
+      "name": "Direct prompt injection",
+      "category": "LLM",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-02",
+      "name": "Indirect prompt injection",
+      "category": "LLM",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-03",
+      "name": "Excessive tool authority",
+      "category": "LLM",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-04",
+      "name": "Alexey/Tikhon role confusion",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-05",
+      "name": "Hallucinated course fact",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-06",
+      "name": "Invented pricing / benefit / scarcity",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-07",
+      "name": "Fabricated or wrong payment destination",
+      "category": "LLM",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-08",
+      "name": "Unsupported citation/source claim",
+      "category": "LLM",
+      "risk": "MODERATE",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-09",
+      "name": "Old-turn context poisoning",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-10",
+      "name": "Cross-session memory leakage",
+      "category": "LLM",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-11",
+      "name": "Deleted/forgotten memory resurrects",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-12",
+      "name": "Sequential-task context accumulation",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-13",
+      "name": "Interrupt resume repeats side effect",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-14",
+      "name": "Parallel interrupt collision",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-15",
+      "name": "Checkpoint namespace/state mismatch",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-16",
+      "name": "Non-durable thread cannot resume",
+      "category": "LLM",
+      "risk": "MODERATE",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-17",
+      "name": "Multi-agent handoff loses context",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-18",
+      "name": "Stochastic routing flip",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-19",
+      "name": "Judge instability / position bias",
+      "category": "LLM",
+      "risk": "MODERATE",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-20",
+      "name": "Tool/output schema drift",
+      "category": "LLM",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-01",
+      "name": "Double-submit",
+      "category": "PAYMENT",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-02",
+      "name": "Processed request but response lost",
+      "category": "PAYMENT",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-03",
+      "name": "Missing idempotency key",
+      "category": "PAYMENT",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-04",
+      "name": "Idempotency key regenerated by retry",
+      "category": "PAYMENT",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-05",
+      "name": "Same idempotency key with changed parameters",
+      "category": "PAYMENT",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-06",
+      "name": "Idempotency record expiry",
+      "category": "PAYMENT",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-07",
+      "name": "Duplicate payment webhook/event",
+      "category": "PAYMENT",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-08",
+      "name": "Out-of-order payment events",
+      "category": "PAYMENT",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-09",
+      "name": "Signature verification after body mutation",
+      "category": "PAYMENT",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-10",
+      "name": "Acknowledgement before durable persistence",
+      "category": "PAYMENT",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-11",
+      "name": "Payment confirmed but user response lost",
+      "category": "PAYMENT",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-12",
+      "name": "Stale invoice/course binding",
+      "category": "PAYMENT",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-13",
+      "name": "Wrong course in deep-link handoff",
+      "category": "PAYMENT",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "PAY-14",
+      "name": "Crash/restart duplicates side effect",
+      "category": "PAYMENT",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "OUT-01",
+      "name": "Duplicate outreach",
+      "category": "OUTBOUND",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "OUT-02",
+      "name": "Opt-out not persisted",
+      "category": "OUTBOUND",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "OUT-03",
+      "name": "Delayed reply bound to wrong campaign state",
+      "category": "OUTBOUND",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "OUT-04",
+      "name": "Cross-lead context contamination",
+      "category": "OUTBOUND",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "OUT-05",
+      "name": "FloodWait / anti-spam failure",
+      "category": "OUTBOUND",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "OUT-06",
+      "name": "Fabricated scarcity / pressure / benefit",
+      "category": "OUTBOUND",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "OUT-07",
+      "name": "Lead prompt injection hijacks policy",
+      "category": "OUTBOUND",
+      "risk": "CRITICAL",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "OUT-08",
+      "name": "Premature Tikhon handoff",
+      "category": "OUTBOUND",
+      "risk": "HIGH",
+      "origin": "BASE_TAXONOMY_82_VERBATIM"
+    },
+    {
+      "id": "AG-21",
+      "name": "Synthetic Verification / Evidence Fabrication",
+      "category": "LLM",
+      "risk": "CRITICAL",
+      "origin": "OWNER_DIRECTIVE_2026-09-23_06_NEW_SESSION_HANDOFF_S4",
+      "definition": "a test author, benchmark runner, evaluator, or agent creates apparent verification without actually observing the system under test.",
+      "examples": [
+        "EXPECTED_* copied to ACTUAL_*",
+        "PASS generated from constants",
+        "hard-coded expected failure presented as observed failure",
+        "mocked success presented as production success",
+        "a branch that simply returns PASS",
+        "an oracle never evaluated",
+        "an execution path never reached",
+        "test metadata presented as runtime evidence"
+      ],
+      "invariant": "NO OBSERVATION -> NO PRODUCT CLAIM"
+    },
+    {
+      "id": "AG-22",
+      "name": "Narrative-Evidence Contradiction",
+      "category": "LLM",
+      "risk": "CRITICAL",
+      "origin": "OWNER_DIRECTIVE_2026-09-23_06_NEW_SESSION_HANDOFF_S4",
+      "definition": "a final report makes a claim not supported by, or contradicted by, the underlying machine-readable evidence.",
+      "examples": [
+        "raw results = FAIL but narrative says clean PASS",
+        "no concurrency occurred but report claims multi-threaded validation",
+        "transport skipped but report says live transport validated",
+        "fault was canned but report claims resilience to real injected fault",
+        "aggregate count differs from raw recomputation"
+      ],
+      "invariant": "EVERY MATERIAL REPORT CLAIM MUST BE MACHINE-DERIVABLE FROM FROZEN RAW EVIDENCE"
+    }
+  ],
+  "category_counts": {
+    "TELEGRAM": 22,
+    "STATE": 18,
+    "LLM": 22,
+    "PAYMENT": 14,
+    "OUTBOUND": 8
+  }
+}

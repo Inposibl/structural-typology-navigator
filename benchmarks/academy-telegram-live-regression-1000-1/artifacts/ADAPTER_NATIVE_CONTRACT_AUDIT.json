@@ -1,0 +1,78 @@
+{
+  "schema": "ADAPTER_NATIVE_CONTRACT_AUDIT_V1",
+  "checks": [
+    {
+      "adapter_id": "navigator_l1_payment_policy",
+      "symbol": "resolveEnrollmentPaymentDecision",
+      "native_signature_declared": "resolveEnrollmentPaymentDecision(query, act, context)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/src/lib/academy/payment-policy.ts",
+      "valid": true,
+      "detail": "TS source declares resolveEnrollmentPaymentDecision(query, act, context)"
+    },
+    {
+      "adapter_id": "navigator_l1_course_reference",
+      "symbol": "resolveCourseReferences",
+      "native_signature_declared": "resolveCourseReferences(query)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/src/lib/academy/course-reference.ts",
+      "valid": true,
+      "detail": "TS source declares resolveCourseReferences(query)"
+    },
+    {
+      "adapter_id": "navigator_l1_commercial_authority",
+      "symbol": "getAuthoritativeCoursePrice",
+      "native_signature_declared": "getAuthoritativeCoursePrice(courseId)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/src/lib/academy/commercial-authority.ts",
+      "valid": true,
+      "detail": "TS source declares getAuthoritativeCoursePrice(courseId)"
+    },
+    {
+      "adapter_id": "chatbot_l3_deep_link_start",
+      "symbol": "cmd_start",
+      "native_signature_declared": "cmd_start(message, command, state)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/chatbot/handlers/client.py",
+      "valid": true,
+      "detail": "native cmd_start params=['message', 'command', 'state'] vs contract arity 3"
+    },
+    {
+      "adapter_id": "chatbot_l3_callback_registry",
+      "symbol": "cb_cohort_selected",
+      "native_signature_declared": "cb_cohort_selected(callback, state)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/chatbot/handlers/client.py",
+      "valid": true,
+      "detail": "native cb_cohort_selected params=['callback', 'state'] vs contract arity 2"
+    },
+    {
+      "adapter_id": "chatbot_l3_parser_bounds",
+      "symbol": "find_valid_history_suffix",
+      "native_signature_declared": "find_valid_history_suffix(history)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/chatbot/data_engine/lebedev_adapter.py",
+      "valid": true,
+      "detail": "native find_valid_history_suffix params=['history', 'max_message_length'] vs contract arity 1"
+    },
+    {
+      "adapter_id": "chatbot_l3_parser_bounds",
+      "symbol": "build_navigator_payload",
+      "native_signature_declared": "build_navigator_payload(history, current_user_message, profile, conversation_state, request_id)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/chatbot/data_engine/lebedev_adapter.py",
+      "valid": true,
+      "detail": "native build_navigator_payload params=['history', 'current_user_message', 'profile', 'conversation_state', 'request_id', 'max_messages', 'max_bytes'] vs contract arity 5"
+    },
+    {
+      "adapter_id": "alexey_user_turn",
+      "symbol": "process_user_turn",
+      "native_signature_declared": "process_user_turn(user_id, user_text, message_id)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/chatbot/data_engine/lebedev_adapter.py",
+      "valid": true,
+      "detail": "native process_user_turn params=['self', 'user_id', 'user_text', 'message_id'] vs contract arity 3"
+    },
+    {
+      "adapter_id": "outbound_dispatcher",
+      "symbol": "send_single",
+      "native_signature_declared": "send_single(target_entity, message)",
+      "file": "/Users/entp_psyche/Desktop/InvestProjects2026/chatbot/data_engine/outreach.py",
+      "valid": true,
+      "detail": "native send_single params=['self', 'target_entity', 'message'] vs contract arity 2"
+    }
+  ],
+  "all_valid": true
+}

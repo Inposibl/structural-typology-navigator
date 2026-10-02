@@ -1,0 +1,65 @@
+{
+  "schema": "ANTI_SELF_VALIDATION_STATIC_AUDIT_V3",
+  "generated_at": "2026-09-30T23:32:22Z",
+  "root": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1",
+  "rules": {
+    "ASV-1": "expected->actual data flow (direct, alias, unpack, subscript, nested, kwarg)",
+    "ASV-2": "actual field initialized from a non-UNOBSERVED literal",
+    "ASV-3": "unconditional PASS return (no governing guard) in adjudication code",
+    "ASV-4": "bare pass used in place of an oracle body",
+    "ASV-5": "prohibited-output scanning pointed at user input instead of system output",
+    "ASV-6": "hard-coded per-scenario verdict branch (scenario/test-id constant comparison)",
+    "ASV-7": "canned literal output constructed as runtime actual evidence",
+    "ASV-8": "AST parse failure (unparseable file fails the gate)"
+  },
+  "files_scanned": 48,
+  "specimen_findings_note": "tests/ files contain deliberate forged fixtures; their ASV findings are recorded, not violations",
+  "specimen_findings": [
+    {
+      "rule": "ASV-1",
+      "file": "tests/iv2_regression_battery.py",
+      "line": 591,
+      "detail": "lambda body references expected material Attribute(EXPECTED_TIKHON)"
+    },
+    {
+      "rule": "ASV-1",
+      "file": "tests/iv2_regression_battery.py",
+      "line": 619,
+      "detail": "lambda body references expected material Attribute(EXPECTED_TIKHON)"
+    },
+    {
+      "rule": "ASV-1",
+      "file": "tests/iv2_regression_battery.py",
+      "line": 646,
+      "detail": "lambda body references expected material Attribute(EXPECTED_TIKHON)"
+    },
+    {
+      "rule": "ASV-1",
+      "file": "tests/iv3_regression_battery.py",
+      "line": 657,
+      "detail": "lambda body fed from expected alias 'doc'"
+    },
+    {
+      "rule": "ASV-1",
+      "file": "tests/iv3_regression_battery.py",
+      "line": 659,
+      "detail": "lambda body references expected material Attribute(EXPECTED_TIKHON)"
+    },
+    {
+      "rule": "ASV-1",
+      "file": "tests/iv3_regression_battery.py",
+      "line": 702,
+      "detail": "lambda body references expected material Attribute(EXPECTED_TIKHON)"
+    },
+    {
+      "rule": "ASV-1",
+      "file": "tests/iv3_regression_battery.py",
+      "line": 706,
+      "detail": "lambda body fed from expected alias 'body'"
+    }
+  ],
+  "findings": [],
+  "violations": 0,
+  "pass": true,
+  "required_condition": "violations = 0 (parse failures count as violations)"
+}

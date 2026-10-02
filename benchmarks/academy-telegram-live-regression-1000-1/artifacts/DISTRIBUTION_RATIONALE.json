@@ -1,0 +1,42 @@
+{
+  "schema": "DISTRIBUTION_RATIONALE_V6",
+  "distribution": {
+    "schema": "CORPUS_DISTRIBUTION_V4",
+    "total_scenarios": 924,
+    "planned_observations": 1046,
+    "tracks": {
+      "ALEXEY_INBOUND": 366,
+      "TIKHON": 255,
+      "ALEXEY_TO_TIKHON": 167,
+      "ALEXEY_OUTBOUND": 136
+    },
+    "levels": {
+      "L1": 200,
+      "L2": 276,
+      "L5": 32,
+      "L3": 270,
+      "L4": 146
+    },
+    "replay_sets": {
+      "NONE": 867,
+      "C": 4,
+      "F": 10,
+      "S": 43
+    },
+    "unique_fingerprints": 924,
+    "effective_duplicate_groups_removed": 0,
+    "effective_duplicate_groups_remaining": 0,
+    "semantic_required": 147,
+    "no_seam": 49,
+    "not_proven_payment_lanes": 24,
+    "distribution_frozen": false
+  },
+  "derivation": "recomputed from the quality-pruned 924 corpus: no old quota was preserved; membership derives ONLY from actual valid retained mechanisms",
+  "replay_sets": {
+    "C": "4 rows with VALID typed concurrency contracts: 2 same-user serialization (A-0011, C-0005) and 2 different-user independence (B-0007, C-0003), each with a benchmark-controlled contention schedule; the 27 pruned C rows were weak duplicates under IV6-F12A/F12B",
+    "F": "10 rows on the registered ALEXEY.LOST_RESPONSE.AFTER_PERSISTENCE mechanism (real post-persistence order)",
+    "S": "43 route-reachable orchestration rows (44 - A-0140, legitimately pruned: its manager-request control turn cannot reach orchestration — IV6-F15 §35)"
+  },
+  "distribution_frozen": false,
+  "planned_observations_note": "planned observation specifications, not measured executions"
+}

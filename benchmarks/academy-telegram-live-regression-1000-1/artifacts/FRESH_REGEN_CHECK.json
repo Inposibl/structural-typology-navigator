@@ -1,0 +1,29 @@
+{
+  "schema": "FRESH_REGEN_CHECK_V6",
+  "method": "clean /tmp regeneration from the frozen CORR5_INPUT_996 (corpus/corr5_input_996.jsonl, sha256 ec591ef1b91eeb58a8873ae8ec4920018f8ce26e3393b88c5b2cf32c6aac9a42) via corpus/repair_v6.py",
+  "artifacts_compared": [
+    "corpus/corrected_corpus_84.jsonl",
+    "corpus/CORPUS_SHA256.txt",
+    "seeds/seeds_30_corrected.jsonl",
+    "seeds/SEED_SYNC_REPORT.json",
+    "corpus/distribution.json",
+    "corpus/EFFECTIVE_STIMULUS_REPORT.json",
+    "corpus/SEMANTIC_DUPLICATE_REPORT.json",
+    "corpus/REPAIR_LOG.json",
+    "corpus/CORPUS_COMPLETENESS_REPORT.json",
+    "corpus/EXPECTATION_CONSISTENCY_REPORT.json",
+    "corpus/VALIDATION_ERRORS.json",
+    "corpus/SEED_NATIVE_CONTRACT_MATRIX.json",
+    "corpus/SCENARIO_COMPILED_CONTRACTS.json",
+    "corpus/CORPUS_PRUNING_PLAN_996_TO_924.json",
+    "corpus/CORPUS_924_COVERAGE_RETENTION_REPORT.json",
+    "corpus/SEMANTIC_DRIFT_REPORT.json",
+    "corpus/PROVIDER_FIXTURE_REGISTRY.json",
+    "corpus/STATIC_QUERY_REGISTRY.json",
+    "corpus/FAULT_MECHANISM_REGISTRY.json",
+    "corpus/CONCURRENCY_MECHANISM_REGISTRY.json",
+    "corpus/CORR5_INPUT_996_IDENTITY.json"
+  ],
+  "unexpected_differences": [],
+  "deterministic": true
+}

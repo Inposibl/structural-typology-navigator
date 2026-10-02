@@ -1,0 +1,37 @@
+{
+  "schema": "CORR1_SEAM_MAP_TELEGRAM22_V1",
+  "authority": [
+    "ACADEMY_TELEGRAM_CORR2_A1_REAL_SEAM_MAP_TELEGRAM_22_IV1_REPORT_2026-09-23T080539Z.md (row-level evidence)",
+    "ACADEMY_TELEGRAM_CORR2_A1_REAL_SEAM_MAP_TELEGRAM_22_CORR1_IV2_REPORT_2026-09-23T081756Z.md (PASS; 11/11 repaired; distribution REAL 6 / STATIC 4 / NO_SEAM 12)"
+  ],
+  "distribution": { "REAL": 6, "STATIC": 4, "NO_SEAM": 12 },
+  "rules": {
+    "REAL": "may receive runtime product PASS/FAIL if actually executed against the authorized seam",
+    "STATIC": "adjudicated from the authorized static seam/oracle only",
+    "NO_SEAM": "may NOT receive fabricated runtime product evidence; adjudication is NOT_OBSERVABLE"
+  },
+  "rows": [
+    {"tg": "TG-01", "name": "Webhook duplicate redelivery", "seam_class": "NO_SEAM", "applicability": "NOT_APPLICABLE (all three transports; no component registers a webhook)", "evidence": "git grep -in webhook -> main.py:60 delete_webhook only"},
+    {"tg": "TG-02", "name": "Polling offset duplicate", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_TIKHON (mitigation owned by aiogram dependency)", "evidence": "repo-wide offset grep -> 0 matches in Academy code"},
+    {"tg": "TG-03", "name": "Multiple polling consumers", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_TIKHON", "evidence": "no single-instance lock; deploy/ast_bot.service Restart=always [SOURCE-PROVEN]; crash-loop consequence [UNPROVEN_RUNTIME_INFERENCE]"},
+    {"tg": "TG-04", "name": "Polling/webhook mode collision", "seam_class": "STATIC", "applicability": "APPLICABLE_TO_TIKHON", "evidence": "main.py:58-63 delete_webhook inside try/except before start_polling"},
+    {"tg": "TG-05", "name": "Pending-update accidental discard", "seam_class": "STATIC", "applicability": "APPLICABLE_TO_TIKHON", "evidence": "main.py:60 drop_pending_updates=True hardcoded"},
+    {"tg": "TG-06", "name": "Wrong allowed_updates persistence", "seam_class": "STATIC", "applicability": "APPLICABLE_TO_TIKHON", "evidence": "main.py:68-71 allowed_updates=dp.resolve_used_update_types(); resolved set includes at least message, callback_query, my_chat_member (handlers/operator.py:52)"},
+    {"tg": "TG-07", "name": "Stateful update reordering", "seam_class": "REAL", "applicability": "APPLICABLE_TO_ALEXEY (mitigated via get_user_lock); APPLICABLE_TO_TIKHON (no mitigation seam)", "symbol": "LebedevNavigatorAdapter.get_user_lock", "evidence": "lebedev_adapter.py:287-293, 382-408 lock wraps idempotency check + state read"},
+    {"tg": "TG-08", "name": "HTTP connection-pool exhaustion", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_ALEXEY; APPLICABLE_TO_TIKHON", "evidence": "fresh unpooled aiohttp session per call (lebedev_adapter.py:328); no pool handling in Academy code"},
+    {"tg": "TG-09", "name": "Stale/tampered callback data", "seam_class": "REAL", "applicability": "APPLICABLE_TO_TIKHON; NOT_APPLICABLE_TO_ALEXEY", "symbol": "cb_cohort_selected", "evidence": "handlers/client.py:249-260 registry lookup rejects unknown cohort before any state.update_data"},
+    {"tg": "TG-10", "name": "Callback not acknowledged", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_TIKHON; NOT_APPLICABLE_TO_ALEXEY", "evidence": "no CallbackAnswerMiddleware/error-handler seam; spinner consequence [UNPROVEN_RUNTIME_INFERENCE]"},
+    {"tg": "TG-11", "name": "Expired callback query", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_TIKHON; NOT_APPLICABLE_TO_ALEXEY", "evidence": "no expiry handling (repo-wide grep 0 matches)"},
+    {"tg": "TG-12", "name": "FloodWait/retry mismanagement", "seam_class": "REAL", "applicability": "APPLICABLE_TO_ALEXEY (DataEngine outreach); NOT_APPLICABLE_TO_TIKHON", "symbol": "SafeOutreachDispatcher.send_single", "evidence": "outreach.py:244-267 catches FloodWaitError, returns telemetry dict {status FLOOD_WAIT, wait_seconds}; no sleep/backoff/retry; sole caller outreach_cli.py:171 breaks"},
+    {"tg": "TG-13", "name": "Invalid deep-link payload", "seam_class": "REAL", "applicability": "APPLICABLE_TO_TIKHON; NOT_APPLICABLE_TO_ALEXEY", "symbol": "cmd_start", "evidence": "handlers/client.py:101-165 get_course_by_id(raw_args); invalid -> silent catalog fallback (choosing_course)"},
+    {"tg": "TG-14", "name": "Telegram ID truncation", "seam_class": "STATIC", "applicability": "APPLICABLE_TO_TIKHON and APPLICABLE_TO_ALEXEY; Navigator leg UNSUPPORTED (no numeric TG id in chat contract)", "symbol": "Application.user_id", "evidence": "database.py:34,80 BigInteger; session_store.py:34 user_id INTEGER PRIMARY KEY; no int32 anywhere"},
+    {"tg": "TG-15", "name": "Webhook origin not authenticated", "seam_class": "NO_SEAM", "applicability": "NOT_APPLICABLE (no webhook endpoint exists)", "evidence": "secret_token grep -> 0 matches"},
+    {"tg": "TG-16", "name": "Webhook crash replay storm", "seam_class": "NO_SEAM", "applicability": "NOT_APPLICABLE (no webhook endpoint exists)", "evidence": "same basis as TG-01"},
+    {"tg": "TG-17", "name": "Poison-pill parser/validation denial-of-service", "seam_class": "REAL", "applicability": "APPLICABLE_TO_ALEXEY; APPLICABLE_TO_NAVIGATOR", "symbol": "find_valid_history_suffix / build_navigator_payload / process_user_turn bounds", "evidence": "lebedev_adapter.py:66-88, 217-270, 396-405; route.ts:121 validateRequestBody bounds 4000/40/200000; Tikhon gap: client handlers strip() with no length bound"},
+    {"tg": "TG-18", "name": "Burst messages consume same FSM state", "seam_class": "REAL", "applicability": "APPLICABLE_TO_ALEXEY (mitigated); APPLICABLE_TO_TIKHON (no mitigation seam)", "symbol": "LebedevNavigatorAdapter.get_user_lock", "evidence": "lebedev_adapter.py:382-408; main.py:52 MemoryStorage; no Lock in handlers/"},
+    {"tg": "TG-19", "name": "Shared Telethon session database lock", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_ALEXEY", "evidence": "no multi-process coordination; session sharing [SOURCE-PROVEN]; SQLite raise [UNPROVEN_RUNTIME_INFERENCE]"},
+    {"tg": "TG-20", "name": "Shared Telethon session update starvation", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_ALEXEY", "evidence": "no queue/worker/watchdog [SOURCE-PROVEN]; all delays yielding awaits; starvation causal claim [UNPROVEN_RUNTIME_INFERENCE]"},
+    {"tg": "TG-21", "name": "Reconnect/catch-up gap", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_ALEXEY", "evidence": "no catch_up/getDifference/on_reconnect seam in Academy code; DEPENDENCY_CAPABILITY_ONLY"},
+    {"tg": "TG-22", "name": "Near-simultaneous callback/message race", "seam_class": "NO_SEAM", "applicability": "APPLICABLE_TO_TIKHON (no mitigation seam); NOT_APPLICABLE_TO_ALEXEY", "evidence": "no serialization primitives in handlers/ [SOURCE-PROVEN]; race consequence [UNPROVEN_RUNTIME_INFERENCE]; aiogram independent dispatch [DEPENDENCY-BEHAVIOR]"}
+  ]
+}

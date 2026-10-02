@@ -1,0 +1,500 @@
+{
+  "schema": "REPORT_CLAIM_LEDGER_V4",
+  "generated_at": "2026-09-30T23:33:08Z",
+  "source_hashes": {
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/taxonomy/taxonomy_84.json": "1ffa47b0289f16c2cd1ab2d9d3562e40f447f5a8dce86acfd51ac20ed9ca6cbc",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/distribution.json": "98fce25472ca22a02b01581758214053dd816759d375a503188d3323cdbad8f4",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/CORPUS_SHA256.txt": "446b5f5614d67b8b26aeec91e44fdd0dfbcb4f1d8546be4bbc5be8e8b76b85c8",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/SEMANTIC_TAXONOMY_COVERAGE.json": "f396c529e78384fe7f45fef1228e1462bf4f0f0401aa7b661f897b6151c49f48",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/seeds/SEED_SYNC_REPORT.json": "6bb50b1e5cce385b601b8772380d74c2c365a0a369bf30584713864b470789a9",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/EVIDENCE_INVENTORY.json": "f0c03d7884e2c70fff5f8e6bb72518310985b6b45b9b0b1476621ad45d603672",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/ANTI_SELF_VALIDATION_STATIC_AUDIT.json": "1ac2f71558d4b0647ab53ee231607c6f8f65dd27c82db03e05e5705526684b8b",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/SELF_TEST_RESULTS.json": "e21c17df69a782c47fbe43d04b6ad6d916bca37383b2e4af68b4040b33f36bc1",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV3_REGRESSION_BATTERY.json": "2e902382e0692cb248a0561fb49718eead1e8de6a46df6c57c49e0d9abe61cd4",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV4_REGRESSION_BATTERY.json": "48d8f008ffe534f20e07223e20cf0c64950f5d6fea6a7d09811750a340f89bf9",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV5_REGRESSION_BATTERY.json": "9c543b256d8f7d8bf288ea5511f15f2c48bec9eb145fd66837cd2eb7a1ec6e5d",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/STATE_MACHINE_INVARIANT_RESULTS.json": "72928e0eb8307e5fcbc64661f749ead41ebf4a43e62a6a7b2133ab2bd37c65cf",
+    "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/SEMANTIC_DUPLICATE_REPORT.json": "5d8e0ec1daf9e099ba68e0a4415f700fda01db900b7bec6156515b7ede8071aa"
+  },
+  "claims": [
+    {
+      "claim_id": "TAX-01",
+      "claim_type": "TAXONOMY_COUNT",
+      "fact_type": "STATIC_SOURCE_FACT",
+      "authoritative": true,
+      "semantic_meaning": "84-class controlling taxonomy count (must equal 84)",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/taxonomy/taxonomy_84.json",
+      "source_artifact_sha256": "1ffa47b0289f16c2cd1ab2d9d3562e40f447f5a8dce86acfd51ac20ed9ca6cbc",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/taxonomy/taxonomy_84.json",
+          "content_sha256": "1ffa47b0289f16c2cd1ab2d9d3562e40f447f5a8dce86acfd51ac20ed9ca6cbc",
+          "schema_identity": "CORR1_TAXONOMY_V1"
+        }
+      ],
+      "filter": {},
+      "computed_value": 84,
+      "render_template": "Controlling taxonomy class count (must equal 84): {value}.",
+      "rendered_value": "Controlling taxonomy class count (must equal 84): 84.",
+      "match": true
+    },
+    {
+      "claim_id": "COR-01",
+      "claim_type": "SCENARIO_COUNT",
+      "fact_type": "CANDIDATE_SPEC_FACT",
+      "authoritative": true,
+      "semantic_meaning": "number of actual corpus rows (candidate specs)",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/distribution.json",
+      "source_artifact_sha256": "98fce25472ca22a02b01581758214053dd816759d375a503188d3323cdbad8f4",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/distribution.json",
+          "content_sha256": "98fce25472ca22a02b01581758214053dd816759d375a503188d3323cdbad8f4",
+          "schema_identity": "CORPUS_DISTRIBUTION_V4"
+        },
+        {
+          "role": "corpus_jsonl",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/corrected_corpus_84.jsonl",
+          "content_sha256": "ec591ef1b91eeb58a8873ae8ec4920018f8ce26e3393b88c5b2cf32c6aac9a42",
+          "schema_identity": "JSONL_ROWS"
+        }
+      ],
+      "filter": {},
+      "computed_value": 996,
+      "render_template": "Corrected corpus candidate scenario count: {value}.",
+      "rendered_value": "Corrected corpus candidate scenario count: 996.",
+      "match": true
+    },
+    {
+      "claim_id": "COR-02",
+      "claim_type": "CORPUS_SHA",
+      "fact_type": "CANDIDATE_SPEC_FACT",
+      "authoritative": true,
+      "semantic_meaning": "corrected corpus SHA-256 (identity, not execution)",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/CORPUS_SHA256.txt",
+      "source_artifact_sha256": "446b5f5614d67b8b26aeec91e44fdd0dfbcb4f1d8546be4bbc5be8e8b76b85c8",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/CORPUS_SHA256.txt",
+          "content_sha256": "446b5f5614d67b8b26aeec91e44fdd0dfbcb4f1d8546be4bbc5be8e8b76b85c8",
+          "schema_identity": null
+        },
+        {
+          "role": "corpus_jsonl",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/corrected_corpus_84.jsonl",
+          "content_sha256": "ec591ef1b91eeb58a8873ae8ec4920018f8ce26e3393b88c5b2cf32c6aac9a42",
+          "schema_identity": "JSONL_ROWS"
+        }
+      ],
+      "filter": {},
+      "computed_value": "ec591ef1b91eeb58a8873ae8ec4920018f8ce26e3393b88c5b2cf32c6aac9a42",
+      "render_template": "Corrected corpus SHA-256 (derived by hashing the corpus artifact): {value}.",
+      "rendered_value": "Corrected corpus SHA-256 (derived by hashing the corpus artifact): ec591ef1b91eeb58a8873ae8ec4920018f8ce26e3393b88c5b2cf32c6aac9a42.",
+      "match": true
+    },
+    {
+      "claim_id": "COR-03",
+      "claim_type": "CORPUS_SHA_EQUALITY",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "independently derived corpus digest EQUALS the recorded authority",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/CORPUS_SHA256.txt",
+      "source_artifact_sha256": "446b5f5614d67b8b26aeec91e44fdd0dfbcb4f1d8546be4bbc5be8e8b76b85c8",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/CORPUS_SHA256.txt",
+          "content_sha256": "446b5f5614d67b8b26aeec91e44fdd0dfbcb4f1d8546be4bbc5be8e8b76b85c8",
+          "schema_identity": null
+        },
+        {
+          "role": "corpus_jsonl",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/corrected_corpus_84.jsonl",
+          "content_sha256": "ec591ef1b91eeb58a8873ae8ec4920018f8ce26e3393b88c5b2cf32c6aac9a42",
+          "schema_identity": "JSONL_ROWS"
+        },
+        {
+          "role": "corpus_sha_sidecar",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/CORPUS_SHA256.txt",
+          "content_sha256": "446b5f5614d67b8b26aeec91e44fdd0dfbcb4f1d8546be4bbc5be8e8b76b85c8",
+          "schema_identity": "SHA256_TEXT"
+        }
+      ],
+      "filter": {},
+      "computed_value": "EQUAL",
+      "render_template": "Independently derived corpus digest vs recorded authority: {value}.",
+      "rendered_value": "Independently derived corpus digest vs recorded authority: EQUAL.",
+      "match": true
+    },
+    {
+      "claim_id": "SEM-01",
+      "claim_type": "CLASS_COVERAGE",
+      "fact_type": "CANDIDATE_SPEC_FACT",
+      "authoritative": true,
+      "semantic_meaning": "semantic taxonomy coverage status",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/SEMANTIC_TAXONOMY_COVERAGE.json",
+      "source_artifact_sha256": "f396c529e78384fe7f45fef1228e1462bf4f0f0401aa7b661f897b6151c49f48",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/SEMANTIC_TAXONOMY_COVERAGE.json",
+          "content_sha256": "f396c529e78384fe7f45fef1228e1462bf4f0f0401aa7b661f897b6151c49f48",
+          "schema_identity": "SEMANTIC_TAXONOMY_COVERAGE_V3"
+        }
+      ],
+      "filter": {
+        "aggregate": "status_counts"
+      },
+      "computed_value": {
+        "SEMANTICALLY_BOUND_NO_SEAM": 23,
+        "SEMANTICALLY_BOUND_STATIC": 4,
+        "SEMANTICALLY_BOUND_RUNTIME": 46,
+        "SEMANTICALLY_BOUND_SEMANTIC_ONLY": 11
+      },
+      "render_template": "Semantic coverage status counts (of 84 classes): {value}.",
+      "rendered_value": "Semantic coverage status counts (of 84 classes): {'SEMANTICALLY_BOUND_NO_SEAM': 23, 'SEMANTICALLY_BOUND_STATIC': 4, 'SEMANTICALLY_BOUND_RUNTIME': 46, 'SEMANTICALLY_BOUND_SEMANTIC_ONLY': 11}.",
+      "match": true
+    },
+    {
+      "claim_id": "SEED-01",
+      "claim_type": "SEED_ID_SET",
+      "fact_type": "CANDIDATE_SPEC_FACT",
+      "authoritative": true,
+      "semantic_meaning": "the exact 30 mandatory seed ID set is preserved (computed from artifacts)",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/seeds/SEED_SYNC_REPORT.json",
+      "source_artifact_sha256": "6bb50b1e5cce385b601b8772380d74c2c365a0a369bf30584713864b470789a9",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/seeds/SEED_SYNC_REPORT.json",
+          "content_sha256": "6bb50b1e5cce385b601b8772380d74c2c365a0a369bf30584713864b470789a9",
+          "schema_identity": "SEED_SYNC_REPORT_V4"
+        },
+        {
+          "role": "seed_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/seeds/seeds_30_corrected.jsonl",
+          "content_sha256": "ece0f54cb01beb0770642705a2fff4b9061d878819bcfeb91af7c564203625eb",
+          "schema_identity": "JSONL_ROWS"
+        },
+        {
+          "role": "seed_contract_matrix",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/SEED_NATIVE_CONTRACT_MATRIX.json",
+          "content_sha256": "9001673bc1aedcd6ce3eefe691c9dadd7a8f4c22cb7591bf031da04cd7adf479",
+          "schema_identity": "SEED_NATIVE_CONTRACT_MATRIX_V2"
+        },
+        {
+          "role": "corpus_jsonl",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/corrected_corpus_84.jsonl",
+          "content_sha256": "ec591ef1b91eeb58a8873ae8ec4920018f8ce26e3393b88c5b2cf32c6aac9a42",
+          "schema_identity": "JSONL_ROWS"
+        }
+      ],
+      "filter": {},
+      "computed_value": "PRESERVED",
+      "render_template": "Exact 30 mandatory seed IDs preserved (computed set equality): {value}.",
+      "rendered_value": "Exact 30 mandatory seed IDs preserved (computed set equality): PRESERVED.",
+      "match": true
+    },
+    {
+      "claim_id": "SEED-02",
+      "claim_type": "FILE_ABSENCE_COUNT",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "count of files matching a pattern inside the registered inventory",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/EVIDENCE_INVENTORY.json",
+      "source_artifact_sha256": "f0c03d7884e2c70fff5f8e6bb72518310985b6b45b9b0b1476621ad45d603672",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/EVIDENCE_INVENTORY.json",
+          "content_sha256": "f0c03d7884e2c70fff5f8e6bb72518310985b6b45b9b0b1476621ad45d603672",
+          "schema_identity": "EVIDENCE_INVENTORY_V4"
+        }
+      ],
+      "filter": {
+        "pattern": "*.json"
+      },
+      "computed_value": 0,
+      "render_template": "Seed observation artifacts found in evidence_runs: {value} (0 = seeds NOT executed).",
+      "rendered_value": "Seed observation artifacts found in evidence_runs: 0 (0 = seeds NOT executed).",
+      "match": true
+    },
+    {
+      "claim_id": "ASV-01",
+      "claim_type": "STATIC_AUDIT",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "anti-self-validation static audit violation count",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/ANTI_SELF_VALIDATION_STATIC_AUDIT.json",
+      "source_artifact_sha256": "1ac2f71558d4b0647ab53ee231607c6f8f65dd27c82db03e05e5705526684b8b",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/ANTI_SELF_VALIDATION_STATIC_AUDIT.json",
+          "content_sha256": "1ac2f71558d4b0647ab53ee231607c6f8f65dd27c82db03e05e5705526684b8b",
+          "schema_identity": "ANTI_SELF_VALIDATION_STATIC_AUDIT_V3"
+        }
+      ],
+      "filter": {},
+      "computed_value": 0,
+      "render_template": "Anti-self-validation static audit violations: {value} (required: 0).",
+      "rendered_value": "Anti-self-validation static audit violations: 0 (required: 0).",
+      "match": true
+    },
+    {
+      "claim_id": "CAN-01",
+      "claim_type": "CANARY_GATE",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "a named calibration gate result",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json",
+      "source_artifact_sha256": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json",
+          "content_sha256": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+          "schema_identity": "CORR4_CANARY_CALIBRATION_V4"
+        }
+      ],
+      "filter": {
+        "gate": "positive"
+      },
+      "computed_value": "PASS",
+      "render_template": "POSITIVE_CANARY gate result: {value}.",
+      "rendered_value": "POSITIVE_CANARY gate result: PASS.",
+      "match": true
+    },
+    {
+      "claim_id": "CAN-02",
+      "claim_type": "CANARY_GATE",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "a named calibration gate result",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json",
+      "source_artifact_sha256": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json",
+          "content_sha256": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+          "schema_identity": "CORR4_CANARY_CALIBRATION_V4"
+        }
+      ],
+      "filter": {
+        "gate": "negative"
+      },
+      "computed_value": "PASS",
+      "render_template": "NEGATIVE_CANARY gate result: {value}.",
+      "rendered_value": "NEGATIVE_CANARY gate result: PASS.",
+      "match": true
+    },
+    {
+      "claim_id": "CAN-03",
+      "claim_type": "CANARY_GATE",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "a named calibration gate result",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json",
+      "source_artifact_sha256": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json",
+          "content_sha256": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+          "schema_identity": "CORR4_CANARY_CALIBRATION_V4"
+        }
+      ],
+      "filter": {
+        "gate": "oracle_mutation"
+      },
+      "computed_value": "PASS",
+      "render_template": "ORACLE_MUTATION_GATE result: {value}.",
+      "rendered_value": "ORACLE_MUTATION_GATE result: PASS.",
+      "match": true
+    },
+    {
+      "claim_id": "CAN-04",
+      "claim_type": "CANARY_GATE",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "a named calibration gate result",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json",
+      "source_artifact_sha256": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/canaries/CANARY_RESULTS.json",
+          "content_sha256": "06a161b24533193e08c0f3f2675f2177a2ab76ae70de540811d703adc2995496",
+          "schema_identity": "CORR4_CANARY_CALIBRATION_V4"
+        }
+      ],
+      "filter": {
+        "gate": "m6_measurement_invalid_guards"
+      },
+      "computed_value": "PASS",
+      "render_template": "M6 measurement-invalid guards: {value}.",
+      "rendered_value": "M6 measurement-invalid guards: PASS.",
+      "match": true
+    },
+    {
+      "claim_id": "TST-01",
+      "claim_type": "SELF_TEST_COUNT",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "harness self-test results",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/SELF_TEST_RESULTS.json",
+      "source_artifact_sha256": "e21c17df69a782c47fbe43d04b6ad6d916bca37383b2e4af68b4040b33f36bc1",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/SELF_TEST_RESULTS.json",
+          "content_sha256": "e21c17df69a782c47fbe43d04b6ad6d916bca37383b2e4af68b4040b33f36bc1",
+          "schema_identity": "CORR2_SELF_TEST_RESULTS_V2"
+        }
+      ],
+      "filter": {},
+      "computed_value": {
+        "passed": 13,
+        "total": 13,
+        "all_pass": true
+      },
+      "render_template": "Harness-only self-tests: {value}.",
+      "rendered_value": "Harness-only self-tests: {'passed': 13, 'total': 13, 'all_pass': True}.",
+      "match": true
+    },
+    {
+      "claim_id": "BAT-01",
+      "claim_type": "BATTERY_COUNT",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "regression battery results",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV3_REGRESSION_BATTERY.json",
+      "source_artifact_sha256": "2e902382e0692cb248a0561fb49718eead1e8de6a46df6c57c49e0d9abe61cd4",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV3_REGRESSION_BATTERY.json",
+          "content_sha256": "2e902382e0692cb248a0561fb49718eead1e8de6a46df6c57c49e0d9abe61cd4",
+          "schema_identity": "IV3_REGRESSION_BATTERY_V1"
+        }
+      ],
+      "filter": {},
+      "computed_value": {
+        "passed": 51,
+        "total": 51,
+        "all_pass": true
+      },
+      "render_template": "IV3 regression battery: {value}.",
+      "rendered_value": "IV3 regression battery: {'passed': 51, 'total': 51, 'all_pass': True}.",
+      "match": true
+    },
+    {
+      "claim_id": "BAT-02",
+      "claim_type": "BATTERY_COUNT",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "regression battery results",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV4_REGRESSION_BATTERY.json",
+      "source_artifact_sha256": "48d8f008ffe534f20e07223e20cf0c64950f5d6fea6a7d09811750a340f89bf9",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV4_REGRESSION_BATTERY.json",
+          "content_sha256": "48d8f008ffe534f20e07223e20cf0c64950f5d6fea6a7d09811750a340f89bf9",
+          "schema_identity": "IV4_REGRESSION_BATTERY"
+        }
+      ],
+      "filter": {},
+      "computed_value": {
+        "passed": 30,
+        "total": 30,
+        "all_pass": true
+      },
+      "render_template": "IV4 regression battery: {value}.",
+      "rendered_value": "IV4 regression battery: {'passed': 30, 'total': 30, 'all_pass': True}.",
+      "match": true
+    },
+    {
+      "claim_id": "BAT-03",
+      "claim_type": "BATTERY_COUNT",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "regression battery results",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV5_REGRESSION_BATTERY.json",
+      "source_artifact_sha256": "9c543b256d8f7d8bf288ea5511f15f2c48bec9eb145fd66837cd2eb7a1ec6e5d",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/IV5_REGRESSION_BATTERY.json",
+          "content_sha256": "9c543b256d8f7d8bf288ea5511f15f2c48bec9eb145fd66837cd2eb7a1ec6e5d",
+          "schema_identity": "IV5_REGRESSION_BATTERY"
+        }
+      ],
+      "filter": {},
+      "computed_value": {
+        "passed": 18,
+        "total": 18,
+        "all_pass": true
+      },
+      "render_template": "IV5 regression battery (owner section 42): {value}.",
+      "rendered_value": "IV5 regression battery (owner section 42): {'passed': 18, 'total': 18, 'all_pass': True}.",
+      "match": true
+    },
+    {
+      "claim_id": "INV-01",
+      "claim_type": "SELF_TEST_COUNT",
+      "fact_type": "AUDIT_FACT",
+      "authoritative": true,
+      "semantic_meaning": "harness self-test results",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/STATE_MACHINE_INVARIANT_RESULTS.json",
+      "source_artifact_sha256": "72928e0eb8307e5fcbc64661f749ead41ebf4a43e62a6a7b2133ab2bd37c65cf",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/artifacts/STATE_MACHINE_INVARIANT_RESULTS.json",
+          "content_sha256": "72928e0eb8307e5fcbc64661f749ead41ebf4a43e62a6a7b2133ab2bd37c65cf",
+          "schema_identity": "STATE_MACHINE_INVARIANT_RESULTS_V1"
+        }
+      ],
+      "filter": {},
+      "computed_value": {
+        "passed": 23,
+        "total": 23,
+        "all_pass": true
+      },
+      "render_template": "Unified verdict state-machine invariants: {value}.",
+      "rendered_value": "Unified verdict state-machine invariants: {'passed': 23, 'total': 23, 'all_pass': True}.",
+      "match": true
+    },
+    {
+      "claim_id": "DUP-01",
+      "claim_type": "EFFECTIVE_DUPLICATE_GROUPS",
+      "fact_type": "CANDIDATE_SPEC_FACT",
+      "authoritative": true,
+      "semantic_meaning": "remaining effective duplicate groups",
+      "source_artifact": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/SEMANTIC_DUPLICATE_REPORT.json",
+      "source_artifact_sha256": "5d8e0ec1daf9e099ba68e0a4415f700fda01db900b7bec6156515b7ede8071aa",
+      "dependencies": [
+        {
+          "role": "source_artifact",
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator/benchmarks/academy-telegram-live-regression-1000-1/corpus/SEMANTIC_DUPLICATE_REPORT.json",
+          "content_sha256": "5d8e0ec1daf9e099ba68e0a4415f700fda01db900b7bec6156515b7ede8071aa",
+          "schema_identity": "EFFECTIVE_DUPLICATE_REPORT_V4"
+        }
+      ],
+      "filter": {},
+      "computed_value": 0,
+      "render_template": "Effective duplicate groups remaining after repair: {value}.",
+      "rendered_value": "Effective duplicate groups remaining after repair: 0.",
+      "match": true
+    }
+  ],
+  "claims_total": 18,
+  "authoritative_claims_total": 18,
+  "all_match": true
+}

@@ -1,0 +1,152 @@
+{
+  "schema": "RAG_DIAGNOSTIC_SCHEMA_V1",
+  "method": "typed observability registry: each diagnostic field declares its source event, source identity (native symbol), type, nullability and allowed values where finite; generic JSON scalar acceptance is insufficient (IV5 F05)",
+  "fields": {
+    "conversationAct": {
+      "FIELD": "conversationAct",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorTurnDetails.conversationAct (navigator-observability.ts)",
+      "NULLABLE": true,
+      "TYPE": "enum_or_null",
+      "ALLOWED_VALUES": [
+        "NAVIGATE",
+        "COURSE_FOLLOW_UP",
+        "COURSE_CONTENT",
+        "META",
+        "OUT_OF_SCOPE",
+        "FACTUAL",
+        "ROUTER_DEGRADED"
+      ]
+    },
+    "courseId": {
+      "FIELD": "courseId",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorTurnDetails.courseId (navigator-observability.ts)",
+      "NULLABLE": true,
+      "TYPE": "string_or_null",
+      "ALLOWED_VALUES": null
+    },
+    "ragInvoked": {
+      "FIELD": "ragInvoked",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorTurnDetails.ragInvoked (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "boolean",
+      "ALLOWED_VALUES": null
+    },
+    "activeBindingCount": {
+      "FIELD": "activeBindingCount",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorTurnDetails.activeBindingCount (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "non_negative_integer_excluding_bool",
+      "ALLOWED_VALUES": null
+    },
+    "retrievedMatchCount": {
+      "FIELD": "retrievedMatchCount",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorTurnDetails.retrievedMatchCount (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "non_negative_integer_excluding_bool",
+      "ALLOWED_VALUES": null
+    },
+    "resolvedEvidenceCount": {
+      "FIELD": "resolvedEvidenceCount",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorTurnDetails.resolvedEvidenceCount (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "non_negative_integer_excluding_bool",
+      "ALLOWED_VALUES": null
+    },
+    "evidenceSelectionStatus": {
+      "FIELD": "evidenceSelectionStatus",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorTurnDetails.evidenceSelectionStatus (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "enum",
+      "ALLOWED_VALUES": [
+        "NOT_RUN",
+        "SUPPORTED",
+        "INSUFFICIENT"
+      ]
+    },
+    "answerOrigin": {
+      "FIELD": "answerOrigin",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorAnswerOrigin (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "enum",
+      "ALLOWED_VALUES": [
+        "DETERMINISTIC_CONTROL",
+        "CONTACT_POLICY",
+        "PAYMENT_POLICY",
+        "CATALOG_AUTHORITY",
+        "COMMERCIAL_AUTHORITY",
+        "RAG_EVIDENCE",
+        "FACTUAL_CEILING",
+        "OUT_OF_SCOPE",
+        "META"
+      ]
+    },
+    "fallback": {
+      "FIELD": "fallback",
+      "SOURCE_EVENT": "NAVIGATOR_TURN",
+      "SOURCE_IDENTITY": "NavigatorTurnFallback (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "enum",
+      "ALLOWED_VALUES": [
+        "NONE",
+        "CATALOG_FOLLOW_UP",
+        "FACTUAL_CEILING",
+        "EVIDENCE_SELECTION_DEGRADED",
+        "ROUTER_VALIDATION_DEGRADED"
+      ]
+    },
+    "groundingStage": {
+      "FIELD": "groundingStage",
+      "SOURCE_EVENT": "NAVIGATOR_GROUNDING",
+      "SOURCE_IDENTITY": "NavigatorGroundingStage (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "enum",
+      "ALLOWED_VALUES": [
+        "PRIMARY_AUDIT_PASS",
+        "PRIMARY_AUDIT_FAIL",
+        "PRIMARY_AUDIT_ERROR",
+        "REPAIR_ATTEMPTED",
+        "REPAIR_AUDIT_PASS",
+        "REPAIR_AUDIT_FAIL",
+        "REPAIR_AUDIT_ERROR",
+        "FACTUAL_CEILING_STRUCTURAL",
+        "FACTUAL_CEILING_AUDIT"
+      ]
+    },
+    "repairAttempted": {
+      "FIELD": "repairAttempted",
+      "SOURCE_EVENT": "NAVIGATOR_GROUNDING",
+      "SOURCE_IDENTITY": "NavigatorGroundingDetails.repairAttempted (navigator-observability.ts)",
+      "NULLABLE": false,
+      "TYPE": "boolean",
+      "ALLOWED_VALUES": null
+    },
+    "reasonCode": {
+      "FIELD": "reasonCode",
+      "SOURCE_EVENT": "NAVIGATOR_GROUNDING",
+      "SOURCE_IDENTITY": "NavigatorGroundingReasonCode (navigator-observability.ts)",
+      "NULLABLE": true,
+      "TYPE": "enum_or_null",
+      "ALLOWED_VALUES": [
+        "UNSUPPORTED_CLAIM",
+        "AUTHORITY_SCOPE",
+        "UNMARKED_INFERENCE"
+      ]
+    }
+  },
+  "invalid_value_rule": "a value failing its exact native type/enum contract is retained as raw evidence but is INVALID and UNOBSERVED for authority (authority_value)",
+  "source_bound_contract": {
+    "native_source_sha256": {
+      "src/lib/navigation/navigator-observability.ts": "129a46c9a779eef070216d1409de7f346c57dbb2a4cdf227d1d10ac284fd1a27",
+      "src/app/api/chat/route.ts": "ce51bd79a27571479e9b3973e020f104f14ed6afacd8ea80f030755ea5f04a9f"
+    },
+    "revalidation_rule": "if a future bound TEST_BASE contains different source bytes for these files, the RAG diagnostic contract REQUIRES REVALIDATION of the typed schema against the new source before execution: this is source-contract validity, not a product verdict"
+  }
+}

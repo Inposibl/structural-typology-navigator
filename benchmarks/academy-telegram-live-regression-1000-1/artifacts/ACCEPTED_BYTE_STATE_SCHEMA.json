@@ -1,0 +1,15 @@
+{
+  "schema": "ACCEPTED_BYTE_STATE_MANIFEST_SCHEMA_V1",
+  "manifest_version": "1.0",
+  "fields": {
+    "manifest_version": "string, must equal 1.0",
+    "head": "40-hex commit SHA, must equal the expected TEST_BASE HEAD",
+    "tracked_modified": "object {repo-relative path: sha256}",
+    "deleted_paths": "array of repo-relative paths accepted as deleted",
+    "untracked_overlay": "object {repo-relative path: sha256} under the EXPLICIT CORR4 overlay policy",
+    "overlay_included_classes": "explicit controlled families (no blanket docs/*)",
+    "excluded_classes": "explicit never-controlled/never-read classes",
+    "manifest_sha256": "sha256 of the canonical JSON of all other fields"
+  },
+  "attestation": "every controlled byte matches; extras under the policy fail; deleted paths absent"
+}

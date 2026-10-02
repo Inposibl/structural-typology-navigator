@@ -1,0 +1,631 @@
+{
+  "schema": "STATIC_QUERY_REGISTRY_V1",
+  "queries": [
+    {
+      "scenario_id": "B-0004",
+      "fact": "serialization_lock_handlers_client",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "asyncio.Lock",
+      "declared_question": "B-0004 declared mechanism — «TG-22 honest NO_SEAM: near-simultaneous callback/message races have no authorized runtime observation seam; the ONLY authorized evidence is registered static queries (AST-derived l» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0004",
+      "fact": "serialization_lock_handlers_operator",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/operator.py",
+      "subject": "asyncio.Lock",
+      "declared_question": "B-0004 declared mechanism — «TG-22 honest NO_SEAM: near-simultaneous callback/message races have no authorized runtime observation seam; the ONLY authorized evidence is registered static queries (AST-derived l» — answered by SYMBOL_ABSENT on handlers/operator.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0004",
+      "fact": "middleware_registered",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "middleware",
+      "declared_question": "B-0004 declared mechanism — «TG-22 honest NO_SEAM: near-simultaneous callback/message races have no authorized runtime observation seam; the ONLY authorized evidence is registered static queries (AST-derived l» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0004",
+      "fact": "memory_storage_present",
+      "query_type": "CONFIG_VALUE_EQUALS",
+      "source_file": "main.py",
+      "subject": null,
+      "declared_question": "B-0004 declared mechanism — «TG-22 honest NO_SEAM: near-simultaneous callback/message races have no authorized runtime observation seam; the ONLY authorized evidence is registered static queries (AST-derived l» — answered by CONFIG_VALUE_EQUALS on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0006",
+      "fact": "payment_success_handlers_client",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "payment_success",
+      "declared_question": "B-0006 declared mechanism — «PAY-11 honest NOT_PROVEN: no payment-success consumer exists; only the derived absence/presence inventory is authorized evidence.» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0006",
+      "fact": "polling_entry_present",
+      "query_type": "CALL_SITE_EXISTS",
+      "source_file": "main.py",
+      "subject": "start_polling",
+      "declared_question": "B-0006 declared mechanism — «PAY-11 honest NOT_PROVEN: no payment-success consumer exists; only the derived absence/presence inventory is authorized evidence.» — answered by CALL_SITE_EXISTS on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "C-0002",
+      "fact": "delete_webhook_only",
+      "query_type": "CALL_SITE_EXISTS",
+      "source_file": "main.py",
+      "subject": "delete_webhook",
+      "declared_question": "C-0002 declared mechanism — «TG-01 honest NO_SEAM: no webhook endpoint exists; registered queries derive the redelivery-surface absence.» — answered by CALL_SITE_EXISTS on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "C-0002",
+      "fact": "webhook_registration_absent",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "add_webhook",
+      "declared_question": "C-0002 declared mechanism — «TG-01 honest NO_SEAM: no webhook endpoint exists; registered queries derive the redelivery-surface absence.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "C-0002",
+      "fact": "webhook_handlers_absent",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "webhook",
+      "declared_question": "C-0002 declared mechanism — «TG-01 honest NO_SEAM: no webhook endpoint exists; registered queries derive the redelivery-surface absence.» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "A-0056",
+      "fact": "multiprocess_coordination_primitives",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "data_engine/lebedev_adapter.py",
+      "subject": "flock",
+      "declared_question": "A-0056 declared mechanism — «Shared Telethon session database lock: Academy code has no multi-process coordination around the shared session file.» — answered by SYMBOL_ABSENT on data_engine/lebedev_adapter.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "A-0058",
+      "fact": "queue_worker_watchdog_primitives",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "data_engine/lebedev_adapter.py",
+      "subject": "asyncio.Queue",
+      "declared_question": "A-0058 declared mechanism — «Update starvation: no job queue/worker/watchdog exists; all delays are yielding awaits.» — answered by SYMBOL_ABSENT on data_engine/lebedev_adapter.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "A-0060",
+      "fact": "catch_up_seams",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "data_engine/lebedev_adapter.py",
+      "subject": "catch_up",
+      "declared_question": "A-0060 declared mechanism — «Reconnect/catch-up gap: no Academy-level catch-up seam exists.» — answered by SYMBOL_ABSENT on data_engine/lebedev_adapter.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "A-0061",
+      "fact": "events_raw_handlers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "events.Raw",
+      "declared_question": "A-0061 declared mechanism — «Reconnect/catch-up gap variant: no events.Raw / getDifference handlers.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "A-0061",
+      "fact": "get_difference_calls",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "get_difference",
+      "declared_question": "A-0061 declared mechanism — «Reconnect/catch-up gap variant: no events.Raw / getDifference handlers.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "A-0062",
+      "fact": "tcpconnector_tuning",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "data_engine/lebedev_adapter.py",
+      "subject": "TCPConnector",
+      "declared_question": "A-0062 declared mechanism — «HTTP connection-pool exhaustion: fresh unpooled aiohttp session per navigator call; no pool handling exists.» — answered by SYMBOL_ABSENT on data_engine/lebedev_adapter.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "A-0063",
+      "fact": "aiogram_session_pool_config",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "AiohttpSession",
+      "declared_question": "A-0063 declared mechanism — «HTTP pool variant: Tikhon uses aiogram's default AiohttpSession without tuning.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0008",
+      "fact": "webhook_registrations",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "add_webhook",
+      "declared_question": "B-0008 declared mechanism — «Webhook duplicate redelivery cannot arise: no component registers a webhook.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0009",
+      "fact": "webhook_auth_tokens",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "secret_token",
+      "declared_question": "B-0009 declared mechanism — «Webhook redelivery auth: no webhook endpoint exists to authenticate.» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0010",
+      "fact": "offset_handling_in_academy_code",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "offset",
+      "declared_question": "B-0010 declared mechanism — «Polling offset duplicate: offset management is aiogram-internal; Academy code has none.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0011",
+      "fact": "offset_persistence",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "offset",
+      "declared_question": "B-0011 declared mechanism — «Polling offset persistence: no Academy-side offset store exists.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0012",
+      "fact": "single_instance_lock",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "single_instance",
+      "declared_question": "B-0012 declared mechanism — «Multiple polling consumers: no single-instance lock/conflict handler exists.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0013",
+      "fact": "conflict_error_handlers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "TelegramConflictError",
+      "declared_question": "B-0013 declared mechanism — «Multiple consumers variant: no TelegramConflictError handling.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0014",
+      "fact": "callback_answer_middleware",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "CallbackAnswerMiddleware",
+      "declared_question": "B-0014 declared mechanism — «Callback not acknowledged: no acknowledgment-guarantee seam exists.» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0015",
+      "fact": "catchall_callback_handlers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "callback_query",
+      "declared_question": "B-0015 declared mechanism — «Callback-ack variant: no filter-less catch-all callback handler.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0017",
+      "fact": "telegram_bad_request_handlers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "TelegramBadRequest",
+      "declared_question": "B-0017 declared mechanism — «Expired-callback variant: no TelegramBadRequest handling around answers.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0018",
+      "fact": "webhook_endpoints",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "webhook",
+      "declared_question": "B-0018 declared mechanism — «Webhook origin auth: no webhook endpoint exists to authenticate.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0020",
+      "fact": "webhook_crash_replay_surface",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "webhook",
+      "declared_question": "B-0020 declared mechanism — «Webhook crash replay storm: no webhook endpoint, no replay surface.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0022",
+      "fact": "serialization_primitives_in_handlers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "Lock",
+      "declared_question": "B-0022 declared mechanism — «Near-simultaneous callback/message race: no per-user serialization between callback and message handlers.» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0022",
+      "fact": "middleware_registered",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "middleware",
+      "declared_question": "B-0022 declared mechanism — «Near-simultaneous callback/message race: no per-user serialization between callback and message handlers.» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0023",
+      "fact": "per_user_locks_tikhon",
+      "query_type": "LOCK_PRIMITIVE_PRESENT",
+      "source_file": "main.py",
+      "subject": null,
+      "declared_question": "B-0023 declared mechanism — «Race variant: no per-user lock primitives anywhere in the Tikhon path.» — answered by LOCK_PRIMITIVE_PRESENT on main.py",
+      "expected_value": false
+    },
+    {
+      "scenario_id": "B-0024",
+      "fact": "delete_webhook_before_polling",
+      "query_type": "CALL_ORDER_BEFORE",
+      "source_file": "main.py",
+      "subject": "delete_webhook",
+      "declared_question": "does the delete_webhook call site strictly precede start_polling in module execution order?",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0024",
+      "fact": "mode",
+      "query_type": "CALL_SITE_EXISTS",
+      "source_file": "main.py",
+      "subject": "start_polling",
+      "declared_question": "is the polling entry point started (polling-only posture)?",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0027",
+      "fact": "drop_pending_updates",
+      "query_type": "CONFIG_VALUE_EQUALS",
+      "source_file": "main.py",
+      "subject": null,
+      "declared_question": "B-0027 declared mechanism — «Pending-update discard: drop_pending_updates=True is hardcoded; downtime messages are discarded by Bot API semantics.» — answered by CONFIG_VALUE_EQUALS on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0030",
+      "fact": "allowed_updates_min_set",
+      "query_type": "HANDLER_DECORATOR_TYPES",
+      "source_file": "handlers/client.py;handlers/operator.py",
+      "subject": null,
+      "declared_question": "which update types does the actual router-decorator inventory (the native resolve_used_update_types surface) cover?",
+      "expected_value": [
+        "callback_query",
+        "message",
+        "my_chat_member"
+      ]
+    },
+    {
+      "scenario_id": "B-0033",
+      "fact": "application_user_id_column",
+      "query_type": "ANNOTATED_COLUMN_TYPE",
+      "source_file": "database.py",
+      "subject": "user_id",
+      "declared_question": "is the Application.user_id ORM column annotated with the BigInteger type?",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0033",
+      "fact": "sent_reminder_user_id_column",
+      "query_type": "ANNOTATED_COLUMN_TYPE",
+      "source_file": "database.py",
+      "subject": "user_id",
+      "declared_question": "is the SentReminder.user_id ORM column annotated with the BigInteger type?",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0041",
+      "fact": "checkout_confirm_handler_present",
+      "query_type": "CALLBACK_FILTER_HANDLER",
+      "source_file": "handlers/client.py",
+      "subject": "cb_ind_terms_confirmed",
+      "declared_question": "is the checkout seam registered as the native callback handler cb_ind_terms_confirmed for confirm:ind_terms?",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0042",
+      "fact": "checkout_confirm_handler_present",
+      "query_type": "CALLBACK_FILTER_HANDLER",
+      "source_file": "handlers/client.py",
+      "subject": "cb_ind_terms_confirmed",
+      "declared_question": "is the checkout seam registered as the native callback handler cb_ind_terms_confirmed for confirm:ind_terms?",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0043",
+      "fact": "checkout_confirm_handler_present",
+      "query_type": "CALLBACK_FILTER_HANDLER",
+      "source_file": "handlers/client.py",
+      "subject": "cb_ind_terms_confirmed",
+      "declared_question": "is the checkout seam registered as the native callback handler cb_ind_terms_confirmed for confirm:ind_terms?",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0054",
+      "fact": "payment_event_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_event",
+      "declared_question": "B-0054 declared mechanism — «PAY-07 honest non-constructible lane: no payment-event consumer exists (controlling IV2 section 18). The scenario retains its class for taxonomy presence but must not count as runt» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0054",
+      "fact": "payment_webhook_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_webhook",
+      "declared_question": "B-0054 declared mechanism — «PAY-07 honest non-constructible lane: no payment-event consumer exists (controlling IV2 section 18). The scenario retains its class for taxonomy presence but must not count as runt» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0055",
+      "fact": "payment_event_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_event",
+      "declared_question": "B-0055 declared mechanism — «PAY-08 honest non-constructible lane: no payment-event stream exists to order (controlling IV2 section 18). The scenario retains its class for taxonomy presence but must not count » — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0055",
+      "fact": "payment_webhook_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_webhook",
+      "declared_question": "B-0055 declared mechanism — «PAY-08 honest non-constructible lane: no payment-event stream exists to order (controlling IV2 section 18). The scenario retains its class for taxonomy presence but must not count » — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0056",
+      "fact": "payment_webhook_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/operator.py",
+      "subject": "webhook",
+      "declared_question": "B-0056 declared mechanism — «PAY-09 honest non-constructible lane: no signature-verification path exists: absence inventory only. The scenario retains its class for taxonomy presence but must not count as runt» — answered by SYMBOL_ABSENT on handlers/operator.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0060",
+      "fact": "payment_event_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_event",
+      "declared_question": "B-0060 declared mechanism — «PAY-11 honest non-constructible lane: no payment-success consumer exists (controlling IV2 section 18). The scenario retains its class for taxonomy presence but must not count as ru» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0060",
+      "fact": "payment_webhook_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_webhook",
+      "declared_question": "B-0060 declared mechanism — «PAY-11 honest non-constructible lane: no payment-success consumer exists (controlling IV2 section 18). The scenario retains its class for taxonomy presence but must not count as ru» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0062",
+      "fact": "payment_event_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_event",
+      "declared_question": "B-0062 declared mechanism — «PAY-06 honest non-constructible lane: no idempotency-TTL/causal expiry point exists in the product. The scenario retains its class for taxonomy presence but must not count as runti» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0062",
+      "fact": "payment_webhook_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_webhook",
+      "declared_question": "B-0062 declared mechanism — «PAY-06 honest non-constructible lane: no idempotency-TTL/causal expiry point exists in the product. The scenario retains its class for taxonomy presence but must not count as runti» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0063",
+      "fact": "payment_event_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_event",
+      "declared_question": "B-0063 declared mechanism — «PAY-10 honest non-constructible lane: no isolated ack-before-durable-ordering seam exists at available adapters. The scenario retains its class for taxonomy presence but must not c» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0063",
+      "fact": "payment_webhook_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_webhook",
+      "declared_question": "B-0063 declared mechanism — «PAY-10 honest non-constructible lane: no isolated ack-before-durable-ordering seam exists at available adapters. The scenario retains its class for taxonomy presence but must not c» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0064",
+      "fact": "payment_event_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_event",
+      "declared_question": "B-0064 declared mechanism — «PAY-14 honest non-constructible lane: no crash/restart simulation seam at the checkout/store boundary. The scenario retains its class for taxonomy presence but must not count as ru» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0064",
+      "fact": "payment_webhook_consumers",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "main.py",
+      "subject": "payment_webhook",
+      "declared_question": "B-0064 declared mechanism — «PAY-14 honest non-constructible lane: no crash/restart simulation seam at the checkout/store boundary. The scenario retains its class for taxonomy presence but must not count as ru» — answered by SYMBOL_ABSENT on main.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0096",
+      "fact": "payment_success_consumer_absent",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "payment_success",
+      "declared_question": "B-0096 declared mechanism — «PAY-11 honest non-constructible lane: no payment-success consumer exists (controlling IV2 section 18). The scenario retains its class for taxonomy presence but must not count as ru» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0187",
+      "fact": "checkout_confirm_handler_present",
+      "query_type": "CALLBACK_FILTER_HANDLER",
+      "source_file": "handlers/client.py",
+      "subject": "cb_ind_terms_confirmed",
+      "declared_question": "is the checkout seam registered as the native callback handler cb_ind_terms_confirmed for confirm:ind_terms?",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0271",
+      "fact": "absence_payment_api_service.py_v1",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "payment",
+      "declared_question": "B-0271 declared mechanism — «PAY-07 honest static lane: derived absence of 'payment' in api_service.py (derivation 1).» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0272",
+      "fact": "absence_payment_api_service.py_v2",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "payment",
+      "declared_question": "B-0272 declared mechanism — «PAY-07 honest static lane: derived absence of 'payment' in api_service.py (derivation 2).» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0273",
+      "fact": "absence_payment_event_operator.py_v1",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/operator.py",
+      "subject": "payment_event",
+      "declared_question": "B-0273 declared mechanism — «PAY-08 honest static lane: derived absence of 'payment_event' in handlers/operator.py (derivation 1).» — answered by SYMBOL_ABSENT on handlers/operator.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0274",
+      "fact": "absence_payment_event_operator.py_v2",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/operator.py",
+      "subject": "payment_event",
+      "declared_question": "B-0274 declared mechanism — «PAY-08 honest static lane: derived absence of 'payment_event' in handlers/operator.py (derivation 2).» — answered by SYMBOL_ABSENT on handlers/operator.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0275",
+      "fact": "absence_signature_api_service.py_v1",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "signature",
+      "declared_question": "B-0275 declared mechanism — «PAY-09 honest static lane: derived absence of 'signature' in api_service.py (derivation 1).» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0276",
+      "fact": "absence_signature_api_service.py_v2",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "signature",
+      "declared_question": "B-0276 declared mechanism — «PAY-09 honest static lane: derived absence of 'signature' in api_service.py (derivation 2).» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0277",
+      "fact": "absence_acknowledgement_client.py_v1",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "acknowledgement",
+      "declared_question": "B-0277 declared mechanism — «PAY-10 honest static lane: derived absence of 'acknowledgement' in handlers/client.py (derivation 1).» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0278",
+      "fact": "absence_acknowledgement_client.py_v2",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "handlers/client.py",
+      "subject": "acknowledgement",
+      "declared_question": "B-0278 declared mechanism — «PAY-10 honest static lane: derived absence of 'acknowledgement' in handlers/client.py (derivation 2).» — answered by SYMBOL_ABSENT on handlers/client.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0279",
+      "fact": "absence_restart_session_store.py_v1",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "data_engine/session_store.py",
+      "subject": "restart",
+      "declared_question": "B-0279 declared mechanism — «PAY-14 honest static lane: derived absence of 'restart' in data_engine/session_store.py (derivation 1).» — answered by SYMBOL_ABSENT on data_engine/session_store.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0280",
+      "fact": "absence_restart_session_store.py_v2",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "data_engine/session_store.py",
+      "subject": "restart",
+      "declared_question": "B-0280 declared mechanism — «PAY-14 honest static lane: derived absence of 'restart' in data_engine/session_store.py (derivation 2).» — answered by SYMBOL_ABSENT on data_engine/session_store.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0281",
+      "fact": "absence_payment_success_api_service.py_v1",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "payment_success",
+      "declared_question": "B-0281 declared mechanism — «PAY-11 honest static lane: derived absence of 'payment_success' in api_service.py (derivation 1).» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0282",
+      "fact": "absence_payment_success_api_service.py_v2",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "payment_success",
+      "declared_question": "B-0282 declared mechanism — «PAY-11 honest static lane: derived absence of 'payment_success' in api_service.py (derivation 2).» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0286",
+      "fact": "pay11_absent_api_service.py_5028",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "payment_success",
+      "declared_question": "B-0286 declared mechanism — «PAY-11 honest static lane: derived consumer absence on a distinct intake file.» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0292",
+      "fact": "pay11_absent_api_service.py_5034",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "payment_success",
+      "declared_question": "B-0292 declared mechanism — «PAY-11 honest static lane: derived consumer absence on a distinct intake file.» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    },
+    {
+      "scenario_id": "B-0298",
+      "fact": "pay11_absent_api_service.py_5040",
+      "query_type": "SYMBOL_ABSENT",
+      "source_file": "api_service.py",
+      "subject": "payment_success",
+      "declared_question": "B-0298 declared mechanism — «PAY-11 honest static lane: derived consumer absence on a distinct intake file.» — answered by SYMBOL_ABSENT on api_service.py",
+      "expected_value": true
+    }
+  ],
+  "validator": "STRUCTURAL VALIDITY + DECLARED-QUESTION RELEVANCE: the compiled static expectation identifies the question it answers; unrelated true facts, wrong scope, wrong symbol, wrong syntax class and empty expectations are rejected"
+}

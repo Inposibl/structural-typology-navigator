@@ -1,0 +1,56 @@
+{
+  "schema": "COMPILER_SEMANTIC_NEGATIVE_FIXTURES_V1",
+  "method": "owner §38: the compiler must reject state expectations on the wrong projection, static assertions unrelated to the declared mechanism (incl. missing declared question / callback-data callees), unregistered provider fixture identities, concurrency contracts without a contention schedule, cross-session claims without explicit causal steps, and Set S rows that cannot reach their declared variable path",
+  "cases": [
+    {
+      "negative": "state_expectation_wrong_projection",
+      "rejected": true,
+      "defects": [
+        "N1: alexey_user_turn persists USER-KEYED state ({user_id: {selectedCourseId, displayName}}); flat keys ['selectedCourseId'] address a projection the adapter never emits — correctly persisted values would FAIL (IV6-F02)"
+      ]
+    },
+    {
+      "negative": "static_unrelated_fact_no_declared_question",
+      "rejected": true,
+      "defects": [
+        "N2: static query 'unrelated_fact' lacks its DECLARED_QUESTION (the compiled expectation must identify what question it answers; IV6-F03 §22)"
+      ]
+    },
+    {
+      "negative": "static_callback_data_as_callee",
+      "rejected": true,
+      "defects": [
+        "N3: CALL_SITE_EXISTS subject 'confirm:ind_terms' is not a code identifier — callback data/prose cannot be a callee or symbol; the declared question must be answered by a typed query matching the native construct (IV6-F03 §21)"
+      ]
+    },
+    {
+      "negative": "provider_fixture_unregistered_identity",
+      "rejected": true,
+      "defects": [
+        "N4: declared PROVIDER_FIXTURE_ID 'PF-UNREGISTERED' is not a registered fixture identity (unregistered provider fixture identity; IV6-F06A)"
+      ]
+    },
+    {
+      "negative": "concurrency_without_contention_schedule",
+      "rejected": true,
+      "defects": [
+        "N5: Set C row without a benchmark-controlled contention schedule (contention_schedule.provider_pause_s > 0 at the awaited provider boundary): same-loop tasks cannot yield real measured contention and independent operations cannot demonstrate simultaneous progress (IV6-F12A/F12B)"
+      ]
+    },
+    {
+      "negative": "cross_session_without_multistep",
+      "rejected": true,
+      "defects": [
+        "N6: cross-session mechanism without an explicit multi-step trajectory (>=2 causal steps with DISTINCT session identifiers): a single request cannot establish cross-session behavior (IV6-F15 §34)"
+      ]
+    },
+    {
+      "negative": "set_s_onboarding_route",
+      "rejected": true,
+      "defects": [
+        "N7: Set S row whose route precondition is 'ONBOARDING_IS_THE_MECHANISM' cannot reach the declared variable orchestration path (IV6-F15 §35)"
+      ]
+    }
+  ],
+  "all_rejected": true
+}

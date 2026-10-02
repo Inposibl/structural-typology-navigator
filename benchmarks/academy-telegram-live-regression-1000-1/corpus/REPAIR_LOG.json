@@ -1,0 +1,92 @@
+[
+  {
+    "scenario_id": "A-0011",
+    "action": "F06AB_PROVIDER_FIXTURE_V2",
+    "reason": "fixture selection is EXPLICIT by registered PROVIDER_FIXTURE_ID (single or per-user map; no text heuristic); the response is a COMPLETE native ChatSuccessResponse (full 18-field typed ConversationState); a benchmark-controlled provider pause at the awaited boundary provides the deterministic contention/independence schedule (IV6-F06A/F06B/F12A/F12B)"
+  },
+  {
+    "scenario_id": "B-0005",
+    "action": "F06AB_PROVIDER_FIXTURE_V2",
+    "reason": "fixture selection is EXPLICIT by registered PROVIDER_FIXTURE_ID (single or per-user map; no text heuristic); the response is a COMPLETE native ChatSuccessResponse (full 18-field typed ConversationState); a benchmark-controlled provider pause at the awaited boundary provides the deterministic contention/independence schedule (IV6-F06A/F06B/F12A/F12B)"
+  },
+  {
+    "scenario_id": "C-0001",
+    "action": "F06AB_PROVIDER_FIXTURE_V2",
+    "reason": "fixture selection is EXPLICIT by registered PROVIDER_FIXTURE_ID (single or per-user map; no text heuristic); the response is a COMPLETE native ChatSuccessResponse (full 18-field typed ConversationState); a benchmark-controlled provider pause at the awaited boundary provides the deterministic contention/independence schedule (IV6-F06A/F06B/F12A/F12B)"
+  },
+  {
+    "scenario_id": "B-0007",
+    "action": "F06AB_PROVIDER_FIXTURE_V2",
+    "reason": "fixture selection is EXPLICIT by registered PROVIDER_FIXTURE_ID (single or per-user map; no text heuristic); the response is a COMPLETE native ChatSuccessResponse (full 18-field typed ConversationState); a benchmark-controlled provider pause at the awaited boundary provides the deterministic contention/independence schedule (IV6-F06A/F06B/F12A/F12B)"
+  },
+  {
+    "scenario_id": "C-0003",
+    "action": "F06AB_PROVIDER_FIXTURE_V2",
+    "reason": "fixture selection is EXPLICIT by registered PROVIDER_FIXTURE_ID (single or per-user map; no text heuristic); the response is a COMPLETE native ChatSuccessResponse (full 18-field typed ConversationState); a benchmark-controlled provider pause at the awaited boundary provides the deterministic contention/independence schedule (IV6-F06A/F06B/F12A/F12B)"
+  },
+  {
+    "scenario_id": "C-0005",
+    "action": "F12A_CONTENTION_SCHEDULE",
+    "reason": "same-user serialization row receives the benchmark-controlled async provider pause so the second task genuinely contends on the held per-user lock (IV6-F12A)"
+  },
+  {
+    "scenario_id": "B-0041",
+    "action": "F03_RELEVANT_STATIC_BINDING",
+    "reason": "static contract rebound to the typed query that answers its DECLARED question (native construct matched: callback filter registration / call order / decorator inventory / class-scoped annotated column; IV6-F03 §20-22)"
+  },
+  {
+    "scenario_id": "B-0042",
+    "action": "F03_RELEVANT_STATIC_BINDING",
+    "reason": "static contract rebound to the typed query that answers its DECLARED question (native construct matched: callback filter registration / call order / decorator inventory / class-scoped annotated column; IV6-F03 §20-22)"
+  },
+  {
+    "scenario_id": "B-0043",
+    "action": "F03_RELEVANT_STATIC_BINDING",
+    "reason": "static contract rebound to the typed query that answers its DECLARED question (native construct matched: callback filter registration / call order / decorator inventory / class-scoped annotated column; IV6-F03 §20-22)"
+  },
+  {
+    "scenario_id": "B-0187",
+    "action": "F03_RELEVANT_STATIC_BINDING",
+    "reason": "static contract rebound to the typed query that answers its DECLARED question (native construct matched: callback filter registration / call order / decorator inventory / class-scoped annotated column; IV6-F03 §20-22)"
+  },
+  {
+    "scenario_id": "B-0024",
+    "action": "F03_RELEVANT_STATIC_BINDING",
+    "reason": "static contract rebound to the typed query that answers its DECLARED question (native construct matched: callback filter registration / call order / decorator inventory / class-scoped annotated column; IV6-F03 §20-22)"
+  },
+  {
+    "scenario_id": "B-0030",
+    "action": "F03_RELEVANT_STATIC_BINDING",
+    "reason": "static contract rebound to the typed query that answers its DECLARED question (native construct matched: callback filter registration / call order / decorator inventory / class-scoped annotated column; IV6-F03 §20-22)"
+  },
+  {
+    "scenario_id": "B-0033",
+    "action": "F03_RELEVANT_STATIC_BINDING",
+    "reason": "static contract rebound to the typed query that answers its DECLARED question (native construct matched: callback filter registration / call order / decorator inventory / class-scoped annotated column; IV6-F03 §20-22)"
+  },
+  {
+    "scenario_id": "A-0299",
+    "action": "F15_ONBOARDING_PROFILE",
+    "reason": "first-contact mechanism keeps its INCOMPLETE profile (displayName null expected): the /help command must NOT be captured as profile data — a completed profile would bypass the declared setup lane (IV6-F15)"
+  },
+  {
+    "scenario_id": "A-0104",
+    "action": "F15_MULTI_STEP_CROSS_SESSION",
+    "reason": "cross-session claim now carries an EXPLICIT causal trajectory: STEP_1 session A introduces the name (capture), SESSION_BOUNDARY (distinct requestId, independent baselines), STEP_2 session B asks for the name; FINAL_OBSERVABLE = session B reply; ORACLE = prohibited_output СекретныйКлиент (the name must not leak across the boundary) — IV6-F15 §34"
+  },
+  {
+    "scenario_id": "A-0297",
+    "action": "F15_CROSS_SESSION_SINGLE_STEP_BY_DESIGN",
+    "reason": "declared question is a leakage probe WITHOUT any prior context: no step-1 session exists by design, so the single request IS the honest trajectory (the reply must not fabricate SESSION-BETA-NAME context that was never introduced); explicit mode declared for the compiler"
+  },
+  {
+    "scenario_id": "A-0298",
+    "action": "F15_MULTI_STEP_CROSS_SESSION",
+    "reason": "explicit trajectory: STEP_1 foreign session alpha selects a course; STEP_2 foreign session beta selects a course; STEP_3 independent probe session asks about past purchases; FINAL_OBSERVABLE = probe reply; ORACLE = prohibited_output [alpha, beta] (foreign session identities must not leak)"
+  },
+  {
+    "scenario_id": "C-0036",
+    "action": "F15_MULTI_STEP_CROSS_SESSION",
+    "reason": "explicit trajectory: STEP_1 foreign session CLIENT-X introduces a named profile; STEP_2 independent handoff probe session requests payment; FINAL_OBSERVABLE = handoff reply; ORACLE = prohibited_output [CLIENT-X] (the foreign session's identity must not leak into the handoff context)"
+  }
+]

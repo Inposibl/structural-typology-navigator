@@ -1,0 +1,158 @@
+{
+  "schema": "RAG_DIAGNOSTIC_CAPTURE_CONTRACT_V5",
+  "correlation_authority": {
+    "step_1": "send the local test request (client body requestId is a label only)",
+    "step_2": "capture the actual SERVER-RETURNED request-id header X-Navigator-Request-Id (native logRequestId = randomUUID()); body['requestId'] is never log authority unless native server behavior changes and source establishes equivalence",
+    "step_3": "correlate NAVIGATOR_TURN / NAVIGATOR_GROUNDING events by that server identity",
+    "step_4": "freeze the matching RAW structured log events into the capture",
+    "step_5": "derive diagnostic fields FROM the frozen events with evidence references",
+    "step_6": "validate every field against its EXACT native type/enum contract (RAG_DIAGNOSTIC_SCHEMA.json); an invalid enum/value becomes INVALID and UNOBSERVED for authority per the documented rule"
+  },
+  "fields": {
+    "conversationAct": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": true,
+      "type": "enum_or_null",
+      "allowed_values": [
+        "NAVIGATE",
+        "COURSE_FOLLOW_UP",
+        "COURSE_CONTENT",
+        "META",
+        "OUT_OF_SCOPE",
+        "FACTUAL",
+        "ROUTER_DEGRADED"
+      ],
+      "source_native_symbol": "NavigatorTurnDetails.conversationAct (navigator-observability.ts)"
+    },
+    "courseId": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": true,
+      "type": "string_or_null",
+      "allowed_values": null,
+      "source_native_symbol": "NavigatorTurnDetails.courseId (navigator-observability.ts)"
+    },
+    "ragInvoked": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": false,
+      "type": "boolean",
+      "allowed_values": null,
+      "source_native_symbol": "NavigatorTurnDetails.ragInvoked (navigator-observability.ts)"
+    },
+    "activeBindingCount": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": false,
+      "type": "non_negative_integer_excluding_bool",
+      "allowed_values": null,
+      "source_native_symbol": "NavigatorTurnDetails.activeBindingCount (navigator-observability.ts)"
+    },
+    "retrievedMatchCount": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": false,
+      "type": "non_negative_integer_excluding_bool",
+      "allowed_values": null,
+      "source_native_symbol": "NavigatorTurnDetails.retrievedMatchCount (navigator-observability.ts)"
+    },
+    "resolvedEvidenceCount": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": false,
+      "type": "non_negative_integer_excluding_bool",
+      "allowed_values": null,
+      "source_native_symbol": "NavigatorTurnDetails.resolvedEvidenceCount (navigator-observability.ts)"
+    },
+    "evidenceSelectionStatus": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": false,
+      "type": "enum",
+      "allowed_values": [
+        "NOT_RUN",
+        "SUPPORTED",
+        "INSUFFICIENT"
+      ],
+      "source_native_symbol": "NavigatorTurnDetails.evidenceSelectionStatus (navigator-observability.ts)"
+    },
+    "answerOrigin": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": false,
+      "type": "enum",
+      "allowed_values": [
+        "DETERMINISTIC_CONTROL",
+        "CONTACT_POLICY",
+        "PAYMENT_POLICY",
+        "CATALOG_AUTHORITY",
+        "COMMERCIAL_AUTHORITY",
+        "RAG_EVIDENCE",
+        "FACTUAL_CEILING",
+        "OUT_OF_SCOPE",
+        "META"
+      ],
+      "source_native_symbol": "NavigatorAnswerOrigin (navigator-observability.ts)"
+    },
+    "fallback": {
+      "source_event": "NAVIGATOR_TURN",
+      "nullable": false,
+      "type": "enum",
+      "allowed_values": [
+        "NONE",
+        "CATALOG_FOLLOW_UP",
+        "FACTUAL_CEILING",
+        "EVIDENCE_SELECTION_DEGRADED",
+        "ROUTER_VALIDATION_DEGRADED"
+      ],
+      "source_native_symbol": "NavigatorTurnFallback (navigator-observability.ts)"
+    },
+    "groundingStage": {
+      "source_event": "NAVIGATOR_GROUNDING",
+      "nullable": false,
+      "type": "enum",
+      "allowed_values": [
+        "PRIMARY_AUDIT_PASS",
+        "PRIMARY_AUDIT_FAIL",
+        "PRIMARY_AUDIT_ERROR",
+        "REPAIR_ATTEMPTED",
+        "REPAIR_AUDIT_PASS",
+        "REPAIR_AUDIT_FAIL",
+        "REPAIR_AUDIT_ERROR",
+        "FACTUAL_CEILING_STRUCTURAL",
+        "FACTUAL_CEILING_AUDIT"
+      ],
+      "source_native_symbol": "NavigatorGroundingStage (navigator-observability.ts)"
+    },
+    "repairAttempted": {
+      "source_event": "NAVIGATOR_GROUNDING",
+      "nullable": false,
+      "type": "boolean",
+      "allowed_values": null,
+      "source_native_symbol": "NavigatorGroundingDetails.repairAttempted (navigator-observability.ts)"
+    },
+    "reasonCode": {
+      "source_event": "NAVIGATOR_GROUNDING",
+      "nullable": true,
+      "type": "enum_or_null",
+      "allowed_values": [
+        "UNSUPPORTED_CLAIM",
+        "AUTHORITY_SCOPE",
+        "UNMARKED_INFERENCE"
+      ],
+      "source_native_symbol": "NavigatorGroundingReasonCode (navigator-observability.ts)"
+    }
+  },
+  "validation_rules": {
+    "counts": "activeBindingCount / retrievedMatchCount / resolvedEvidenceCount must be non-negative integers (bool excluded)",
+    "booleans": "ragInvoked / repairAttempted must be actual booleans",
+    "enums": "finite enums accept ONLY their declared native members; conversationAct/reasonCode additionally allow null per the native contract; courseId is string-or-null",
+    "malformed_values": "a malformed value is retained as raw evidence but marked valid=false and authority_value=UNOBSERVED: it never becomes a valid diagnostic conclusion",
+    "missing_events": "absent event -> UNOBSERVED (never response-text keyword detection)",
+    "wrong_request_id": "events carrying a foreign requestId are ignored entirely",
+    "malformed_json_lines": "ignored (documented); absence of matching events leaves all fields UNOBSERVED"
+  },
+  "event_selection_semantics": "Grounding may emit more than one event. The FINAL grounding event in file sequence represents stage/repairAttempted/reasonCode (a later repair/final event materially updates them); the full ordered sequence and event count are preserved in the capture. The LAST NAVIGATOR_TURN event represents the turn fields.",
+  "evidence_binding": "Every derived field carries: event type, server request id, raw event evidence id (event:serverRequestId:sequence:digest), field name, and field value digest. No diagnostic exists merely as an auxiliary scalar.",
+  "native_source_basis": "src/app/api/chat/route.ts: logRequestId = randomUUID(); turn/grounding logs and the X-Navigator-Request-Id response header use that identity. Turn fields are top-level properties of the turn log; grounding fields are stage/repairAttempted/reasonCode.",
+  "source_bound_contract": {
+    "native_source_sha256": {
+      "src/lib/navigation/navigator-observability.ts": "129a46c9a779eef070216d1409de7f346c57dbb2a4cdf227d1d10ac284fd1a27",
+      "src/app/api/chat/route.ts": "ce51bd79a27571479e9b3973e020f104f14ed6afacd8ea80f030755ea5f04a9f"
+    },
+    "revalidation_rule": "if a future bound TEST_BASE contains different source bytes for these files, the RAG diagnostic contract REQUIRES REVALIDATION of the typed schema against the new source before execution: this is source-contract validity, not a product verdict"
+  }
+}

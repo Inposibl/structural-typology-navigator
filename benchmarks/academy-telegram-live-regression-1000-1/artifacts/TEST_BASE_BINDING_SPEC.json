@@ -1,0 +1,55 @@
+{
+  "schema": "TEST_BASE_BINDING_SPEC_V2",
+  "generated_at": "2026-09-30T23:32:10Z",
+  "binding_contract": {
+    "NAVIGATOR_TEST_ROOT": {
+      "identity_type": "SHA",
+      "expected_branch": "navigator-production-dialogue-corr2-ab-normalization",
+      "expected_head": "0a930593c1e354022160925e12e0b6474b5fa240",
+      "tracked_tree": "must be CLEAN at the TEST_BASE commit"
+    },
+    "TIKHON_TEST_ROOT": {
+      "identity_type": "ACCEPTED_BYTE_STATE",
+      "expected_branch": "feat/telegram-shared-brain-integration-1",
+      "expected_head": "3adbb9f1d16c299c5b42f1dccad0966c4e7eeecd",
+      "byte_state_manifest": {
+        "path": "tests/_testbase/accepted-byte-state.json (inside the bound root)",
+        "authority": "externally pinned canonical candidate digest"
+      }
+    },
+    "history_root": "/Users/entp_psyche/Desktop/InvestProjects2026/History",
+    "history_rule": "any configured runtime source resolving under History fails closed",
+    "live_tree_rule": "live product trees are refused as TEST_BASE roots",
+    "runner_order": "binding gate runs BEFORE any adapter invocation; unbound -> 0 calls"
+  },
+  "current_binding_state": {
+    "navigator": {
+      "ok": false,
+      "resolved": null,
+      "reasons": [
+        "NAVIGATOR_TEST_ROOT not configured: the harness refuses to guess a SUT path"
+      ],
+      "expected": {
+        "repo_name": "structural-typology-navigator",
+        "branch": "navigator-production-dialogue-corr2-ab-normalization",
+        "head": "0a930593c1e354022160925e12e0b6474b5fa240",
+        "identity_type": "SHA"
+      }
+    },
+    "tikhon": {
+      "ok": false,
+      "resolved": null,
+      "reasons": [
+        "TIKHON_TEST_ROOT not configured: the harness refuses to guess a SUT path"
+      ],
+      "expected": {
+        "repo_name": "chatbot",
+        "branch": "feat/telegram-shared-brain-integration-1",
+        "head": "3adbb9f1d16c299c5b42f1dccad0966c4e7eeecd",
+        "identity_type": "ACCEPTED_BYTE_STATE"
+      }
+    },
+    "all_bound": false
+  },
+  "current_state_note": "Harness-only suites run in the CALIBRATION lane; product roots bind at the later authorized execution act. REAL_TEST_BASE_BINDING = NOT_YET_EXECUTED."
+}

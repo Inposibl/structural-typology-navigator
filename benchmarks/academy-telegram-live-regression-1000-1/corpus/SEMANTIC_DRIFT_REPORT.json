@@ -1,0 +1,5 @@
+{
+  "schema": "SEMANTIC_DRIFT_REPORT_V2",
+  "SEMANTIC_DRIFT_FINDINGS": 0,
+  "note": "B-0030 again measures resolved allowed_updates, not a decorator inventory"
+}

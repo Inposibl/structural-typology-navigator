@@ -1,0 +1,127 @@
+{
+  "schema": "EFFECTIVE_STIMULUS_REPORT_V4",
+  "method": "adapter-consumed input projection with parser normalization for callback data (IV6-F17); redundancy = same consumed stimulus + failure mechanism + material controlling assertion, independent of track",
+  "redundancy_criterion": "adapter-consumed stimulus (parsed) + failure mechanism + material controlling assertion",
+  "iv6_f17_pair_resolution": [
+    "B-0129 retained; B-0130 removed by pruning"
+  ],
+  "redundant_effective_scenarios": 0,
+  "shared_stimulus_groups": 23,
+  "shared_stimulus_group_members": [
+    [
+      "B-0001",
+      "B-0050"
+    ],
+    [
+      "A-0111",
+      "A-0297"
+    ],
+    [
+      "A-0146",
+      "A-0147",
+      "A-0148",
+      "A-0149",
+      "A-0150",
+      "A-0151",
+      "A-0152",
+      "A-0153",
+      "A-0154",
+      "A-0155"
+    ],
+    [
+      "A-0156",
+      "A-0157"
+    ],
+    [
+      "A-0293",
+      "C-0033"
+    ],
+    [
+      "A-0309",
+      "A-0310",
+      "C-0041"
+    ],
+    [
+      "B-0041",
+      "B-0042",
+      "B-0043",
+      "B-0187"
+    ],
+    [
+      "B-0085",
+      "C-0014"
+    ],
+    [
+      "B-0086",
+      "C-0017"
+    ],
+    [
+      "B-0088",
+      "C-0032"
+    ],
+    [
+      "B-0089",
+      "C-0029"
+    ],
+    [
+      "B-0090",
+      "C-0024"
+    ],
+    [
+      "B-0092",
+      "C-0028"
+    ],
+    [
+      "B-0093",
+      "C-0027"
+    ],
+    [
+      "B-0121",
+      "B-0221"
+    ],
+    [
+      "B-0123",
+      "B-0257"
+    ],
+    [
+      "B-0146",
+      "C-0016"
+    ],
+    [
+      "B-0147",
+      "C-0018"
+    ],
+    [
+      "B-0148",
+      "C-0015"
+    ],
+    [
+      "B-0201",
+      "B-0215",
+      "B-0246",
+      "B-0268",
+      "C-0127",
+      "C-0132",
+      "C-0134",
+      "C-0152",
+      "C-0153",
+      "C-0154",
+      "C-0155"
+    ],
+    [
+      "B-0205",
+      "C-0169"
+    ],
+    [
+      "C-0011",
+      "C-0036"
+    ],
+    [
+      "C-0165",
+      "C-0166"
+    ]
+  ],
+  "unique_native_stimuli": 881,
+  "remaining_duplicate_groups": [],
+  "honesty_note": "'924 unique native stimuli' is NOT claimed: shared stimuli across distinct legitimate assertions remain and are tagged shared_stimulus_group_id on each row"
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "CORPUS_DISTRIBUTION_V5",
+  "total_scenarios": 924,
+  "tracks": {
+    "ALEXEY_INBOUND": 374,
+    "TIKHON": 245,
+    "ALEXEY_TO_TIKHON": 169,
+    "ALEXEY_OUTBOUND": 136
+  },
+  "levels": {
+    "L1": 205,
+    "L2": 278,
+    "L5": 40,
+    "L3": 270,
+    "L4": 131
+  },
+  "replay_sets": {
+    "NONE": 859,
+    "C": 12,
+    "F": 10,
+    "S": 43
+  },
+  "unique_fingerprints": 924,
+  "effective_duplicate_groups_remaining": 0,
+  "redundant_effective_scenarios": 0,
+  "distribution_frozen": false,
+  "set_s": 43
+}
