@@ -1,0 +1,66 @@
+{
+  "schema": "CURRENT_AUTHORITY_MANIFEST_CONSTRUCT_CORRECTION_1_CORR1_V1",
+  "act": "ACADEMY-TELEGRAM-LIVE-REGRESSION-1000-1.BENCHMARK-CONSTRUCT-CORRECTION-1.CORR1",
+  "created_utc": "2026-10-02T08:49:57Z",
+  "git_head": "160aaed2d0afc261db66778b23996428d582f2d8",
+  "branch": "navigator-production-dialogue-corr2-ab-normalization",
+  "purpose": "IV1-M01/M02 correction: explicitly versioned CURRENT authority manifest with explicit path domains and the RECOVERED, PROVEN CHANGED_FILE_SET_SHA256 recipe. Supersedes CURRENT_AUTHORITY_MANIFEST_CONSTRUCT_CORRECTION_1.json (preserved untouched as historical provenance).",
+  "path_domains": {
+    "PATH_DISPLAY_DOMAIN": "BENCHMARK_RELATIVE",
+    "CHANGED_FILE_SET_HASH_PATH_DOMAIN": "REPOSITORY_RELATIVE",
+    "REPOSITORY_PREFIX": "benchmarks/academy-telegram-live-regression-1000-1/",
+    "note": "the CHANGED_FILE_SET below is DISPLAYED benchmark-relative (prefix stripped); the CHANGED_FILE_SET_SHA256 is computed over REPOSITORY-relative paths (git diff --name-only form, i.e. display path with REPOSITORY_PREFIX prepended)"
+  },
+  "hash_recipe": {
+    "field": "CHANGED_FILE_SET_SHA256",
+    "recovered_from": "BENCHMARK-CONSTRUCT-CORRECTION-1 author identity computation (git diff --name-only HEAD -- benchmarks/academy-telegram-live-regression-1000-1/ evaluated with the repository root as git workdir; output paths are REPOSITORY-relative)",
+    "exact_path_set_source": "git diff --name-only HEAD -- benchmarks/academy-telegram-live-regression-1000-1/ (tracked modifications only; untracked files excluded); at CORR1 completion this yields exactly the 5 files listed in changed_tracked_file_set_repository_relative",
+    "display_to_hash_path_conversion": "hash_path = REPOSITORY_PREFIX + display_path  (identity when the path is already repository-relative, as produced by git diff --name-only)",
+    "ordering_rule": "Python sorted() over the repository-relative path strings (lexicographic by Unicode code point)",
+    "json_serialization": "json.dumps(sorted_paths, sort_keys=True) with DEFAULT separators (\", \", \": \") and DEFAULT ensure_ascii=True; sort_keys is a no-op on a list and is recorded because it was present in the accepted computation",
+    "character_encoding": "str.encode() = UTF-8 (paths are pure ASCII; ensure_ascii setting therefore has no observable effect on these bytes, but the accepted computation used the json.dumps default ensure_ascii=True)",
+    "hash": "SHA-256 over the exact resulting bytes",
+    "formula": "sha256( utf8( json.dumps( sorted(repository_relative_paths), sort_keys=True ) ) )   # default separators \", \" / \": \", default ensure_ascii=True",
+    "reproduction_proof": {
+      "reproduced_value": "a41ddcbb8dab3eebd3e4262398741d9f54b9e287db003567eb2ed12c793e170c",
+      "accepted_value": "a41ddcbb8dab3eebd3e4262398741d9f54b9e287db003567eb2ed12c793e170c",
+      "MATCH": true,
+      "negative_control": "the conceptual compact-separator variant json.dumps(..., ensure_ascii=False, separators=(\",\",\":\")) yields ae24cc99e518bfc4… and does NOT reproduce the accepted value — the Owner example recipe was explicitly not copied blindly"
+    }
+  },
+  "changed_tracked_file_set_repository_relative": [
+    "benchmarks/academy-telegram-live-regression-1000-1/adapters/product.py",
+    "benchmarks/academy-telegram-live-regression-1000-1/corpus/CORPUS_SHA256.txt",
+    "benchmarks/academy-telegram-live-regression-1000-1/corpus/SEED_NATIVE_CONTRACT_MATRIX.json",
+    "benchmarks/academy-telegram-live-regression-1000-1/corpus/corrected_corpus_84.jsonl",
+    "benchmarks/academy-telegram-live-regression-1000-1/seeds/seeds_30_corrected.jsonl"
+  ],
+  "changed_tracked_file_set_display_benchmark_relative": [
+    "adapters/product.py",
+    "corpus/CORPUS_SHA256.txt",
+    "corpus/SEED_NATIVE_CONTRACT_MATRIX.json",
+    "corpus/corrected_corpus_84.jsonl",
+    "seeds/seeds_30_corrected.jsonl"
+  ],
+  "CHANGED_TRACKED_FILE_COUNT": 5,
+  "CHANGED_FILE_SET_SHA256": "a41ddcbb8dab3eebd3e4262398741d9f54b9e287db003567eb2ed12c793e170c",
+  "current_identities": {
+    "POST_CORRECTION_HARNESS_ADAPTERS_IDENTITY": "2c6f6a43dc7a6ff17b375c91c7a4c80e7e7648d99349709abb4cba87f21906d2",
+    "POST_CORRECTION_CORPUS_SHA256": "4bcff795231700ff7631d000bdbc2ff984412fef187e0cf60228743d6ce1be6e",
+    "POST_CORRECTION_SEED_SHA256": "4ad688b230a593bd79d4f92ebb21f690b9ef553551d4b56062e8537d1e275d85",
+    "POST_CORRECTION_ADAPTER_REGISTRY_SHA256": "88b98492920ba0adb5abca6da6eeb6089ac8e0be19d55563edf330651d86800c",
+    "SEED_NATIVE_CONTRACT_MATRIX_SHA256_POST_CORR1": "a6998b7b1f0c9d0794a924fc5a8d16996a197e3341cce5880806c6a22abe64e5",
+    "CHANGED_FILE_POST_SHA256": {
+      "benchmarks/academy-telegram-live-regression-1000-1/adapters/product.py": "54730dbdb321b656f53459e12a427868bcb136acaf38b3a6c49bc5c2ab34fb44",
+      "benchmarks/academy-telegram-live-regression-1000-1/corpus/CORPUS_SHA256.txt": "36fbb6ec061d3cb43be3f266c1ef17433629eba6c24dea6122ad0af958201fc3",
+      "benchmarks/academy-telegram-live-regression-1000-1/corpus/SEED_NATIVE_CONTRACT_MATRIX.json": "a6998b7b1f0c9d0794a924fc5a8d16996a197e3341cce5880806c6a22abe64e5",
+      "benchmarks/academy-telegram-live-regression-1000-1/corpus/corrected_corpus_84.jsonl": "4bcff795231700ff7631d000bdbc2ff984412fef187e0cf60228743d6ce1be6e",
+      "benchmarks/academy-telegram-live-regression-1000-1/seeds/seeds_30_corrected.jsonl": "4ad688b230a593bd79d4f92ebb21f690b9ef553551d4b56062e8537d1e275d85"
+    }
+  },
+  "historical_pre_state": {
+    "SEED_NATIVE_CONTRACT_MATRIX_SHA256_PRE_CORR1": "aba88cd1dd02f0a75dd0c208b3a15094e775a9cf494dd3be1295541e5fee37d4",
+    "superseded_manifest": "artifacts/CURRENT_AUTHORITY_MANIFEST_CONSTRUCT_CORRECTION_1.json (sha256 6f9d6e42e6a37bea8add86996175a4597d77a389f126aefda87361ea5ad5ac81) — preserved untouched as historical provenance",
+    "note": "PRE values are historical state only; the IV1-M01 matrix physical drift (B-0004/B-0006/C-0002 key-order-only) existed in the PRE bytes and is resolved by CORR1"
+  }
+}

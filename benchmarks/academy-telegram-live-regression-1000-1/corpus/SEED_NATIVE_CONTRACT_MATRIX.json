@@ -256,12 +256,12 @@
       "CONCURRENCY_REQUIRED": false,
       "FAULT_REQUIRED": false,
       "NATIVE_ADAPTER": "navigator_l2_chat_api",
-      "ROW_SHA": "b88b16e51bac37c87e904856d8eed889b559b15ff3d1ce7b1abe5a081097bd41",
+      "ROW_SHA": "2c88f738ba1e6cfeddfa4323205096e3a3e622a39794aaf27855c3ef6b83bbe6",
       "ADAPTER": "navigator_l2_chat_api",
       "PROVIDER_MODE": "STUBBED_NEUTRAL",
       "PROVIDER_FIXTURE_ID": null,
       "ROUTE_PRECONDITION": "COMPLETE_PROFILE_PROVIDED",
-      "MULTI_STEP_REQUIREMENT": false,
+      "MULTI_STEP_REQUIREMENT": true,
       "OBSERVABLES": [
         "courseMatch",
         "selectedCourseId",
@@ -294,8 +294,8 @@
       "CONTRACT_COMPILED": true,
       "OBSERVABLES_COMPLETE": true,
       "ORACLES_COMPLETE": true,
-      "CONTROLLING_CORPUS_ROW_SHA256": "b88b16e51bac37c87e904856d8eed889b559b15ff3d1ce7b1abe5a081097bd41",
-      "SEED_ARTIFACT_SHA256": "b88b16e51bac37c87e904856d8eed889b559b15ff3d1ce7b1abe5a081097bd41",
+      "CONTROLLING_CORPUS_ROW_SHA256": "2c88f738ba1e6cfeddfa4323205096e3a3e622a39794aaf27855c3ef6b83bbe6",
+      "SEED_ARTIFACT_SHA256": "2c88f738ba1e6cfeddfa4323205096e3a3e622a39794aaf27855c3ef6b83bbe6",
       "READINESS": "READY_FOR_FIRST_PRODUCT_RUN_CONTRACT"
     },
     {
@@ -321,12 +321,12 @@
       "CONCURRENCY_REQUIRED": false,
       "FAULT_REQUIRED": false,
       "NATIVE_ADAPTER": "navigator_l2_chat_api",
-      "ROW_SHA": "2bc3966b49a4f4111c01e6d5aa2b3e1c108f104247a96b6c422a1948393e765b",
+      "ROW_SHA": "f38894afe34d7db4daeb0232d3f501e8b1c51a4e7e0f2cd779f20029bfeca2b2",
       "ADAPTER": "navigator_l2_chat_api",
       "PROVIDER_MODE": "STUBBED_NEUTRAL",
       "PROVIDER_FIXTURE_ID": null,
       "ROUTE_PRECONDITION": "COMPLETE_PROFILE_PROVIDED",
-      "MULTI_STEP_REQUIREMENT": false,
+      "MULTI_STEP_REQUIREMENT": true,
       "OBSERVABLES": [
         "courseMatch",
         "selectedCourseId",
@@ -359,8 +359,8 @@
       "CONTRACT_COMPILED": true,
       "OBSERVABLES_COMPLETE": true,
       "ORACLES_COMPLETE": true,
-      "CONTROLLING_CORPUS_ROW_SHA256": "2bc3966b49a4f4111c01e6d5aa2b3e1c108f104247a96b6c422a1948393e765b",
-      "SEED_ARTIFACT_SHA256": "2bc3966b49a4f4111c01e6d5aa2b3e1c108f104247a96b6c422a1948393e765b",
+      "CONTROLLING_CORPUS_ROW_SHA256": "f38894afe34d7db4daeb0232d3f501e8b1c51a4e7e0f2cd779f20029bfeca2b2",
+      "SEED_ARTIFACT_SHA256": "f38894afe34d7db4daeb0232d3f501e8b1c51a4e7e0f2cd779f20029bfeca2b2",
       "READINESS": "READY_FOR_FIRST_PRODUCT_RUN_CONTRACT"
     },
     {
@@ -387,12 +387,12 @@
       "CONCURRENCY_REQUIRED": false,
       "FAULT_REQUIRED": false,
       "NATIVE_ADAPTER": "navigator_l2_chat_api",
-      "ROW_SHA": "6974c53c0957ddc0c224f866a76408e1c9db9eafeb0932ffdbd8041888e14bab",
+      "ROW_SHA": "b364f7840180a3558226ace2f8bc65396cfd6849d151facb40a0660ced36dba9",
       "ADAPTER": "navigator_l2_chat_api",
       "PROVIDER_MODE": "STUBBED_NEUTRAL",
       "PROVIDER_FIXTURE_ID": null,
       "ROUTE_PRECONDITION": "COMPLETE_PROFILE_PROVIDED",
-      "MULTI_STEP_REQUIREMENT": false,
+      "MULTI_STEP_REQUIREMENT": true,
       "OBSERVABLES": [
         "courseMatch",
         "selectedCourseId",
@@ -425,8 +425,8 @@
       "CONTRACT_COMPILED": true,
       "OBSERVABLES_COMPLETE": true,
       "ORACLES_COMPLETE": true,
-      "CONTROLLING_CORPUS_ROW_SHA256": "6974c53c0957ddc0c224f866a76408e1c9db9eafeb0932ffdbd8041888e14bab",
-      "SEED_ARTIFACT_SHA256": "6974c53c0957ddc0c224f866a76408e1c9db9eafeb0932ffdbd8041888e14bab",
+      "CONTROLLING_CORPUS_ROW_SHA256": "b364f7840180a3558226ace2f8bc65396cfd6849d151facb40a0660ced36dba9",
+      "SEED_ARTIFACT_SHA256": "b364f7840180a3558226ace2f8bc65396cfd6849d151facb40a0660ced36dba9",
       "READINESS": "READY_FOR_FIRST_PRODUCT_RUN_CONTRACT"
     },
     {
@@ -1606,7 +1606,7 @@
       "CONCURRENCY_REQUIRED": false,
       "FAULT_REQUIRED": false,
       "NATIVE_ADAPTER": "outbound_lead_lifecycle",
-      "ROW_SHA": "d55c30e5457fe12bdad93c5cb96530558ca3335da6a59ba86fddf924e05191cd",
+      "ROW_SHA": "140eddf277bcbd639726f0eb33dd0199b538483febcf8ce7742c913d92cc624c",
       "ADAPTER": "outbound_lead_lifecycle",
       "PROVIDER_MODE": "STUBBED_NEUTRAL",
       "PROVIDER_FIXTURE_ID": null,
@@ -1632,8 +1632,8 @@
       "CONTRACT_COMPILED": true,
       "OBSERVABLES_COMPLETE": true,
       "ORACLES_COMPLETE": true,
-      "CONTROLLING_CORPUS_ROW_SHA256": "d55c30e5457fe12bdad93c5cb96530558ca3335da6a59ba86fddf924e05191cd",
-      "SEED_ARTIFACT_SHA256": "d55c30e5457fe12bdad93c5cb96530558ca3335da6a59ba86fddf924e05191cd",
+      "CONTROLLING_CORPUS_ROW_SHA256": "140eddf277bcbd639726f0eb33dd0199b538483febcf8ce7742c913d92cc624c",
+      "SEED_ARTIFACT_SHA256": "140eddf277bcbd639726f0eb33dd0199b538483febcf8ce7742c913d92cc624c",
       "READINESS": "READY_FOR_FIRST_PRODUCT_RUN_CONTRACT"
     },
     {
@@ -1663,7 +1663,7 @@
       "CONCURRENCY_REQUIRED": false,
       "FAULT_REQUIRED": false,
       "NATIVE_ADAPTER": "outbound_lead_lifecycle",
-      "ROW_SHA": "3e2b6551381bbfe7590c205857e207b63efa799f77db86b266e430c0a5940b73",
+      "ROW_SHA": "f3d77c856969dcb1b26260d176042dd389f6fd8f35745e3ceb05c8fb59e01aa6",
       "ADAPTER": "outbound_lead_lifecycle",
       "PROVIDER_MODE": "STUBBED_NEUTRAL",
       "PROVIDER_FIXTURE_ID": null,
@@ -1689,8 +1689,8 @@
       "CONTRACT_COMPILED": true,
       "OBSERVABLES_COMPLETE": true,
       "ORACLES_COMPLETE": true,
-      "CONTROLLING_CORPUS_ROW_SHA256": "3e2b6551381bbfe7590c205857e207b63efa799f77db86b266e430c0a5940b73",
-      "SEED_ARTIFACT_SHA256": "3e2b6551381bbfe7590c205857e207b63efa799f77db86b266e430c0a5940b73",
+      "CONTROLLING_CORPUS_ROW_SHA256": "f3d77c856969dcb1b26260d176042dd389f6fd8f35745e3ceb05c8fb59e01aa6",
+      "SEED_ARTIFACT_SHA256": "f3d77c856969dcb1b26260d176042dd389f6fd8f35745e3ceb05c8fb59e01aa6",
       "READINESS": "READY_FOR_FIRST_PRODUCT_RUN_CONTRACT"
     },
     {
@@ -1708,7 +1708,19 @@
         "preconditions": {
           "lead_status": "NAVIGATOR_MODE_ACTIVE",
           "navigator_transport": "real_local",
-          "user_id": 900003
+          "user_id": 900003,
+          "users": [
+            {
+              "user_id": 900003,
+              "profile": {
+                "addressMode": "VY",
+                "displayName": "Тест",
+                "nameDeclined": false,
+                "pendingUserRequest": null
+              },
+              "state": {}
+            }
+          ]
         },
         "fault_schedule": [],
         "concurrency_workers": 0,
@@ -1720,7 +1732,7 @@
       "CONCURRENCY_REQUIRED": false,
       "FAULT_REQUIRED": false,
       "NATIVE_ADAPTER": "alexey_user_turn",
-      "ROW_SHA": "b226406e5e29f2d9671f9202d4597f41a7b9a23fe00a7678aef14606197bf955",
+      "ROW_SHA": "a39d9e0ba6642263b7ce4e4b239182dc9bdb3c944383a86512cd4876cf61209d",
       "ADAPTER": "alexey_user_turn",
       "PROVIDER_MODE": "REAL_LOCAL",
       "PROVIDER_FIXTURE_ID": null,
@@ -1730,6 +1742,9 @@
         "selectedCourseId",
         "displayName",
         "leadStatus",
+        "handoffCourseId",
+        "handoffRecord",
+        "paymentCourseId",
         "nativeError"
       ],
       "ORACLES": [
@@ -1747,8 +1762,8 @@
       "CONTRACT_COMPILED": true,
       "OBSERVABLES_COMPLETE": true,
       "ORACLES_COMPLETE": true,
-      "CONTROLLING_CORPUS_ROW_SHA256": "b226406e5e29f2d9671f9202d4597f41a7b9a23fe00a7678aef14606197bf955",
-      "SEED_ARTIFACT_SHA256": "b226406e5e29f2d9671f9202d4597f41a7b9a23fe00a7678aef14606197bf955",
+      "CONTROLLING_CORPUS_ROW_SHA256": "a39d9e0ba6642263b7ce4e4b239182dc9bdb3c944383a86512cd4876cf61209d",
+      "SEED_ARTIFACT_SHA256": "a39d9e0ba6642263b7ce4e4b239182dc9bdb3c944383a86512cd4876cf61209d",
       "READINESS": "READY_FOR_FIRST_PRODUCT_RUN_CONTRACT"
     },
     {
@@ -1765,7 +1780,19 @@
         "preconditions": {
           "lead_status": "NAVIGATOR_MODE_ACTIVE",
           "navigator_transport": "real_local",
-          "user_id": 900004
+          "user_id": 900004,
+          "users": [
+            {
+              "user_id": 900004,
+              "profile": {
+                "addressMode": "VY",
+                "displayName": "Тест",
+                "nameDeclined": false,
+                "pendingUserRequest": null
+              },
+              "state": {}
+            }
+          ]
         },
         "fault_schedule": [],
         "concurrency_workers": 0,
@@ -1777,7 +1804,7 @@
       "CONCURRENCY_REQUIRED": false,
       "FAULT_REQUIRED": false,
       "NATIVE_ADAPTER": "alexey_user_turn",
-      "ROW_SHA": "b68d5202053d53aa540a08bb5585a31a93da74dc17db8297f4541e6873309538",
+      "ROW_SHA": "3be68280d7fd920331b362d60453b94d8d7c7ad72f020c4f26f0488f723291ea",
       "ADAPTER": "alexey_user_turn",
       "PROVIDER_MODE": "REAL_LOCAL",
       "PROVIDER_FIXTURE_ID": null,
@@ -1787,6 +1814,9 @@
         "selectedCourseId",
         "displayName",
         "leadStatus",
+        "handoffCourseId",
+        "handoffRecord",
+        "paymentCourseId",
         "nativeError"
       ],
       "ORACLES": [
@@ -1804,8 +1834,8 @@
       "CONTRACT_COMPILED": true,
       "OBSERVABLES_COMPLETE": true,
       "ORACLES_COMPLETE": true,
-      "CONTROLLING_CORPUS_ROW_SHA256": "b68d5202053d53aa540a08bb5585a31a93da74dc17db8297f4541e6873309538",
-      "SEED_ARTIFACT_SHA256": "b68d5202053d53aa540a08bb5585a31a93da74dc17db8297f4541e6873309538",
+      "CONTROLLING_CORPUS_ROW_SHA256": "3be68280d7fd920331b362d60453b94d8d7c7ad72f020c4f26f0488f723291ea",
+      "SEED_ARTIFACT_SHA256": "3be68280d7fd920331b362d60453b94d8d7c7ad72f020c4f26f0488f723291ea",
       "READINESS": "READY_FOR_FIRST_PRODUCT_RUN_CONTRACT"
     },
     {
@@ -1822,7 +1852,19 @@
         "preconditions": {
           "lead_status": "NAVIGATOR_MODE_ACTIVE",
           "navigator_transport": "real_local",
-          "user_id": 900005
+          "user_id": 900005,
+          "users": [
+            {
+              "user_id": 900005,
+              "profile": {
+                "addressMode": "VY",
+                "displayName": "Тест",
+                "nameDeclined": false,
+                "pendingUserRequest": null
+              },
+              "state": {}
+            }
+          ]
         },
         "fault_schedule": [],
         "concurrency_workers": 0,
@@ -1834,7 +1876,7 @@
       "CONCURRENCY_REQUIRED": false,
       "FAULT_REQUIRED": false,
       "NATIVE_ADAPTER": "alexey_user_turn",
-      "ROW_SHA": "69dcf2c1a6d0be905ef9a41fbd1f77c73b86dfdd415d6c16b34ce079565bfabf",
+      "ROW_SHA": "09721a6cf63f5d2f0dd37b0c2be3431a0af06e2f72a84030de1108f5479d8a81",
       "ADAPTER": "alexey_user_turn",
       "PROVIDER_MODE": "REAL_LOCAL",
       "PROVIDER_FIXTURE_ID": null,
@@ -1844,6 +1886,9 @@
         "selectedCourseId",
         "displayName",
         "leadStatus",
+        "handoffCourseId",
+        "handoffRecord",
+        "paymentCourseId",
         "nativeError"
       ],
       "ORACLES": [
@@ -1861,8 +1906,8 @@
       "CONTRACT_COMPILED": true,
       "OBSERVABLES_COMPLETE": true,
       "ORACLES_COMPLETE": true,
-      "CONTROLLING_CORPUS_ROW_SHA256": "69dcf2c1a6d0be905ef9a41fbd1f77c73b86dfdd415d6c16b34ce079565bfabf",
-      "SEED_ARTIFACT_SHA256": "69dcf2c1a6d0be905ef9a41fbd1f77c73b86dfdd415d6c16b34ce079565bfabf",
+      "CONTROLLING_CORPUS_ROW_SHA256": "09721a6cf63f5d2f0dd37b0c2be3431a0af06e2f72a84030de1108f5479d8a81",
+      "SEED_ARTIFACT_SHA256": "09721a6cf63f5d2f0dd37b0c2be3431a0af06e2f72a84030de1108f5479d8a81",
       "READINESS": "READY_FOR_FIRST_PRODUCT_RUN_CONTRACT"
     }
   ]

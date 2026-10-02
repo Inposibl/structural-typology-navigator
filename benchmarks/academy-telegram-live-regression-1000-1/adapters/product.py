@@ -448,9 +448,45 @@ class NavigatorL2ChatAdapter(_AdapterBase):
                 chain_state["stepRequestStates"] = request_states
                 chain_state["stepResponseProfiles"] = response_profiles
                 chain_state["stepResponseStates"] = response_states
+            # BENCHMARK-CONSTRUCT-CORRECTION-1 PD-F03: rows that declare
+            # state_setup.final_native_projection = true bind the scenario's
+            # act/state oracles to the FINAL step's native response — the
+            # same lastAssistant/state projection the single-body path
+            # exposes — instead of the chain bookkeeping surface. The chain
+            # evidence stays available under state.multiStepChain. Opt-in
+            # per row; propagation without the flag (e.g. A-0105) and all
+            # non-propagate multi_step rows keep the exact prior capture.
+            values_act = "MULTI_STEP_EXECUTED"
+            values_state: dict = chain_state
+            if (propagate and state_setup.get("final_native_projection") is True
+                    and causal_complete and isinstance(final, dict)):
+                cs_final = final.get("conversationState") or {}
+                last_assistant = cs_final.get("lastAssistant") or {}
+                expected_keys = {"message", "profile", "conversationState",
+                                 "contactCard", "resetConversation"}
+                values_state = {
+                    "courseMatch": cs_final.get("courseMatch"),
+                    "selectedCourseId": cs_final.get("selectedCourseId"),
+                    "lastAssistantAct": last_assistant.get("act"),
+                    "lastAssistantCourseId": last_assistant.get("courseId"),
+                    "pendingConfirmationKind":
+                        (cs_final.get("pendingConfirmation") or {}).get("kind"),
+                    "activeFlowId": (cs_final.get("activeFlow") or {}).get("id"),
+                    "pendingQuestionPresent":
+                        bool((cs_final.get("activeFlow") or {}).get("pendingQuestion")),
+                    "handoffStatus": (cs_final.get("handoff") or {}).get("status"),
+                    "displayName": (final.get("profile") or {}).get("displayName"),
+                    "addressMode": (final.get("profile") or {}).get("addressMode"),
+                    "schemaConformant": expected_keys.issubset(final.keys()),
+                    "contactCardPresent": final.get("contactCard") is not None,
+                    "resetConversation": final.get("resetConversation"),
+                    "nativeRequestIdHeader": step_results[-1]["header"],
+                    "multiStepChain": chain_state,
+                }
+                values_act = last_assistant.get("act") or "MULTI_STEP_EXECUTED"
             return RawCapture(
-                values={"act": "MULTI_STEP_EXECUTED", "origin": "NAVIGATOR_L2_CHAT",
-                        "state": chain_state,
+                values={"act": values_act, "origin": "NAVIGATOR_L2_CHAT",
+                        "state": values_state,
                         "link": None, "output": final_message,
                         "tool_api": UNOBSERVED, "mutations": UNOBSERVED},
                 transcripts={f"step_{s['step']}_reply":
@@ -1442,10 +1478,34 @@ class AlexeyUserTurnAdapter(_AdapterBase):
         else:
             api_url = "http://127.0.0.1:1/unreachable"
         adapter = mod.LebedevNavigatorAdapter(api_url=api_url, session_store=store, outreach_manager=hist)
-        # seed lead state for lifecycle lanes (real history store)
+        # seed lead state for lifecycle lanes (real history store).
+        # BENCHMARK-CONSTRUCT-CORRECTION-1 PD-F02: a status UPDATE cannot
+        # create a lead row (outreach.py UPDATE ... WHERE user_id matches
+        # nothing on a fresh store), so a declared lead_status precondition
+        # alone never establishes the lead. When the scenario explicitly
+        # declares state_setup.lead_setup = "record_attempt_then_status",
+        # the lead is created through the native first-touch recording
+        # operation (record_attempt INSERT) BEFORE the declared status is
+        # applied through the native status API. Rows that do not declare
+        # the contract keep the exact prior setup behavior.
+        state_setup = to_native(request.state_setup or {})
+        lead_setup_contract = state_setup.get("lead_setup")
         if pre.get("lead_status"):
-            hist.update_lead_status(base_uid, pre["lead_status"],
-                                    error_message=None, sync_to_sheets=False)
+            if lead_setup_contract is None:
+                hist.update_lead_status(base_uid, pre["lead_status"],
+                                        error_message=None, sync_to_sheets=False)
+            elif lead_setup_contract == "record_attempt_then_status":
+                hist.record_attempt(base_uid, username=None, first_name=None,
+                                    chat_source=None,
+                                    message_text=outreach_mod.format_navigator_message(),
+                                    status=outreach_mod.STAGE_FIRST_TOUCH_SENT,
+                                    error_message=None)
+                hist.update_lead_status(base_uid, pre["lead_status"],
+                                        error_message=None, sync_to_sheets=False)
+            else:
+                return self._fail(
+                    f"unsupported state_setup.lead_setup contract "
+                    f"{lead_setup_contract!r}")
         # F06: explicit INPUT-side per-user session seeding (preconditions.users
         # is scenario stimulus: the native store state BEFORE the measured
         # turns; it never derives from expected/oracle fields)
@@ -2085,7 +2145,29 @@ class OutboundLeadLifecycleAdapter(AlexeyUserTurnAdapter):
         adapter.call_navigator_core = stubbed_core
         uid = int(pre.get("user_id", 900001))
         lead_status = pre.get("lead_status", outreach_mod.STAGE_FIRST_TOUCH_SENT)
-        hist.update_lead_status(uid, lead_status, sync_to_sheets=False)
+        # BENCHMARK-CONSTRUCT-CORRECTION-1 PD-F02: a status UPDATE cannot
+        # create a lead row on a fresh store; without the declared contract
+        # this setup stayed update-only and the native lead branch was
+        # skipped (get_lead -> None). When the scenario declares
+        # state_setup.lead_setup = "record_attempt_then_status", the lead is
+        # created through the native first-touch recording operation
+        # (record_attempt INSERT) BEFORE the declared status is applied —
+        # the exact native creation-then-status order. Rows that do not
+        # declare the contract keep the exact prior setup behavior.
+        lead_setup_contract = to_native(request.state_setup or {}).get("lead_setup")
+        if lead_setup_contract is None:
+            hist.update_lead_status(uid, lead_status, sync_to_sheets=False)
+        elif lead_setup_contract == "record_attempt_then_status":
+            hist.record_attempt(uid, username=None, first_name=None,
+                                chat_source=None,
+                                message_text=outreach_mod.format_navigator_message(),
+                                status=outreach_mod.STAGE_FIRST_TOUCH_SENT,
+                                error_message=None)
+            hist.update_lead_status(uid, lead_status, sync_to_sheets=False)
+        else:
+            return self._fail(
+                f"unsupported state_setup.lead_setup contract "
+                f"{lead_setup_contract!r}")
         refusal_text = turns[0]["content"] if turns else "Не пишите мне больше."
 
         # B-13: the ACTUAL native classifier result for this exact stimulus
