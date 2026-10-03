@@ -531,6 +531,9 @@ _BEARER_RE = re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._\-]+")
 _CRED_URL_RE = re.compile(r"\b[a-zA-Z][a-zA-Z0-9+.-]*://[^/\s:@]+:[^/\s@]+@")
 _QUERY_SECRET_RE = re.compile(r"(?i)([?&](?:token|key|secret|password|api[-_]?key|access[-_]?token)=)[^&\s]+")
 _KV_SECRET_RE = re.compile(r"(?i)\b(api[_-]?key|password|passwd|secret|token|access[-_]?token)\b(\s*[:=]\s*)\S+")
+_SB_SECRET_RE = re.compile(r"sb_secret_\S+")
+_SK_BARE_RE = re.compile(r"\bsk-[A-Za-z0-9_\-]{8,}")
+_BASIC_RE = re.compile(r"(?i)\bauthorization:\s*basic\s+\S+")
 
 _REDACTED = "[REDACTED]"
 
@@ -542,6 +545,9 @@ def sanitize_text(text: str) -> str:
     out = _CRED_URL_RE.sub(lambda m: m.group(0).split("://")[0] + "://" + _REDACTED + "@", out)
     out = _QUERY_SECRET_RE.sub(lambda m: m.group(1) + _REDACTED, out)
     out = _KV_SECRET_RE.sub(lambda m: m.group(1) + m.group(2) + _REDACTED, out)
+    out = _SB_SECRET_RE.sub(_REDACTED, out)
+    out = _SK_BARE_RE.sub(_REDACTED, out)
+    out = _BASIC_RE.sub("Authorization: Basic " + _REDACTED, out)
     return out
 
 

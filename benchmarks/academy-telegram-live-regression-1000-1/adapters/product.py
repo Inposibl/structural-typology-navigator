@@ -48,10 +48,31 @@ def _load_package_module(root: str | None, package: str, module: str):
     the bound TEST_BASE (owner section 59). Returns (module, error)."""
     if not root:
         return None, "TEST_BASE root not bound"
+    if package == "data_engine":
+        from execution_infrastructure.product_capability import (
+            install_product_code_guard,
+            require_product_import_permission,
+        )
+
+        # Import permission only. Every product call still checks the
+        # runner-owned authority inside the guarded product code.
+        install_product_code_guard()
+        require_product_import_permission(str(root))
     root_real = str(Path(root).resolve())
     try:
         import importlib
 
+        # The real Chatbot tree imports telethon and aiohttp from its own
+        # TEST_BASE venv. The harness interpreter does not carry those
+        # packages. The venv stays behind the TEST_BASE root on sys.path.
+        venv_site = (
+            Path(root_real) / "venv" / "lib"
+            / f"python{sys.version_info.major}.{sys.version_info.minor}"
+            / "site-packages"
+        )
+        site_text = str(venv_site)
+        if venv_site.is_dir() and site_text not in sys.path:
+            sys.path.append(site_text)
         saved_path = sys.path[:]
         sys.path.insert(0, root_real)
         # purge any previously imported benchmark-target modules so the import
@@ -64,11 +85,34 @@ def _load_package_module(root: str | None, package: str, module: str):
             mod_file = str(Path(getattr(mod, "__file__", "") or "").resolve())
             if not mod_file.startswith(root_real):
                 return None, f"import escaped TEST_BASE root: {mod_file}"
+            if package == "data_engine":
+                from execution_infrastructure.pd_f06_product_lifecycle import bind_loaded_data_engine_module
+
+                bind_loaded_data_engine_module(mod)
             return mod, None
         finally:
             sys.path[:] = saved_path
     except Exception as exc:  # noqa: BLE001 — clean binding condition
         return None, f"package import failed from TEST_BASE: {type(exc).__name__}: {exc}"
+
+
+def _seal_product_execute(cls: type) -> None:
+    """Require accepted product authority before an adapter body runs."""
+    original = cls.__dict__.get("execute")
+    if original is None or not callable(original):
+        return
+    if getattr(original, "_academy_product_sealed", False):
+        return
+
+    def guarded(self, request, *args, **kwargs):
+        from execution_infrastructure.product_capability import require_product_authority
+
+        root = getattr(request, "tikhon_test_root", None)
+        require_product_authority(None if root is None else str(root))
+        return original(self, request, *args, **kwargs)
+
+    guarded._academy_product_sealed = True  # type: ignore[attr-defined]
+    cls.execute = guarded
 
 
 class _AdapterBase:
@@ -87,6 +131,10 @@ class _AdapterBase:
         self.token = token
         self.spec = spec
         self.adapter_id = getattr(self, "adapter_id", getattr(spec, "adapter_id", "?"))
+
+    def __init_subclass__(cls, **kwargs) -> None:
+        super().__init_subclass__(**kwargs)
+        _seal_product_execute(cls)
 
     def _fail(self, reason: str) -> RawCapture:
         return RawCapture(capture_error=str(reason), sut_symbol=getattr(self, "adapter_id", "?"))
@@ -278,6 +326,26 @@ def navigator_chat_endpoint(base: str) -> str:
     return root + "/api/chat"
 
 
+def arm_native_chat_transport(adapter: Any) -> None:
+    """Arm the active attempt immediately before the native Navigator POST.
+
+    Chatbot source is not modified. real_local keeps call_navigator_core and
+    this wrapper is the only extra step in front of that POST.
+    """
+    original = adapter.call_navigator_core
+    if getattr(original, "_academy_request_armed", False):
+        return
+
+    async def armed_real_local_core(*args: Any, **kwargs: Any) -> Any:
+        from execution_infrastructure.attempt_binding import arm_chat_request_for_active_attempt
+
+        arm_chat_request_for_active_attempt()
+        return await original(*args, **kwargs)
+
+    armed_real_local_core._academy_request_armed = True  # type: ignore[attr-defined]
+    adapter.call_navigator_core = armed_real_local_core
+
+
 def _transport_outcome(status: int, body: Any) -> str:
     """Existing single-request transport-success contract.
 
@@ -317,6 +385,8 @@ class NavigatorL2ChatAdapter(_AdapterBase):
         return {f: rec["value"] for f, rec in doc["fields"].items()}
 
     def _chat_call(self, base: str, body: dict):
+        from execution_infrastructure.attempt_binding import arm_chat_request_for_active_attempt
+        arm_chat_request_for_active_attempt()
         req = urllib.request.Request(
             navigator_chat_endpoint(base), data=json.dumps(body).encode(),
             headers={"Content-Type": "application/json",
@@ -1478,6 +1548,8 @@ class AlexeyUserTurnAdapter(_AdapterBase):
         else:
             api_url = "http://127.0.0.1:1/unreachable"
         adapter = mod.LebedevNavigatorAdapter(api_url=api_url, session_store=store, outreach_manager=hist)
+        if mode == "real_local":
+            arm_native_chat_transport(adapter)
         # seed lead state for lifecycle lanes (real history store).
         # BENCHMARK-CONSTRUCT-CORRECTION-1 PD-F02: a status UPDATE cannot
         # create a lead row (outreach.py UPDATE ... WHERE user_id matches
@@ -3380,3 +3452,13 @@ class StaticSourceInventoryAdapter(_AdapterBase):
 
 
 import urllib.parse  # noqa: E402  (used by NavigatorL2ChatAdapter)
+
+# Product binding is a property of the adapter, not of the caller's lane label.
+NavigatorL2ChatAdapter.requires_authenticated_product_binding = True
+AlexeyUserTurnAdapter.requires_authenticated_product_binding = True
+AlexeyUserTurnAdapter.requires_tikhon_test_root = True
+TikhonStartAdapter.requires_tikhon_test_root = True
+TikhonCallbackAdapter.requires_tikhon_test_root = True
+TikhonParserAdapter.requires_tikhon_test_root = True
+OutboundDispatcherAdapter.requires_tikhon_test_root = True
+StaticSourceInventoryAdapter.requires_tikhon_test_root = True

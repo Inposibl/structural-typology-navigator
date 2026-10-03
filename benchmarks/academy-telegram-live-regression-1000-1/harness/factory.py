@@ -271,6 +271,17 @@ def create_calibration_adapter(
     reg = fixture_registry or registry
     spec = resolve_adapter_spec(request.adapter_id, reg, LANE_CALIBRATION)
     cls = _import_implementation(spec.implementation_class)
+    from execution_infrastructure.product_capability import is_product_backed
+
+    if (
+        is_product_backed(cls)
+        or getattr(cls, "requires_authenticated_product_binding", False)
+        or getattr(cls, "requires_tikhon_test_root", False)
+    ):
+        raise FactoryRejected(
+            "CALIBRATION_LABEL_CANNOT_DOWNGRADE_PRODUCT_REQUIREMENT: "
+            f"{spec.implementation_class} requires an authenticated product binding"
+        )
     adapter = cls(request=request, token=None, spec=spec)
     return adapter, spec
 

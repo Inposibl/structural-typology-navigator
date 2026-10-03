@@ -56,6 +56,14 @@ class BindingCheck:
     reasons: list[str] = field(default_factory=list)
 
 
+def _git_env() -> dict:
+    """CORR6: read-only git inspection. GIT_OPTIONAL_LOCKS=0 stops git
+    status from refreshing and rewriting a TEST_BASE index during binding."""
+    env = dict(os.environ)
+    env["GIT_OPTIONAL_LOCKS"] = "0"
+    return env
+
+
 def _is_under(path: Path, ancestor: Path) -> bool:
     try:
         path.resolve().relative_to(ancestor.resolve())
@@ -76,9 +84,9 @@ def check_history_exclusion(root: Path) -> str | None:
 def read_worktree_identity(root: Path) -> dict | None:
     try:
         head = subprocess.run(["git", "-C", str(root), "rev-parse", "HEAD"],
-                              capture_output=True, text=True, check=True, timeout=15).stdout.strip()
+                              capture_output=True, text=True, check=True, env=_git_env(), timeout=15).stdout.strip()
         branch = subprocess.run(["git", "-C", str(root), "rev-parse", "--abbrev-ref", "HEAD"],
-                                capture_output=True, text=True, check=True, timeout=15).stdout.strip()
+                                capture_output=True, text=True, check=True, env=_git_env(), timeout=15).stdout.strip()
     except (subprocess.SubprocessError, OSError):
         return None
     return {"head": head, "branch": branch}
@@ -89,7 +97,7 @@ def _tracked_files_clean(root: Path) -> str | None:
     try:
         out = subprocess.run(
             ["git", "-C", str(root), "status", "--porcelain=v1", "--untracked-files=no"],
-            capture_output=True, text=True, check=True, timeout=15,
+            capture_output=True, text=True, check=True, env=_git_env(), timeout=15,
         )
     except (subprocess.SubprocessError, OSError) as exc:
         return f"tracked-cleanliness check failed: {exc}"
@@ -229,7 +237,7 @@ def detect_unexpected_controlled_files(root: Path, manifest_doc: dict) -> list[s
 
     try:
         ls = subprocess.run(["git", "-C", str(root), "ls-files"],
-                            capture_output=True, text=True, check=True, timeout=30).stdout.splitlines()
+                            capture_output=True, text=True, check=True, env=_git_env(), timeout=30).stdout.splitlines()
     except (subprocess.SubprocessError, OSError):
         return reasons
     for rel in sorted(set(ls) - known):
@@ -285,7 +293,7 @@ def check_root(env_name: str, expected: dict, *, require_worktree_marker: bool =
             try:
                 out = subprocess.run(
                     ["git", "-C", str(root), "status", "--porcelain=v1", "--untracked-files=no"],
-                    capture_output=True, text=True, check=True, timeout=15)
+                    capture_output=True, text=True, check=True, env=_git_env(), timeout=15)
                 if out.stdout.strip():
                     reasons.append("Navigator TEST_BASE must be a clean SHA worktree")
             except (subprocess.SubprocessError, OSError) as exc:
