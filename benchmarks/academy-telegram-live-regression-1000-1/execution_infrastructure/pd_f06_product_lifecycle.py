@@ -93,6 +93,32 @@ def ensure_product_wrappers(chatbot_root: str | Path) -> dict[str, Any]:
     root = str(Path(chatbot_root))
     if root not in sys.path:
         sys.path.insert(0, root)
+    # WRAP-INSTALL-VENV-PATH-1 (DEFECT-2 repair): bind the Chatbot TEST_BASE
+    # venv site-packages so this cold guarded import can resolve the product's
+    # own dependencies (telethon/aiohttp and transitive requirements such as
+    # typing_extensions) from the accepted TEST_BASE venv -- the exact same
+    # path adapters/product.py::_load_package_module exposes for adapter-side
+    # imports. Import-window precedence over the interpreter's own
+    # site-packages is required: those can hold an older typing_extensions
+    # that would otherwise shadow the venv copy on a cold import (failure
+    # decomposition DIAG-2B). After the bounded window the entry persists
+    # appended -- the identical steady state the adapter-side path leaves
+    # behind -- so lazily imported product dependencies stay resolvable for
+    # the process lifetime. A root without a usable venv leaves sys.path
+    # untouched and fails closed below (PRODUCT_LIFECYCLE_UNAVAILABLE).
+    root_real = str(Path(root).resolve())
+    venv_site = (
+        Path(root_real) / "venv" / "lib"
+        / f"python{sys.version_info.major}.{sys.version_info.minor}"
+        / "site-packages"
+    )
+    venv_site_text = str(venv_site)
+    venv_bound_here = False
+    if venv_site.is_dir():
+        if venv_site_text in sys.path:
+            sys.path.remove(venv_site_text)
+        sys.path.insert(0, venv_site_text)
+        venv_bound_here = True
     from .product_capability import install_product_code_guard
 
     install_product_code_guard()
@@ -105,6 +131,10 @@ def ensure_product_wrappers(chatbot_root: str | Path) -> dict[str, Any]:
             from data_engine.outreach import OutreachHistoryManager
     except Exception as exc:  # noqa: BLE001
         raise RuntimeError(f"PRODUCT_LIFECYCLE_UNAVAILABLE: {type(exc).__name__}: {exc}") from exc
+    finally:
+        if venv_bound_here:
+            sys.path.remove(venv_site_text)
+            sys.path.append(venv_site_text)
     wrapped = bind_loaded_data_engine_module()
     if not wrapped:
         wrapped = [

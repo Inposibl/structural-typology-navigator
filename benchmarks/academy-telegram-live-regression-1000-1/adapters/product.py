@@ -3187,8 +3187,17 @@ class StaticSourceInventoryAdapter(_AdapterBase):
                 parsed_cache[rel] = None
                 return None
             try:
+                # DEFECT-4 repair (EXACT30-EXECUTION-2.STATIC-SEEDS-GUARD-COLLISION-1):
+                # attribute the parse to the file's real accepted product path.
+                # ast.parse's default filename "<unknown>" is not a product path,
+                # so the guarded-loader compile audit refuses accepted product
+                # source bytes (PRODUCT_CODE_COMPILE_OUTSIDE_GUARDED_LOADER).
+                # Supplying the true path keeps the guard boundary intact:
+                # accepted bytes + their real product path parse; accepted
+                # bytes under any non-product filename remain refused.
                 parsed_cache[rel] = _ast.parse(p.read_text(encoding="utf-8",
-                                                           errors="replace"))
+                                                           errors="replace"),
+                                               filename=str(p))
             except SyntaxError:
                 parsed_cache[rel] = None
             return parsed_cache[rel]
