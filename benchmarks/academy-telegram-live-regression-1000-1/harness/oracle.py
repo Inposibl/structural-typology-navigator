@@ -398,22 +398,53 @@ def oracle_no_payment_link(frozen: FrozenEvidence, spec: dict, params: dict) -> 
                        [frozen.sha256])
 
 
+def _state_subset_mismatches(expected: Any, actual: Any, path: str) -> dict:
+    """RC-B02 RECURSIVE_NESTED_MAPPING_SUBSET (successor semantics; controlling
+    contract BENCHMARK-SEMANTIC-CONTRACT-V2.FSM-SYMBOLIC.RECURSIVE-STATE-SUBSET.
+    CANDIDATE-1). Recursion happens ONLY through mappings: at each mapping
+    depth the actual value must be a mapping, every expected key must exist,
+    and its value must recursively satisfy the same relation; extra actual
+    mapping keys are ALLOWED. Scalar leaves keep predecessor decoded-value
+    equality (Python ==; existing True==1 / 1==1.0 behavior retained; no new
+    coercion, case folding, tolerance or wildcard). Lists stay ATOMIC
+    predecessor exact equality — same length, same order, same whole values;
+    mappings inside lists are NOT recursively subset-compared. Expected null
+    is an exact value, never a wildcard; key presence stays mandatory."""
+    mismatches: dict = {}
+    if isinstance(expected, dict):
+        if not isinstance(actual, dict):
+            mismatches[path] = {"expected": "<MAPPING>",
+                                "actual": actual,
+                                "reason": "expected mapping, actual is not a mapping"}
+            return mismatches
+        for k, v in expected.items():
+            child = f"{path}.{k}" if path else str(k)
+            if k not in actual:
+                mismatches[child] = {"expected": v, "actual": "<KEY_ABSENT> (presence required)"}
+            else:
+                mismatches.update(_state_subset_mismatches(v, actual[k], child))
+    elif actual != expected:
+        mismatches[path] = {"expected": expected, "actual": actual}
+    return mismatches
+
+
 def oracle_state_subset(frozen: FrozenEvidence, spec: dict, params: dict) -> OracleCheck:
     ev = frozen.load()
     _check_field_ref(ev, "state")
     actual_state = _require_executed(ev, _observed(ev, "state"), "state_subset")
     expected_state = params.get("expected_state", spec.get("expected", {}).get("state")) or {}
+    if not isinstance(expected_state, dict):
+        # RC-B02 fail-closed malformed-contract guard: the successor comparison
+        # is defined for mapping expected roots only. A non-mapping root is an
+        # explicit benchmark defect, never a silent pass or a guessed verdict.
+        raise OracleError("state_subset expected_state must be a mapping; "
+                          f"got {type(expected_state).__name__} (malformed contract)")
     if not isinstance(actual_state, dict):
         return OracleCheck("state_subset", bool(params.get("required", True)), False,
                            f"actual state is not a mapping: {type(actual_state).__name__}", [frozen.sha256])
-    mismatches = {}
-    for k, v in expected_state.items():
-        if k not in actual_state:
-            mismatches[k] = {"expected": v, "actual": "<KEY_ABSENT> (presence required)"}
-        elif actual_state[k] != v:
-            mismatches[k] = {"expected": v, "actual": actual_state[k]}
+    mismatches = _state_subset_mismatches(expected_state, actual_state, "")
     return OracleCheck("state_subset", bool(params.get("required", True)), not mismatches,
-                       "actual state satisfies specified subset (presence + equality)" if not mismatches
+                       "actual state satisfies specified subset (recursive mapping subset)" if not mismatches
                        else f"state mismatches: {mismatches}", [frozen.sha256])
 
 

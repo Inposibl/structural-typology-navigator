@@ -923,10 +923,34 @@ def _rag_field_record(field: str, value: Any, event_type: str,
 # Tikhon deep-link start — native handler invocation in a fixture context (§30)
 # ---------------------------------------------------------------------------
 
+# RC-B01 (BENCHMARK-SUCCESSOR-IMPLEMENTATION-1; controlling contract
+# BENCHMARK-SEMANTIC-CONTRACT-V2.FSM-SYMBOLIC.RECURSIVE-STATE-SUBSET.CANDIDATE-1):
+# the TikhonStartAdapter benchmark observable state.fsm_state_literal carries
+# the CANONICAL symbolic FSM identity projected through this closed map, never
+# the Python/object repr. Scope is ONLY the TikhonStartAdapter projection; no
+# other adapter, state leaf or operator is normalized.
+TIKHON_FSM_CANONICAL_MAP = {
+    "OrderFlow:choosing_course": "OrderFlow.choosing_course",
+}
+FSM_PROJECTION_FAILURE = "FSM_PROJECTION_FAILURE"
+
+
+def project_tikhon_fsm_canonical(native_identity):
+    """RC-B01 canonical projection: closed-map lookup of the typed native FSM
+    identity captured before str() conversion. Unknown, absent or non-symbolic
+    identities FAIL CLOSED as an explicit benchmark projection/measurement
+    failure (FSM_PROJECTION_FAILURE) — never guessed, never mapped to an
+    expected value, never a silent repr fallback."""
+    if not isinstance(native_identity, str) or not native_identity:
+        return FSM_PROJECTION_FAILURE
+    return TIKHON_FSM_CANONICAL_MAP.get(native_identity, FSM_PROJECTION_FAILURE)
+
+
 class _RecordingFSM:
     def __init__(self, initial_data=None):
         self._data = dict(initial_data or {})
         self.state = None
+        self.native_state = None
         self.cleared = False
         self.updates: list[tuple] = []
 
@@ -938,6 +962,13 @@ class _RecordingFSM:
         self.updates.append(("update_data", dict(kw)))
 
     async def set_state(self, state):
+        # RC-B01: capture the typed native identity BEFORE str() destroys the
+        # native/canonical distinction. The raw repr surface below is kept
+        # unchanged (diagnostics only; never the comparison identity).
+        native = getattr(state, "state", None)
+        if native is None and isinstance(state, str):
+            native = state
+        self.native_state = native
         self.state = str(state)
         self.updates.append(("set_state", str(state)))
 
@@ -986,9 +1017,14 @@ class TikhonStartAdapter(_AdapterBase):
       -> state.clear() / state.set_state(OrderFlow.choosing_course)
     INPUT_MAPPING: turns[0] -> /start command args.
     OUTPUT_MAPPING: recorded catalog invocation course_id -> catalogCourseContext;
-    recorded FSM state -> fsm_state_literal/stateCleared; recorded caption ->
-    output. Handler failure propagates as capture error (the adapter does NOT
-    reconstruct handler behavior)."""
+    recorded FSM state -> fsm_state_literal (RC-B01 canonical symbolic projection
+    of the native identity through TIKHON_FSM_CANONICAL_MAP; unknown native
+    identities fail closed as FSM_PROJECTION_FAILURE) with the raw native/repr
+    observation retained separately in fsm_state_native_raw and the fsm_updates
+    transcript (diagnostics only, never the comparison identity);
+    stateCleared unchanged; recorded caption -> output. Handler failure
+    propagates as capture error (the adapter does NOT reconstruct handler
+    behavior)."""
 
     adapter_id = "chatbot_l3_deep_link_start"
 
@@ -1025,10 +1061,17 @@ class TikhonStartAdapter(_AdapterBase):
         caption = ""
         if message.answer_photo_calls:
             caption = str(message.answer_photo_calls[-1].get("caption", ""))
-        fsm_literal = state.state if state.state is not None else ("CLEARED" if state.cleared else None)
+        # RC-B01: the benchmark observable carries the canonical symbolic
+        # projection; CLEARED/unset sentinel behavior is unchanged. The raw
+        # native identity is retained separately as a diagnostic field.
+        fsm_literal = (project_tikhon_fsm_canonical(state.native_state)
+                       if state.state is not None
+                       else ("CLEARED" if state.cleared else None))
+        fsm_native_raw = state.native_state if state.state is not None else None
         return RawCapture(
             values={"act": "TIKHON_START", "origin": "TIKHON_CMD_START",
                     "state": {"fsm_state_literal": fsm_literal,
+                              "fsm_state_native_raw": fsm_native_raw,
                               "stateCleared": state.cleared,
                               "catalogCourseContext": catalog_course},
                     "link": None, "output": caption[:2000],

@@ -151,7 +151,13 @@ def _oracle_observable(name: str, params: dict) -> str:
 
 MEASUREMENT_KINDS = {
     "act_equals": "EQUALITY", "origin_equals": "EQUALITY", "exact_link": "EQUALITY",
-    "state_subset": "SUBSET_EQUALITY", "concurrency_invariant": "SUBSET_EQUALITY",
+    # BENCHMARK-SUCCESSOR-IMPLEMENTATION-1 (RC-B02): state_subset compiles with
+    # its OWN successor measurement kind so compiled contracts distinguish the
+    # new RECURSIVE_NESTED_MAPPING_SUBSET comparison mode from
+    # concurrency_invariant, which keeps the predecessor SUBSET_EQUALITY kind
+    # unchanged.
+    "state_subset": "RECURSIVE_NESTED_MAPPING_SUBSET",
+    "concurrency_invariant": "SUBSET_EQUALITY",
     "gate_detection": "FLAG_ALL", "decision_kind": "EQUALITY",
     "course_reference_kind": "EQUALITY", "course_ids_match": "SET_EQUALITY",
     "catalog_fallback": "EQUALITY", "prohibited_output": "ABSENCE",
@@ -272,6 +278,36 @@ def compile_scenario_contract(spec: dict, adapter_capability: AdapterCapability)
                                "expectation set (vacuous oracle; F03)")
             cc.static_query_contract = list(exps or [])
 
+    # ---- CORR1 (BENCHMARK-SUCCESSOR-IMPLEMENTATION-1.CORR1.
+    # CONTRACT-COMPILE-VALIDATION-1): the Owner-accepted successor contract
+    # requires non-mapping expected_state to be rejected DURING CONTRACT
+    # COMPILATION — a later oracle-stage guard is not a substitute. The
+    # effective expected_state resolves with the oracle's controlling
+    # precedence WITHOUT a truthiness fallback: an explicitly supplied
+    # params.expected_state is inspected as-is (a falsey malformed value can
+    # never hide behind `or {}`); otherwise the predecessor fallback source
+    # spec.expected.state applies; absent on both sources retains the
+    # predecessor empty-mapping behavior. An empty mapping `{}` stays a valid
+    # empty expectation, and every Owner-accepted RC-B02 shape compiles.
+    for o in oracles:
+        if o.get("oracle") != "state_subset":
+            continue
+        o_params = o.get("params") or {}
+        if "expected_state" in o_params:
+            effective_expected_state = o_params.get("expected_state")
+            expected_state_source = "params.expected_state (explicit)"
+        else:
+            effective_expected_state = (spec.get("expected") or {}).get("state")
+            expected_state_source = "expected.state (predecessor fallback)"
+            if effective_expected_state is None:
+                continue
+        if not isinstance(effective_expected_state, dict):
+            defects.append(
+                f"{sid}: state_subset {expected_state_source} must be a mapping; "
+                f"got {type(effective_expected_state).__name__} "
+                "(non-mapping expected_state rejected at contract compilation; "
+                "CORR1.CONTRACT-COMPILE-VALIDATION-1)")
+
     # ---- every material expected field compiles exactly once (F02) ---------
     expected = spec.get("expected") or {}
     expected_fields: list[tuple[str, str]] = []
@@ -296,8 +332,21 @@ def compile_scenario_contract(spec: dict, adapter_capability: AdapterCapability)
             for k in (params.get("required_detections") or []):
                 adjudicator_fields.setdefault(str(k), []).append(oname)
         if oname in STATE_ADJUDICATORS:
-            for k in (params.get("expected_state") or {}):
-                adjudicator_fields.setdefault(str(k), []).append(oname)
+            # CORR2 (CORR1.IV1 blocking finding F2): the malformed-root guard
+            # is scoped to state_subset ONLY — its compile-time defect is
+            # recorded by the CORR1 validation loop above, so the walk below
+            # must never re-crash on a malformed state_subset root. Every
+            # OTHER state adjudicator keeps the failed-predecessor `or {}`
+            # walk exactly, including its TypeError on truthy non-mapping
+            # roots (out-of-scope semantics are preserved, not repaired).
+            es = params.get("expected_state")
+            if oname == "state_subset":
+                if isinstance(es, dict):
+                    for k in es:
+                        adjudicator_fields.setdefault(str(k), []).append(oname)
+            else:
+                for k in (es or {}):
+                    adjudicator_fields.setdefault(str(k), []).append(oname)
     joint_ok = bool(spec.get("replay_set") == "C")
     for field_key, decl in expected_fields:
         adjudicators = adjudicator_fields.get(field_key, [])
