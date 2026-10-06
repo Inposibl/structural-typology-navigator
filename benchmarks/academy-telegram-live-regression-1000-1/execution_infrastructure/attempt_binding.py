@@ -7,13 +7,16 @@ passes it to apply_infrastructure_precedence before the verdict.
 
 from __future__ import annotations
 
+import ipaddress
 import json
 import os
+import re
 import secrets
 import urllib.request
 from typing import Any
 
 from .pd_f04_provider_evidence import aggregate_attempt_evidence, normalize_provider_event, redact
+from .pd_f06_isolation import is_opaque_function_id, is_opaque_module_id
 from .pd_f06_lifecycle import AttemptBoundary, _accurate_status
 
 _ATTEMPT: dict[str, Any] | None = None
@@ -433,10 +436,12 @@ def finish_attempt() -> dict[str, Any]:
         )
         note_handoff("OS_F04", {"execution_status": (evidence.get("os_f04") or {}).get("execution_status")})
         cursor = int(evidence.get("python_event_cursor") or 0)
-        for event in events()[cursor:]:
+        for offset, event in enumerate(events()[cursor:]):
             item = dict(event)
             if item.get("decision") == "deny" or item.get("external_contact") is True:
                 item["violation"] = True
+                # Block-B RC-O01: attempt-local position in recorded event order.
+                item["event_sequence"] = offset
                 # Same recursive redaction as every other raw evidence record.
                 evidence["python_violations"].append(_safe_record(item))
         if evidence["python_violations"]:
@@ -461,6 +466,218 @@ def finish_attempt() -> dict[str, Any]:
             close_evidence_attempt()
         else:
             disarm_request_identity()
+
+
+# Block-B RC-O01: bounded, allowlisted projection of the Python isolation
+# violations kept for one attempt. Diagnostic only; no verdict reads it.
+# Block C serializes it next to the unchanged python_violation_count.
+# CORR1 PRIVACY-VALUE-BOUNDARY-1: a key allowlist is not a value privacy
+# guarantee — every serialized string must satisfy a bounded safe grammar
+# or degrade to null.
+# CORR2 OPAQUE-CALLSITE-AND-SCOPED-IPV6-CLOSURE-1 (Owner adjudication):
+# callsite.module/function serialize ONLY exact opaque correlation IDs
+# (m:/f: + 32 hex); injected raw labels are never re-hashed into IDs.
+# Enum-like diagnostic fields use exact finite producer-value allowlists.
+# Scoped IPv6 degrades to null before any ipaddress representation.
+PYTHON_VIOLATION_MAX_RECORDS = 32
+PYTHON_VIOLATION_FIELDS = (
+    "event_sequence",
+    "operation",
+    "decision",
+    "reason",
+    "destination_class",
+    "normalized_host",
+    "port",
+    "path_class",
+    "external_contact",
+    "violation",
+)
+PYTHON_VIOLATION_CALLSITE_FIELDS = ("frame_class", "module", "function", "lineno")
+_CALLSITE_FRAME_CLASSES = frozenset({
+    "PRODUCT_CHATBOT", "BENCHMARK_HARNESS", "THIRD_PARTY", "STDLIB", "OTHER",
+})
+_LABEL_MAX = {
+    "operation": 64,
+    "decision": 16,
+    "reason": 64,
+    "destination_class": 64,
+    "normalized_host": 253,
+    "path_class": 128,
+}
+# Exact authoritative producer sets, derived from the isolation source
+# (pd_f06_isolation.py) only. The projection returns a known value or null —
+# never an arbitrary value merely because it matches a charset.
+# operation: every _record(...) operation literal in the guard
+# (guarded_open/os.open/audit.open + the nine guarded socket entry points).
+OPERATION_VALUES = frozenset({
+    "open",
+    "os.open",
+    "audit.open",
+    "socket.getaddrinfo",
+    "socket.create_connection",
+    "socket.connect",
+    "socket.connect_ex",
+    "socket.gethostbyname",
+    "socket.gethostbyname_ex",
+    "socket.gethostbyaddr",
+    "socket.sendto",
+    "socket.sendmsg",
+})
+# decision: the two literals the guard records.
+DECISION_VALUES = frozenset({"allow", "deny"})
+# reason: classify_host's LOOPBACK/DEFAULT_DENY and the credential-path
+# PermissionError reason CREDENTIAL_DISCOVERY_DENIED.
+REASON_VALUES = frozenset({
+    "LOOPBACK",
+    "DEFAULT_DENY",
+    "CREDENTIAL_DISCOVERY_DENIED",
+})
+# destination_class: classify_host's enumerated classes, plus the fixed
+# normalized-host echoes produced for _DENY_EXACT entries that carry no
+# google/telegram/sheets name and for the _GOOGLE_SUFFIXES apex itself.
+# Arbitrary gstatic-suffixed subdomain echoes are NOT authoritative values
+# and degrade to null (the open-ended echo family is closed here).
+DESTINATION_CLASS_VALUES = frozenset({
+    "LOOPBACK",
+    "GOOGLE",
+    "GOOGLE_SHEETS_API",
+    "GOOGLE_OAUTH_TOKEN",
+    "TELEGRAM",
+    "ALL_OTHER_HOSTS",
+    "UNKNOWN",
+    "api.cohere.com",
+    "api.deepseek.com",
+    "suggestions.dadata.ru",
+    "structural-typology-navigator.vercel.app",
+    "gstatic.com",
+})
+# Enumerated diagnostic tokens: letters, digits, underscore and dot only, with
+# at least one alphanumeric character. Used for path_class only (basename-only
+# contract); the four enum fields above use exact value membership.
+_TOKEN_LABEL_RE = re.compile(r"[A-Za-z0-9_.]+")
+# Hostnames: dot-separated labels of letters, digits and inner hyphens.
+_HOST_LABEL = r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
+_HOSTNAME_RE = re.compile(_HOST_LABEL + r"(?:\." + _HOST_LABEL + r")*")
+
+
+def _bounded_int(value: Any) -> int | None:
+    return value if isinstance(value, int) and not isinstance(value, bool) else None
+
+
+def _allowlisted(value: Any, allowed: frozenset) -> str | None:
+    """A known authoritative producer value, or None. Exact membership only."""
+    return value if isinstance(value, str) and value in allowed else None
+
+
+def _safe_enum_label(value: Any, limit: int) -> str | None:
+    """Bounded diagnostic token only (letters/digits/underscore/dot); else None."""
+    if not isinstance(value, str) or not value or len(value) > limit:
+        return None
+    if _TOKEN_LABEL_RE.fullmatch(value) is None or not any(c.isalnum() for c in value):
+        return None
+    return value
+
+
+def _safe_host_label(value: Any) -> str | None:
+    """Serialize only a genuinely host-like value: an unscoped IP literal in
+    canonical form, or bounded dot-separated host labels.
+
+    A URL, userinfo, port, path, query, fragment, scoped IPv6 (any ``%``
+    zone/scope content), control character, embedded credential or arbitrary
+    payload never satisfies this projection and is never parsed into new
+    sensitive fields; unsafe values degrade to null.
+    """
+    if not isinstance(value, str) or not value:
+        return None
+    # Scoped IPv6 is not part of this diagnostic surface: reject any "%"
+    # BEFORE any ipaddress representation can carry the scope verbatim.
+    if "%" in value:
+        return None
+    # Reject values that carry control characters or whitespace anywhere.
+    # The value is never cleaned into a safe-looking host: cleaning a payload
+    # would be a transport, not a projection.
+    if any(ord(ch) < 0x20 or ord(ch) == 0x7F or ch.isspace() for ch in value):
+        return None
+    text = value
+    if text.endswith("."):
+        text = text.rstrip(".")
+    if not text or len(text) > _LABEL_MAX["normalized_host"]:
+        return None
+    bracketed = text.startswith("[") and text.endswith("]")
+    candidate = text[1:-1] if bracketed else text
+    try:
+        address = ipaddress.ip_address(candidate)
+    except ValueError:
+        address = None
+    if address is not None:
+        if address.version == 6:
+            return f"[{address.compressed}]" if bracketed else address.compressed
+        return None if bracketed else address.compressed
+    if bracketed:
+        return None
+    lowered = text.lower()
+    if len(lowered) > 253 or _HOSTNAME_RE.fullmatch(lowered) is None:
+        return None
+    return lowered
+
+
+def _safe_basename(value: Any) -> str | None:
+    """Basename only, even if a producer ever supplied a path."""
+    if not isinstance(value, str) or not value:
+        return None
+    return os.path.basename(value.replace("\\", "/").rstrip("/")) or None
+
+
+def _project_callsite(callsite: Any) -> dict[str, Any]:
+    site = callsite if isinstance(callsite, dict) else {}
+    frame_class = site.get("frame_class")
+    module = site.get("module")
+    function = site.get("function")
+    return {
+        "frame_class": frame_class if frame_class in _CALLSITE_FRAME_CLASSES else "OTHER",
+        # Accept only values already in the exact opaque-ID grammar. Injected
+        # raw labels are NOT re-hashed into IDs; they degrade to null.
+        "module": module if is_opaque_module_id(module) else None,
+        "function": function if is_opaque_function_id(function) else None,
+        "lineno": _bounded_int(site.get("lineno")),
+    }
+
+
+def _project_violation(record: Any) -> dict[str, Any]:
+    source = record if isinstance(record, dict) else {}
+    projected: dict[str, Any] = {
+        "event_sequence": _bounded_int(source.get("event_sequence")),
+        "operation": _allowlisted(source.get("operation"), OPERATION_VALUES),
+        "decision": _allowlisted(source.get("decision"), DECISION_VALUES),
+        "reason": _allowlisted(source.get("reason"), REASON_VALUES),
+        "destination_class": _allowlisted(source.get("destination_class"), DESTINATION_CLASS_VALUES),
+        "normalized_host": _safe_host_label(source.get("normalized_host")),
+        "port": _bounded_int(source.get("port")),
+        "path_class": _safe_enum_label(_safe_basename(source.get("path_class")), _LABEL_MAX["path_class"]),
+        "external_contact": source.get("external_contact") is True,
+        "violation": source.get("violation") is True,
+        "callsite": _project_callsite(source.get("callsite")),
+    }
+    # The stored record is already redacted; the projection is redacted again.
+    return _safe_record(projected)
+
+
+def python_violation_details(scenario_id: str, attempt_number: int) -> dict[str, Any]:
+    """Read-only projection for per-attempt snapshot serialization.
+
+    Returns fresh objects; the stored attempt evidence is never exposed.
+    python_violation_total equals len(python_violations) in the store, which
+    is the existing python_violation_count surface.
+    """
+    stored = _STORE.get((str(scenario_id), int(attempt_number))) or {}
+    records = list(stored.get("python_violations") or [])
+    return {
+        "python_violations": [
+            _project_violation(record) for record in records[:PYTHON_VIOLATION_MAX_RECORDS]
+        ],
+        "python_violation_total": len(records),
+        "python_violations_truncated": len(records) > PYTHON_VIOLATION_MAX_RECORDS,
+    }
 
 
 def collected_evidence(scenario_id: str, attempt_number: int) -> dict[str, Any] | None:

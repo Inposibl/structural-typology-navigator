@@ -10,9 +10,11 @@ from __future__ import annotations
 
 import builtins
 import fnmatch
+import hashlib
 import io
 import ipaddress
 import os
+import re
 import socket
 import sys
 from pathlib import Path
@@ -222,8 +224,199 @@ def classify_host(host: str | None) -> dict[str, Any]:
     }
 
 
+# Block-B RC-O01: bounded callsite label for each recorded event. Diagnostic
+# only. Pure frame and string inspection (no file, socket or subprocess
+# access). Absolute paths, source lines, arguments and locals are never kept.
+# CORR2 OPAQUE-CALLSITE-AND-SCOPED-IPV6-CLOSURE-1 (Owner adjudication):
+# plaintext Python module/function metadata is not a privacy-safe
+# serialization surface — a syntactically valid identifier is not proof of
+# safety. callsite.module / callsite.function carry deterministic OPAQUE
+# correlation identifiers (m:/f: + 32 hex of a domain-separated SHA-256),
+# never raw metadata. The raw value is grammar-validated first; anything not
+# a bounded module/code label degrades to null, and no payload is ever
+# cleaned or truncated into a label or an ID.
+CALLSITE_FRAME_CLASSES = (
+    "PRODUCT_CHATBOT",
+    "BENCHMARK_HARNESS",
+    "THIRD_PARTY",
+    "STDLIB",
+    "OTHER",
+)
+_CALLSITE_MAX_DEPTH = 64
+_CALLSITE_MODULE_MAX = 128
+_CALLSITE_FUNCTION_MAX = 64
+_IDENTIFIER_LABEL = r"[A-Za-z_][A-Za-z0-9_]*"
+_MODULE_LABEL_RE = re.compile(_IDENTIFIER_LABEL + r"(?:\." + _IDENTIFIER_LABEL + r")*")
+_FUNCTION_LABEL_RE = re.compile(_IDENTIFIER_LABEL)
+_SPECIAL_FUNCTION_LABEL_RE = re.compile(r"<[A-Za-z0-9_]+>")
+_MODULE_ID_DOMAIN = "academy-rc-o01-callsite-module-v1"
+_FUNCTION_ID_DOMAIN = "academy-rc-o01-callsite-function-v1"
+_OPAQUE_MODULE_ID_RE = re.compile(r"m:[0-9a-f]{32}")
+_OPAQUE_FUNCTION_ID_RE = re.compile(r"f:[0-9a-f]{32}")
+
+
+def _valid_module_label(value: Any) -> str | None:
+    """A dotted Python module identifier only; otherwise None."""
+    if not isinstance(value, str) or not value or len(value) > _CALLSITE_MODULE_MAX:
+        return None
+    return value if _MODULE_LABEL_RE.fullmatch(value) else None
+
+
+def _valid_function_label(value: Any) -> str | None:
+    """A Python code-object label (identifier or ``<special>``); else None."""
+    if not isinstance(value, str) or not value or len(value) > _CALLSITE_FUNCTION_MAX:
+        return None
+    if _FUNCTION_LABEL_RE.fullmatch(value) or _SPECIAL_FUNCTION_LABEL_RE.fullmatch(value):
+        return value
+    return None
+
+
+def _opaque_id(prefix: str, domain: str, raw: str) -> str:
+    digest = hashlib.sha256((domain + "\0" + raw).encode("utf-8")).hexdigest()
+    return prefix + digest[:32]
+
+
+def opaque_module_id(value: Any) -> str | None:
+    """Deterministic opaque correlation ID for a raw module label, or None.
+
+    Stable across processes and runs; domain-separated from function IDs;
+    ASCII-only and bounded. Derived only from the grammar-valid raw label —
+    no Python hash(), salt, clock, nonce, environment or filesystem input.
+    """
+    raw = _valid_module_label(value)
+    return None if raw is None else _opaque_id("m:", _MODULE_ID_DOMAIN, raw)
+
+
+def opaque_function_id(value: Any) -> str | None:
+    """Deterministic opaque correlation ID for a raw code label, or None."""
+    raw = _valid_function_label(value)
+    return None if raw is None else _opaque_id("f:", _FUNCTION_ID_DOMAIN, raw)
+
+
+def is_opaque_module_id(value: Any) -> bool:
+    """True only for the exact public opaque module-ID grammar m:[0-9a-f]{32}."""
+    return isinstance(value, str) and _OPAQUE_MODULE_ID_RE.fullmatch(value) is not None
+
+
+def is_opaque_function_id(value: Any) -> bool:
+    """True only for the exact public opaque function-ID grammar f:[0-9a-f]{32}."""
+    return isinstance(value, str) and _OPAQUE_FUNCTION_ID_RE.fullmatch(value) is not None
+
+
+def _root_forms(path: Any) -> tuple[str, ...]:
+    forms = []
+    try:
+        text = os.fspath(path)
+        forms.append(os.path.normcase(os.path.abspath(text)))
+        forms.append(os.path.normcase(os.path.realpath(text)))
+    except Exception:  # noqa: BLE001 — an unusable root is simply not a root
+        return ()
+    return tuple(dict.fromkeys(item.rstrip(os.sep) for item in forms if item))
+
+
+def _stdlib_roots() -> tuple[str, ...]:
+    try:
+        import sysconfig
+
+        paths = sysconfig.get_paths()
+        roots: tuple[str, ...] = ()
+        for key in ("stdlib", "platstdlib"):
+            if paths.get(key):
+                roots += _root_forms(paths[key])
+        return roots
+    except Exception:  # noqa: BLE001
+        return ()
+
+
+def _product_roots_at_import() -> tuple[str, ...]:
+    try:
+        from .constants import CHATBOT_TEST_BASE
+
+        return _root_forms(CHATBOT_TEST_BASE)
+    except Exception:  # noqa: BLE001 — module loaded outside its package
+        return ()
+
+
+# Resolved once at import, never during an event.
+_GUARD_MODULE = __name__
+_BENCH_ROOTS = _root_forms(Path(__file__).parent.parent)
+_STDLIB_ROOTS = _stdlib_roots()
+_PRODUCT_ROOTS = _product_roots_at_import()
+
+
+def _under(filename: str, roots: tuple[str, ...]) -> bool:
+    return any(filename == root or filename.startswith(root + os.sep) for root in roots)
+
+
+def _canonical_source_path(path: str) -> str:
+    """Lexical canonical form only: normcase(normpath(path)).
+
+    Pure string transformation. No realpath, stat, symlink resolution,
+    filesystem traversal or network I/O — two normpath-equivalent source
+    paths must classify identically.
+    """
+    return os.path.normcase(os.path.normpath(path))
+
+
+def _frame_class(filename: Any) -> str:
+    if not isinstance(filename, str) or not filename:
+        return "OTHER"
+    if filename.startswith("<frozen "):
+        return "STDLIB"
+    if not os.path.isabs(filename):
+        return "OTHER"
+    name = _canonical_source_path(filename)
+    parts = name.split(os.sep)
+    if "site-packages" in parts or "dist-packages" in parts:
+        return "THIRD_PARTY"
+    env_root = os.environ.get("ACADEMY_CHATBOT_ROOT")
+    canonical_env_root = (
+        _canonical_source_path(env_root).rstrip(os.sep)
+        if env_root and os.path.isabs(env_root)
+        else ""
+    )
+    env_roots = (canonical_env_root,) if canonical_env_root else ()
+    if _under(name, _PRODUCT_ROOTS + env_roots):
+        return "PRODUCT_CHATBOT"
+    if _under(name, _BENCH_ROOTS):
+        return "BENCHMARK_HARNESS"
+    if _under(name, _STDLIB_ROOTS):
+        return "STDLIB"
+    return "OTHER"
+
+
+def _callsite() -> dict[str, Any]:
+    """First frame outside this guard module, as opaque correlation IDs.
+
+    Only the opaque module/function identifiers are stored; raw Python
+    metadata never enters the callsite record.
+    """
+    unknown = {"frame_class": "OTHER", "module": None, "function": None, "lineno": None}
+    try:
+        frame = sys._getframe(1)
+        depth = 0
+        while frame is not None and depth < _CALLSITE_MAX_DEPTH:
+            module = frame.f_globals.get("__name__") if isinstance(frame.f_globals, dict) else None
+            if module != _GUARD_MODULE:
+                code = frame.f_code
+                lineno = frame.f_lineno
+                return {
+                    "frame_class": _frame_class(getattr(code, "co_filename", None)),
+                    "module": opaque_module_id(module),
+                    "function": opaque_function_id(getattr(code, "co_name", None)),
+                    "lineno": lineno if isinstance(lineno, int) and not isinstance(lineno, bool) else None,
+                }
+            frame = frame.f_back
+            depth += 1
+    except Exception:  # noqa: BLE001 — unusual stack metadata degrades to OTHER
+        return unknown
+    return unknown
+
+
 def _record(event: dict[str, Any]) -> None:
-    _state["events"].append(event)
+    item = dict(event)
+    item["callsite"] = _callsite()
+    _state["events"].append(item)
 
 
 def events() -> list[dict[str, Any]]:
