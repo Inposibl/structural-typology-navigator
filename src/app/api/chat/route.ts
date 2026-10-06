@@ -256,6 +256,22 @@ function orchestrationAct(
     return { act: "PAYMENT_CONFIRMATION", flowId: null };
   }
 
+  // P03 — the structured payment clarification outranks an ordinary FACTUAL
+  // act only while the payment-multiple ambiguity is being asked or has
+  // exhausted its budget; ordinary factual (price) metadata stays FACTUAL.
+  const paymentPolicyClarificationActive =
+    result.observability?.answerOrigin === "PAYMENT_POLICY" &&
+    (result.clarification.status === "ASKED" ||
+      result.clarification.status === "EXHAUSTED");
+
+  if (paymentPolicyClarificationActive && result.clarification.status === "ASKED") {
+    return { act: "CLARIFICATION", flowId: "COURSE_SELECTION" };
+  }
+
+  if (paymentPolicyClarificationActive) {
+    return { act: "CLARIFICATION_EXHAUSTED", flowId: "COURSE_SELECTION" };
+  }
+
   if (result.conversationAct.state === "FACTUAL") {
     return { act: "FACTUAL", flowId: null };
   }
@@ -300,6 +316,14 @@ function orchestrationAct(
 function orchestrationDecision(
   result: NavigatorOrchestrationResult,
 ): OrchestratedDecision {
+  // P03 — the orchestrator's explicit validated binding state effect is
+  // consumed before the ordinary navigation-decision mapping and forwarded to
+  // applyOrchestratedTurn as the turn's decision.
+  const explicitBinding = result.stateEffects.courseBinding;
+  if (explicitBinding !== undefined) {
+    return explicitBinding;
+  }
+
   const decision = result.decision;
 
   if (decision === null) return { kind: "NONE" };

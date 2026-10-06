@@ -275,7 +275,10 @@ test("P7: full restart outranks an open confirmation and replays nothing", () =>
   assert.equal(result.resetConversation, true);
   assert.equal(result.conversationState.pendingConfirmation, null);
   assert.equal(result.conversationState.deferredRequest, null);
-  assert.equal(result.profile.displayName, null);
+  // Owner-adjudicated Block-A T32 successor: TURN_LEVEL_PROFILE_SURVIVAL —
+  // restart clears the working conversation state while preserving the
+  // canonical profile.
+  assert.deepEqual(result.profile, COMPLETE_PROFILE);
 });
 
 test("P8: cancel outranks an open confirmation and clears it without routing", () => {
@@ -703,10 +706,15 @@ test("E4: the capacity outcome is not persisted into the conversation state", ()
   // handoff and qualitySignals (A05, A21, A22, A23-A25). The closed shape is
   // still asserted exactly, so a capacity outcome still cannot leak a marker
   // into the state.
+  // SUCCESSOR EXPECTATION UPDATE (Block-A A0 Owner-accepted successor contract,
+  // A1.CORR1 F03): courseReferents is a canonical A0-authorized wire field —
+  // every canonical state emits it, including the empty []. Adding it here is
+  // the only change; every other closed-shape protection stays exact.
   assert.deepEqual(Object.keys(result.conversationState).sort(), [
     "activeFlow",
     "clarification",
     "courseMatch",
+    "courseReferents",
     "deferredRequest",
     "execution",
     "handoff",

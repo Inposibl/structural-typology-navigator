@@ -183,11 +183,91 @@ export function detectUnsupportedAddressModeVariant(
   return scan.unsupportedAddressModeWord;
 }
 
+/** A clause together with the source positions of its canonical characters. */
+type SourceClause = {
+  /** Clause text in the documented canonical form (edges trimmed, whitespace collapsed). */
+  text: string;
+  /** Source offset of every character of `text`, same order and length. */
+  offsets: number[];
+  /** Offset of the clause's raw span start in the source text. */
+  start: number;
+  /** Offset just past the clause's raw span end in the source text. */
+  end: number;
+};
+
+/** Same clause-boundary run, sticky-free clone so spans can be walked. */
+const CLAUSE_SEPARATOR_GLOBAL = new RegExp(
+  CLAUSE_SEPARATOR.source,
+  `${CLAUSE_SEPARATOR.flags}g`,
+);
+
+/** One character of the clause-edge class used by TRIM_EDGES. */
+const CLAUSE_EDGE_CHAR = /[\s,.;:!?—–-]/u;
+
+/**
+ * The canonical clause form plus a source-offset map, so consumed control
+ * spans can be subtracted from the original text instead of reconstructed.
+ * Exactly reproduces the previous normalization pipeline (edge trim, then
+ * global whitespace collapse, then trim).
+ */
+function normalizeClauseWithMap(raw: string): {
+  text: string;
+  offsets: number[];
+} {
+  let first = 0;
+  let last = raw.length;
+  while (first < last && CLAUSE_EDGE_CHAR.test(raw.charAt(first))) first += 1;
+  while (last > first && CLAUSE_EDGE_CHAR.test(raw.charAt(last - 1))) last -= 1;
+
+  let text = "";
+  const offsets: number[] = [];
+  let whitespace = false;
+  for (let index = first; index < last; index += 1) {
+    const char = raw.charAt(index);
+    if (/\s/u.test(char)) {
+      if (!whitespace) {
+        text += " ";
+        offsets.push(index);
+        whitespace = true;
+      }
+      continue;
+    }
+    whitespace = false;
+    text += char;
+    offsets.push(index);
+  }
+  return { text, offsets };
+}
+
+/**
+ * The clause split with source spans and offset maps retained. Clause texts
+ * are exactly splitIntoClauses output; the maps let scanControls subtract
+ * consumed control spans from the original source.
+ */
+function splitIntoSourceClauses(value: string): SourceClause[] {
+  const clauses: SourceClause[] = [];
+  let cursor = 0;
+  for (;;) {
+    CLAUSE_SEPARATOR_GLOBAL.lastIndex = cursor;
+    const match = CLAUSE_SEPARATOR_GLOBAL.exec(value);
+    const end = match === null ? value.length : match.index;
+    const { text, offsets } = normalizeClauseWithMap(value.slice(cursor, end));
+    if (text.length > 0) {
+      clauses.push({
+        text,
+        offsets: offsets.map((offset) => offset + cursor),
+        start: cursor,
+        end,
+      });
+    }
+    if (match === null) break;
+    cursor = CLAUSE_SEPARATOR_GLOBAL.lastIndex;
+  }
+  return clauses;
+}
+
 export function splitIntoClauses(value: string): string[] {
-  return value
-    .split(CLAUSE_SEPARATOR)
-    .map((clause) => clause.replace(TRIM_EDGES, "").replace(/\s+/gu, " ").trim())
-    .filter((clause) => clause.length > 0);
+  return splitIntoSourceClauses(value).map((clause) => clause.text);
 }
 
 export function isGreetingClause(clause: string): boolean {
@@ -319,7 +399,18 @@ function resolveClause(
     : { accepted: false, remainder: null };
 }
 
-function scanClause(clause: string, options: ControlScanOptions): ControlScan {
+type ClauseScan = {
+  controls: ControlToken[];
+  unsupportedAddressModeWord: string | null;
+  /**
+   * Length of the explicitly consumed prefix in normalized-clause
+   * coordinates (the index of the first surviving character, or the whole
+   * clause for a pure control clause), or null when nothing was consumed.
+   */
+  consumedPrefixLength: number | null;
+};
+
+function scanClause(clause: string, options: ControlScanOptions): ClauseScan {
   const controls: ControlToken[] = [];
   let unsupportedAddressModeWord: string | null = null;
   let sawBoundary = false;
@@ -371,23 +462,40 @@ function scanClause(clause: string, options: ControlScanOptions): ControlScan {
     // text; report it as ordinary text so it reaches normal routing.
     return {
       controls: [],
-      remainder: clause,
       unsupportedAddressModeWord: null,
+      consumedPrefixLength: null,
     };
   }
 
+  // The recognition loop only ever consumes a prefix of the clause, and the
+  // surviving residue starts after the clause-edge run it left behind.
+  const surviving = rest.replace(/^[\s,.;:!?—–-]+/u, "");
+  const consumedPrefixLength =
+    resolved.remainder !== null
+      ? clause.length - surviving.length
+      : clause.length;
+
   return {
     controls,
-    remainder: resolved.remainder,
     unsupportedAddressModeWord,
+    consumedPrefixLength,
   };
 }
 
+/**
+ * Scans the message for control language and derives the routed remainder by
+ * SOURCE SUBTRACTION: the remainder is the user's original text minus exactly
+ * the spans the recognition loop explicitly consumed. Nothing is reconstructed
+ * from clauses, no separator is selected or synthesized, and every surviving
+ * character keeps its source order. Only the pre-existing whitespace
+ * canonicalization (a formatting-only run becomes one space) and the
+ * pre-existing final-edge normalization are applied on top.
+ */
 export function scanControls(
   text: string,
   options: ControlScanOptions = {},
 ): ControlScan {
-  const clauses = splitIntoClauses(text);
+  const clauses = splitIntoSourceClauses(text);
 
   if (clauses.length === 0) {
     return {
@@ -398,19 +506,39 @@ export function scanControls(
   }
 
   const controls: ControlToken[] = [];
-  const remainders: string[] = [];
+  const consumedSpans: { start: number; end: number }[] = [];
   let unsupportedAddressModeWord: string | null = null;
 
   for (const clause of clauses) {
-    const scan = scanClause(clause, options);
+    const scan = scanClause(clause.text, options);
     controls.push(...scan.controls);
     if (scan.unsupportedAddressModeWord) {
       unsupportedAddressModeWord = scan.unsupportedAddressModeWord;
     }
-    if (scan.remainder) remainders.push(scan.remainder);
+
+    const consumed = scan.consumedPrefixLength;
+    if (consumed === null) continue;
+    const start = clause.offsets[0];
+    if (start === undefined) continue; // unreachable: clause texts are non-empty
+    const end =
+      consumed >= clause.text.length
+        ? (clause.offsets[clause.text.length - 1] ?? clause.end - 1) + 1
+        : (clause.offsets[consumed] ?? clause.end);
+    consumedSpans.push({ start, end });
   }
 
-  const remainder = remainders.join(". ").slice(0, MAX_CHAT_MESSAGE_LENGTH);
+  let remainder = "";
+  let cursor = 0;
+  for (const span of consumedSpans) {
+    remainder += text.slice(cursor, span.start);
+    cursor = span.end;
+  }
+  remainder += text.slice(cursor);
+  remainder = remainder
+    .replace(/\s+/gu, " ")
+    .replace(TRIM_EDGES, "")
+    .trim()
+    .slice(0, MAX_CHAT_MESSAGE_LENGTH);
 
   return {
     controls,

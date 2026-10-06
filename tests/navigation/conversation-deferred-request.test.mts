@@ -244,7 +244,9 @@ test("E: a full restart clears a preserved remainder and resets as accepted", ()
   assert.equal(restarted.state, "RESPOND");
   assert.equal(restarted.resetConversation, true);
   assert.equal(restarted.conversationState.deferredRequest, null);
-  assert.equal(restarted.profile.displayName, null);
+  // Owner-adjudicated Block-A T32 successor: TURN_LEVEL_PROFILE_SURVIVAL —
+  // the pre-restart canonical profile survives the restart deep-equal.
+  assert.deepEqual(restarted.profile, COMPLETE_PROFILE);
 
   const next = turn("привет", restarted.conversationState);
   assert.doesNotMatch(effectiveRequest(next) ?? "", /расскажи про курс Маслоу/u);

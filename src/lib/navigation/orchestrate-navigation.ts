@@ -66,10 +66,16 @@ import {
 import {
   composeEnrollmentPaymentAnswer,
   hasEnrollmentPaymentIntent,
+  paymentMultipleIssueKey,
   resolveEnrollmentPaymentDecision,
 } from "../academy/payment-policy.ts";
+import {
+  resolveCourseReferences,
+  type AcademyCourseId,
+} from "../academy/course-reference.ts";
 import type {
   ConversationState,
+  OrchestratedDecision,
   PendingConfirmation,
 } from "./conversation-state.ts";
 import {
@@ -102,6 +108,12 @@ export type OrchestrationStateEffects = {
   catalogAuthorityVersion: string | null;
   transactionalAuthorityVersion: string | null;
   pendingConfirmation: PendingConfirmation | null;
+  /**
+   * P03 — the explicit validated course-binding state effect (MATCHED
+   * resolution or AMBIGUOUS candidate set) consumed by the API layer before
+   * the ordinary navigation-decision mapping.
+   */
+  courseBinding?: OrchestratedDecision;
 };
 
 /**
@@ -193,6 +205,11 @@ export type OrchestrateNavigatorOptions = {
     | "deferredRequest"
     | "pendingConfirmation"
     | "lastAssistant"
+    | "courseReferents"
+    // P03 (CORR1 F04/F05) — the stored clarification record, so the bare-
+    // candidate continuation and the preserved-remainder reduction are gated
+    // on the recorded payment-multiple issue identity itself.
+    | "clarification"
   >;
   dependencies?: OrchestrationDependencies;
 };
@@ -314,6 +331,7 @@ function emptyResult(
   answerOrigin: NavigatorAnswerOrigin,
   contactCard: AcademyContactCard | null = null,
   stateEffects: Partial<OrchestrationStateEffects> = {},
+  clarification: OrchestrationClarificationOutcome = NOT_APPLICABLE_CLARIFICATION,
 ): NavigatorOrchestrationResult {
   return {
     message,
@@ -340,12 +358,13 @@ function emptyResult(
       fallback: "NONE",
       crossCourseLeakageDetected: false,
     },
-    clarification: NOT_APPLICABLE_CLARIFICATION,
+    clarification,
     stateEffects: {
       catalogAuthorityVersion: stateEffects.catalogAuthorityVersion ?? null,
       transactionalAuthorityVersion:
         stateEffects.transactionalAuthorityVersion ?? null,
       pendingConfirmation: stateEffects.pendingConfirmation ?? null,
+      courseBinding: stateEffects.courseBinding,
     },
   };
 }
@@ -530,6 +549,45 @@ const NOT_APPLICABLE_CLARIFICATION: OrchestrationClarificationOutcome = {
   question: null,
 };
 
+/**
+ * P03 writer gate — the only authorized source of comparison candidates.
+ *
+ * A validated COURSE_COMPARISON may emit an AMBIGUOUS candidate set only when
+ * it carries two known catalogue identities and its set equals the course
+ * references of the latest effective user query, so the model's pair is always
+ * corroborated by the user's own words. CATALOG_LIST, price metadata and
+ * assistant prose never populate the field; an unknown comparison identity
+ * never synthesizes a pair.
+ */
+function validatedComparisonCandidates(
+  conversationAct: ConversationActDecision,
+  query: string,
+): readonly AcademyCourseId[] | null {
+  if (conversationAct.state !== "FACTUAL") return null;
+
+  const comparison = conversationAct.intents.find(
+    (intent) => intent.kind === "COURSE_COMPARISON",
+  );
+  if (
+    comparison === undefined ||
+    comparison.kind !== "COURSE_COMPARISON" ||
+    comparison.hasUnknownCourse ||
+    comparison.courseIds.length !== 2
+  ) {
+    return null;
+  }
+
+  const lexicalCourseIds: readonly AcademyCourseId[] =
+    resolveCourseReferences(query).courseIds;
+  const sameSet =
+    lexicalCourseIds.length === comparison.courseIds.length &&
+    comparison.courseIds.every((courseId) =>
+      lexicalCourseIds.includes(courseId),
+    );
+
+  return sameSet ? comparison.courseIds : null;
+}
+
 type OrchestrationStateContext = OrchestrateNavigatorOptions["conversationState"];
 
 /**
@@ -617,15 +675,56 @@ export async function orchestrateNavigatorResponse(
     options,
   );
 
+  // P03 — the stored comparison candidates and the liveness of the structured
+  // payment clarification they back. Continuation is possible only when the
+  // recorded last assistant act is the payment clarification itself, the open
+  // issue is the EXACT current payment-multiple issue of the stored candidate
+  // set, the stored clarification record is that same issue, the state is
+  // AMBIGUOUS with no selected course, no stale/no-match guard applies, and the
+  // candidate set is non-empty.
+  //
+  // CORR1 F04 — the previous prefix-only issue check let a wrong or already
+  // spent issue pay a bare candidate. Here the prior issue must equal
+  // paymentMultipleIssueKey(storedReferents) — the same canonical algorithm
+  // that created the clarification — and the recorded last assistant act must
+  // be the asked clarification itself: an exhausted issue records
+  // CLARIFICATION_EXHAUSTED or the one-shot HANDOFF_OFFERED on its
+  // exhaustion/handoff turn and is never live again for that set, while a new
+  // valid comparison establishes a new issue identity and a fresh budget
+  // (a set change resets attempts), so a stale handoff from a prior issue
+  // cannot spend the new issue's lifecycle either.
+  const storedState = options.conversationState;
+  const storedReferents: readonly AcademyCourseId[] =
+    storedState?.courseReferents ?? [];
+  const priorIssueKey = options.clarification?.priorIssueKey ?? null;
+  const currentPaymentIssueKey = paymentMultipleIssueKey(storedReferents);
+  const paymentClarificationLive =
+    storedState?.lastAssistant?.act === "CLARIFICATION" &&
+    priorIssueKey !== null &&
+    storedState?.clarification?.issueKey === priorIssueKey &&
+    priorIssueKey === currentPaymentIssueKey &&
+    storedState?.courseMatch === "AMBIGUOUS" &&
+    (storedState?.selectedCourseId ?? null) === null &&
+    storedState?.staleReference == null &&
+    storedReferents.length > 0;
+
+  // CORR2 F05 — the CORR1 duplicate-line reduction is removed at the root:
+  // the kernel no longer preserves a redundant remainder on the exhausted
+  // payment-multiple handoff transition, so the effective request is never
+  // that one question repeated and the payment decision reads the turn's real
+  // effective request exactly as every other lane does. Duplicated or
+  // multi-line text is consequently never collapsed or qualified here.
   const paymentDecision = resolveEnrollmentPaymentDecision(
     query,
     conversationAct,
     {
-      selectedCourseId: options.conversationState?.selectedCourseId ?? null,
-      courseMatch: options.conversationState?.courseMatch ?? "UNKNOWN",
+      selectedCourseId: storedState?.selectedCourseId ?? null,
+      courseMatch: storedState?.courseMatch ?? "UNKNOWN",
       staleCourseReference:
-        options.conversationState?.staleReference !== null &&
-        options.conversationState?.staleReference !== undefined,
+        storedState?.staleReference !== null &&
+        storedState?.staleReference !== undefined,
+      courseReferents: storedReferents,
+      pendingPaymentClarification: paymentClarificationLive,
     },
   );
 
@@ -643,6 +742,13 @@ export async function orchestrateNavigatorResponse(
     factualMessage === null ? message : `${factualMessage}\n\n${message}`;
 
   if (paymentDecision.kind === "ACTION") {
+    // P03 — when the resolved payment consumes a stored candidate set, the
+    // resolution is an explicit course selection: bind MATCHED and clear the
+    // candidates through the validated state effect.
+    const resolvedBinding: OrchestratedDecision | undefined =
+      storedReferents.length > 0 && paymentDecision.action.courseId !== null
+        ? { kind: "MATCHED", courseId: paymentDecision.action.courseId }
+        : undefined;
     return emptyResult(
       combineFactual(
         composeEnrollmentPaymentAnswer(paymentDecision.action, options.profile),
@@ -656,15 +762,67 @@ export async function orchestrateNavigatorResponse(
             ? ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE
             : null,
         transactionalAuthorityVersion: ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
+        ...(resolvedBinding !== undefined
+          ? { courseBinding: resolvedBinding }
+          : {}),
       },
     );
   }
 
   if (paymentDecision.kind === "CLARIFY_MULTIPLE") {
+    // Lexical multi-course requests keep the existing generic clarification.
+    if (paymentDecision.fromStoredCandidates !== true) {
+      return emptyResult(
+        combineFactual(composePaymentAmbiguityAnswer(options.profile)),
+        conversationAct,
+        "PAYMENT_POLICY",
+      );
+    }
+
+    // P03 structured payment clarification — deterministic one-question
+    // wording, explicit AMBIGUOUS/candidates binding, and the A14 budget
+    // scoped to the payment-multiple issue identity.
+    const issueKey = paymentMultipleIssueKey(paymentDecision.courseIds);
+    const priorAttempts =
+      options.clarification?.priorIssueKey === issueKey
+        ? (options.clarification?.priorAttempts ?? 0)
+        : 0;
+    const courseBinding: OrchestratedDecision = {
+      kind: "AMBIGUOUS",
+      ...(paymentDecision.courseIds.length > 0
+        ? { courseIds: [...paymentDecision.courseIds] }
+        : {}),
+    };
+
+    if (priorAttempts >= CLARIFICATION_BUDGET) {
+      return emptyResult(
+        combineFactual(composeClarificationExhaustionAnswer(options.profile)),
+        conversationAct,
+        "PAYMENT_POLICY",
+        null,
+        { courseBinding },
+        {
+          status: "EXHAUSTED",
+          issueKey,
+          attempts: CLARIFICATION_BUDGET,
+          question: null,
+        },
+      );
+    }
+
+    const question = composePaymentAmbiguityAnswer(options.profile);
     return emptyResult(
-      combineFactual(composePaymentAmbiguityAnswer(options.profile)),
+      combineFactual(question),
       conversationAct,
       "PAYMENT_POLICY",
+      null,
+      { courseBinding },
+      {
+        status: "ASKED",
+        issueKey,
+        attempts: priorAttempts + 1,
+        question,
+      },
     );
   }
 
@@ -712,6 +870,12 @@ export async function orchestrateNavigatorResponse(
   }
 
   if (conversationAct.state === "FACTUAL") {
+    // P03 — a corroborated comparison replaces the candidate set through the
+    // explicit AMBIGUOUS binding; the factual act itself stays FACTUAL.
+    const comparisonCandidates = validatedComparisonCandidates(
+      conversationAct,
+      query,
+    );
     return emptyResult(
       factualMessage ?? "",
       conversationAct,
@@ -724,6 +888,14 @@ export async function orchestrateNavigatorResponse(
       transactionalAuthorityVersion: factualUsesTransactionalAuthority
         ? ACADEMY_COMMERCIAL_AUTHORITY_VERSION
         : null,
+      ...(comparisonCandidates !== null
+        ? {
+            courseBinding: {
+              kind: "AMBIGUOUS",
+              courseIds: [...comparisonCandidates],
+            } satisfies OrchestratedDecision,
+          }
+        : {}),
       },
     );
   }

@@ -16,6 +16,10 @@ import {
   type ConversationProfile,
 } from "../chat-contract.ts";
 import { isRecommendableCourseId } from "../academy/course-catalog.ts";
+import {
+  isAcademyCourseId,
+  type AcademyCourseId,
+} from "../academy/course-reference.ts";
 
 /** Owner-ratified stale navigation-context boundary: 24 hours of inactivity. */
 export const SESSION_CONTEXT_TTL_MS = 24 * 60 * 60 * 1000;
@@ -28,6 +32,12 @@ export const CLARIFICATION_BUDGET = 3;
 
 export const MAX_CONVERSATION_STATE_IDENTIFIER_LENGTH = 120;
 export const MAX_PENDING_CONFIRMATION_PROMPT_LENGTH = 600;
+
+/**
+ * P03 — the largest validated comparison candidate set. A non-empty
+ * courseReferents list carries 2–6 unique current catalogue IDs.
+ */
+export const MAX_COURSE_REFERENTS = 6;
 
 /**
  * One centrally configured repair-failure threshold (A05/A23). The counter it
@@ -339,6 +349,16 @@ export type ConversationState = {
   handoff: HandoffState;
   /** A25 bounded session-scope quality and failure-capture evidence. */
   qualitySignals: QualitySignal[];
+  /**
+   * P03 — the validated two-course comparison candidates behind a live
+   * payment/navigation ambiguity. Written only from a corroborated factual
+   * comparison, replaced (never unioned) by a newer valid comparison, and
+   * cleared on resolution, explicit selection, cancel, TTL, restart and close.
+   * Every canonical state emits the field, including the empty [] (see
+   * withCanonicalCourseReferentsField); legacy payloads without it normalize
+   * to [] on read.
+   */
+  courseReferents: AcademyCourseId[];
 };
 
 export class ConversationStateValidationError extends Error {
@@ -544,6 +564,27 @@ function hideNullAuthorityDefaults(
   return state;
 }
 
+/**
+ * P03 (CORR1 F03) — courseReferents is a canonical wire field. Every canonical
+ * state, including the initial one, carries a real own enumerable
+ * courseReferents property, so the initial/wire state emits courseReferents:
+ * [] and ordinary state spreading preserves the field at every transition
+ * length. Legacy payloads without the field normalize to [] on read, so
+ * legacy key-shapes are still accepted; unknown other keys stay rejected.
+ */
+function withCanonicalCourseReferentsField(
+  state: ConversationState,
+): ConversationState {
+  const referents = state.courseReferents ?? [];
+  Object.defineProperty(state, "courseReferents", {
+    configurable: true,
+    enumerable: true,
+    value: referents,
+    writable: true,
+  });
+  return state;
+}
+
 export function readSessionTimestamp(
   value: unknown,
   fieldName: string,
@@ -567,37 +608,42 @@ export function readSessionTimestamp(
 export function createInitialConversationState(
   nowMs: number,
 ): ConversationState {
-  return hideNullAuthorityDefaults({
-    lifecycle: "OPEN",
-    activeFlow: null,
-    suspendedFlow: null,
-    courseMatch: "UNKNOWN",
-    selectedCourseId: null,
-    clarification: null,
-    pendingConfirmation: null,
-    catalogAuthorityVersion: null,
-    transactionalAuthorityVersion: null,
-    deferredRequest: null,
-    lastAssistant: null,
-    lastActivityAt: toSessionTimestamp(nowMs),
-    staleReference: null,
-    repair: null,
-    execution: { ...EMPTY_EXECUTION },
-    lastTechnicalError: null,
-    handoff: createEmptyHandoffState(),
-    qualitySignals: [],
-  });
+  return withCanonicalCourseReferentsField(
+    hideNullAuthorityDefaults({
+      lifecycle: "OPEN",
+      activeFlow: null,
+      suspendedFlow: null,
+      courseMatch: "UNKNOWN",
+      selectedCourseId: null,
+      clarification: null,
+      pendingConfirmation: null,
+      catalogAuthorityVersion: null,
+      transactionalAuthorityVersion: null,
+      deferredRequest: null,
+      lastAssistant: null,
+      lastActivityAt: toSessionTimestamp(nowMs),
+      staleReference: null,
+      repair: null,
+      execution: { ...EMPTY_EXECUTION },
+      lastTechnicalError: null,
+      handoff: createEmptyHandoffState(),
+      qualitySignals: [],
+      courseReferents: [],
+    }),
+  );
 }
 
 /** Working navigation state only: everything the 24h TTL expires. */
 export function clearWorkingState(
   state: ConversationState,
 ): ConversationState {
-  return hideNullAuthorityDefaults({
-    ...createInitialConversationState(0),
-    lifecycle: state.lifecycle,
-    lastActivityAt: state.lastActivityAt,
-  });
+  return withCanonicalCourseReferentsField(
+    hideNullAuthorityDefaults({
+      ...createInitialConversationState(0),
+      lifecycle: state.lifecycle,
+      lastActivityAt: state.lastActivityAt,
+    }),
+  );
 }
 
 function readRequestId(value: unknown, fieldName: string): string | null {
@@ -956,6 +1002,7 @@ export function normalizeConversationStatePayload(
       "lastTechnicalError",
       "handoff",
       "qualitySignals",
+      "courseReferents",
     ])
   ) {
     throw new ConversationStateValidationError(
@@ -1139,6 +1186,52 @@ export function normalizeConversationStatePayload(
     MAX_CHAT_MESSAGE_LENGTH,
   );
 
+  // P03 — validated comparison candidates. Absent/empty normalizes to [];
+  // a non-empty set must be 2–6 unique current catalogue IDs (including the
+  // listed-unroutable identity, which may be a referent but never payable)
+  // and may exist only in an AMBIGUOUS state with no selected course.
+  let courseReferents: AcademyCourseId[] = [];
+  if (
+    value.courseReferents !== null &&
+    value.courseReferents !== undefined
+  ) {
+    const raw = value.courseReferents;
+    if (!Array.isArray(raw) || raw.length > MAX_COURSE_REFERENTS) {
+      throw new ConversationStateValidationError(
+        `courseReferents must be an array of at most ${MAX_COURSE_REFERENTS} course IDs.`,
+      );
+    }
+
+    const ids: AcademyCourseId[] = raw.map((courseId, index) => {
+      if (typeof courseId !== "string" || !isAcademyCourseId(courseId)) {
+        throw new ConversationStateValidationError(
+          `courseReferents[${String(index)}] must be a current catalogue course ID.`,
+        );
+      }
+      return courseId;
+    });
+
+    if (new Set(ids).size !== ids.length) {
+      throw new ConversationStateValidationError(
+        "courseReferents cannot contain duplicate course IDs.",
+      );
+    }
+
+    if (ids.length === 1) {
+      throw new ConversationStateValidationError(
+        "A non-empty courseReferents set requires at least two candidates.",
+      );
+    }
+
+    if (ids.length > 0 && (courseMatch !== "AMBIGUOUS" || selectedCourseId !== null)) {
+      throw new ConversationStateValidationError(
+        "A non-empty courseReferents set requires courseMatch AMBIGUOUS and no selected course.",
+      );
+    }
+
+    courseReferents = ids;
+  }
+
   const catalogAuthorityVersion = readNullableString(
     value.catalogAuthorityVersion,
     "catalogAuthorityVersion",
@@ -1236,26 +1329,29 @@ export function normalizeConversationStatePayload(
     );
   }
 
-  return hideNullAuthorityDefaults({
-    lifecycle,
-    activeFlow,
-    suspendedFlow,
-    courseMatch,
-    selectedCourseId,
-    clarification,
-    pendingConfirmation,
-    catalogAuthorityVersion,
-    transactionalAuthorityVersion,
-    deferredRequest,
-    lastAssistant,
-    lastActivityAt: value.lastActivityAt as string,
-    staleReference,
-    repair: readRepairState(value.repair),
-    execution: readExecutionState(value.execution),
-    lastTechnicalError: readTechnicalErrorState(value.lastTechnicalError),
-    handoff: readHandoffState(value.handoff),
-    qualitySignals: readQualitySignals(value.qualitySignals),
-  });
+  return withCanonicalCourseReferentsField(
+    hideNullAuthorityDefaults({
+      lifecycle,
+      activeFlow,
+      suspendedFlow,
+      courseMatch,
+      selectedCourseId,
+      clarification,
+      pendingConfirmation,
+      catalogAuthorityVersion,
+      transactionalAuthorityVersion,
+      deferredRequest,
+      lastAssistant,
+      lastActivityAt: value.lastActivityAt as string,
+      staleReference,
+      repair: readRepairState(value.repair),
+      execution: readExecutionState(value.execution),
+      lastTechnicalError: readTechnicalErrorState(value.lastTechnicalError),
+      handoff: readHandoffState(value.handoff),
+      qualitySignals: readQualitySignals(value.qualitySignals),
+      courseReferents,
+    }),
+  );
 }
 
 export type SessionFreshnessOutcome = {
@@ -1330,10 +1426,35 @@ export function withCourseBinding(
   selectedCourseId: string | null,
 ): ConversationState {
   if (courseMatch === "MATCHED" && selectedCourseId !== null) {
-    return { ...state, courseMatch, selectedCourseId };
+    // P03 (CORR1 F06) — a resolved MATCHED binding consumes the candidate set:
+    // a non-empty courseReferents list is only valid under AMBIGUOUS with no
+    // selected course, so any transition that resolves the ambiguity into
+    // MATCHED + selectedCourseId (explicit selection, accepted payment-course
+    // confirmation, ordinary resolution) must clear it here for the resulting
+    // state to be a valid canonical wire state.
+    return withCanonicalCourseReferentsField({
+      ...state,
+      courseMatch,
+      selectedCourseId,
+      courseReferents: [],
+    });
   }
 
   return { ...state, courseMatch, selectedCourseId: null };
+}
+
+/**
+ * P03 — replaces the validated comparison candidate set. The set is a canonical
+ * enumerable wire field at every length, including the empty [].
+ */
+export function withCourseReferents(
+  state: ConversationState,
+  courseReferents: readonly AcademyCourseId[],
+): ConversationState {
+  return withCanonicalCourseReferentsField({
+    ...state,
+    courseReferents: [...courseReferents],
+  });
 }
 
 /**
@@ -1366,7 +1487,7 @@ export function resumeSuspendedFlow(
 export function cancelCurrentFlow(
   state: ConversationState,
 ): ConversationState {
-  return {
+  return withCanonicalCourseReferentsField({
     ...state,
     activeFlow: null,
     suspendedFlow: null,
@@ -1378,7 +1499,8 @@ export function cancelCurrentFlow(
     selectedCourseId: null,
     staleReference: null,
     deferredRequest: null,
-  };
+    courseReferents: [],
+  });
 }
 
 export function closeConversation(
@@ -1591,7 +1713,16 @@ export type OrchestratedDecision =
   | { kind: "NONE" }
   | { kind: "MATCHED"; courseId: string }
   | { kind: "NO_MATCH" }
-  | { kind: "AMBIGUOUS" };
+  | {
+      kind: "AMBIGUOUS";
+      /**
+       * P03 — the validated candidate set behind this ambiguity. Present only
+       * when the turn carries an explicit validated set (a corroborated
+       * comparison or a stored-candidate payment clarification); absent means
+       * "preserve whatever candidate set exists".
+       */
+      courseIds?: readonly AcademyCourseId[];
+    };
 
 export type OrchestratedClarification = {
   status: "NOT_APPLICABLE" | "ASKED" | "EXHAUSTED";
@@ -1667,13 +1798,24 @@ export function applyOrchestratedTurn(
 
   switch (outcome.decision.kind) {
     case "MATCHED":
+      // P03 lifecycle — a successful resolution also consumes the candidate set.
+      next = withCourseReferents(next, []);
       next = withCourseBinding(next, "MATCHED", outcome.decision.courseId);
       break;
     case "NO_MATCH":
+      // A non-empty candidate set requires AMBIGUOUS, so a no-match resolution
+      // must clear the set for the state to stay valid.
+      next = withCourseReferents(next, []);
       next = withCourseBinding(next, "NO_CURRENT_COURSE_MATCH", null);
       break;
     case "AMBIGUOUS":
       next = withCourseBinding(next, "AMBIGUOUS", null);
+      // Replace the candidate set only when the turn carries an explicit
+      // validated one; an ambiguity without a set (e.g. the ask-more lane)
+      // preserves the stored comparison candidates.
+      if (outcome.decision.courseIds !== undefined) {
+        next = withCourseReferents(next, outcome.decision.courseIds);
+      }
       break;
     default:
       break;

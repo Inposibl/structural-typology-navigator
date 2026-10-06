@@ -90,9 +90,17 @@ test("dialog restart returns ADDRESS_SETUP and instructs client to clear old cou
   if (result.state !== "RESPOND") return;
 
   assert.equal(result.resetConversation, true);
-  assert.equal(result.profile.displayName, null);
-  assert.equal(result.profile.addressMode, null);
-  assert.match(result.message, /как к вам обращаться/u);
+  // Owner-adjudicated Block-A T32 successor: TURN_LEVEL_PROFILE_SURVIVAL —
+  // restart clears the working conversation/course state, the complete
+  // pre-restart canonical profile survives, and no first-time address
+  // prompt is re-asked merely because restart occurred.
+  assert.deepEqual(result.profile, {
+    displayName: "Иван",
+    addressMode: "TY",
+    nameDeclined: false,
+    pendingUserRequest: null,
+  });
+  assert.doesNotMatch(result.message, /как к вам обращаться/u);
 });
 
 test("ordinary substantive message after completed profile proceeds to router unchanged", () => {

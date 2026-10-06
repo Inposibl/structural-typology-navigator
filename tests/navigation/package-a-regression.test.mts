@@ -546,8 +546,10 @@ test("R21: 'давай сначала' performs a full restart, distinct from ca
 
   assert.equal(result.state, "RESPOND");
   assert.equal(result.resetConversation, true);
-  assert.equal(result.profile.displayName, null);
-  assert.equal(result.profile.addressMode, null);
+  // Owner-adjudicated Block-A T32 successor: TURN_LEVEL_PROFILE_SURVIVAL —
+  // native restart retains the existing user profile while the working
+  // conversation state resets.
+  assert.deepEqual(result.profile, COMPLETE_PROFILE);
   assert.equal(result.conversationState.courseMatch, "UNKNOWN");
   assert.equal(result.conversationState.selectedCourseId, null);
 });

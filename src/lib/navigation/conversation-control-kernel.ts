@@ -34,6 +34,8 @@ import { ACADEMY_COMMERCIAL_AUTHORITY_VERSION } from "../academy/commercial-auth
 import {
   composeEnrollmentPaymentAnswer,
   paymentActionForCourse,
+  paymentMultipleIssueKey,
+  resolveLivePaymentMultipleAnswer,
 } from "../academy/payment-policy.ts";
 import {
   applyConversationProfileControl,
@@ -42,7 +44,6 @@ import {
 import {
   advanceAddressModeDecline,
   advanceConversationProfile,
-  createEmptyConversationProfile,
   detectAddressPreferenceDecline,
   INITIAL_ADDRESS_PROMPT,
   isConversationProfileComplete,
@@ -121,6 +122,13 @@ import {
   type DeferredCapacityNoticeScope,
   type RestatementKind,
 } from "./conversation-response.ts";
+
+/**
+ * Restart acknowledgment for a preserved complete profile (Owner-adjudicated
+ * Block-A T32 successor, TURN_LEVEL_PROFILE_SURVIVAL): the dialogue restarts,
+ * but the user is already known, so the turn must not re-open address setup.
+ */
+const RESTART_ACKNOWLEDGMENT = "Хорошо, начнём сначала.";
 
 export type ConversationControlAct =
   | "RESTART"
@@ -305,6 +313,58 @@ function capacityNoticeScope(
 }
 
 /**
+ * CORR2 F04 — structural identification of the answer to the actually asked
+ * third payment-multiple clarification question (A14/A23). Every condition is
+ * structured: the recorded clarification is exhausted, its issue is the exact
+ * current payment-multiple issue of the stored candidate set, the just-asked
+ * question is the last assistant action, the working state is still the
+ * unselected AMBIGUOUS set, no stale reference or open confirmation
+ * interferes, and the turn text is an exact payable member of that live
+ * candidate set under the P01 closed grammar. Anything else — another issue,
+ * an old candidate set, a non-member or non-payable name, prose, or an
+ * already offered handoff — is not the third answer and stays with the
+ * ordinary exhaustion gate.
+ */
+function livePaymentMultipleThirdAnswer(
+  state: ConversationState,
+  text: string,
+): boolean {
+  const clarification = state.clarification;
+
+  return (
+    clarification !== null &&
+    isClarificationExhausted(clarification) &&
+    state.lastAssistant?.act === "CLARIFICATION" &&
+    state.courseMatch === "AMBIGUOUS" &&
+    state.selectedCourseId === null &&
+    state.staleReference === null &&
+    state.pendingConfirmation === null &&
+    state.courseReferents.length > 0 &&
+    clarification.issueKey === paymentMultipleIssueKey(state.courseReferents) &&
+    resolveLivePaymentMultipleAnswer(text, state.courseReferents) !== null
+  );
+}
+
+/**
+ * CORR2 F05 — whether the exhausted clarification whose offer is being made
+ * is the payment-multiple issue of the stored candidate set: the only
+ * transition whose consumed turn text is the redundant repeated question
+ * itself, and therefore the only exhaustion offer that completes without A19
+ * remainder preservation. Every other exhausted clarification (repair,
+ * address mode, foreign issue keys) keeps the preservation exactly as before.
+ */
+function exhaustedPaymentMultipleIssue(state: ConversationState): boolean {
+  const clarification = state.clarification;
+
+  return (
+    clarification !== null &&
+    isClarificationExhausted(clarification) &&
+    state.courseReferents.length > 0 &&
+    clarification.issueKey === paymentMultipleIssueKey(state.courseReferents)
+  );
+}
+
+/**
  * Prepares a READY handoff and renders its summary from the same preparation,
  * so the message and the stored context can never disagree (A23/A24).
  */
@@ -412,12 +472,22 @@ function resolveConversationControl(
   // ---------------------------------------------------------------------
 
   if (isConversationResetRequest(text)) {
+    // Owner-adjudicated Block-A T32 successor (TURN_LEVEL_PROFILE_SURVIVAL):
+    // a restart restarts the Navigator dialogue/navigation process, not the
+    // user's identity. The working conversation state is replaced by the
+    // canonical restart-cleared state, while the pre-restart canonical
+    // profile is preserved as-is — never reconstructed, never re-inferred.
+    // With an incomplete profile the address setup genuinely continues, so
+    // the initial prompt stays; a preserved complete profile must not be
+    // greeted as a first-time user.
     return {
       state: "RESPOND",
       act: "RESTART",
-      profile: createEmptyConversationProfile(),
+      profile,
       conversationState: createInitialConversationState(nowMs),
-      message: INITIAL_ADDRESS_PROMPT,
+      message: isConversationProfileComplete(profile)
+        ? RESTART_ACKNOWLEDGMENT
+        : INITIAL_ADDRESS_PROMPT,
       resetConversation: true,
     };
   }
@@ -797,12 +867,37 @@ function resolveConversationControl(
   // 3b. Exhausted clarification changes strategy (A23/A14): offer human help
   // once. The clarification resource itself is never reset here, and the offer
   // is one-shot, so the user is not trapped in the offer either.
+  //
+  // CORR2 F04 — one bounded exception: when every structured condition
+  // identifies the turn as the answer to the actually asked third
+  // payment-multiple question (live issue of the current stored candidate
+  // set, just-asked clarification state, exact payable candidate answer), the
+  // answer must resolve through ordinary routing, so the one-shot offer does
+  // not consume it. An unresolved turn on the same issue still receives the
+  // offer, and no fourth clarification question is ever asked.
+  //
+  // CORR2 F05 — on the exhausted payment-multiple transition the consumed
+  // turn text is that same repeated ambiguous question, so preserving it as a
+  // deferred remainder would prepend a redundant copy to the next unresolved
+  // turn ("Как оплатить его\nКак оплатить его"). The offer therefore completes
+  // without remainder preservation and the next unresolved turn routes on its
+  // own text. Every other exhausted clarification keeps A19 preservation.
   // ---------------------------------------------------------------------
 
   if (
     state.handoff.status === "NONE" &&
-    isClarificationExhausted(state.clarification)
+    isClarificationExhausted(state.clarification) &&
+    !livePaymentMultipleThirdAnswer(state, text)
   ) {
+    if (exhaustedPaymentMultipleIssue(state)) {
+      return respond(
+        "HANDOFF_OFFERED",
+        profile,
+        withHandoff(state, offerHandoff("CLARIFICATION_EXHAUSTED")),
+        composeHandoffOfferedAnswer(profile, "CLARIFICATION_EXHAUSTED"),
+      );
+    }
+
     return respondPreservingRemainder(
       "HANDOFF_OFFERED",
       profile,

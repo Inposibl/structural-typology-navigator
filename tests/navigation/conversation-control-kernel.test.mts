@@ -140,8 +140,10 @@ test("A17: restart is distinct from cancellation", () => {
 
   assert.equal(result.state, "RESPOND");
   assert.equal(result.resetConversation, true);
-  assert.equal(result.profile.displayName, null);
-  assert.equal(result.profile.addressMode, null);
+  // Owner-adjudicated Block-A T32 successor: TURN_LEVEL_PROFILE_SURVIVAL —
+  // restart clears the working conversation state, but the pre-existing
+  // canonical profile survives instead of being reset.
+  assert.deepEqual(result.profile, COMPLETE_PROFILE);
   assert.equal(result.conversationState.courseMatch, "UNKNOWN");
 });
 

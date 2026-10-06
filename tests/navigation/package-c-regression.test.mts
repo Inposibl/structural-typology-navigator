@@ -81,13 +81,18 @@ test("A11: payment matrix blocks conflict, ambiguity, stale and no-match paths",
     ).kind,
     "PRESERVE_NO_MATCH",
   );
-  assert.equal(
-    resolveEnrollmentPaymentDecision(
-      "Как оплатить курс Маслоу?",
-      { state: "OUT_OF_SCOPE" },
-    ).kind,
-    "NONE",
+  // SUCCESSOR EXPECTATION UPDATE (Block-A A0 Owner-accepted successor contract,
+  // A1.CORR1 F01): under the accepted A0 closed qualification the optional
+  // курс/курса determiner precedes the closed alias, so the whole request
+  // "Как оплатить курс Маслоу?" qualifies on the OUT_OF_SCOPE lane and resolves
+  // the explicit maslow action. The historical expectation (NONE) predates A0.
+  const determinerAlias = resolveEnrollmentPaymentDecision(
+    "Как оплатить курс Маслоу?",
+    { state: "OUT_OF_SCOPE" },
   );
+  assert.equal(determinerAlias.kind, "ACTION");
+  if (determinerAlias.kind !== "ACTION") throw new Error("expected action");
+  assert.equal(determinerAlias.action.courseId, "maslow");
 });
 
 test("A11: explicit, selected, equal and generic payment cases resolve deterministically", () => {

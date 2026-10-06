@@ -16,9 +16,6 @@ import test from "node:test";
 
 import { POST } from "../../src/app/api/chat/route.ts";
 import {
-  INITIAL_ADDRESS_PROMPT,
-} from "../../src/lib/navigation/conversation-profile.ts";
-import {
   SESSION_CONTEXT_TTL_MS,
   createInitialConversationState,
   toSessionTimestamp,
@@ -160,8 +157,13 @@ test("A17: full reset returns a fresh state and the initial prompt", async () =>
   });
 
   assert.equal(payload.resetConversation, true);
-  assert.equal(payload.message, INITIAL_ADDRESS_PROMPT);
-  assert.equal(payload.profile.displayName, null);
+  // Owner-adjudicated Block-A T32 successor: TURN_LEVEL_PROFILE_SURVIVAL —
+  // the working state is fresh/reset and the complete preserved profile
+  // survives deep-equal; a complete profile does not receive the first-time
+  // address prompt, it receives the CORR3 restart acknowledgment.
+  assert.deepEqual(payload.profile, COMPLETE_PROFILE);
+  assert.equal(payload.message, "Хорошо, начнём сначала.");
+  assert.doesNotMatch(payload.message, /как к вам обращаться/u);
   assert.equal(payload.conversationState.courseMatch, "UNKNOWN");
 });
 
