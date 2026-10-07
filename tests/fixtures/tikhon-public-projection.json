@@ -1,0 +1,166 @@
+{
+  "fixture_revision": "validation-lane-separation-1-owner-maslow-6-60000",
+  "source_kind": "deterministic synthetic test revision; not a live database read",
+  "as_of": "2026-10-07T00:00:00Z",
+  "currency": "RUB",
+  "currency_symbol": "₽",
+  "projection_version": 1,
+  "projected_at": "2026-10-07T00:00:00Z",
+  "courses": [
+    {
+      "id": "levels_of_consciousness",
+      "title": "Уровни сознания",
+      "short_description": "Deterministic public course contract fixture",
+      "meetings_count": 6,
+      "format_info": "6 онлайн-встреч в Zoom по 2 часа · 2 раза в неделю",
+      "max_participants": 24,
+      "course_page_url": "https://structural-typology.academy/courses/levels-of-consciousness",
+      "cadence": "2 раза в неделю",
+      "pricing_options": [
+        {
+          "id": "single_payment",
+          "title": "Единая оплата",
+          "price": 60000,
+          "description": "Условия оплаты и возврата указаны в публичной оферте"
+        }
+      ],
+      "cohorts": [
+        {
+          "id": "waiting_list",
+          "title": "Лист ожидания",
+          "is_active": true,
+          "enrollment_status": "WAITING_LIST",
+          "is_enrollment_open": false
+        }
+      ]
+    },
+    {
+      "id": "maslow",
+      "title": "Маслоу",
+      "short_description": "Deterministic public course contract fixture",
+      "meetings_count": 6,
+      "format_info": "6 онлайн-встреч в Zoom по 2 часа · 2 раза в неделю",
+      "max_participants": 24,
+      "course_page_url": "https://structural-typology.academy/courses/maslow",
+      "cadence": "2 раза в неделю",
+      "pricing_options": [
+        {
+          "id": "single_payment",
+          "title": "Единая оплата",
+          "price": 60000,
+          "description": "Условия оплаты и возврата указаны в публичной оферте"
+        }
+      ],
+      "cohorts": [
+        {
+          "id": "waiting_list",
+          "title": "Лист ожидания",
+          "is_active": true,
+          "enrollment_status": "WAITING_LIST",
+          "is_enrollment_open": false
+        }
+      ]
+    },
+    {
+      "id": "normative_situation",
+      "title": "Нормативная ситуация",
+      "short_description": "Deterministic public course contract fixture",
+      "meetings_count": 6,
+      "format_info": "6 онлайн-встреч в Zoom по 2 часа · 2 раза в неделю",
+      "max_participants": 24,
+      "course_page_url": "https://structural-typology.academy/courses/normative-situation",
+      "cadence": "2 раза в неделю",
+      "pricing_options": [
+        {
+          "id": "single_payment",
+          "title": "Единая оплата",
+          "price": 60000,
+          "description": "Условия оплаты и возврата указаны в публичной оферте"
+        }
+      ],
+      "cohorts": [
+        {
+          "id": "waiting_list",
+          "title": "Лист ожидания",
+          "is_active": true,
+          "enrollment_status": "WAITING_LIST",
+          "is_enrollment_open": false
+        }
+      ]
+    },
+    {
+      "id": "play_and_creativity",
+      "title": "Игра и творчество",
+      "short_description": "Deterministic public course contract fixture",
+      "meetings_count": 6,
+      "format_info": "6 онлайн-встреч в Zoom по 2 часа · 2 раза в неделю",
+      "max_participants": 24,
+      "course_page_url": "https://structural-typology.academy/courses/play-and-creativity",
+      "cadence": "2 раза в неделю",
+      "pricing_options": [
+        {
+          "id": "single_payment",
+          "title": "Единая оплата",
+          "price": 60000,
+          "description": "Условия оплаты и возврата указаны в публичной оферте"
+        }
+      ],
+      "cohorts": [
+        {
+          "id": "waiting_list",
+          "title": "Лист ожидания",
+          "is_active": true,
+          "enrollment_status": "WAITING_LIST",
+          "is_enrollment_open": false
+        }
+      ]
+    },
+    {
+      "id": "structural_typology",
+      "title": "Структурная типология личности",
+      "short_description": "Deterministic public course contract fixture",
+      "meetings_count": 25,
+      "format_info": "25 онлайн-встреч в Zoom по 2 часа · 1 раз в неделю (вс)",
+      "max_participants": 12,
+      "course_page_url": "https://structural-typology.academy/courses/structural-typology",
+      "cadence": "1 раз в неделю (вс)",
+      "pricing_options": [
+        {
+          "id": "full_prepayment",
+          "title": "Полная предоплата",
+          "price": 160000,
+          "description": "Условия оплаты и возврата указаны в публичной оферте",
+          "base_price": 200000,
+          "discount_percent": 20
+        },
+        {
+          "id": "level_1",
+          "title": "1-й уровень",
+          "price": 50000,
+          "description": "Условия оплаты и возврата указаны в публичной оферте"
+        },
+        {
+          "id": "level_2",
+          "title": "2-й уровень",
+          "price": 100000,
+          "description": "Условия оплаты и возврата указаны в публичной оферте"
+        },
+        {
+          "id": "level_3",
+          "title": "3-й уровень",
+          "price": 50000,
+          "description": "Условия оплаты и возврата указаны в публичной оферте"
+        }
+      ],
+      "cohorts": [
+        {
+          "id": "waiting_list",
+          "title": "Лист ожидания",
+          "is_active": true,
+          "enrollment_status": "WAITING_LIST",
+          "is_enrollment_open": false
+        }
+      ]
+    }
+  ]
+}

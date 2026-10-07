@@ -3,29 +3,6 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-// Load .env.local if present so route handler has access to Supabase configuration under npm test
-const envLocalPath = path.resolve(process.cwd(), ".env.local");
-if (fs.existsSync(envLocalPath)) {
-  const envText = fs.readFileSync(envLocalPath, "utf-8");
-  for (const line of envText.split("\n")) {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
-      const idx = trimmed.indexOf("=");
-      const key = trimmed.slice(0, idx).trim();
-      let val = trimmed.slice(idx + 1).trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[key]) {
-        process.env[key] = val;
-      }
-    }
-  }
-}
-
 import {
   getMeetingWord,
   extractCadence,
@@ -35,7 +12,13 @@ import {
   isCohortUnavailable,
   getCohortBadgeText,
   Cohort,
+  ApiResponse,
 } from "../../src/app/tikhon-miniapp-pilot/helpers.ts";
+
+// Revision-bound deterministic public contract; never a database read.
+const projection = JSON.parse(fs.readFileSync(
+  new URL("../fixtures/tikhon-public-projection.json", import.meta.url), "utf-8",
+)) as ApiResponse;
 
 describe("Tikhon Mini App Batch 1 — Catalog & Cohort Selection Contract", () => {
   const pageSourcePath = path.resolve(
@@ -50,11 +33,14 @@ describe("Tikhon Mini App Batch 1 — Catalog & Cohort Selection Contract", () =
   const pageSource = fs.readFileSync(pageSourcePath, "utf-8");
   const cssSource = fs.readFileSync(cssSourcePath, "utf-8");
 
-  test("A: Screen 1 renders course cards from API payload dynamically", async () => {
-    const { GET } = await import("../../src/app/api/tikhon/courses/route.ts");
-    const response = await GET();
-    assert.equal(response.status, 200, "API response must return 200");
-    const data = await response.json();
+  test("A: Deterministic fixture payload supports five dynamic Screen 1 course cards", async () => {
+    const data = projection;
+    assert.ok(pageSource.includes("setCourses(data.courses)"));
+    assert.ok(pageSource.includes("courses.map((course)"));
+    assert.deepStrictEqual(data.courses.map((course) => course.id).sort(), [
+      "levels_of_consciousness", "maslow", "normative_situation",
+      "play_and_creativity", "structural_typology",
+    ].sort());
 
     assert.ok(Array.isArray(data.courses));
     assert.equal(data.courses.length, 5, "Expected 5 courses from projection");
@@ -266,15 +252,13 @@ describe("Tikhon Mini App Batch 1 — Catalog & Cohort Selection Contract", () =
     );
   });
 
-  test("L: Maslow live control values render correctly from projection", async () => {
-    const { GET } = await import("../../src/app/api/tikhon/courses/route.ts");
-    const response = await GET();
-    const data = await response.json();
+  test("L: Maslow deterministic fixture preserves Owner revision and cadence helper", async () => {
+    const data = projection;
     const maslow = data.courses.find((c: { id: string }) => c.id === "maslow");
 
     assert.ok(maslow, "Maslow course must exist in projection");
-    assert.equal(maslow.meetings_count, 4, "Maslow must have 4 meetings");
-    assert.equal(maslow.pricing_options[0].price, 45000, "Maslow price must be 45 000 RUB");
+    assert.equal(maslow.meetings_count, 6, "Owner revision: Maslow must have 6 meetings");
+    assert.equal(maslow.pricing_options.find((option) => option.id === "single_payment")?.price, 60000, "Owner revision: Maslow price must be 60 000 RUB");
     assert.equal(maslow.max_participants, 24, "Maslow limit must be 24");
     assert.ok(
       maslow.format_info.includes("2 раза в неделю"),

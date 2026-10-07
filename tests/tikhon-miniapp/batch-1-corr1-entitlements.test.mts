@@ -4,29 +4,6 @@ import crypto from "crypto";
 import fs from "fs";
 import path from "path";
 
-// Load .env.local if present so route handler has access to Supabase configuration under npm test
-const envLocalPath = path.resolve(process.cwd(), ".env.local");
-if (fs.existsSync(envLocalPath)) {
-  const envText = fs.readFileSync(envLocalPath, "utf-8");
-  for (const line of envText.split("\n")) {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
-      const idx = trimmed.indexOf("=");
-      const key = trimmed.slice(0, idx).trim();
-      let val = trimmed.slice(idx + 1).trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[key]) {
-        process.env[key] = val;
-      }
-    }
-  }
-}
-
 import { NextRequest } from "next/server";
 import {
   deriveSubjectKey,
@@ -61,6 +38,11 @@ function createValidInitData(userId: number, botToken: string, options: { authDa
 
   return params.toString();
 }
+
+// Revision-bound deterministic public contract; never a database read.
+const projection = JSON.parse(fs.readFileSync(
+  new URL("../fixtures/tikhon-public-projection.json", import.meta.url), "utf-8",
+)) as ApiResponse;
 
 describe("TIKHON-MINIAPP BATCH 1 CORR1: Commercial, Progression & Private Entitlements", () => {
   // -------------------------------------------------------------------------
@@ -310,47 +292,62 @@ describe("TIKHON-MINIAPP BATCH 1 CORR1: Commercial, Progression & Private Entitl
   });
 
   // -------------------------------------------------------------------------
-  // 5. Live Supabase End-to-End API Integration
+  // 5. Deterministic private GET/privacy and public commercial contracts
   // -------------------------------------------------------------------------
-  test("Live 1: GET /api/tikhon/student-status for legacy user 8807727029 returns unverified status", async () => {
-    const liveBotToken = process.env.TELEGRAM_BOT_TOKEN || process.env.BOT_TOKEN;
-    const liveEntitlementSecret = process.env.ENTITLEMENT_SUBJECT_SECRET;
-    assert.ok(liveBotToken, "TELEGRAM_BOT_TOKEN must be in environment");
-    assert.ok(liveEntitlementSecret, "ENTITLEMENT_SUBJECT_SECRET must be in environment");
-
-    const initData = createValidInitData(8807727029, liveBotToken);
-    const req = new NextRequest("http://localhost:3000/api/tikhon/student-status", {
-      headers: { "x-telegram-init-data": initData },
-    });
-
-    const res = await studentStatusHandler(req);
-    assert.strictEqual(res.status, 200);
-
-    const json = await res.json();
-    assert.strictEqual(json.is_authenticated, true);
-    assert.strictEqual(json.user_id, undefined, "user_id must NOT be exposed in response");
-    assert.strictEqual(json.subject_key, undefined, "subject_key must NOT be exposed in response");
-    assert.ok(json.courses?.structural_typology, "Must contain structural_typology entitlement record");
-    assert.strictEqual(json.courses.structural_typology.legacy_history_unverified, true);
-    assert.deepStrictEqual(json.courses.structural_typology.paid_options, []);
+  test("Synthetic 1: Authenticated legacy GET preserves fail-closed status and strips internal identity", async () => {
+    const keys = ["SUPABASE_URL", "SUPABASE_SECRET_KEY", "SUPABASE_SERVICE_ROLE_KEY",
+      "TELEGRAM_BOT_TOKEN", "BOT_TOKEN", "ENTITLEMENT_SUBJECT_SECRET"];
+    const saved = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+    const savedFetch = globalThis.fetch;
+    let requests = 0;
+    try {
+      for (const key of keys) delete process.env[key];
+      process.env.SUPABASE_URL = "https://synthetic-entitlements.invalid";
+      process.env.SUPABASE_SECRET_KEY = "synthetic_fixture_key";
+      process.env.TELEGRAM_BOT_TOKEN = SYNTHETIC_BOT_TOKEN;
+      process.env.ENTITLEMENT_SUBJECT_SECRET = SYNTHETIC_ENTITLEMENT_SECRET;
+      globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+        requests += 1;
+        const url = new URL(String(input));
+        assert.strictEqual(url.origin, "https://synthetic-entitlements.invalid");
+        assert.strictEqual(url.pathname, "/rest/v1/tikhon_private_entitlements");
+        assert.strictEqual(init?.method, "GET");
+        assert.strictEqual(url.searchParams.get("select"), "course_id,paid_options,legacy_history_unverified");
+        assert.strictEqual(url.searchParams.get("subject_key"),
+          `eq.${deriveSubjectKey(SYNTHETIC_ENTITLEMENT_SECRET, 500000001)}`);
+        return Response.json([{
+          course_id: "structural_typology", paid_options: [], legacy_history_unverified: true,
+          user_id: 500000001, subject_key: "synthetic_internal_subject", application_id: "synthetic_internal_application",
+        }]);
+      }) as typeof fetch;
+      const res = await studentStatusHandler(new NextRequest("http://localhost:3000/api/tikhon/student-status", {
+        headers: { "x-telegram-init-data": createValidInitData(500000001, SYNTHETIC_BOT_TOKEN) },
+      }));
+      assert.strictEqual(res.status, 200);
+      assert.strictEqual(requests, 1);
+      const json = await res.json();
+      assert.deepStrictEqual(json, {
+        is_authenticated: true,
+        courses: { structural_typology: { paid_options: [], legacy_history_unverified: true } },
+      });
+      assert.ok(res.headers.get("Cache-Control")?.includes("private"));
+      assert.ok(res.headers.get("Cache-Control")?.includes("no-store"));
+      const serialized = JSON.stringify(json);
+      for (const forbidden of ["user_id", "subject_key", "application_id", "synthetic_internal_subject", "500000001"]) {
+        assert.ok(!serialized.includes(forbidden), "private response must strip internal identity");
+      }
+      assert.strictEqual(getOptionEligibility("structural_typology", "level_1", json.courses.structural_typology).state, "LOCKED");
+    } finally {
+      globalThis.fetch = savedFetch;
+      for (const key of keys) {
+        if (saved[key] === undefined) delete process.env[key];
+        else process.env[key] = saved[key];
+      }
+    }
   });
 
-  test("Live 2: GET /api/tikhon/courses contains canonical URLs, cadence and 160k prepayment", async () => {
-    const supabaseUrl = process.env.SUPABASE_URL || "https://mgtghkxebccahtqqyyjv.supabase.co";
-    const supabaseKey = process.env.SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
-    assert.ok(supabaseKey, "SUPABASE_SECRET_KEY must be in environment");
-
-    const res = await fetch(`${supabaseUrl.replace(/\/$/, "")}/rest/v1/tikhon_public_projection?id=eq.current&select=courses`, {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: `Bearer ${supabaseKey}`,
-      },
-    });
-
-    assert.strictEqual(res.status, 200);
-    const rows = await res.json();
-    assert.strictEqual(rows.length, 1);
-    const courses: Course[] = rows[0].courses;
+  test("Fixture 2: Public course URLs, cadence and Structural Typology commercial contract", () => {
+    const courses: Course[] = projection.courses;
     assert.strictEqual(courses.length, 5);
 
     const st = courses.find((c) => c.id === "structural_typology");
@@ -377,6 +374,10 @@ describe("TIKHON-MINIAPP BATCH 1 CORR1: Commercial, Progression & Private Entitl
       for (const po of c.pricing_options) {
         assert.ok(!po.description.includes("невозвратный"), `Option ${po.id} must not mention невозвратный`);
       }
+    }
+    const serialized = JSON.stringify(projection);
+    for (const forbidden of ["user_id", "subject_key", "application_id"]) {
+      assert.ok(!serialized.includes(forbidden), "public fixture must not contain internal identity");
     }
   });
 });

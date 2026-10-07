@@ -3,29 +3,6 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-// Load .env.local if present so route handler has access to Supabase configuration under npm test
-const envLocalPath = path.resolve(process.cwd(), ".env.local");
-if (fs.existsSync(envLocalPath)) {
-  const envText = fs.readFileSync(envLocalPath, "utf-8");
-  for (const line of envText.split("\n")) {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith("#") && trimmed.includes("=")) {
-      const idx = trimmed.indexOf("=");
-      const key = trimmed.slice(0, idx).trim();
-      let val = trimmed.slice(idx + 1).trim();
-      if (
-        (val.startsWith('"') && val.endsWith('"')) ||
-        (val.startsWith("'") && val.endsWith("'"))
-      ) {
-        val = val.slice(1, -1);
-      }
-      if (!process.env[key]) {
-        process.env[key] = val;
-      }
-    }
-  }
-}
-
 import {
   PAYER_TYPE_OPTIONS,
   isValidPayerType,
@@ -35,6 +12,7 @@ import {
   canProceedToPayerSelection,
   getOptionEligibility,
   Course,
+  ApiResponse,
   Cohort,
   PricingOption,
   StudentCourseStatus,
@@ -45,6 +23,11 @@ import {
   validateTelegramInitData,
   GET as studentStatusHandler,
 } from "../../src/app/api/tikhon/student-status/route.ts";
+
+// Revision-bound deterministic public contract; never a database read.
+const projection = JSON.parse(fs.readFileSync(
+  new URL("../fixtures/tikhon-public-projection.json", import.meta.url), "utf-8",
+)) as ApiResponse;
 
 describe("Tikhon Mini App Batch 2 — Pricing & Payer Selection Contract", () => {
   const pageSourcePath = path.resolve(
@@ -106,11 +89,8 @@ describe("Tikhon Mini App Batch 2 — Pricing & Payer Selection Contract", () =>
 
   /* ---------------- PRICING (§23) ---------------- */
 
-  test("A: all four single-option courses auto-select single_payment from the source object", async () => {
-    const { GET } = await import("../../src/app/api/tikhon/courses/route.ts");
-    const response = await GET();
-    assert.equal(response.status, 200, "API response must return 200");
-    const data = await response.json();
+  test("A: deterministic fixture — all four single-option courses auto-select single_payment from the source object", async () => {
+    const data = projection;
 
     const singleOptionIds = [
       "levels_of_consciousness",
@@ -128,6 +108,7 @@ describe("Tikhon Mini App Batch 2 — Pricing & Payer Selection Contract", () =>
       );
       const auto = getSingleAutoPricingOption(course);
       assert.ok(auto, `${id} must auto-select its only pricing option`);
+      assert.strictEqual(auto, course.pricing_options[0], "helper must return the source option object");
       assert.equal(
         auto.id,
         course.pricing_options[0].id,
@@ -141,10 +122,8 @@ describe("Tikhon Mini App Batch 2 — Pricing & Payer Selection Contract", () =>
     }
   });
 
-  test("B: Structural Typology does NOT auto-select among multiple eligible options", async () => {
-    const { GET } = await import("../../src/app/api/tikhon/courses/route.ts");
-    const response = await GET();
-    const data = await response.json();
+  test("B: deterministic fixture — Structural Typology does NOT auto-select among multiple eligible options", async () => {
+    const data = projection;
     const st = data.courses.find(
       (c: { id: string }) => c.id === "structural_typology",
     );

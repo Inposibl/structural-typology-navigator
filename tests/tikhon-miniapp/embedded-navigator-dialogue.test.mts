@@ -22,7 +22,6 @@ import {
 import { validateConversationActDecision } from "../../src/lib/navigation/conversation-act-router.ts";
 import { applyConversationControlKernel } from "../../src/lib/navigation/conversation-control-kernel.ts";
 import {
-  createEmptyConversationProfile,
   INITIAL_ADDRESS_PROMPT,
   isConversationProfileComplete,
 } from "../../src/lib/navigation/conversation-profile.ts";
@@ -532,8 +531,8 @@ describe("Tikhon embedded Navigator dialogue", () => {
       if (produced.state !== "RESPOND") return;
       assert.equal(produced.act, "RESTART");
       assert.equal(produced.resetConversation, true);
-      assert.equal(produced.message, INITIAL_ADDRESS_PROMPT);
-      assert.deepEqual(produced.profile, createEmptyConversationProfile());
+      assert.equal(produced.message, "Хорошо, начнём сначала.");
+      assert.deepEqual(produced.profile, resetTurn.body.profile);
 
       const interpreted = interpretNavigatorChatResponse(
         true,

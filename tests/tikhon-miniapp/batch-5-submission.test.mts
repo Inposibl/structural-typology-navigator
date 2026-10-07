@@ -13,6 +13,7 @@ import {
 } from "../../src/app/tikhon-miniapp-pilot/helpers.ts";
 import { submitTikhonApplication } from "../../src/app/tikhon-miniapp-pilot/submission.ts";
 import { execFileSync } from "node:child_process";
+import { assertNoRuntimeEnvFiles, createSafeEnvironment } from "../../scripts/validation-lanes.mjs";
 import os from "node:os";
 import { register } from "node:module";
 import { pathToFileURL } from "node:url";
@@ -801,16 +802,19 @@ describe("TIKHON-MINIAPP BATCH 5: Application Submission & Dual Handoff", () => 
     // Never a real bot token.
     const syntheticToken = `999001462:AA${crypto.randomBytes(12).toString("hex")}`;
 
+    assertNoRuntimeEnvFiles(repoRoot);
+    const buildEnv: NodeJS.ProcessEnv = {
+      ...createSafeEnvironment(),
+      NODE_ENV: "production",
+      TELEGRAM_BOT_TOKEN: syntheticToken,
+      BOT_TOKEN: syntheticToken,
+    };
+
     let buildLog = "";
     try {
       buildLog = execFileSync(process.execPath, [nextCli, "build"], {
         cwd: repoRoot,
-        env: {
-          ...process.env,
-          TELEGRAM_BOT_TOKEN: syntheticToken,
-          BOT_TOKEN: syntheticToken,
-          NEXT_TELEMETRY_DISABLED: "1",
-        },
+        env: buildEnv,
         encoding: "utf-8",
         timeout: 540_000,
         maxBuffer: 64 * 1024 * 1024,
