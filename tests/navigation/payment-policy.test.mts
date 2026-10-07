@@ -30,17 +30,13 @@ test("exact Owner-authorized payment deep links remain frozen", () => {
   );
 });
 
-test("explicit enrollment intent resolves a named levels course from NAVIGATE", () => {
+test("unconsumed narrative payment framing returns no action from NAVIGATE", () => {
   const action = resolveEnrollmentPaymentAction(
     "Мне подходит курс по уровням сознания, хочу оплатить",
     { state: "NAVIGATE" },
   );
 
-  assert.deepEqual(action, {
-    courseId: "levels-of-consciousness",
-    paymentUrl:
-      "https://t.me/AST_payment_course_bot?start=levels_of_consciousness",
-  });
+  assert.equal(action, null);
 });
 
 test("this course enrollment uses the already bound follow-up course", () => {

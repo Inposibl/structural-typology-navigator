@@ -488,8 +488,8 @@ function scanClause(clause: string, options: ControlScanOptions): ClauseScan {
  * the spans the recognition loop explicitly consumed. Nothing is reconstructed
  * from clauses, no separator is selected or synthesized, and every surviving
  * character keeps its source order. Only the pre-existing whitespace
- * canonicalization (a formatting-only run becomes one space) and the
- * pre-existing final-edge normalization are applied on top.
+ * canonicalization (an LF-containing run becomes one LF; any other run
+ * becomes one space) and the pre-existing final-edge normalization apply.
  */
 export function scanControls(
   text: string,
@@ -535,7 +535,7 @@ export function scanControls(
   }
   remainder += text.slice(cursor);
   remainder = remainder
-    .replace(/\s+/gu, " ")
+    .replace(/\s+/gu, (run) => run.includes("\n") ? "\n" : " ")
     .replace(TRIM_EDGES, "")
     .trim()
     .slice(0, MAX_CHAT_MESSAGE_LENGTH);

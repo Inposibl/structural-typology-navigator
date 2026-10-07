@@ -7,6 +7,7 @@ import {
   composeEnrollmentPaymentAnswer,
   hasEnrollmentPaymentIntent,
   paymentActionForCourse,
+  resolveEnrollmentPaymentAction,
   resolveEnrollmentPaymentDecision,
 } from "../../src/lib/academy/payment-policy.ts";
 import {
@@ -497,17 +498,15 @@ test("CORR2 A11: English canonical and slug references map to existing catalog c
   );
 });
 
-test("CORR2 A11: a single English reference keeps the course-specific payment action", () => {
+test("CORR2 A11: a space-form English reference has no bounded payment authority", () => {
   const decision = resolveEnrollmentPaymentDecision(
     "Хочу оплатить structural typology",
     { state: "NAVIGATE" },
   );
-  assert.equal(decision.kind, "ACTION");
-  if (decision.kind !== "ACTION") throw new Error("expected action");
-  assert.equal(decision.action.courseId, "structural-typology");
+  assert.deepEqual(decision, { kind: "NONE" });
   assert.equal(
-    decision.action.paymentUrl,
-    "https://t.me/AST_payment_course_bot?start=structural_typology",
+    resolveEnrollmentPaymentAction("Хочу оплатить structural typology", { state: "NAVIGATE" }),
+    null,
   );
 });
 
@@ -617,9 +616,11 @@ test("CORR2.CORR1: start-anchored bare imperatives enter the existing payment pa
     "Оплатить structural typology",
     { state: "NAVIGATE" },
   );
-  assert.equal(english.kind, "ACTION");
-  if (english.kind !== "ACTION") throw new Error("expected action");
-  assert.equal(english.action.courseId, "structural-typology");
+  assert.deepEqual(english, { kind: "NONE" });
+  assert.equal(
+    resolveEnrollmentPaymentAction("Оплатить structural typology", { state: "NAVIGATE" }),
+    null,
+  );
 
   const multiRu = "Оплатить Маслоу или Уровни сознания";
   assert.equal(resolveCourseReferences(multiRu).kind, "MULTIPLE");

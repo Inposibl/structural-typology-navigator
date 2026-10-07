@@ -50,7 +50,7 @@ test("explicit course enrollment bypasses RAG and returns exact payment deep lin
   assert.doesNotMatch(result.message, /подключённых материалах/u);
 });
 
-test("named levels course enrollment resolves checkout even before RAG", async () => {
+test("unconsumed narrative payment framing follows deterministic local routing", async () => {
   let routeCalls = 0;
 
   const result = await orchestrateNavigatorResponse(
@@ -66,15 +66,14 @@ test("named levels course enrollment resolves checkout even before RAG", async (
         classifyAct: async () => ({ state: "NAVIGATE" }),
         route: async () => {
           routeCalls += 1;
-          throw new Error("router must be bypassed after explicit purchase intent");
+          return { state: "NO_CURRENT_COURSE_MATCH", rationale: "Локальная тестовая маршрутизация." };
         },
+        compose: async () => "Локальный ответ без оплаты.",
       },
     },
   );
 
-  assert.equal(routeCalls, 0);
-  assert.match(
-    result.message,
-    /https:\/\/t\.me\/AST_payment_course_bot\?start=levels_of_consciousness/u,
-  );
+  assert.equal(routeCalls, 1);
+  assert.equal(result.decision?.state, "NO_CURRENT_COURSE_MATCH");
+  assert.doesNotMatch(result.message, /AST_payment_course_bot/u);
 });

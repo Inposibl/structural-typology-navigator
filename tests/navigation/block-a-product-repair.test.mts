@@ -29,7 +29,7 @@
  */
 
 import assert from "node:assert/strict";
-import test from "node:test";
+import test, { after, mock } from "node:test";
 
 import {
   handleChatRequest,
@@ -70,6 +70,7 @@ import {
   createInitialConversationState,
   normalizeConversationStatePayload,
   reopenConversation,
+  systemSessionClock,
   withCourseBinding,
   withCourseReferents,
   type ConversationState,
@@ -77,6 +78,8 @@ import {
 import type { ConversationProfile } from "../../src/lib/chat-contract.ts";
 
 const T0 = Date.parse("2026-10-05T09:00:00.000Z");
+mock.method(systemSessionClock, "now", () => T0);
+after(() => mock.restoreAll());
 
 const PROFILE: ConversationProfile = {
   displayName: "Тест",
@@ -2289,9 +2292,9 @@ test("T39: the selected package adds no deferred P04–P07 mechanism over the fr
   assert.doesNotMatch(a0015.message, /два места/u);
 });
 
-test("T40: contact-payment mixed requests keep payment precedence and cross-course evidence never leaks", async () => {
+test("T40: mixed contact tails block payment and cross-course evidence never leaks", async () => {
   // A request carrying payment intent is never captured by the deterministic
-  // contact shortcut and produces no manager card; the payment answer wins.
+  // contact shortcut and produces no manager card; the foreign tail blocks payment.
   const mixed = await orchestrateNavigatorResponse(
     [
       {
@@ -2307,14 +2310,21 @@ test("T40: contact-payment mixed requests keep payment precedence and cross-cour
           courseId: "maslow",
           evidenceRequested: false,
         }),
-        retrieve: async () => {
-          throw new Error("retrieval must not run");
-        },
+        retrieve: async () => ({ hasActiveSources: false, bindings: [], matches: [] }),
+        composeFollowUp: async () => "Ответ по материалам курса.",
       },
     },
   );
   assert.equal(mixed.contactCard, null);
-  assert.match(mixed.message, /start=maslow/u);
+  assert.doesNotMatch(mixed.message, /AST_payment_course_bot/u);
+  assert.equal(
+    resolveEnrollmentPaymentDecision(
+      "Хочу оплатить его, и как связаться с менеджером?",
+      { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
+      { selectedCourseId: "maslow", courseMatch: "MATCHED" },
+    ).kind,
+    "NONE",
+  );
 
   // Cross-course evidence is discarded at the structural ceiling.
   const ceiling = await orchestrateNavigatorResponse(
@@ -2750,7 +2760,7 @@ test("CORR4 F02 support: real source punctuation stays significant across newlin
   // the pure payment request; the genuine "?" boundary survives the scan.
   const scan = scanControls("Погода?\nКак оплатить его?");
   assert.equal(scan.controls.length, 0);
-  assert.equal(scan.remainder, "Погода? Как оплатить его");
+  assert.equal(scan.remainder, "Погода?\nКак оплатить его");
 });
 
 const CORR4_PUNCTUATION = /[.;:!?…]/gu;
@@ -2821,11 +2831,11 @@ test("CORR4 F02 support: scanner introduces no invented punctuation for untouche
   }
 
   // The Owner's two defect vectors reconstruct to exactly the whitespace-
-  // canonical form of their single-line sources — never a re-punctuation.
-  assert.equal(scanControls("Как\nоплатить\nего?").remainder, "Как оплатить его");
+  // canonical form retaining LF boundaries — never a re-punctuation.
+  assert.equal(scanControls("Как\nоплатить\nего?").remainder, "Как\nоплатить\nего");
   assert.equal(
     scanControls("Хочу\nоплатить\nкурс\nМаслоу.").remainder,
-    "Хочу оплатить курс Маслоу",
+    "Хочу\nоплатить\nкурс\nМаслоу",
   );
   // A real source period survives as a real period.
   assert.equal(
@@ -2835,7 +2845,7 @@ test("CORR4 F02 support: scanner introduces no invented punctuation for untouche
   // A real source "?" survives as a real "?" across a newline boundary.
   assert.equal(
     scanControls("Как оплатить его?\nЗапиши меня к врачу").remainder,
-    "Как оплатить его? Запиши меня к врачу",
+    "Как оплатить его?\nЗапиши меня к врачу",
   );
 });
 
@@ -2887,10 +2897,10 @@ test("CORR5 F02 support: interior source punctuation survives the native path (C
   // compound gap; the former CORR4 candidate reduced all four to a payable
   // "Как оплатить его". The marks must now survive in order.
   const vectors: ReadonlyArray<[string, string]> = [
-    ["Как\n ? \nоплатить\n ? \nего", "Как ? оплатить ? его"],
-    ["Как\r\n ? \r\nоплатить\r\n ? \r\nего", "Как ? оплатить ? его"],
-    ["Как\n . \nоплатить\n . \nего", "Как . оплатить . его"],
-    ["Как\n\t: \nоплатить\n\t: \nего", "Как : оплатить : его"],
+    ["Как\n ? \nоплатить\n ? \nего", "Как\n?\nоплатить\n?\nего"],
+    ["Как\r\n ? \r\nоплатить\r\n ? \r\nего", "Как\n?\nоплатить\n?\nего"],
+    ["Как\n . \nоплатить\n . \nего", "Как\n.\nоплатить\n.\nего"],
+    ["Как\n\t: \nоплатить\n\t: \nего", "Как\n:\nоплатить\n:\nего"],
   ];
   for (const [input, expectedEffective] of vectors) {
     const effective = await assertNotPayable(input);
@@ -2904,15 +2914,15 @@ test("CORR5 F02 support: a consumed control never merges survivors across its re
   // into the payable single-line form.
   const resume = await assertNotPayable("Как оплатить\nпродолжим.\nего?");
   const skip = await assertNotPayable("Как оплатить\nпропустим.\nего?");
-  assert.equal(resume, "Как оплатить . его");
-  assert.equal(skip, "Как оплатить . его");
+  assert.equal(resume, "Как оплатить\n.\nего");
+  assert.equal(skip, "Как оплатить\n.\nего");
   assert.notEqual(resume, "Как оплатить его");
 
   // Scanner level across the IV1 merging control classes.
   for (const control of ["повтори", "перефразируй", "проще", "отмени подбор", "продолжим", "пропустим", "пока"]) {
     const source = `Как оплатить\n${control}.\nего?`;
     const scan = scanControls(source, { confirmationPending: true, addressSetupOpen: true });
-    assert.equal(scan.remainder, "Как оплатить . его", JSON.stringify({ control }));
+    assert.equal(scan.remainder, "Как оплатить\n.\nего", JSON.stringify({ control }));
     assert.equal(
       qualifiesForAcademyPaymentScopeOverride(scan.remainder ?? ""),
       false,
@@ -2926,18 +2936,18 @@ test("CORR5 F02 support: no-control roundtrip preserves the whole non-whitespace
   // only the pre-existing message-edge run normalized away. No interior
   // punctuation may disappear; none may be invented.
   const cases: ReadonlyArray<[string, string]> = [
-    ["Как\n ? \nоплатить\n ? \nего", "Как ? оплатить ? его"],
-    ["Как\r\n ? \r\nоплатить\r\n ? \r\nего", "Как ? оплатить ? его"],
-    ["Как\n . \nоплатить\n . \nего", "Как . оплатить . его"],
-    ["Как\n\t: \nоплатить\n\t: \nего", "Как : оплатить : его"],
-    ["Альфа? \n!Бета", "Альфа? !Бета"],
+    ["Как\n ? \nоплатить\n ? \nего", "Как\n?\nоплатить\n?\nего"],
+    ["Как\r\n ? \r\nоплатить\r\n ? \r\nего", "Как\n?\nоплатить\n?\nего"],
+    ["Как\n . \nоплатить\n . \nего", "Как\n.\nоплатить\n.\nего"],
+    ["Как\n\t: \nоплатить\n\t: \nего", "Как\n:\nоплатить\n:\nего"],
+    ["Альфа? \n!Бета", "Альфа?\n!Бета"],
     ["Альфа;Бета", "Альфа;Бета"],
     ["Альфа…Бета", "Альфа…Бета"],
-    ["Погода?\nКак оплатить его?", "Погода? Как оплатить его"],
-    ["Как оплатить его?\nЗапиши меня к врачу", "Как оплатить его? Запиши меня к врачу"],
-    ["Хочу оплатить курс Маслоу.\nПереведи деньги на другой сервис", "Хочу оплатить курс Маслоу. Переведи деньги на другой сервис"],
+    ["Погода?\nКак оплатить его?", "Погода?\nКак оплатить его"],
+    ["Как оплатить его?\nЗапиши меня к врачу", "Как оплатить его?\nЗапиши меня к врачу"],
+    ["Хочу оплатить курс Маслоу.\nПереведи деньги на другой сервис", "Хочу оплатить курс Маслоу.\nПереведи деньги на другой сервис"],
     ["Как\tоплатить\tего?", "Как оплатить его"],
-    ["Как\r\nоплатить\r\nего?", "Как оплатить его"],
+    ["Как\r\nоплатить\r\nего?", "Как\nоплатить\nего"],
   ];
   for (const [source, expected] of cases) {
     const scan = scanControls(source, {});
@@ -2961,8 +2971,8 @@ test("CORR5 F02 support: consumed controls subtract only control-construct chara
     ["повтори, а потом расскажи про мышление", "расскажи про мышление"],
     ["пока\nКак оплатить его", "Как оплатить его"],
     ["повтори?\nКак оплатить его?", "Как оплатить его"],
-    ["Как оплатить\nпродолжим.\nего?", "Как оплатить . его"],
-    ["Как оплатить\nпродолжим. пока.\nего?", "Как оплатить . . его"],
+    ["Как оплатить\nпродолжим.\nего?", "Как оплатить\n.\nего"],
+    ["Как оплатить\nпродолжим. пока.\nего?", "Как оплатить\n. .\nего"],
     ["повтори, Как оплатить его", "Как оплатить его"],
   ];
   for (const [source, expected] of cases) {

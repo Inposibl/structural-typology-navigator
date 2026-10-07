@@ -908,7 +908,8 @@ export async function orchestrateNavigatorResponse(
 
   if (
     contactIntent &&
-    conversationAct.state !== "NAVIGATE"
+    conversationAct.state !== "NAVIGATE" &&
+    !(conversationAct.state === "COURSE_FOLLOW_UP" && hasEnrollmentPaymentIntent(query))
   ) {
     const contact = composeAcademyContactAnswer(contactIntent, options.profile);
     return emptyResult(

@@ -215,30 +215,155 @@ function matchNamedCourseObject(normalized: string): AcademyCourseId | null {
   return null;
 }
 
+// Fresh authority is separate from the historical tables consumed by P03.
+const FRESH_SCOPE_OVERRIDE_PREFIXES = [
+  ...SCOPE_OVERRIDE_PREFIXES,
+  "заплатить за",
+  "где заплатить за",
+].sort((a, b) => b.length - a.length);
+
+const FRESH_NAMED_ALIASES = [
+  ...CLOSED_NAMED_ALIASES,
+  { courseId: "structural-typology", alias: "структурную типологию личности" },
+  { courseId: "levels-of-consciousness", alias: "иерархию уровней сознания" },
+] as const;
+
+const FRESH_SECONDARY_CLAUSES = [
+  "как оплатить", "где оплатить", "как купить", "как оформить", "как записаться",
+  "куда платить", "куда оплачивать", "куда перевести",
+  "оплатить", "купить", "оформить", "записаться",
+];
+
+const FRESH_OBJECT_SURFACES = [...new Set([
+  ...FRESH_NAMED_ALIASES.map(({ alias }) => alias),
+  ...ACADEMY_COURSES.flatMap((course) => [course.id, normalizeForPaymentQualification(course.title)]),
+])].sort((a, b) => b.length - a.length).map((surface) =>
+  surface.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&").replace(/ /gu, "\\s+"),
+).join("|");
+const FRESH_OBJECT_SOURCE = `(?:(?:курс|курса)\\s+)?(?:${FRESH_OBJECT_SURFACES})`;
+const FRESH_OBJECT_SPANS = new RegExp(
+  `(?<![\\p{L}\\p{N}_@/\\-])(?:(?:курс|курса)\\s+)?(?:«\\s*${FRESH_OBJECT_SOURCE}\\s*»|"\\s*${FRESH_OBJECT_SOURCE}\\s*"|${FRESH_OBJECT_SOURCE})(?![\\p{L}\\p{N}_/\\-])`,
+  "giu",
+);
+
+type FreshPaymentForm = { courseId: AcademyCourseId | null };
+
+function matchFreshCourseObject(normalized: string): AcademyCourseId | null {
+  let object = normalized.replace(/^(?:курс|курса)\s+/u, "");
+  if (
+    (object.startsWith("«") && object.endsWith("»")) ||
+    (object.startsWith('"') && object.endsWith('"'))
+  ) {
+    object = object.slice(1, -1).trim();
+  }
+  const historical = matchNamedCourseObject(object);
+  if (historical !== null) return historical;
+  const withoutDeterminer = object.replace(/^(?:курс|курса)\s+/u, "");
+  const alias = FRESH_NAMED_ALIASES.find((entry) => entry.alias === withoutDeterminer);
+  return alias !== undefined && isAcademyCourseId(alias.courseId) ? alias.courseId : null;
+}
+
+function matchFreshPrimary(normalized: string): FreshPaymentForm | null {
+  for (const prefix of FRESH_SCOPE_OVERRIDE_PREFIXES) {
+    const remainder = normalized === prefix
+      ? ""
+      : normalized.startsWith(`${prefix} `)
+        ? normalized.slice(prefix.length + 1)
+        : null;
+    if (remainder === null) continue;
+    const courseId = matchFreshCourseObject(remainder);
+    if (courseId !== null) return { courseId };
+    if (
+      prefix !== "заплатить за" && prefix !== "где заплатить за" &&
+      (remainder === "" || PERMITTED_ANAPHORIC_SUFFIXES.includes(remainder))
+    ) {
+      return { courseId: null };
+    }
+  }
+  return null;
+}
+
+function recognizeFreshPaymentForm(query: string): FreshPaymentForm | null {
+  const framing = query.match(/^\s*(?:да|хорошо|окей)(?![а-яёa-z0-9])([\s,.;:!?…]+)/iu);
+  if (framing !== null && (framing[1].match(/\n/gu)?.length ?? 0) <= 1) {
+    query = query.slice(framing[0].length);
+  }
+
+  // Exact leftmost-longest objects protect their original source offsets,
+  // including title punctuation and formatting whitespace inside the object.
+  const spans = [...query.matchAll(FRESH_OBJECT_SPANS)].map((match) => ({
+    start: match.index,
+    end: match.index + match[0].length,
+  }));
+  const fragments: string[] = [];
+  const boundaries: ("SOFT_LF" | "HARD_PUNCT")[] = [];
+  let fragment = "";
+  let spanIndex = 0;
+  let cursor = 0;
+  while (cursor < query.length) {
+    const span = spans[spanIndex];
+    if (span !== undefined && cursor === span.start) {
+      fragment += query.slice(span.start, span.end);
+      cursor = span.end;
+      spanIndex += 1;
+      continue;
+    }
+    if (!/[\s.;:!?…]/u.test(query[cursor])) {
+      fragment += query[cursor++];
+      continue;
+    }
+    const start = cursor;
+    while (cursor < query.length && /[\s.;:!?…]/u.test(query[cursor])) cursor += 1;
+    const run = query.slice(start, cursor);
+    const hard = /[.;:!?…]/u.test(run);
+    if (hard || run.includes("\n")) {
+      if (fragment.trim().length > 0) {
+        fragments.push(fragment.trim());
+        boundaries.push(hard ? "HARD_PUNCT" : "SOFT_LF");
+        fragment = "";
+      } else if (hard && boundaries.length > 0) {
+        boundaries[boundaries.length - 1] = "HARD_PUNCT";
+      }
+    } else {
+      fragment += " ";
+    }
+  }
+  if (fragment.trim().length > 0) fragments.push(fragment.trim());
+  if (fragments.length === 0) return null;
+
+  // Evaluate contiguous partitions from the end, retaining only minimum-join
+  // cost and its count. A tied minimum fails closed; hard edges never join.
+  const best: ({ joins: number; count: number } & FreshPaymentForm | null)[] =
+    Array(fragments.length + 1).fill(null);
+  best[fragments.length] = { joins: 0, count: 1, courseId: null };
+  for (let start = fragments.length - 1; start >= 0; start -= 1) {
+    let block = "";
+    for (let end = start; end < fragments.length; end += 1) {
+      if (end > start && boundaries[end - 1] !== "SOFT_LF") break;
+      block += `${end > start ? " " : ""}${fragments[end]}`;
+      const normalized = block.replace(/\s+/gu, " ").trim().toLowerCase();
+      const form = start === 0
+        ? matchFreshPrimary(normalized)
+        : FRESH_SECONDARY_CLAUSES.includes(normalized) ? { courseId: null } : null;
+      const suffix = best[end + 1];
+      if (form === null || suffix === null) continue;
+      const joins = end - start + suffix.joins;
+      const prior = best[start];
+      if (prior === null || joins < prior.joins) {
+        best[start] = { joins, count: suffix.count, courseId: form.courseId };
+      } else if (joins === prior.joins) {
+        prior.count = Math.min(2, prior.count + suffix.count);
+      }
+    }
+  }
+  const winner = best[0];
+  return winner !== null && winner.count === 1 ? { courseId: winner.courseId } : null;
+}
+
 export function qualifiesForAcademyPaymentScopeOverride(
   query: string,
 ): boolean {
-  const normalized = normalizeForPaymentQualification(query);
-  if (normalized.length === 0) return false;
-
-  for (const prefix of SCOPE_OVERRIDE_PREFIXES) {
-    let remainder: string | null = null;
-    if (normalized === prefix) {
-      remainder = "";
-    } else if (normalized.startsWith(`${prefix} `)) {
-      remainder = normalized.slice(prefix.length + 1);
-    }
-    if (remainder === null) continue;
-
-    if (
-      remainder === "" ||
-      PERMITTED_ANAPHORIC_SUFFIXES.includes(remainder) ||
-      matchNamedCourseObject(remainder) !== null
-    ) {
-      return true;
-    }
-  }
-  return false;
+  return recognizeFreshPaymentForm(query) !== null;
 }
 
 /**
@@ -369,6 +494,8 @@ export function resolveEnrollmentPaymentDecision(
   act: ConversationActDecision,
   context: PaymentResolutionContext = {},
 ): EnrollmentPaymentDecision {
+  if (act.state === "ROUTER_DEGRADED") return { kind: "NONE" };
+
   // P03 continuation — evaluated before the fresh-intent gate and only for a
   // live structured payment clarification: an exact named-candidate answer
   // continues the already-qualified flow without repeating payment language.
@@ -389,7 +516,9 @@ export function resolveEnrollmentPaymentDecision(
     }
   }
 
-  if (!hasEnrollmentPaymentIntent(query)) {
+  const freshForm = recognizeFreshPaymentForm(query);
+  const genericIntent = hasEnrollmentPaymentIntent(query);
+  if (!genericIntent && freshForm?.courseId == null) {
     return { kind: "NONE" };
   }
 
@@ -398,7 +527,7 @@ export function resolveEnrollmentPaymentDecision(
   // OUT_OF_SCOPE request keeps the existing NONE veto.
   if (
     act.state === "OUT_OF_SCOPE" &&
-    !qualifiesForAcademyPaymentScopeOverride(query)
+    freshForm === null
   ) {
     return { kind: "NONE" };
   }
@@ -434,6 +563,7 @@ export function resolveEnrollmentPaymentDecision(
       };
     }
 
+    if (freshForm?.courseId !== explicitCourseId) return { kind: "NONE" };
     return { kind: "ACTION", action: paymentActionForCourse(explicitCourseId) };
   }
 
@@ -458,10 +588,11 @@ export function resolveEnrollmentPaymentDecision(
   }
 
   if (selectedCourseId !== null) {
+    if (freshForm === null) return { kind: "NONE" };
     return { kind: "ACTION", action: paymentActionForCourse(selectedCourseId) };
   }
 
-  if (act.state !== "META") {
+  if (genericIntent && act.state !== "META") {
     return {
       kind: "ACTION",
       action: {
