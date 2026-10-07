@@ -620,8 +620,8 @@ test("T14: the five official course URLs and the general URL stay byte-exact wit
   assert.equal(ACADEMY_PAYMENT_POLICY.generalUrl, GENERAL_URL);
 
   const modes: Array<[ConversationProfile["addressMode"], RegExp]> = [
-    ["TY", /оплаты открой /u],
-    ["VY", /оплаты откройте /u],
+    ["TY", /оплаты перейди /u],
+    ["VY", /оплаты перейдите /u],
     [null, /Запись и оплата — через/u],
   ];
   for (const [mode, pattern] of modes) {

@@ -94,6 +94,13 @@ test("A11: payment matrix blocks conflict, ambiguity, stale and no-match paths",
   assert.equal(determinerAlias.kind, "ACTION");
   if (determinerAlias.kind !== "ACTION") throw new Error("expected action");
   assert.equal(determinerAlias.action.courseId, "maslow");
+  assert.equal(
+    resolveEnrollmentPaymentDecision(
+      "Как записаться к врачу?",
+      { state: "OUT_OF_SCOPE" },
+    ).kind,
+    "NONE",
+  );
 });
 
 test("A11: explicit, selected, equal and generic payment cases resolve deterministically", () => {
@@ -569,7 +576,8 @@ test("CORR2 F-2: payment wording implies no current cohort, stream, schedule or 
   ];
 
   for (const answer of answers) {
-    assert.match(answer, /Помощник[а-яё]* по оплате курсов/u, answer);
+    assert.match(answer, /Тихон[а-яё]*|AI-секретар[а-яё]*/u, answer);
+    assert.doesNotMatch(answer, /Помощник[а-яё]* по оплате курсов/u, answer);
     assert.doesNotMatch(
       answer,
       /поток|расписан|набор|старт|групп|окно/iu,
@@ -645,6 +653,13 @@ test("CORR2.CORR1: narrative payment mentions and protected lanes stay non-trans
   assert.equal(
     resolveEnrollmentPaymentDecision(
       "Оплатить Маслоу и Уровни сознания",
+      { state: "OUT_OF_SCOPE" },
+    ).kind,
+    "NONE",
+  );
+  assert.equal(
+    resolveEnrollmentPaymentDecision(
+      "Куда перевести деньги за квартиру?",
       { state: "OUT_OF_SCOPE" },
     ).kind,
     "NONE",

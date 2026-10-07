@@ -1,0 +1,250 @@
+{
+  "$id": "https://structural-typology.academy/benchmarks/navigator-bounded-reasoning-rag-1/schema.v1.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "definitions": {
+    "evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "authorityRelation": {
+          "enum": [
+            "ELABORATION",
+            "FOUNDATIONAL",
+            "OPERATIONALIZATION",
+            "PROPOSITION_SCOPED_CORRECTION",
+            "SUPPLEMENTAL"
+          ]
+        },
+        "chunkId": {
+          "type": "integer"
+        },
+        "documentId": {
+          "type": "string"
+        },
+        "evidenceNote": {
+          "type": "string"
+        },
+        "locator": {
+          "type": "object"
+        },
+        "sourceSlug": {
+          "type": "string"
+        },
+        "supportsPropositions": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "sourceSlug",
+        "documentId",
+        "chunkId",
+        "authorityRelation",
+        "locator",
+        "supportsPropositions"
+      ],
+      "type": "object"
+    }
+  },
+  "description": "Architecture-neutral gold record for one benchmark item. Judges the user-level epistemic outcome (answerability, propositions, authority semantics, provenance, abstention, inference boundaries) and never an internal retrieval or reasoning mechanism. Authority is represented semantically and MUST NOT be encoded as a numeric rank.",
+  "properties": {
+    "acceptableAlternativeEvidence": {
+      "description": "Evidence that may substitute for gold, OR an explicit negative control whose evidenceNote begins by stating it does NOT support the proposition.",
+      "items": {
+        "$ref": "#/definitions/evidence"
+      },
+      "type": "array"
+    },
+    "adjudicationNotes": {
+      "type": "string"
+    },
+    "boundedInference": {
+      "additionalProperties": false,
+      "properties": {
+        "acceptableInference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "premises": {
+          "description": "Proposition ids; every premise must be backed by goldEvidence. Inference depth for v1 is 1.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "prohibitedExternalPremises": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "required",
+        "premises",
+        "acceptableInference",
+        "prohibitedExternalPremises"
+      ],
+      "type": "object"
+    },
+    "conversationContext": {
+      "description": "Prior dialogue turns required for pronoun/context items.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "courseId": {
+      "description": "professional-development-stages is permitted ONLY in ADVERSARIAL_SAFETY while the course is LISTED_UNROUTABLE with 0 active bindings.",
+      "enum": [
+        "levels-of-consciousness",
+        "maslow",
+        "normative-situation",
+        "play-and-creativity",
+        "structural-typology",
+        "professional-development-stages"
+      ]
+    },
+    "expectedAbstentionBoundary": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "expectedAnswerability": {
+      "enum": [
+        "ANSWERABLE",
+        "INSUFFICIENT",
+        "PARTIALLY_ANSWERABLE"
+      ]
+    },
+    "goldEvidence": {
+      "items": {
+        "$ref": "#/definitions/evidence"
+      },
+      "type": "array"
+    },
+    "id": {
+      "pattern": "^NBRR1-(DEV|HOLD|ADV)-[0-9]{3}$",
+      "type": "string"
+    },
+    "itemSha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "ownerDecisionClass": {
+      "description": "A straightforward corpus-grounded; B needs semantic/authority judgement; C answerability genuinely ambiguous; D unresolved source conflict; E proposed exclusion.",
+      "enum": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E"
+      ]
+    },
+    "prohibitedPropositions": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "question": {
+      "minLength": 5,
+      "type": "string"
+    },
+    "questionClass": {
+      "type": "string"
+    },
+    "requiredPropositions": {
+      "description": "Atomic propositions a correct answer must convey. Wording is free; no single canonical sentence is frozen.",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "scopedCorrection": {
+      "additionalProperties": false,
+      "properties": {
+        "controllingSource": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "scope": {
+          "description": "The single proposition the correction controls.",
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "required",
+        "scope",
+        "controllingSource"
+      ],
+      "type": "object"
+    },
+    "split": {
+      "enum": [
+        "DEVELOPMENT",
+        "HOLDOUT",
+        "ADVERSARIAL_SAFETY"
+      ]
+    },
+    "status": {
+      "enum": [
+        "AUTHOR_PROPOSED",
+        "OWNER_ACCEPTED",
+        "OWNER_REJECTED",
+        "OWNER_AMENDED"
+      ]
+    },
+    "trapFlags": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "visibility": {
+      "description": "Governance-level restriction only. No technical access control exists on these files.",
+      "enum": [
+        "BLIND",
+        "VISIBLE_REGRESSION",
+        "SEALED_BLIND"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "split",
+    "courseId",
+    "questionClass",
+    "question",
+    "expectedAnswerability",
+    "requiredPropositions",
+    "prohibitedPropositions",
+    "goldEvidence",
+    "acceptableAlternativeEvidence",
+    "scopedCorrection",
+    "boundedInference",
+    "expectedAbstentionBoundary",
+    "trapFlags",
+    "adjudicationNotes",
+    "status",
+    "itemSha256"
+  ],
+  "title": "NAVIGATOR-BOUNDED-REASONING-RAG-1 gold item, v1",
+  "type": "object"
+}

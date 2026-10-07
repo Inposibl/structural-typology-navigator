@@ -600,16 +600,16 @@ test("A03: the enrollment payment answer follows the selected mode", () => {
 
   assert.match(tyCourse, /(?<![а-яё])перейди(?![а-яё])/u);
   assert.doesNotMatch(tyCourse, /перейдите/u);
-  assert.match(tyGeneric, /(?<![а-яё])открой(?![а-яё])/u);
-  assert.doesNotMatch(tyGeneric, /откройте/u);
+  assert.match(tyGeneric, /(?<![а-яё])перейди(?![а-яё])/u);
+  assert.doesNotMatch(tyGeneric, /перейдите/u);
 
   const vyCourse = composeEnrollmentPaymentAnswer(courseAction, ANNA_VY);
   const vyGeneric = composeEnrollmentPaymentAnswer(genericAction, ANNA_VY);
 
   assert.match(vyCourse, /перейдите/u);
   assert.doesNotMatch(vyCourse, /(?<![а-яё])перейди(?![а-яё])/u);
-  assert.match(vyGeneric, /откройте/u);
-  assert.doesNotMatch(vyGeneric, /(?<![а-яё])открой(?![а-яё])/u);
+  assert.match(vyGeneric, /перейдите/u);
+  assert.doesNotMatch(vyGeneric, /(?<![а-яё])перейди(?![а-яё])/u);
 
   // With no stored mode the wording carries no address at all, so it is correct
   // in either mode and never invents a default.
@@ -639,7 +639,8 @@ test("A03/C: the payment destination and course binding are unchanged by the mod
   for (const profile of [IVAN_TY, ANNA_VY, undefined]) {
     const answer = composeEnrollmentPaymentAnswer(decision.action, profile);
     assert.match(answer, /https:\/\/t\.me\/AST_payment_course_bot\?start=maslow/u);
-    assert.match(answer, /Помощник[а-яё]* по оплате курсов/u);
+    assert.match(answer, /Тихон[а-яё]*|AI-секретар[а-яё]*/u);
+    assert.doesNotMatch(answer, /Помощник[а-яё]* по оплате курсов/u);
     assert.doesNotMatch(answer, /поток|расписан|набор|старт|групп|окно/iu);
   }
 
