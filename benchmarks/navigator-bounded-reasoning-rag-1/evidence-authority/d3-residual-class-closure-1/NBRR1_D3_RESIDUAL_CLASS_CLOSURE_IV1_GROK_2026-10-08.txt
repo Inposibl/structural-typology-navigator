@@ -1,0 +1,292 @@
+1. Act and role
+
+Act: NAVIGATOR-BOUNDED-REASONING-RAG-1.D3-RESIDUAL-CLASS-CLOSURE-1.IV1
+
+Role: independent D3 semantic-map and counting-contract verifier (Grok 4.7). Read-only. This is IV1 of the Codex Sol 6.1 candidate, not further authoring. The earlier residual-applicability advisory is not evidence of correctness.
+
+IV1 report identity: NBRR1.D3-RESIDUAL-CLASS-CLOSURE-1.IV1:3fd6568fd255598a3331007649a1a5e34495d03586dd07c5a2b2f3657d0b02e0
+
+That digest is SHA-256 of the canonical JSON object whose fields are this act, verdict PASS, blocking 0, major 0, minor 3, and the map, counting-contract, package, source HEAD, benchmark, universe, and candidate-pair digests below, with ownerAccepted, executionAuthorized, and scorerImplemented all false.
+
+2. Candidate artifact identities
+
+Package directory:
+
+/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1_RESUME_1/
+
+┌────────────────────────────────────────────┬──────────────────────────────────────────────────────────────────┬─────────────────────────────┐
+│ Artifact                                   │ SHA-256                                                          │ Result                      │
+├────────────────────────────────────────────┼──────────────────────────────────────────────────────────────────┼─────────────────────────────┤
+│ package-identity.json                      │ 82c5b4af1bf08ac4abf5219041fd9752b9a1066db7062465891acedb0fbeed4a │ match                       │
+├────────────────────────────────────────────┼──────────────────────────────────────────────────────────────────┼─────────────────────────────┤
+│ d3-semantic-equivalence-map.candidate.json │ 5094a769e3f27c98dc1ae89b14bd253f01f95b64f715d9aa9c51e103f436c5d7 │ match                       │
+├────────────────────────────────────────────┼──────────────────────────────────────────────────────────────────┼─────────────────────────────┤
+│ d3-counting-contract.json                  │ 0b29ab6ce3ef45d4fad5736035566e8574c3cc769e8fb55aa8bf19a7af967fe4 │ match                       │
+├────────────────────────────────────────────┼──────────────────────────────────────────────────────────────────┼─────────────────────────────┤
+│ SHA256SUMS                                 │ 42 of 42 files                                                   │ match, no missing, no extra │
+└────────────────────────────────────────────┴──────────────────────────────────────────────────────────────────┴─────────────────────────────┘
+
+Status on the package, map, and contract remains D3_RESIDUAL_CLASS_CLOSURE_CANDIDATE_PENDING_INDEPENDENT_IV. independentlyVerified, ownerAccepted, and executionAuthorized are false in the artifacts. This IV1 does not rewrite those flags.
+
+3. Source, benchmark, and universe integrity
+
+┌─────────────────────────────┬─────────────────────────────────────────────────────────────────────────────────┬──────────────────────────┐
+│ Control                     │ Expected                                                                        │ Observed                 │
+├─────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ Source HEAD                 │ a77c94742dd4f7fbbd3ee8f7feb8023a58051721                                        │ match, porcelain count 0 │
+├─────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ Benchmark identity          │ 5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3                │ match                    │
+├─────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ Universe                    │ 1999 passages, 0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e │ match                    │
+├─────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ Candidate pairs             │ 3276, 3d49600625db5fde1ebc209eaf4ccaafc4578db00ea8a6b03fc24740817ae904          │ match                    │
+├─────────────────────────────┼─────────────────────────────────────────────────────────────────────────────────┼──────────────────────────┤
+│ Maslow B1 / B2 / non-Maslow │ 554 / 37 / 1408                                                                 │ match                    │
+└─────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────┴──────────────────────────┘
+
+Benchmark identity was recomputed from the eight manifest input files by hashing bytes only. Gold and holdout files were not decoded. B1/B2 evidence was not reopened. Protected question and gold content was not inspected.
+
+4. Independent semantic review coverage
+
+All 42 new anchors were read: decision, normalized sentence, semantic fields, every distinct occurrence string, and the class-specific bindings (atomic cells, local subjects, qualifications, source-label conflicts). Every occurrence string is a substring of its pinned physical source, and each stored occurrence SHA-256 matches the occurrence bytes.
+
+Source windows read directly, not from author summaries:
+
+• ST_09_12_CANONICAL.md ### ENTP (line 1424) and ### ENFP (line 1723), including the contradictory Ne attribution and the Ne table.
+• The shared predicate at lines 263 and 1592.
+• The repeated label strip in LevelOfCons_Protections_of_Perception_CANONICAL.md (lines 591–708).
+• Continuation witnesses for the Maslow imitator sentence, the successive-desire quotation, Matthew 7:6, the Level-II formula, and the Jung Ego sentence.
+
+The 426 pair-class labels were recomputed from frozen anchor links. All 15 new groups were read. All 519 guards were counted by family, trigger, and outcome. The author validator was run without --write. It is author-focused validation, not this IV1.
+
+Coverage limit: the 16 table-header carriers share one header string each; the full passage around every carrier was not re-read. The 32 historical groups were checked as unchanged canonical bytes, not re-adjudicated.
+
+5. Forty-two anchor dispositions
+
+┌─────────────────────────────────┬──────────┬──────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Class                           │ Expected │ Observed │ Semantic result                                                                                                                                                               │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Nonmaterial editorial           │        6 │        6 │ Production boilerplate. No theoretical predicate. Surrounding course text stays in the universe.                                                                              │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Nonmaterial table header        │        2 │        2 │ Column names only. Cells are not credited through the header.                                                                                                                 │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Bibliographic title             │        3 │        3 │ Work titles, including the Aion span cut at (R. Not assertions of those works.                                                                                                │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Nonmaterial label strip         │        5 │        5 │ Predicate-free legend strips repeated across slides. Bullets stay outside the excluded span. Anchors 8 and 9 are a short/long prefix of the same strip; both have zero units. │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Atomic comparison decomposition │        3 │        3 │ Each row splits into two cells with two groups. Play is not merged with learning.                                                                                             │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Local-subject scoped distinct   │        8 │        8 │ Same lead-in under different slide or type subjects. No shared group.                                                                                                         │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Equivalent scoped               │        9 │        9 │ Same subject, predicate, polarity, qualification, and course. Group is the repeated span only.                                                                                │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Qualification-scoped distinct   │        1 │        1 │ Same predicate, two qualifications, no group.                                                                                                                                 │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Source-label conflict           │        5 │        5 │ ENFP heading versus ENTP attribution. No group.                                                                                                                               │
+├─────────────────────────────────┼──────────┼──────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Total                           │       42 │       42 │                                                                                                                                                                               │
+└─────────────────────────────────┴──────────┴──────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Equivalent checks that held:
+
+• Level-II formula «Я несовершенен, но способен видеть, как я стал таков» only. Neighboring formulas stay outside the group.
+• Maslow imitator sentence. Chunks 222–224 are overlapping windows of one sentence about the imitator’s attention on imitation. Footnotes and the surrounding Batishchev list are not grouped.
+• «Когда и оно удовлетворено…» is the quotation only. Footnotes 23 and 46 are provenance.
+• Matthew 7:6 keeps the prohibition and the trampling consequence. The author’s application and the conclusion stay outside.
+• Jung Ego affirmative sentence only. The negative counterpart and footnotes [^11] / [^16] stay outside.
+• Fi, Se, Si, and the «Другие / гармония» row are function-definition rows. Type profiles are not merged. The harmony row’s leading comma is a chunk boundary, not a second cell.
+
+Distinct and nonmaterial checks that held:
+
+• Comparison cells are «Ведущий игры — только участник игры» versus «Лидер в обучении и его ведущий — человек извне», and the play-evaluation cell versus the learning-evaluation cell. Courses play-and-creativity and structural-typology have separate group identities for the same cell text.
+• Local subjects differ: Maslow slides 14, 17, and 20; type headings for the stage, level, and Ni-cell lines. Same-subject continuations are one contribution, not several.
+• Line 263 restricts the preceding principles sentence to observable physical objects. Line 1592 states principles without that restriction. The shared «Любит указывать…» sentence is kept as two qualified propositions.
+
+No anchor was forced to PASS where the source was insufficient. wholePassageEquivalence is false on all 42. independentMaterialCreditEstablished is false on all 42.
+
+6. Four hundred twenty-six pair dispositions
+
+Recomputed from frozen pair IDs and anchor links:
+
+┌────────────────────────────────────┬───────┐
+│ Class                              │ Pairs │
+├────────────────────────────────────┼───────┤
+│ STRUCTURAL_SPAN_ONLY               │   250 │
+├────────────────────────────────────┼───────┤
+│ TYPE_LEVEL_TEMPLATE                │    62 │
+├────────────────────────────────────┼───────┤
+│ NO_SHARED_SUBSTANTIAL_SENTENCE     │    50 │
+├────────────────────────────────────┼───────┤
+│ ALREADY_RESOLVED_PROPOSITION_SCOPE │    22 │
+├────────────────────────────────────┼───────┤
+│ LIST_COMPARISON                    │    23 │
+├────────────────────────────────────┼───────┤
+│ ATOMIC_CONFLICT_SPAN               │    19 │
+├────────────────────────────────────┼───────┤
+│ Total                              │   426 │
+└────────────────────────────────────┴───────┘
+
+Original 3276 pairs: procedural exclusion 2329, historical NOT_EQUIVALENT 503, historical EQUIVALENT 18, BOUNDED_DISPOSITION 426. Zero undifferentiated unresolved pair records. Each of the 426 is in the membership set once.
+
+Procedural split, from receipts: technical overlap 1913, low-information shingles 416. Semantic verdict on those receipts is null, and independent evidence credit is 0. Partition file: RULE_1 1913, RULE_2 416, RULE_1_EXCEPTIONS 45, NONADJACENT_SENTENCE 358, NONADJACENT_HIGH_LEXICAL_NO_SENTENCE 23. Adjacent overlaps: 1958.
+
+Every bounded pair has previousDecision=UNRESOLVED, semanticVerdict=null, wholePassageEquivalence=false, and independentCreditEstablished=false. No pair was promoted to NOT_EQUIVALENT. Historical EQUIVALENT and NOT_EQUIVALENT rows were not relabeled. Passage states: 1964 unclosed, 33 grouped, 2 procedurally distinct.
+
+Declared precedence, confirmed by recomputation: local-subject template, then list/comparison, then atomic/qualification/conflict, then structural-only. A pair class does not equate the whole passages.
+
+7. The 62/19 discrepancy
+
+The advisory did not store a pair-ID membership list. The list was recovered, not invented, by replaying the advisory bucket on the frozen pre-closure uncertainty labels in REPORT.md.
+
+Advisory rule that reproduces 65/16: a pair is TYPE_LEVEL_TEMPLATE when every linked uncertainty is in {TYPE_OR_LEVEL_APPLICABILITY_CONFLICT, structural labels, already-resolved decisions}. Otherwise an atomic-scope label falls through to ATOMIC_CONFLICT_SPAN. Replay result: template 65, atomic 16, and the other four classes unchanged. Exactly three pairs change under the author’s later labels.
+
+┌─────────────────────────────────────────────────────────────────────────┬──────────────────────────────────────┬──────────────────────┬─────────┐
+│ Pair                                                                    │ Old label                            │ Author class         │ Anchors │
+├─────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────┼──────────────────────┼─────────┤
+│ D3PAIR-42b09ea5be73fa2eaf5b6223fa0c444a149d3937a60c183e5758c1043c2ce2a8 │ TYPE_OR_LEVEL_APPLICABILITY_CONFLICT │ ATOMIC_CONFLICT_SPAN │ 50 only │
+├─────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────┼──────────────────────┼─────────┤
+│ D3PAIR-b58c53e2ef247bf0e897ba886c56e2164921b31843624d875a36fabe94622876 │ same                                 │ same                 │ 54 only │
+├─────────────────────────────────────────────────────────────────────────┼──────────────────────────────────────┼──────────────────────┼─────────┤
+│ D3PAIR-9868bf9f50d90f2f1d446ee3e3e8023316f06790707a5327ac4944021d08a6e8 │ same                                 │ same                 │ 54 only │
+└─────────────────────────────────────────────────────────────────────────┴──────────────────────────────────────┴──────────────────────┴─────────┘
+
+Anchors 50 and 54 are the ENTP attribution sentence and the Ne weakness/strength cells inside the ENFP block. Source confirms both the ### ENFP heading and the words «в типе ENTP». They are source-label conflicts, not one collapsed atomic proposition. Neither anchor has a group. Both pairs bind SOURCE_TYPE_LABEL_CONFLICT with effect FAIL_CLOSED.
+
+The earlier 65/16 figure was an aggregate of the coarser pre-closure label TYPE_OR_LEVEL_APPLICABILITY_CONFLICT. It was not a miscount of the author’s six classes. Moving anchor 47 into the template bucket would yield 63/18, not 65/16. Anchor 47’s only pair, D3PAIR-24c2db11d32c37e76356a5286943bed1aa2e395b77a3f2b5eda3b14ead6d6f59, was already inside the advisory atomic bucket (ATOMIC_PROPOSITION_SCOPE_UNRESOLVED). Its qualifications stay distinct.
+
+One mixed pair stays template under both systems: D3PAIR-ed9fec4844439d1cfbd6c543c14adc7b54752b78351aa4be8567079e008129a1 (anchors 36, 54, 68). Local-subject precedence sets the class name. The conflict guard remains bound. No additional Owner rule is required for this recount.
+
+ATOMIC_CONFLICT_SPAN is a precedence bucket of 10 equivalent-only pairs, 4 equivalent-plus-structural pairs, 3 conflict-only pairs, 1 conflict-plus-header pair (D3PAIR-1e9f1f9de5b9e1e33e2a4e2f52084cdc4a68e170f9bcc108d656042109798c2e, anchors 37, 50, 54, 66, 75, 82), and 1 qualification pair. The name is not the outcome. Outcomes are on the guards.
+
+8. Forty-seven groups
+
+47 group identities, 0 duplicates. 32 historical groups match their frozen canonical hashes (historicalGroups: PASS_ALL32_UNCHANGED on the read-only validator rerun). 15 new groups, each one course and one proposition:
+
+• Play leadership and learning leadership, separate groups in play-and-creativity (5 members each) and again in structural-typology (3 members each). No cross-course collapse.
+• Play evaluation and learning evaluation, two groups, two members each.
+• Level-II formula, 2 members, levels-of-consciousness.
+• Maslow imitator attention, successive desires, and Matthew 7:6, 3 members each, maslow only.
+• Jung Ego, Fi, Se, Si, and the group-harmony row, 2 members each, structural-typology only.
+
+No new group uses a conflict carrier. No group merges distinct comparison cells, type profiles, or whole passages. No group is built from protected benchmark selection. No ungrounded transitive closure was found.
+
+9. Five hundred nineteen guards
+
+All 519 records have a deterministic D3GUARD- identity, a trigger operator, an effect, trace fields, failClosedOnMissingBinding=true, and wholePassageEquivalence=false.
+
+┌──────────────────────────────────┬─────────┬───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ Family                           │ Records │ Effect                                                                                                            │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ NO_WHOLE_PASSAGE_INFERENCE       │     426 │ Deny whole-passage inference. Failure D3_WHOLE_PASSAGE_EQUIVALENCE_INFERRED.                                      │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ ADJACENT_SOURCE_SPAN_ONCE        │      27 │ One shared source contribution. Outside material needs its own binding.                                           │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ TYPE_QUALIFIED_NICKNAME_ONCE     │      23 │ One unit for the same typed nickname. A different type or claim stays distinct.                                   │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ NONMATERIAL_SPAN_NO_CREDIT       │      16 │ No independent unit. Other material preserved.                                                                    │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ REPEATED_ATOMIC_PROPOSITION_ONCE │       9 │ One unit for the same accepted proposition. Outside claims need a separate binding.                               │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ LOCAL_SUBJECT_SCOPE_REQUIRED     │       8 │ Distinct by local subject. Unknown or generic subject fails closed. Same-subject continuation is suppressed once. │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ SOURCE_TYPE_LABEL_CONFLICT       │       5 │ Fail closed. groupAcrossConflict=false. No source repair.                                                         │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ COMPARISON_CELLS_SCOPED          │       3 │ Cells stay separate. Merging the row fails D3_COMPARISON_SCOPE_COLLAPSE.                                          │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ USED_MATERIAL_BINDING_REQUIRED   │       1 │ Missing or conflicting binding is SCORING_FAILURE before a number.                                                │
+├──────────────────────────────────┼─────────┼───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ QUALIFICATION_SCOPE_REQUIRED     │       1 │ Qualified propositions stay distinct.                                                                             │
+└──────────────────────────────────┴─────────┴───────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+Focused negative counterexamples, not a scorer run:
+
+• Crediting the editorial or label-strip span fails D3_NONMATERIAL_INDEPENDENT_CREDIT.
+• Using the disputed Ne span as ENTP evidence, or as corroboration of ENFP, fails D3_SOURCE_TYPE_LABEL_CONFLICT.
+• Merging play leadership with learning leadership fails D3_COMPARISON_SCOPE_COLLAPSE.
+• Merging the physical-objects qualification with the principles qualification fails D3_QUALIFICATION_SCOPE_COLLAPSE.
+• Counting the Matthew quotation twice, or treating the whole Maslow passage as equivalent, fails the repeated-atomic or whole-passage guard.
+• A missing used span, course, polarity, qualification, or evidence partition fails before a number.
+
+These guards are declarative. The contract sets runnerOrScorerImplemented=false. They are not an implemented enforcement mechanism.
+
+10. ENFP / ENTP source conflict
+
+ST_09_12_CANONICAL.md has ### ENTP at line 1424 with stack Ne1 Ti2 Fe3 Si4, and ### ENFP at line 1723 with stack Ne1 Fi2 Te3 Si4. Under the ENFP heading, line 1727 still says «Наблюдаемые свойства доминантной эктофункции (Ne) в типе ENTP». The following Ne paragraph is byte-identical to the ENTP paragraph. The ENFP dependency row says ENFP but lists Ne>Ti>Fe>Si.
+
+Local headings were checked on conflict anchors 37, 50, 54, 66, and 82. Members 198 and 199 are under ### ENTP. Member 238 is under ### ENFP. All three carry the ENTP attribution sentence. No group joins them. Type-specific use fails closed. The corpus was not repaired, and original authorial intent was not inferred.
+
+The repeated stage line under ENFP (anchor 68, chunk 239) does not itself say ENTP. It stays a separate ENFP-scoped template. The disputed Ne spans on the neighboring chunks remain conflict-guarded.
+
+There is no ### ENFJ heading. The ENFJ block is identified by «в типе ENFJ» (line 1917) and ### Ключевые черты ENFJ (line 1941). The candidate binds that local sentence as the ENFJ subject and does not merge it with ENFP. That binding is attested and is not a second type conflict.
+
+11. C/R counting-contract assessment
+
+Preserved metric: |unitKeys(R)| / |unitKeys(C)|. C is cited or used evidence. R is the original relevant subset. Empty denominator yields score null, not a perfect score. No fractional weights, no compensatory accounting, no aggregate score. Nine dimensions and nine non-compensatory gates are unchanged. noAggregateScore, noWeights, and noCrossDimensionCompensation are true. D4 remains separate from D3 deduplication.
+
+A. Semantic map. Independently acceptable as a candidate map of the residual classes. Same qualified proposition is represented once. Distinct subjects, qualifications, comparison cells, and courses stay distinct. Nonmaterial spans are not evidence. Conflicts do not receive a type assignment.
+
+B. Operational mechanics. The Owner’s frozen rule is the unchanged C/R cardinality and proposition-scoped collapse, with failure before a number when applicability is missing or conflicting. The contract follows that rule. Schema nbrr1-d3-counting-contract/3 and the v2 contribution-vector representation remain CANDIDATE_NOT_OWNER_ACCEPTED. They are not promoted. unitKey still names a contribution-vector key, and it also requires an accepted disposition plus a privileged binding. Without those, the outcome is D3_ACCEPTED_AUTHORITY_CONFLICT or D3_CONTRIBUTION_UNRESOLVED before any number. That is a fail-closed boundary, not a silent counting algorithm. No replacement algorithm is proposed here.
+
+C. Privileged proposition-to-scope mapping. Still a later admission gate. bindingCreatedHere is false and implementationCreated is false. This IV1 does not create it.
+
+A, B, and C are separate. Acceptance of the map does not accept v2/v3 mechanics, does not implement a scorer, and does not open privileged benchmark binding.
+
+12. Focused test results
+
+PYTHONDONTWRITEBYTECODE=1 python3 d3-validate.py was run from the candidate directory with no --write. Exit 0. static-validation.json hash remained e8f3e09438433a139271b86222f6d7c0d6b8acdcde73f3870597b48ceeff9bb4. Git porcelain remained 0.
+
+Validator kind: AUTHOR_FOCUSED_VALIDATION_NOT_INDEPENDENT_IV. Verdict string: D3_RESIDUAL_CLASS_CLOSURE_CANDIDATE_PENDING_INDEPENDENT_IV. Physical occurrence and context checks: 807. Local-subject bindings checked: 36. Historical pair and anchor bytes: exact. Historical groups: all 32 unchanged. Admission guards: 519. This result is a structural check. It is not the semantic verdict.
+
+An earlier invocation from the workspace root failed to open the script and wrote nothing in the candidate.
+
+13. Findings
+
+BLOCKING: none.
+
+MAJOR: none.
+
+MINOR:
+
+• IV1-MIN-01. The class name ATOMIC_CONFLICT_SPAN also covers equivalent collapses and the qualification-distinct pair. Pair records keep semanticVerdict=null. Guards carry the real effect. A consumer that read only the class name would misread the pair.
+• IV1-MIN-02. D3PAIR-ed9fec4844439d1cfbd6c543c14adc7b54752b78351aa4be8567079e008129a1 is labeled TYPE_LEVEL_TEMPLATE while anchors 36, 54, and 68 are all bound. The source-label conflict guard is present. The class name alone does not show it.
+• IV1-MIN-03. Chunk 52 has a visible # ISTP heading. Anchors 47 and 71 leave the subject UNKNOWN and forbid type inference. That fails closed and does not assign ISTP. It also does not merge the physical-objects qualification with the INTP principles sentence.
+
+14. Verdict
+
+PASS
+
+Zero BLOCKING and zero MAJOR findings. The semantic map and the required D3 consumption contract match the controlling Owner rule: collapse the same material proposition inside its course and scope, keep distinct propositions distinct, treat procedural exclusion as not NOT_EQUIVALENT, and fail closed when applicability is missing or conflicting.
+
+PASS does not mean Owner acceptance, Git closure, an implemented scorer, TEST_BASE readiness, or permission to run FULL123.
+
+15. Readiness for Owner acceptance
+
+The candidate is ready for the Orchestrator to seek Owner acceptance of this map and of the declarative consumption contract.
+
+Still false, and not granted by this IV1: ownerAccepted, executionAuthorized, scorer implementation, privileged proposition-to-scope binding, and acceptance of v2/v3 contribution-vector mechanics.
+
+16. Minimal correction
+
+No Codex correction is required before Owner review. The three minor notes are consumption cautions, not map defects. No pair, group, or guard needs to be rewritten for this verdict.
+
+17. Unauthorized-operation counters
+
+BENCHMARK_EXECUTIONS=0
+
+PROVIDER_CALLS=0
+
+PRODUCTION_CONTACT=0
+
+REPOSITORY_MUTATIONS=0
+
+CANDIDATE_MUTATIONS=0
+
+GIT_MUTATIONS=0
+
+No production source changes, frozen-benchmark changes, corpus repair, B1/B2 recovery, ontology work, Navigator API call, TEST_BASE provisioning, runner or scorer implementation, FULL123, FULL924, or deployment.
+
+18. Next handoff
+
+Orchestrator: seek Owner acceptance of candidate map 5094a769e3f27c98dc1ae89b14bd253f01f95b64f715d9aa9c51e103f436c5d7 and counting contract 0b29ab6ce3ef45d4fad5736035566e8574c3cc769e8fb55aa8bf19a7af967fe4, citing IV1 identity NBRR1.D3-RESIDUAL-CLASS-CLOSURE-1.IV1:3fd6568fd255598a3331007649a1a5e34495d03586dd07c5a2b2f3657d0b02e0.
+
+Do not treat this PASS as the Owner decision. Do not close Git, implement a scorer, or run FULL123 on the strength of this report. Privileged applicability binding remains a later gate. If the Owner wants a number from the unaccepted contribution-vector representation, that needs a separate Owner decision. This verifier does not invent that representation.
