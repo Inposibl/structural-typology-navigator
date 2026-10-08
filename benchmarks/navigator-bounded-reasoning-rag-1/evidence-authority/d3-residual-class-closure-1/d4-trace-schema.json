@@ -1,0 +1,249 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:nbrr1:d4-trace:1",
+  "title": "Per-claim deterministic provenance and independent semantic support receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "itemId",
+    "courseId",
+    "benchmarkIdentity",
+    "goldMemberSha256",
+    "goldItemSha256",
+    "rawOutputSha256",
+    "claimId",
+    "claimText",
+    "answerSpan",
+    "material",
+    "claimType",
+    "passages",
+    "identityChecks",
+    "d4A",
+    "d4B",
+    "semanticRationale",
+    "reviewerId",
+    "reviewerIndependent",
+    "adjudicationInputDigest",
+    "adjudicationReceiptSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "d4-trace/1"
+    },
+    "itemId": {
+      "type": "string",
+      "pattern": "^NBRR1-(DEV|HOLD|ADV)-[0-9]{3}$"
+    },
+    "courseId": {
+      "type": "string"
+    },
+    "benchmarkIdentity": {
+      "const": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3"
+    },
+    "goldMemberSha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "goldItemSha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "rawOutputSha256": {
+      "$ref": "#/$defs/hash"
+    },
+    "claimId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claimText": {
+      "type": "string"
+    },
+    "answerSpan": {
+      "$ref": "#/$defs/span"
+    },
+    "material": {
+      "type": "boolean"
+    },
+    "claimType": {
+      "enum": [
+        "ACADEMY_FACT",
+        "INFERENCE",
+        "ATTRIBUTION",
+        "AUTHORITY_SCOPE",
+        "ABSTENTION_BOUNDARY",
+        "NON_MATERIAL"
+      ]
+    },
+    "passages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/passage"
+      }
+    },
+    "identityChecks": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/check"
+      }
+    },
+    "d4A": {
+      "enum": [
+        "PASS",
+        "FAIL",
+        "NOT_APPLICABLE",
+        "AUTHORITY_FAILURE"
+      ]
+    },
+    "d4B": {
+      "enum": [
+        "SUPPORTED",
+        "PARTIAL",
+        "UNSUPPORTED",
+        "CONTRADICTED",
+        "AMBIGUOUS",
+        "ABSTAINED",
+        "ADJUDICATION_FAILURE",
+        "NOT_APPLICABLE"
+      ]
+    },
+    "semanticRationale": {
+      "type": "string"
+    },
+    "reviewerId": {
+      "type": "string"
+    },
+    "reviewerIndependent": {
+      "const": true
+    },
+    "adjudicationInputDigest": {
+      "$ref": "#/$defs/hash"
+    },
+    "adjudicationReceiptSha256": {
+      "$ref": "#/$defs/hash"
+    }
+  },
+  "$defs": {
+    "hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "startUtf8",
+        "endUtf8"
+      ],
+      "properties": {
+        "startUtf8": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "endUtf8": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "result",
+        "expected",
+        "observed"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "result": {
+          "enum": [
+            "PASS",
+            "FAIL",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "expected": {},
+        "observed": {}
+      }
+    },
+    "passage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "memberId",
+        "courseId",
+        "sourceSlug",
+        "documentIdentity",
+        "historicalDocumentId",
+        "historicalChunkId",
+        "chunkIndex",
+        "locator",
+        "passageSha256",
+        "authorityManifestSha256",
+        "goldPointer",
+        "authorityRelation",
+        "supportSpans"
+      ],
+      "properties": {
+        "memberId": {
+          "type": "string"
+        },
+        "courseId": {
+          "type": "string"
+        },
+        "sourceSlug": {
+          "type": "string"
+        },
+        "documentIdentity": {
+          "type": "string"
+        },
+        "historicalDocumentId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "historicalChunkId": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "chunkIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "locator": {
+          "type": "object"
+        },
+        "passageSha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "authorityManifestSha256": {
+          "$ref": "#/$defs/hash"
+        },
+        "goldPointer": {
+          "type": "string"
+        },
+        "authorityRelation": {
+          "enum": [
+            "FOUNDATIONAL",
+            "ELABORATION",
+            "OPERATIONALIZATION",
+            "PROPOSITION_SCOPED_CORRECTION",
+            "SUPPLEMENTAL"
+          ]
+        },
+        "supportSpans": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/span"
+          }
+        }
+      }
+    }
+  },
+  "description": "Schema validation is necessary but not sufficient. Check span bounds/substrings, exact historical resolution, course/gold binding and independent support judgments using d4-hybrid-contract.json. Null historical DB IDs do not authorize missing frozen identity bindings."
+}

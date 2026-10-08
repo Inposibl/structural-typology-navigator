@@ -1,0 +1,331 @@
+{
+  "kind": "CORPUS_ONLY_PRIOR_PROPOSALS_AND_EXPLORATORY_PAIR_IDS",
+  "priorMapSha256": "ac810dffd9b4d94e5a9a89d073beb004409097f979e38a82e9f546e5ba8747c7",
+  "groups": [
+    {
+      "groupId": "D3-a0ea1d602177bb9a602aa1b1123df96510255a168a32c101fb70d72a8b3170ac",
+      "countingWeight": 1,
+      "countingScope": {
+        "courseId": "play-and-creativity",
+        "corpusTargetId": "PLAY_VOLUNTARY",
+        "semanticTarget": "Игра добровольна и основана на личной заинтересованности; принудить к игре нельзя.",
+        "scopeRestriction": "Only the stated corpus proposition; never unconditional whole-passage equivalence. Other claims in the same passages remain distinct."
+      },
+      "members": [
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/29",
+          "passageSha256": "45191dadd528d935dcc669d4e576c0d515e45063c8a380fdcf5b74c742ab7bc7",
+          "witness": {
+            "startUtf8": 724,
+            "endUtf8": 831,
+            "text": "Невозможно принудить к игре. Играть можно только захотеть.",
+            "sha256": "abe78a9e92a183e539d835da1c0b7b3ca7637c99f95ca2e090cc4e0cdd4db5be"
+          }
+        },
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/38",
+          "passageSha256": "92a582bdee688ff6b886049bed6522d0d9bd98cb290b43df7d6ed4eec02dc30d",
+          "witness": {
+            "startUtf8": 726,
+            "endUtf8": 833,
+            "text": "Невозможно принудить к игре. Играть можно только захотеть.",
+            "sha256": "abe78a9e92a183e539d835da1c0b7b3ca7637c99f95ca2e090cc4e0cdd4db5be"
+          }
+        },
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/44",
+          "passageSha256": "3ed62bc7d77c140312b3a31045adfaad5c584c56f953f4ad3cf58654622ca3e0",
+          "witness": {
+            "startUtf8": 797,
+            "endUtf8": 904,
+            "text": "Невозможно принудить к игре. Играть можно только захотеть.",
+            "sha256": "abe78a9e92a183e539d835da1c0b7b3ca7637c99f95ca2e090cc4e0cdd4db5be"
+          }
+        },
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/54",
+          "passageSha256": "49f7889375176fcd53b971eb234a11d582e9a828fd54d4a1f8d32a81e81f2b59",
+          "witness": {
+            "startUtf8": 852,
+            "endUtf8": 959,
+            "text": "Невозможно принудить к игре. Играть можно только захотеть.",
+            "sha256": "abe78a9e92a183e539d835da1c0b7b3ca7637c99f95ca2e090cc4e0cdd4db5be"
+          }
+        }
+      ],
+      "groupingRationale": "Same stated proposition in distinct passage bytes. Orthographic/dash/case variation and repetition of this statement do not supply independent support. Exact byte spans make this proposal reproducible; surrounding distinct material is not equated.",
+      "authoritySources": [
+        "non-maslow-historical-ingestion-1"
+      ],
+      "author": "CODEX SOL 6.1",
+      "independentlyVerified": false,
+      "ownerAccepted": false
+    },
+    {
+      "groupId": "D3-5d26f2ac3432634822aa8515226d88a901cc9f4040c7085fbb0205313ebf34bb",
+      "countingWeight": 1,
+      "countingScope": {
+        "courseId": "play-and-creativity",
+        "corpusTargetId": "CREATIVITY_VOLUNTARY",
+        "semanticTarget": "Начало творческой самореализации требует личной заинтересованности; к творчеству нельзя принудить.",
+        "scopeRestriction": "Only the stated corpus proposition; never unconditional whole-passage equivalence. Other claims in the same passages remain distinct."
+      },
+      "members": [
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/44",
+          "passageSha256": "3ed62bc7d77c140312b3a31045adfaad5c584c56f953f4ad3cf58654622ca3e0",
+          "witness": {
+            "startUtf8": 1425,
+            "endUtf8": 1486,
+            "text": "Невозожно принудить к творчеству",
+            "sha256": "fb2b50535a48d5c99e54121c0b4a49a62a0f08af575e3ad30d374c099579c25c"
+          }
+        },
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/54",
+          "passageSha256": "49f7889375176fcd53b971eb234a11d582e9a828fd54d4a1f8d32a81e81f2b59",
+          "witness": {
+            "startUtf8": 1480,
+            "endUtf8": 1543,
+            "text": "Невозможно принудить к творчеству",
+            "sha256": "dc3e670eac666625507b54a6ee3bfeb82a36605f92e6d7d3377faf970f230db9"
+          }
+        }
+      ],
+      "groupingRationale": "Same stated proposition in distinct passage bytes. Orthographic/dash/case variation and repetition of this statement do not supply independent support. Exact byte spans make this proposal reproducible; surrounding distinct material is not equated.",
+      "authoritySources": [
+        "non-maslow-historical-ingestion-1"
+      ],
+      "author": "CODEX SOL 6.1",
+      "independentlyVerified": false,
+      "ownerAccepted": false
+    },
+    {
+      "groupId": "D3-48a11bd1002f3e7d2ec2301954ed683405a5e742a449b08e616351c449068796",
+      "countingWeight": 1,
+      "countingScope": {
+        "courseId": "play-and-creativity",
+        "corpusTargetId": "PLAY_PRODUCT",
+        "semanticTarget": "Игра происходит ради самой игры, без конечного результата.",
+        "scopeRestriction": "Only the stated corpus proposition; never unconditional whole-passage equivalence. Other claims in the same passages remain distinct."
+      },
+      "members": [
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/38",
+          "passageSha256": "92a582bdee688ff6b886049bed6522d0d9bd98cb290b43df7d6ed4eec02dc30d",
+          "witness": {
+            "startUtf8": 2014,
+            "endUtf8": 2078,
+            "text": "Игра ради игры - и ни для чего более.",
+            "sha256": "1c50082cdc625ea0e1cdc1515b520a67d9bc5f978950540824f5a160d2eb5b90"
+          }
+        },
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/45",
+          "passageSha256": "f911da74e927094c938f68204e80bcfb59e1867014a931427f3850bb988e3703",
+          "witness": {
+            "startUtf8": 904,
+            "endUtf8": 968,
+            "text": "Игра ради игры - и ни для чего более.",
+            "sha256": "1c50082cdc625ea0e1cdc1515b520a67d9bc5f978950540824f5a160d2eb5b90"
+          }
+        },
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/55",
+          "passageSha256": "964f4946d64874d81f6f2440fe2fbddb39ead05799cb3e69ff0c098e44494277",
+          "witness": {
+            "startUtf8": 1430,
+            "endUtf8": 1496,
+            "text": "Игра ради игры — и ни для чего более.",
+            "sha256": "9f1d8843504cbe9f33d92ffa2dd55fd118afb223b3fac1bb1624ff11059f363a"
+          }
+        }
+      ],
+      "groupingRationale": "Same stated proposition in distinct passage bytes. Orthographic/dash/case variation and repetition of this statement do not supply independent support. Exact byte spans make this proposal reproducible; surrounding distinct material is not equated.",
+      "authoritySources": [
+        "non-maslow-historical-ingestion-1"
+      ],
+      "author": "CODEX SOL 6.1",
+      "independentlyVerified": false,
+      "ownerAccepted": false
+    },
+    {
+      "groupId": "D3-67fdb69c1531bbfde43c423a3ef721db854dbc01e373e575c2bceb5675e3ae37",
+      "countingWeight": 1,
+      "countingScope": {
+        "courseId": "play-and-creativity",
+        "corpusTargetId": "CREATIVITY_PRODUCT",
+        "semanticTarget": "Идеальный результат является главной целью творчества.",
+        "scopeRestriction": "Only the stated corpus proposition; never unconditional whole-passage equivalence. Other claims in the same passages remain distinct."
+      },
+      "members": [
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/45",
+          "passageSha256": "f911da74e927094c938f68204e80bcfb59e1867014a931427f3850bb988e3703",
+          "witness": {
+            "startUtf8": 1048,
+            "endUtf8": 1133,
+            "text": "Идеальный результат - главная цель творчества!",
+            "sha256": "13c13b9173103b90402b2a20375642f558e9b14499721eb7327d4d8cb5b474fb"
+          }
+        },
+        {
+          "memberId": "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/55",
+          "passageSha256": "964f4946d64874d81f6f2440fe2fbddb39ead05799cb3e69ff0c098e44494277",
+          "witness": {
+            "startUtf8": 1576,
+            "endUtf8": 1663,
+            "text": "Идеальный результат — главная цель творчества!",
+            "sha256": "22e6996373e6554a12d6e5a8a225ac56d7b7fbc65c0646eb291b0deac6a8787e"
+          }
+        }
+      ],
+      "groupingRationale": "Same stated proposition in distinct passage bytes. Orthographic/dash/case variation and repetition of this statement do not supply independent support. Exact byte spans make this proposal reproducible; surrounding distinct material is not equated.",
+      "authoritySources": [
+        "non-maslow-historical-ingestion-1"
+      ],
+      "author": "CODEX SOL 6.1",
+      "independentlyVerified": false,
+      "ownerAccepted": false
+    },
+    {
+      "groupId": "D3-e8e9f09cfc590e9c7145b90b8a24a246f1d9ed3e9e090a769ca525e896f73b69",
+      "countingWeight": 1,
+      "countingScope": {
+        "courseId": "structural-typology",
+        "corpusTargetId": "EGO_CONSTITUENTS",
+        "semanticTarget": "У Юнга два главных компонента Эго — осознание тела/своего существования и данные памяти.",
+        "scopeRestriction": "Only the stated corpus proposition; never unconditional whole-passage equivalence. Other claims in the same passages remain distinct."
+      },
+      "members": [
+        {
+          "memberId": "structural-typology/structural-typology-book/110c57cacce869c3f20c59bc37209518857ca318784c002ee7c6e6e63ff9c147/11",
+          "passageSha256": "17d8026cdeb4a60c5b05a17662c0f0aa89654af71c07c2b5d68d2988423cdfb6",
+          "witness": {
+            "startUtf8": 1095,
+            "endUtf8": 1245,
+            "text": "The ego is a complex datum which is constituted first of all by a general awareness of your body, of your existence, and secondly by your memory data;",
+            "sha256": "65ba2f9875e76f0de3179386210d6620ebf3dfce97207e4c8f4e8f6417a57e85"
+          }
+        },
+        {
+          "memberId": "structural-typology/structural-typology-book/110c57cacce869c3f20c59bc37209518857ca318784c002ee7c6e6e63ff9c147/15",
+          "passageSha256": "7e760bac2ef40ef52750a53c34bb6928c8598776f9ccd2c6cdb95d42ab568858",
+          "witness": {
+            "startUtf8": 915,
+            "endUtf8": 1065,
+            "text": "The Ego is a complex datum which is constituted first of all by a general awareness of your body, of your existence, and secondly by your memory data;",
+            "sha256": "c1bad902223989ca07954ca14419a5e1a5fce5ef4b67f39f39ea13c105695e04"
+          }
+        }
+      ],
+      "groupingRationale": "Same stated proposition in distinct passage bytes. Orthographic/dash/case variation and repetition of this statement do not supply independent support. Exact byte spans make this proposal reproducible; surrounding distinct material is not equated.",
+      "authoritySources": [
+        "non-maslow-historical-ingestion-1"
+      ],
+      "author": "CODEX SOL 6.1",
+      "independentlyVerified": false,
+      "ownerAccepted": false
+    }
+  ],
+  "knownPairs": [
+    {
+      "members": [
+        "structural-typology/structural-typology-book/087383626c0fe8dbe247a529cb3745f8d903cb24b89d2f2cd812163b61ae9593/114",
+        "structural-typology/structural-typology-book/087383626c0fe8dbe247a529cb3745f8d903cb24b89d2f2cd812163b61ae9593/266"
+      ],
+      "priorSimilarity": 0.8616352201257862
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/087383626c0fe8dbe247a529cb3745f8d903cb24b89d2f2cd812163b61ae9593/199",
+        "structural-typology/structural-typology-book/087383626c0fe8dbe247a529cb3745f8d903cb24b89d2f2cd812163b61ae9593/238"
+      ],
+      "priorSimilarity": 0.7583892617449665
+    },
+    {
+      "members": [
+        "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/45",
+        "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/55"
+      ],
+      "priorSimilarity": 0.5224719101123596
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/51",
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/58"
+      ],
+      "priorSimilarity": 0.5
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/48",
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/51"
+      ],
+      "priorSimilarity": 0.5
+    },
+    {
+      "members": [
+        "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/44",
+        "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/54"
+      ],
+      "priorSimilarity": 0.48863636363636365
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/48",
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/58"
+      ],
+      "priorSimilarity": 0.4803921568627451
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/47",
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/51"
+      ],
+      "priorSimilarity": 0.47619047619047616
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/087383626c0fe8dbe247a529cb3745f8d903cb24b89d2f2cd812163b61ae9593/134",
+        "structural-typology/structural-typology-book/087383626c0fe8dbe247a529cb3745f8d903cb24b89d2f2cd812163b61ae9593/166"
+      ],
+      "priorSimilarity": 0.472
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/48",
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/52"
+      ],
+      "priorSimilarity": 0.47058823529411764
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/52",
+        "structural-typology/structural-typology-book/794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3/58"
+      ],
+      "priorSimilarity": 0.4583333333333333
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/04d8d2f077a73efea8b1a8c6e434729acec674e0c3e5473971a24f6eab6db5fd/33",
+        "structural-typology/structural-typology-book/04d8d2f077a73efea8b1a8c6e434729acec674e0c3e5473971a24f6eab6db5fd/40"
+      ],
+      "priorSimilarity": 0.4311111111111111
+    },
+    {
+      "members": [
+        "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/38",
+        "play-and-creativity/play-and-creativity-foundational/9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66/44"
+      ],
+      "priorSimilarity": 0.42857142857142855
+    },
+    {
+      "members": [
+        "structural-typology/structural-typology-book/110c57cacce869c3f20c59bc37209518857ca318784c002ee7c6e6e63ff9c147/11",
+        "structural-typology/structural-typology-book/110c57cacce869c3f20c59bc37209518857ca318784c002ee7c6e6e63ff9c147/15"
+      ],
+      "priorSimilarity": 0.4268774703557312
+    }
+  ]
+}

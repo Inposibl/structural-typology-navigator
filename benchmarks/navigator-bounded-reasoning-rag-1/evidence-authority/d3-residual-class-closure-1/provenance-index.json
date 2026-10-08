@@ -1,0 +1,73 @@
+{
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "ownerRequest": {
+    "path": "/Users/entp_psyche/.codex/attachments/2a1d93a5-7b90-4ba3-8d36-2ee98405ddbc/Pasted text.txt",
+    "sha256": "5a2e325256573185f4f854dcf12ae97113ec9aab5275cfad3965effea7b86213",
+    "bytes": 18506
+  },
+  "priorReport": {
+    "path": "/Users/entp_psyche/Desktop/InvestProjects2026/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1_REPORT_2026-10-07.md",
+    "sha256": "adf83e671dc32792d9aa1d3255e913c33f3d2cb87c60635d5bbcfcb7cbd08182",
+    "bytes": 18621
+  },
+  "priorPolicy": [
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1/decision.json",
+      "sha256": "aaae80005ca507005ddef6268f8a8d6e76ce9f6903eeb8e721b7c59387f4c9e0",
+      "bytes": 5782
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1/owner-decision-binding.json",
+      "sha256": "f0b6762ec74fa05a76921bf26a8313adc29cf717abc761f35dda188949e2ad81",
+      "bytes": 4452
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1/d3-counting-contract.json",
+      "sha256": "787c5de2ab00524382673434fbbe2cc1d03e5df2a05ab18dfbeb9a373a979f66",
+      "bytes": 2898
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1/d4-hybrid-contract.json",
+      "sha256": "be87bbf9d1794cddf8be7dffecbd0ab4d5568d122069cf152776d4f8e037e76a",
+      "bytes": 2625
+    }
+  ],
+  "preservedDecisions": [
+    "exact123 and frozen identity",
+    "retire EXACT30; FULL924 separate",
+    "same-item context only; no cross-item state",
+    "nine dimensions/gates; no aggregate",
+    "DEVELOPMENT diagnostic; HOLDOUT/ADVERSARIAL unsupported0",
+    "D3 quotient semantic counting",
+    "D4 identity AND independent support",
+    "no confidence reruns"
+  ],
+  "deferredNowDefined": [
+    "exact default product callable/input/output and failures",
+    "runtime/env/network/component timeout semantics",
+    "raw/attempt/accounting/interfaces",
+    "D4 trace/semantic reviewer interface",
+    "mechanical access separation",
+    "future implementation surface and TEST_BASE admission"
+  ],
+  "authorUtilities": [
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1_RESUME_1/authoring-method/nbrr1_resume_author.py",
+      "sha256": "4a72ae69769f63f305a168dd1baa356b3b40d20aa2530d36eee99d3906b6bb46",
+      "bytes": 69660
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1_RESUME_1/authoring-method/nbrr1_resume_universe.mts",
+      "sha256": "00f61109ca07913d21dd530283341b1f4f3b0aceadb81b6b321cd66e93e89796",
+      "bytes": 5090
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1_RESUME_1/authoring-method/nbrr1_resume_validate.py",
+      "sha256": "3c5645afbb865b825f15faa25f3d05ce7aba1a8180180fc5586b105eaa1a24ae",
+      "bytes": 7138
+    }
+  ],
+  "roles": "Contract author only; static checks are not DeepSeek independent IV.",
+  "instructionTail": "Pasted request physically ends after section15 raw-output destinations; no later requirements inferred.",
+  "generatorNotice": "Author generator emits initial drafts into a destination that must not exist. Final request-ID/tsx/header amendments are recorded in report and audit. Do not run this author generator on the sealed package or product repo. Validation utility is bounded static structure/hash inspection, not a runner/scorer."
+}

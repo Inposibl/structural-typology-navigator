@@ -1,0 +1,750 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "EVIDENCE_MATERIALIZATION",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "acceptedAuthorities": {
+    "maslow": {
+      "root": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1",
+      "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+      "manifests": [
+        {
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/forensic_manifest_554.jsonl",
+          "sha256": "54b692f10147dc2714d8f2e49fa2c98ead68e80955c59f34e705f45651381414",
+          "bytes": 3628506
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/forensic_manifest_37.jsonl",
+          "sha256": "b334bd0d6ff219f2c28628ac43eceec466c083cf4d220ee492f6332fc3f12c28",
+          "bytes": 158150
+        }
+      ],
+      "passageCount": 591,
+      "acceptedB1RequiredBindings": 31,
+      "acceptedB2RequiredBindings": 13,
+      "verificationBoundary": "Consume accepted historical authority; hash checks in this act are materialization integrity, not reopening B1/B2 IV.",
+      "acceptanceArtifacts": [
+        {
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/owner-acceptance/B1_OWNER_ACCEPTANCE_2026-10-07.md",
+          "sha256": "74c0262980ddedc22a0ffc377af64077b26e78169a08fa4731d4bb2e7df5aa3c",
+          "bytes": 1096
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/owner-acceptance/B2_OWNER_ACCEPTANCE_2026-10-07.md",
+          "sha256": "3774550ce7ef92078feb09dc0001c587409515e2ec2f0c65b375af7b403daaf7",
+          "bytes": 850
+        }
+      ],
+      "independentReports": [
+        {
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/reports/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_MASLOW_NON_QA_HISTORICAL_B1_RECOVERY_1_IV1_REPORT_2026-10-07.md",
+          "sha256": "f9a58ad7ce974576cdfc6beb461838e0bd30e1abeccdc430c36aa62428051c88",
+          "bytes": 20462
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/reports/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_MASLOW_QA_HISTORICAL_B2_RECOVERY_1_IV1_REPORT_2026-10-07.md",
+          "sha256": "634af5e9efce2216731f4c883b6983094e026958a1dbe5d32b115729f46c1fde",
+          "bytes": 17974
+        }
+      ]
+    },
+    "nonMaslow": {
+      "root": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1",
+      "historicalIngestionAct": "ACADEMY-MULTI-COURSE-RAG-EXPANSION-1.INGESTION-1",
+      "receiptArtifacts": [
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/BINDING_ZERO_PROOF.json",
+          "sha256": "6f5474b560ebb7910eacff896c48f4a82215e97fdc0dc56c2a4b72c8cc6f999c",
+          "bytes": 540
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/COURSE_VERIFICATION.json",
+          "sha256": "4b1f1a63b4eb79b1759b7447fd0b61648b3ba15aae37a39517de72ff137871bc",
+          "bytes": 1423
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/EMBEDDING_RECEIPTS.json",
+          "sha256": "6db1c3cca61d6805d2aafb75a5dc06363018c50ef269d5ab00a9a1107c84f3ab",
+          "bytes": 9571
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/INGESTION_PLAN.json",
+          "sha256": "58bf808bc2009ec4fdb0d11845e80367b0db382e18cb26dfabe11e42447a12c8",
+          "bytes": 264076
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/MASLOW_NON_REGRESSION.json",
+          "sha256": "8424025e17877d2b91680c055554d68e5d33b894e0c4ce16162d9beb4ed5f7bd",
+          "bytes": 767
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/POSTLIVE_STATE.json",
+          "sha256": "d11222caca4992a1496eb159983dd3888710f5ddfb67f0fe1688bbcdb21e16de",
+          "bytes": 33326
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/PRELIVE_STATE.json",
+          "sha256": "98e7ea720a0594216100fa483b4e35ef36df426d4be045491eeb85a7b6dcd15b",
+          "bytes": 13984
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "sha256": "ab51bc31ff7c3fcc24a5517ff58d2978feb463d526a80087fb3f992ca45fc720",
+          "bytes": 257412
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/STORAGE_RECEIPTS.json",
+          "sha256": "85392d32f6aefa8fd8f9e063eabdfe13e157516de7fc09d1abf8ea7fe150ee0e",
+          "bytes": 16801
+        }
+      ],
+      "committedReport": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/docs/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1_REPORT_2026-09-20.md",
+        "sha256": "090a8cc3d7cb93614d91e3d4d17918ef5195e70afef126c8144c1f15bff87f68",
+        "bytes": 12503
+      },
+      "independentReport": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/docs/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1_IV1_REPORT_2026-09-20.md",
+        "sha256": "ff843ecc8030394d81d373e9fe76dddb185d89ae78d478a0f6e787ea2ddb57e1",
+        "bytes": 13395
+      },
+      "boundSourceAuthority": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/docs/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_COURSE_BINDING_1_REPORT_2026-09-21.md",
+        "sha256": "750ef780411036f0cdedd5cad16c66a5d1015da86c8fb3a5f37e3ffff8bddd1d",
+        "bytes": 10786
+      },
+      "documents": [
+        {
+          "courseId": "normative-situation",
+          "sourceSlug": "normative-situation-foundational",
+          "sourceId": "37f12740-d7d6-4dca-9720-9070fd48c48a",
+          "historicalDocumentId": "246cd5bf-7a2f-4f3d-9b4d-3138c669b9b0",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/NormaSituations_CANONICAL.md",
+          "canonicalSha256": "cc06e7ad72492481e0b252ea03269ec0dad739ae18b6f2c7d350b712ea40fdd9",
+          "normalizedContentSha256": "259c8943ea5db848d3ec0b30e0b6d2a94da3ca0972e83c3e55e5bed892866273",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 103,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "normative-situation",
+          "sourceSlug": "normative-situation-course-page",
+          "sourceId": "d910ec8f-e90b-40e9-8ec5-91b5f8b046a4",
+          "historicalDocumentId": "8c5eb793-ddab-4c80-a945-793ecfcb571a",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Normative-Situation.md",
+          "canonicalSha256": "ee93e31587090a0104141e2590bd8e36a2f86e9d28bf3ace21db1a3f8d54e371",
+          "normalizedContentSha256": "4ca4cbe705eb541ee50267673aa6a1ac6148168eeda66e430ebeca71237f1118",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 8,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "OPERATIONALIZATION",
+          "bound": true
+        },
+        {
+          "courseId": "play-and-creativity",
+          "sourceSlug": "play-and-creativity-foundational",
+          "sourceId": "432cfcb6-c295-449d-849d-3dfa1b2718b5",
+          "historicalDocumentId": "29454f75-283c-4ad0-8c8c-4ee6e167c66a",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Arts_like_methodology_CANONICAL.md",
+          "canonicalSha256": "9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66",
+          "normalizedContentSha256": "fcb9873856efad72524ed95f15c5e4a96503ba5600bc2cfad3bcd87584416a5e",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 68,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "play-and-creativity",
+          "sourceSlug": "play-and-creativity-supplemental",
+          "sourceId": "d4943a02-7c6d-4077-91d2-e0b4ca43d342",
+          "historicalDocumentId": "33b786ec-f8d8-436c-a218-1eae92283eca",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/MethodologyOfLeadersContemplates_CANONICAL.md",
+          "canonicalSha256": "84960b8df1a0b2d1adc4d89c81023ea2fc1f82d795da841a57781ec1c5dda9a1",
+          "normalizedContentSha256": "898da492a6e08a93dd62cac6a1e32a20516513ced3f5777f3f42ba39cf95dc0f",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 37,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "SUPPLEMENTAL",
+          "bound": true
+        },
+        {
+          "courseId": "play-and-creativity",
+          "sourceSlug": "play-and-creativity-course-page",
+          "sourceId": "9c13b5d9-8306-478a-b257-421623919d07",
+          "historicalDocumentId": "93fa5e83-8904-4a47-92f5-a297ef041d18",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Play-and-Creativity.md",
+          "canonicalSha256": "4cc16361ebdc210fb0e6619ea8c6c5fb2c17300dc32af964d462469b111150d7",
+          "normalizedContentSha256": "fe7453ecf993ed24c7ff47942c0359233dd763e2b8182d4c996dfdf8bd265053",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 5,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "OPERATIONALIZATION",
+          "bound": true
+        },
+        {
+          "courseId": "levels-of-consciousness",
+          "sourceSlug": "levels-of-consciousness-protections-of-perception",
+          "sourceId": "119643da-5961-4fee-9e71-297f7ad83f9f",
+          "historicalDocumentId": "73cdcbfa-e539-404c-a17e-190a4505816d",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/LevelOfCons_Protections_of_Perception_CANONICAL.md",
+          "canonicalSha256": "124a5da4de652d47371c9db9228f4f1028d2d80278b91687eaa048fed8ceaf7a",
+          "normalizedContentSha256": "8046cdeee89c0bbf158ff5699e0816e8cd098cb05ce29fa0dbe61220842ee200",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 28,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "OPERATIONALIZATION",
+          "bound": true
+        },
+        {
+          "courseId": "levels-of-consciousness",
+          "sourceSlug": "levels-of-consciousness-foundational",
+          "sourceId": "83611f83-9787-44ed-8b43-6827ac0b7615",
+          "historicalDocumentId": "3fe3c262-4f80-478b-bfb8-b4a90dde5ffe",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Levels_of_Consciousness_FOUNDATIONAL_CANONICAL.md",
+          "canonicalSha256": "5893b1bc03ec372e6c40ea637d412cc2ab6fe0ed8cdca4bae18fed9c93c0371a",
+          "normalizedContentSha256": "29a0fe3c3e4d8ba9060320dee979e55ab5c892feb9a977c23b290da4c3dfe9ef",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 75,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "levels-of-consciousness",
+          "sourceSlug": "levels-of-consciousness-course-page",
+          "sourceId": "3d49cb21-df35-42a0-8827-717935f2d35e",
+          "historicalDocumentId": "95db6f87-bf83-4d24-838c-b4a642014f57",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Levels-of-Consciousness.md",
+          "canonicalSha256": "a9852ba6856a243f66ac59641933b6371f2efef5a6007d43e46dc471a9482e37",
+          "normalizedContentSha256": "30bee81b0ef276010c8adec59e53e004ce5bd0e030645903c6b5f6a8ea2774f2",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 6,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "OPERATIONALIZATION",
+          "bound": true
+        },
+        {
+          "courseId": "levels-of-consciousness",
+          "sourceSlug": "levels-of-consciousness-transcript",
+          "sourceId": "a9eb75d0-6f21-458a-8200-00fa9dd1e1b5",
+          "historicalDocumentId": "bbc34417-b81e-4c2c-97b3-9a095e4f4a6e",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/LevelsOfConsciousness_Transcript_CANONICAL.md",
+          "canonicalSha256": "7faebe8af8ea37422042a7c6624b2cf04053b6b888af852f46a83d5285533f42",
+          "normalizedContentSha256": "8860ea8cae2e4750cb91f5a08ae98a4a01ef00845c132aeae5a299a5c94f2069",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 92,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "ELABORATION",
+          "bound": true
+        },
+        {
+          "courseId": "professional-development-stages",
+          "sourceSlug": "professional-development-stages-presentation",
+          "sourceId": "9a68241f-af80-4b87-95eb-8f8cf58b9fb5",
+          "historicalDocumentId": "09b593c7-50ee-4778-be5a-a54c250d285c",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Stages_of_Professionalization_Presentation_CANONICAL.md",
+          "canonicalSha256": "9e1e6495ff62b0dfbe52f64b582fa8b242131216ec2b0195953db10c5d810a2e",
+          "normalizedContentSha256": "fdeba4a58cce8b3df779ab9ab58a1b427e8e064abd9f84fd485c9b082b110f1a",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 9,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "ELABORATION",
+          "bound": false
+        },
+        {
+          "courseId": "professional-development-stages",
+          "sourceSlug": "professional-development-stages-foundational",
+          "sourceId": "d4095ee3-6c79-4bdb-be1e-5269f59809f2",
+          "historicalDocumentId": "98d080ea-81f8-4f90-b8f6-e4b76b175e10",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/StagesOfProfessionalization_CANONICAL.md",
+          "canonicalSha256": "05d758a3444ed4c883f91ce63aa8820aa00005127b2d13e9da9e722e1b50c3c8",
+          "normalizedContentSha256": "d560e8098cea2307dc89a1c9c107b164265deb93d20883630997869c6c4c21b3",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 116,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": false
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "280de37d-5a83-414a-9cf8-d2c216e64622",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_01_CANONICAL.md",
+          "canonicalSha256": "68ca1c89488a356b8960d85804d77c50cdd716a105646e50e68ef81f17d63dae",
+          "normalizedContentSha256": "9f4478199df77106b72327caaae2814dfdbe064f8827f576158a303adf5e4f2e",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 39,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "9800d671-de61-4522-a3f9-a710530ed5db",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_02_Stages_of_Development_CANONICAL.md",
+          "canonicalSha256": "04d8d2f077a73efea8b1a8c6e434729acec674e0c3e5473971a24f6eab6db5fd",
+          "normalizedContentSha256": "166a6e1ba2b98d684cbf6898b597c260a1d16b8a13f92d8be8b11cfa2b6ad921",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 45,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "86abbb19-76f6-42e9-8c91-b310644b2a53",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_03_Levels_of_Consciousness_CANONICAL.md",
+          "canonicalSha256": "a9b86d3c3ab25ab83e1b8b243eae4072b7026f4237cf2ee0e292e08ecb2ca780",
+          "normalizedContentSha256": "df76f6a4e4fdb4d46cafc4192e0ca7f4eecd30a82a40c451ccf1799787a45788",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 75,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "d5e513e0-3d94-43a5-896f-f1a1c3442aa2",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_04_CANONICAL.md",
+          "canonicalSha256": "707d2cafd99855d681c75b344743664d74727652919526d181d84c162271cc4f",
+          "normalizedContentSha256": "44187d68f7533b22d5dc055df57b969b3f0f2db2ebe7e2f52bd5e4d0fff9b30a",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 72,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "6662977f-c490-4d9b-be45-f540e554edd8",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_05_CANONICAL.md",
+          "canonicalSha256": "fa02cdfb6f393875adc3a7d7fee628ccfa72a7f194e82f5968fda2f4e2b4f511",
+          "normalizedContentSha256": "7d9cad64ccf4ccf97c277bd3af9776ebceb57bb040b48d4559780355a76f71a5",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 68,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "48ea5a08-ef95-4a9c-89e6-3dcc690e3df4",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_06_CANONICAL.md",
+          "canonicalSha256": "dc6fa75c5cce552d476709babe161d1492632c34f9ef77a46d44fae983128d41",
+          "normalizedContentSha256": "fa01f85f9ac4692be08766f17618ca6be639dc9800d8437d1dea25308f67c7de",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 54,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "360c1121-ab1c-4cf6-b148-5cbe5b507fea",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_07_CANONICAL.md",
+          "canonicalSha256": "36aef0d658d5ace1e4328ba63b810bc8bc70e3cb16a68689c826f110e255e305",
+          "normalizedContentSha256": "fd3e45e3b1317061941b75b6661a544f10a372a6319417d4d79c0d71a7230876",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 113,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "870ff16c-1aba-49fe-bbc5-16961dda20e2",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_08_CANONICAL.md",
+          "canonicalSha256": "110c57cacce869c3f20c59bc37209518857ca318784c002ee7c6e6e63ff9c147",
+          "normalizedContentSha256": "2f3b9184afc5fa06bab7847eab4931499474e623424acbbf3dc43695dc5e7816",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 40,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "cc56f4f1-c9f9-4532-8ccb-091680f7eed4",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_09_12_CANONICAL.md",
+          "canonicalSha256": "087383626c0fe8dbe247a529cb3745f8d903cb24b89d2f2cd812163b61ae9593",
+          "normalizedContentSha256": "fe224b123656e1788b44964d70bdd9c9579f0092f8157b848fb5fbeaf7589efc",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 307,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "33792332-fb67-42a9-aba6-39108ebe90cb",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_13_CANONICAL.md",
+          "canonicalSha256": "db3e4ecf1fc63a3b76fdd66aa62d2eb245484da764ed8f84c60b3d8b590ce3e9",
+          "normalizedContentSha256": "f8e588c9c4b0b91af483f3220c1f60f788e19dce72eb549b03d227e729b61383",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 57,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "d4b78ebe-e0bf-486b-8486-e8b8f5a6020f",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_14_CANONICAL.md",
+          "canonicalSha256": "794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3",
+          "normalizedContentSha256": "fbeee22d5f47db7f7c911082a498d7b0f9975d681abbd76b8122c66f80bcbc9a",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 73,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-book",
+          "sourceId": "3bb46dde-10f9-4bf7-bf5b-e444074a6b46",
+          "historicalDocumentId": "c09c77ca-2fb9-410b-835c-e733545cb3c0",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_15_CANONICAL.md",
+          "canonicalSha256": "2dfeef93e1f1d98dc9ba044a1ab91638a4ed8d2a654d8664f94d23bb0dcaf6b5",
+          "normalizedContentSha256": "b8cdfa56d21ecac9cdc3c071122966c9c2e237b0965fa7f6550f1a4885c98209",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 31,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "FOUNDATIONAL",
+          "bound": true
+        },
+        {
+          "courseId": "structural-typology",
+          "sourceSlug": "structural-typology-course-page",
+          "sourceId": "826de4c7-f919-413a-aa1d-d15b7d7c3653",
+          "historicalDocumentId": "6520088b-f78b-449b-81bb-c63abe0e6a2a",
+          "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Structural-Typology.md",
+          "canonicalSha256": "d8b58a7c0448d169f3d51f959528a888ade5255697062fe967f06c1d6f2282b7",
+          "normalizedContentSha256": "caaf8a965b64440add3e7b7e0774bd62d36b935e42caf4564810aa2204b841e0",
+          "chunking": {
+            "strategy": "characters",
+            "targetCharacters": 1200,
+            "hardMaximumCharacters": 1600,
+            "overlapCharacters": 160
+          },
+          "chunkCount": 12,
+          "chunkIdentityAuthority": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+          "authorityRelation": "OPERATIONALIZATION",
+          "bound": true
+        }
+      ],
+      "boundPassages": 1408,
+      "unboundPDSExcluded": 125
+    }
+  },
+  "historicalVsCurrent": {
+    "goldAuthority": "Only exact historical receipt/manifest-bound passage bytes.",
+    "runtimeRetrieval": "Current TEST_BASE retrieval is measured product behavior; neither a live database row nor runtime result changes gold.",
+    "silentFallbackAllowed": false
+  },
+  "identityKey": [
+    "courseId",
+    "sourceSlug",
+    "historicalDocumentId OR canonicalDocumentSha256 with explicit historical document binding",
+    "historicalChunkIndex",
+    "locator",
+    "historicalChunkId only where explicitly bound"
+  ],
+  "identityResolution": [
+    "Authorized scorer reads each frozen goldEvidence and acceptableAlternativeEvidence identity. Contract/D3 authors do not read protected item selection.",
+    "Verify benchmark manifest identity and exact protected member bytes before privileged parsing; reject altered files.",
+    "Choose source family by exact sourceSlug/course binding. Require exact document match in accepted receipt or accepted B1/B2 binding. Never match by source title or passage similarity.",
+    "Require explicit locator.chunkIndex from frozen identity; interpret it as document-local historical chunkIndex. Never infer an index from a database serial, line number, list position or question number.",
+    "Maslow B1: select exactly one row by sourceSlug, canonicalDocumentSha256 and historicalChunkIndex; every supplied frozen locator field must agree with row.locator.primary or authoritative headingPath. Read b1/<exactPassageArtifact> as binary bytes.",
+    "Maslow B2: source maslow-qa-2025-04-20 and historical document b7e264ec-02cf-4ee0-8912-564a221c295c; select row.historicalChunkIndex by the explicit frozen index. Validate primary lines/pages/questionNumber/headingPath and authorityBoundaryGroup where supplied. Read b2/<losslessContentArtifactReference>. A question number does not select a whole question.",
+    "Null unreferenced Maslow database IDs remain null. Referenced serial/document labels may be bound only by explicit accepted IV trace or frozen identity-to-index-and-locator binding confirmed by that IV. Null does not permit contiguous-ID arithmetic. No extra recovery is required for unreferenced IDs.",
+    "Non-Maslow: match exact receipt sourceSlug and documentId; canonicalPath is the physical path in documents. Verify all nine receipt digests against committed report, canonical bytes against canonicalFileSha256; use pinned pure adaptMarkdownDocument plus buildIngestionPlan with receipt.chunking. Hash each resulting UTF-8 content; normalized document hash, ordered chunkIndexes and every contentSha256 must equal receipt.",
+    "Non-Maslow generic adapter reproduces passage content and Markdown heading/line/block ranges. Extra PDF/page provenance fields require their accepted canonicalization sidecar or historical binding; do not pretend generic Markdown adapter emits those fields. Any required extra locator field without authority is LOCATOR_AUTHORITY_MISSING.",
+    "Verify all locator fields and explicit database identity-to-locator bindings, preserving historical labels separately from passage member ID. No global interchangeability.",
+    "Reject symlinks/path traversal escaping declared roots; resolve exactly one manifest row. SHA-256 is over unmodified UTF-8 artifact bytes; no trim, BOM deletion, newline conversion or Unicode normalization at passage-verification time.",
+    "Bind resolved receipt to the exact frozen gold field pointer, proposition-scoped support references and authorityRelation. Negative alternative controls remain prohibited support; byte existence does not authorize a proposition."
+  ],
+  "requiredManifests": [
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/manifest.v1.json",
+      "sha256": "bdd4a9c8d730325e3b2360fb3250a75cd83b52bec044270e0df04a367338ad7b",
+      "bytes": 20318
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/BINDING_ZERO_PROOF.json",
+      "sha256": "6f5474b560ebb7910eacff896c48f4a82215e97fdc0dc56c2a4b72c8cc6f999c",
+      "bytes": 540
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/COURSE_VERIFICATION.json",
+      "sha256": "4b1f1a63b4eb79b1759b7447fd0b61648b3ba15aae37a39517de72ff137871bc",
+      "bytes": 1423
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/EMBEDDING_RECEIPTS.json",
+      "sha256": "6db1c3cca61d6805d2aafb75a5dc06363018c50ef269d5ab00a9a1107c84f3ab",
+      "bytes": 9571
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/INGESTION_PLAN.json",
+      "sha256": "58bf808bc2009ec4fdb0d11845e80367b0db382e18cb26dfabe11e42447a12c8",
+      "bytes": 264076
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/MASLOW_NON_REGRESSION.json",
+      "sha256": "8424025e17877d2b91680c055554d68e5d33b894e0c4ce16162d9beb4ed5f7bd",
+      "bytes": 767
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/POSTLIVE_STATE.json",
+      "sha256": "d11222caca4992a1496eb159983dd3888710f5ddfb67f0fe1688bbcdb21e16de",
+      "bytes": 33326
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/PRELIVE_STATE.json",
+      "sha256": "98e7ea720a0594216100fa483b4e35ef36df426d4be045491eeb85a7b6dcd15b",
+      "bytes": 13984
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json",
+      "sha256": "ab51bc31ff7c3fcc24a5517ff58d2978feb463d526a80087fb3f992ca45fc720",
+      "bytes": 257412
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/Academy Texts Corpus/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/STORAGE_RECEIPTS.json",
+      "sha256": "85392d32f6aefa8fd8f9e063eabdfe13e157516de7fc09d1abf8ea7fe150ee0e",
+      "bytes": 16801
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/forensic_manifest_554.jsonl",
+      "sha256": "54b692f10147dc2714d8f2e49fa2c98ead68e80955c59f34e705f45651381414",
+      "bytes": 3628506
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/forensic_manifest_37.jsonl",
+      "sha256": "b334bd0d6ff219f2c28628ac43eceec466c083cf4d220ee492f6332fc3f12c28",
+      "bytes": 158150
+    }
+  ],
+  "pureReproductionModules": [
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/ingestion/adapters.ts",
+      "sha256": "db239e3371c84c67a5f7ae0821ba7c0ffdf98cce548b26edd65b574ea1aaa837",
+      "bytes": 4876
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/ingestion/build-ingestion-plan.ts",
+      "sha256": "e008dae857ef921953f07e1e7cb672e90e7e91551728f1657c024be78e18b049",
+      "bytes": 2283
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/ingestion/chunker.ts",
+      "sha256": "a0ebd5a549bce83761c57a056671cde539cdb83049d8bb641fbedaccda49eb26",
+      "bytes": 9393
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/ingestion/normalization.ts",
+      "sha256": "3c945005683ad9738f783b5d6f60dbc5e69fdfc1ac5e8b6f32d883614ec28e0f",
+      "bytes": 807
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/ingestion/hash.ts",
+      "sha256": "5c154cd082bbdcd9ec40c82096e4bd5ef30cf6726e507504690f2d98f83e2a88",
+      "bytes": 358
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/ingestion/types.ts",
+      "sha256": "4b857a129efea6f78df1a17742f908a76f68c38a8f41e9bead4b5d57fa29f67b",
+      "bytes": 2380
+    },
+    {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/ingestion/validation.ts",
+      "sha256": "e30841f04bed2365d36c0c3c1bc59de45928ceed31bfc84f8b77067dfea3e2c8",
+      "bytes": 3448
+    }
+  ],
+  "failureClassification": {
+    "IDENTITY_MISSING": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "IDENTITY_AMBIGUOUS": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "DOCUMENT_MISMATCH": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "CHUNK_INDEX_MISSING": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "LOCATOR_MISMATCH": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "LOCATOR_AUTHORITY_MISSING": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "PASSAGE_MISSING": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "HASH_MISMATCH": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "UNAUTHORIZED_SOURCE": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default.",
+    "GOLD_BINDING_MISSING": "AUTHORITY_INFRASTRUCTURE_FAILURE; block affected scoring and final acceptance; preserve identity and reason; never product-quality failure by default."
+  },
+  "missingIdentityRecordFields": [
+    "protected item ID/pointer in restricted store",
+    "courseId",
+    "sourceSlug",
+    "documentId",
+    "chunkId",
+    "locator",
+    "expectedAuthority",
+    "failureCode"
+  ],
+  "unresolvedFrozenIdentities": {
+    "open": "No missing identities asserted without privileged complete binding check.",
+    "protected": "31 B1 and 13 B2 bindings accepted by Owner; this act does not reopen their IV. Full non-Maslow protected projection must be checked by authorized scorer preflight.",
+    "completeFull123BindingAttestedByThisAuthor": false
+  },
+  "universe": {
+    "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1_RESUME_1/authorized-evidence-universe.jsonl",
+    "sha256": "0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e",
+    "bytes": 5120248
+  },
+  "zeroSilentFallback": true,
+  "openDevelopmentAuthorValidation": {
+    "occurrences": 110,
+    "allResolved": true,
+    "missingIdentities": [],
+    "locatorMismatches": [],
+    "protectedParsed": false,
+    "artifact": "open-evidence-resolution-validation.json"
+  }
+}

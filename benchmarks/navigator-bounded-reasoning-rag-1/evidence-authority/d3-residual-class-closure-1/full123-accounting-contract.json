@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "FULL123_ACCOUNTING",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "partition": {
+    "DEVELOPMENT": 49,
+    "HOLDOUT": 50,
+    "ADVERSARIAL_SAFETY": 24,
+    "TOTAL": 123
+  },
+  "adversarialPartition": {
+    "VISIBLE_REGRESSION": 10,
+    "SEALED_BLIND": 14,
+    "TOTAL": 24
+  },
+  "membership": "Trusted controller creates manifest from exact unchanged frozen records; question/gold IDs must join1:1 and visibility is explicit frozen metadata. No membership change, inferred split, duplicate/omit or replacement fixture.",
+  "terminalStates": [
+    "EXECUTED_SUCCESSFULLY",
+    "PRODUCT_LEVEL_FAILURE",
+    "SCORING_FAILURE",
+    "INFRASTRUCTURE_FAILURE",
+    "TIMEOUT",
+    "NOT_EXECUTED_AUTHORIZED_STOP"
+  ],
+  "recordFields": [
+    "runId",
+    "itemId",
+    "split",
+    "visibility",
+    "inputIdentity",
+    "attemptReceipts",
+    "executionTerminal",
+    "scoringTerminal",
+    "finalAccountingState",
+    "qualityStatus",
+    "primaryCause",
+    "secondaryCauses",
+    "stopAuthority",
+    "rawEvidenceRefs"
+  ],
+  "exactlyOnce": "One terminal accounting row per frozen item ID; attempts are child append-only records, never extra item rows. Atomic uniqueness on (runId,itemId), receipt hash and manifest bijection checked at closure.",
+  "classificationPrecedence": "Retain orthogonal execution/scoring/quality axes. If item was stopped before invocation -> NOT_EXECUTED_AUTHORIZED_STOP; deadline exceeded -> TIMEOUT; execution infrastructure failure -> INFRASTRUCTURE_FAILURE; attributable product failure -> PRODUCT_LEVEL_FAILURE; valid execution but scorer fails -> SCORING_FAILURE; otherwise EXECUTED_SUCCESSFULLY even when semantic quality FAIL. Preserve secondary causes.",
+  "productVsInfrastructure": "Provider/network/authority/adjudicator/capture/isolated-data failure is not automatically product-quality failure. Unknown cause remains explicit and quality UNRESOLVED.",
+  "completeness": {
+    "fullyAccounted": "All123 unique terminal rows join frozen manifest, counts49/50/24 and10/14 match, every attempt/retry retained, and all receipts verify.",
+    "fullyExecuted": "All123 invoked; no NOT_EXECUTED_AUTHORIZED_STOP. Successful execution is a separate count from attempted execution.",
+    "fullyScored": "All applicable dimensions/gates/reviewer outputs closed; no SCORING_FAILURE/UNRESOLVED.",
+    "passing": "Separate gate and policy verdicts satisfied; never implied by fully accounted/executed. No aggregate metric."
+  },
+  "interruption": "After controller crash, reconcile attempts/raw output and synthesize explicit missing-output/infrastructure records; preserve crash receipt. No auto-resume/retry until authorized. If stop unauthorized, mark stop authority missing and run invalid, not lawful omission.",
+  "stop": "Admission/startup run refusal can be recorded with123 NOT_EXECUTED_AUTHORIZED_STOP under the pre-bound fail-closed policy; no provider contacts. Do not create such run records in this authoring act.",
+  "reportCounts": [
+    "totalManifest",
+    "totalTerminal",
+    "primaryInvocations",
+    "productResponses",
+    "productFailures",
+    "scoringFailures",
+    "infrastructureFailures",
+    "timeouts",
+    "authorizedNotExecuted",
+    "providerAttempts",
+    "sourceRetries",
+    "harnessRetries",
+    "gateFailuresByGateAndSplit",
+    "unsupportedCountsBySplit"
+  ],
+  "zeroSilentOmissions": true,
+  "zeroUnrecordedRetries": true
+}

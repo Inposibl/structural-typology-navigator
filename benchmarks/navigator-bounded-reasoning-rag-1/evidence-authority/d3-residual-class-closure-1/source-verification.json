@@ -1,0 +1,2865 @@
+{
+  "physicalRoot": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1",
+  "head": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "branch": "integration/academy-main-reconciliation-1",
+  "commit": [
+    "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+    "cd3743232c235d228fce1c2d9bf816d3d1e471d0",
+    "test: bind historical Maslow evidence authority"
+  ],
+  "remote": "https://github.com/Inposibl/structural-typology-navigator.git",
+  "status": "",
+  "mismatches": [],
+  "workingBytesEqualControllingCommit": true,
+  "members": [
+    {
+      "path": "AGENTS.md",
+      "sha256": "d643cf14af87344db8e28ed80c62413bd81d5b44d84c8eea322b5aab5c9df699"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/README.md",
+      "sha256": "270e72f29ae8922f7b2b5ce2e529d18c194891ac8c8193c8b3eb888c356b1436"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/adversarial-safety.gold.v1.jsonl",
+      "sha256": "e3d1c637cdb9508b22baa2ba182f5da6543ac52259bf231b73c0dbb1ffb45b74"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/adversarial-safety.v1.jsonl",
+      "sha256": "5d3308c52896d9e8584e11246060d8ada60dd058e1eb625b6f03ce14def39942"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/development.gold.v1.jsonl",
+      "sha256": "4069ed35a056c28bc16610b915269555ad49a6c065131bb72728738127e51303"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/development.v1.jsonl",
+      "sha256": "5be942a2f46ee1d4530dc025905853d4adeb478b54b5e8ed3318e5cbc4ecbb05"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/forensic_manifest_554.jsonl",
+      "sha256": "54b692f10147dc2714d8f2e49fa2c98ead68e80955c59f34e705f45651381414"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-000.utf8.txt",
+      "sha256": "66d7e9d8a49f062d94b8ca047a8cc37725ee5e6d9e8d7817b9b1e3d7ebbd56a7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-001.utf8.txt",
+      "sha256": "70a0fcc9d280b632d19bcf3ec99a3574c3cfcb04188acbbe84bd453882feadf1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-002.utf8.txt",
+      "sha256": "4c88a064981a0c3a0d4a3891b9fd58887485cc37fe8fdda122794f5eaf744683"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-003.utf8.txt",
+      "sha256": "8cb325275f7b46647cec2c3661652895f971a3036068da5b57741147ca712a6a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-004.utf8.txt",
+      "sha256": "fa1189d56b1e4d718b9872778438bfc1636c8a2c85db42417f2c97aefda67f7d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-005.utf8.txt",
+      "sha256": "a677288f032c257c5fdc32f82c4b0c2e5c49dbd0bd104da911bad071bbba3202"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-006.utf8.txt",
+      "sha256": "2bb90140bcde8b3fd2b800825e7640816ecfcac137e7c924152ffd3e816037dd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-007.utf8.txt",
+      "sha256": "da8e6b32c074533b4c45af2992e8be03481bee92f011e7030fe23740b6c9e186"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-008.utf8.txt",
+      "sha256": "1304977b1a0c8e7dac2bd87d0b1505281b0e07f4ef1845571d046c5d166b5313"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-009.utf8.txt",
+      "sha256": "09e999d7314f4c1458acb60242fb8e77ea5f6234afb037775f71eca694df3cc2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-010.utf8.txt",
+      "sha256": "c6a58b604229211b10f3b3ff0dca408934844a357c3404da862a7563abcbb9ea"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-011.utf8.txt",
+      "sha256": "407d4f23d3e21da9b05d20cd1a8451e917bc500eb0f046dd90500d21f4297088"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-012.utf8.txt",
+      "sha256": "7a4748fbe04994f725a6f646661e65ab35dff6f2eb0c866c216a839f7c087b33"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-013.utf8.txt",
+      "sha256": "5d1fddf8de3894f1675e74cfbf2cc5897db2b63cf9707096b44f1a4507387a4f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-014.utf8.txt",
+      "sha256": "9649e2b76da762a7fb3a56742c94b75f92aaec97c9c842d9f9a12ccc0ffc41a3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-015.utf8.txt",
+      "sha256": "d057d2676b02a02f8495ad47e0e545cd08896d5a1ee9e0a5854010900027afa0"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-016.utf8.txt",
+      "sha256": "9b1975472becc99bf39a951560f2fc975ed6ce2d757b94cbd7e388bb1da96133"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-017.utf8.txt",
+      "sha256": "2e73e502790525e0be5dce7c4464c87670317274b61d14862b95922aaf4b5a8e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-018.utf8.txt",
+      "sha256": "1df646ab7cfae44259057a0d660a99e62a70ea454d0d8b230c3f2b38a088e73e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-019.utf8.txt",
+      "sha256": "7200afd62d62439e96afbe9f519de1746cef4ae41a3e709608c8b4ab24702670"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-020.utf8.txt",
+      "sha256": "308ca95af0331492079c31d24e3bb581a592e5f5e66489e075e66af9e624cc71"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-021.utf8.txt",
+      "sha256": "3370fdf76d96e61d903e88953a41caa7bf377ebdd681d429342b2a214b9c5063"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-022.utf8.txt",
+      "sha256": "c64239227c7b458f5ffd2e6696fc71073113550492a6899f93165363b0352e85"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-023.utf8.txt",
+      "sha256": "295c1b96429b99c822e36158709456a5527cf7f3c3e81f35b79305d39c5bc36d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-024.utf8.txt",
+      "sha256": "d7df81f490b6e3ca90e9461e09c1f62246fac5a2ac3ec9fa25d8fb686e248b11"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-025.utf8.txt",
+      "sha256": "262ba955317acd01e8a56de7d1595455ccbafd7b8f615eb7cb997c00959b992a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-026.utf8.txt",
+      "sha256": "3822986dea2b867eb46bd8fc4b9d8e95937800e603a8e08a23b2dd09a1cab029"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-027.utf8.txt",
+      "sha256": "15ab4b1315834591d769297784ccfc3a90898c4e6c2610f8b8fb205d651af3ce"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-028.utf8.txt",
+      "sha256": "c6816ce630edf1a06f7a87f6c386a9aadae79eaff146496fa26d27df0c6873bb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-029.utf8.txt",
+      "sha256": "03297ad1b88b66e7a4673d424f539e1558e06742cbc5515c44fad4d24823dcf5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-030.utf8.txt",
+      "sha256": "5ad5fd24f365e7965a5d01317ff2e2a8eb5e7e4978fbf3a3343404236412577b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-031.utf8.txt",
+      "sha256": "2a45af096eabd2823b9d843ff5e11c2b656ac2acae0ec1ac91bfe84b2eb8f00c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-032.utf8.txt",
+      "sha256": "3264996833907b3e99dedc946d10563615d0426586935722e660057ea2576311"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-033.utf8.txt",
+      "sha256": "5aa130fe9714b2aa70955270cc0e2a44c61c9e1397c66dfde5290b91fb813d68"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-034.utf8.txt",
+      "sha256": "927396a439cbf31fe6fea51b557a57e08b3c1e8dfedc88a7469bb1643f35a6c6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-035.utf8.txt",
+      "sha256": "3511d8fd31150988601ff86c7003d8be80bb0b14d21fa54e2ab8af378e3094fd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-036.utf8.txt",
+      "sha256": "7ab59d21e9308933c2ce1197b3141b79c4e0e5e6a875cd028ce92c4b47bab901"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-037.utf8.txt",
+      "sha256": "45de242a357023fc0f64b6bc607e7dd374d3ecbf9c3d304e3b7874222654fb32"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-038.utf8.txt",
+      "sha256": "b003f4a1dce507c72ec6a63ecd900a9912056bf4eeea33ec7519f8a1a7ca94cc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-039.utf8.txt",
+      "sha256": "64742ae37ac8cfb240bd24ebeb9ca1b5a6d27c25ad3e3eabb98f9ab222b5f9c5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-040.utf8.txt",
+      "sha256": "028322b65171804f6503d41a1add5ccee4bf791ec0f15948bba27b7c970538fd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-041.utf8.txt",
+      "sha256": "660ffbb51a18ce0c71d3832de11f850cf1319d31768e42bb73617f4e6c0f72f3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-042.utf8.txt",
+      "sha256": "5690cd54d8abf3dc93e30aa8ce11f7aad71cd9141e21a82a3a3542221a9b8364"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-043.utf8.txt",
+      "sha256": "33a7a7323deca09a373cc7b3f015de463f983a34e8ef71757fc0b677387acb70"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-044.utf8.txt",
+      "sha256": "d65a8819e1c40ab6c16a2474ae559bb3a2e2d481ef8cf6a45643bad0b4f0e784"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-045.utf8.txt",
+      "sha256": "fa1a1eecf8e588090e5d2d68ec4660580a8160bbc58fc341672e551a712b84e9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-046.utf8.txt",
+      "sha256": "59318adab89b2d11e1c2fa81a24c820ae055eae62ae950fd2068c754e2c4a0b6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-047.utf8.txt",
+      "sha256": "457fb6e3ee981ce7bb657e4ac06b2e58c7ac85bf796d5eb8742700fc09a88896"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-048.utf8.txt",
+      "sha256": "ecda7aa8a40c43d4ca4e9253687be2adf58a8e85f6cc5c91b75010eb18915346"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-049.utf8.txt",
+      "sha256": "e89832f06dc9682063d272b76b570a7cefc829369ffe39c01309fada27ed8e8f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-050.utf8.txt",
+      "sha256": "ea5be9ddf4fa4182b40f36bd4a5801f58e35e0667c3a9f6132c8d462837de98e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-051.utf8.txt",
+      "sha256": "41fae43b2467eb7b3ae31161534b68b7b3d2c5a924eca9ef47a62f5c433883a4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-052.utf8.txt",
+      "sha256": "11c3cb7c0aaa8708a502b45631f07f5ff27da9876a17541657b5b53e3607635e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-053.utf8.txt",
+      "sha256": "62ccd9c4980dbfaf75da337584e0ae45b730d0dad0b057f9a8f242fd27f97ee8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-054.utf8.txt",
+      "sha256": "e7c340198b44fbf33b33573c7e21fc2d0b6424f9f8630a1127adc6cb22609ff6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-055.utf8.txt",
+      "sha256": "95ded9a79d216fd4f1394ab87565931c66738f19322ade219f76ca575788b136"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-056.utf8.txt",
+      "sha256": "b94958417976bc56fc863672b7f53ce701fac7d02e28bfb3255d9b574b6c0cae"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-057.utf8.txt",
+      "sha256": "791520eae5af54b6e1ab81ae51bef2b5199f9969e72d9351742286d2afa5589d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-058.utf8.txt",
+      "sha256": "43d60703c7e8b889bb09c2f07eb0335c095c92d1272367e59fc07dfd04aa50c3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-059.utf8.txt",
+      "sha256": "560682f59263b90acdc11be0b6b382cb3ba5e49331bf74cf205ece72bc0c46c0"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-060.utf8.txt",
+      "sha256": "2491503d50e243a7871e63c3b36fbcac0fb64fa29c3c3a18a5c21dda1bfa1025"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-061.utf8.txt",
+      "sha256": "f80d0bf2dea1cade841e07f9db3ba92063740a6e9b868a1f992882ea220d5a15"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-062.utf8.txt",
+      "sha256": "1766bf79f9cb29ada6206a0686b49363e96df6484fd531cbe7d63112c7857907"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-063.utf8.txt",
+      "sha256": "579d2faea86960e2bb73af9760c0fec1447231fec8892390b8ffa82612527b85"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-064.utf8.txt",
+      "sha256": "4c0c95cde79883f2dfd8806e9f19d154094db241ef91714cff213097c96ca110"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-065.utf8.txt",
+      "sha256": "79e00d59f5045059f8119655cf71d2472f2f2f75c77197d05549fca2d91ad29c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-066.utf8.txt",
+      "sha256": "f4b40b818e7452f694d410bd6fbec7068a5e1138a49e4f52dc3e4fcf788fddb0"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-067.utf8.txt",
+      "sha256": "5a1ac87ef71a8cd1ce766e4d11033a2d40a78113bf6663d9e007751f0a1278e4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-068.utf8.txt",
+      "sha256": "b190a671178aa4b269c593f83d711d0f9114b310f734ab79da72549b9dfd59f7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-069.utf8.txt",
+      "sha256": "f686f2320093451341f6a32e9bc7d10a3364df03d9d3b8c05a0b7d7994e65e3d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-070.utf8.txt",
+      "sha256": "479ae551c024947bf1e25857f03cf5a445b5b5411a8a35afc0ab746da5fcd7c7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-071.utf8.txt",
+      "sha256": "668604514d570997a9d96cb7a3fe5a28912272093f5a27e7069bd762da86d54f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-072.utf8.txt",
+      "sha256": "e72fcfc9bfea93baaa479ec40b4d27bca5808b78626919873665d8c8fafccb8f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-073.utf8.txt",
+      "sha256": "639a613715a60c8a2ba71cb7d966fe77fac8f7f1503d539a065f40705d4a1b72"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-074.utf8.txt",
+      "sha256": "58f03f71f3eacf3ba3fdc33f2078d9738db830d0e1a330142968233246198bf4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-075.utf8.txt",
+      "sha256": "f80dd7ce574244cb6e4bc28326c00cfe6351e8e8d7a934e04b01277883197c22"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-076.utf8.txt",
+      "sha256": "00229f0ed60dbda619652aed0e5ebb413cb3ec18e7ce0650d05c8d429accfef5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-077.utf8.txt",
+      "sha256": "2924cebe7e1eee4bef9810454f45f4af39f7f490e383beece8b007333146058e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-078.utf8.txt",
+      "sha256": "cf05ec4022acefd12ea8ad75be017d5f1a7569e883e57a01515166392f7853eb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-079.utf8.txt",
+      "sha256": "5bd9a2a31158f6938013d90f253ba096270a7714a5454998a135b4894bc1a068"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-080.utf8.txt",
+      "sha256": "2e0001193d2ce3e7a65bac174de41cdc9eeca032123614cbf0338cc60ac0af15"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-081.utf8.txt",
+      "sha256": "440e87a44b65740eab1a88bacc078b7a690cf57b7219cd711fbc1a7d375fb2a5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-082.utf8.txt",
+      "sha256": "e48d38636de72372c29ebce5d2e939b0c4e35ba844ff1ff44f65b2aaa68c2bb6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-083.utf8.txt",
+      "sha256": "2bc60143ac326b2b7770e2251c9d2ca8a5fec03566411208415cadeccf080401"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-084.utf8.txt",
+      "sha256": "1c240f63577f8e4458c873f3e2afc586ea215210d0478039769a9a2c5b896eff"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-085.utf8.txt",
+      "sha256": "d16d2ee4d3b0656135bceea5c4b6966f4a185559e5eb8520e4fabdd0a80a6011"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-086.utf8.txt",
+      "sha256": "7f261a8a5920dd1d0840c3c3264a91fb8097c20ae86ca7ec11d4ba154aa6dfa2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-087.utf8.txt",
+      "sha256": "c7bb77606a2f0e49056c5ea68b3fa3d95214c8e605035a9dd731530089eccdd4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-088.utf8.txt",
+      "sha256": "199a56d55423d9109e8f9908ec57a4ee6a88fff241c6046d91a5439b3fe9b0b3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-089.utf8.txt",
+      "sha256": "6bb7aba67124beb90d7aa0b3b998cb1048ae30164e94fe0b214ff60bf054cf9e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-090.utf8.txt",
+      "sha256": "08c189dbec5ccb668636e4deeb9408b955355e117a19e5896c85fc0d15f7d7c9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-091.utf8.txt",
+      "sha256": "f4c75f15f144d974500485b7b6671070b49b204cf6513778f146d5e879b9b864"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-092.utf8.txt",
+      "sha256": "7a382532b0f86bffa447a2a782c89404f6857bfa6bd1e74064599815194f44cb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-093.utf8.txt",
+      "sha256": "93ee2f338208354d2bbdb93c791e1d19fc028a6c0918260e13718488a75e4641"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-094.utf8.txt",
+      "sha256": "4d0036fee4a1e9b4d576894bbe7e10cde7ce5961345724462ef51098430a806c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-095.utf8.txt",
+      "sha256": "d66d799c6eb828d1290ab344cdfd848c5c770aaa47c491314bb9ee3af46f56cf"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-096.utf8.txt",
+      "sha256": "90b54ff70d8794cfbe3bc98138e8c930e985a018d2b128e618794266bfda80ba"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-097.utf8.txt",
+      "sha256": "26676c66151204c01cc17df62e7996c2b16949c172e704747af985e15215eb7e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-098.utf8.txt",
+      "sha256": "62ffca6904f381b4b3d96e0ca5ffd838ba1fe4c9eea820a434e41b9d31521250"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-099.utf8.txt",
+      "sha256": "02784e7ae603af07336dd62f73ec05644a9902c12a1ad81479b19bbd5a244388"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-100.utf8.txt",
+      "sha256": "201392f12090eaaff8d63cf81299cf38d4503f7cd5f6faa9d5a736cd1c73e40d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-101.utf8.txt",
+      "sha256": "1c2f71722598a0bce86f88d26153c55f33ef2fe2bd577ba2d42a2bef50d0114a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-102.utf8.txt",
+      "sha256": "5984d45195159dd1231573326ee4ca27e41638b97ecc7c25968f1389ecc05bd2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-103.utf8.txt",
+      "sha256": "d4b13da55916b76b72bc7e9b071c79367721ff6482024ebf730586cd40bbbd8e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-104.utf8.txt",
+      "sha256": "82106ad728e6cf1ab8e8a86bea0e3de462e3d0d6054db6cc530ce63f265a4b8d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-105.utf8.txt",
+      "sha256": "a5fb82d1871fa5f46722ec501554eadb94face4dbf8ac74198deff68e85af573"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-106.utf8.txt",
+      "sha256": "db41a6e27b0e3a8ef5ee58c11fb39316bbc4eb70a9457468c35123edc70006b7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-107.utf8.txt",
+      "sha256": "1d07e1bc9c2b3f3c80469edd406d49387564fe1a4e35dc7c8a9270a906488033"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-108.utf8.txt",
+      "sha256": "932a59df080cadaf3743429fb87f66e987ce43e3090294cf79a3a8b8ca208a03"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-109.utf8.txt",
+      "sha256": "1bf63bca161daee0de10935efe61df73cd6fa3512aff298f839931233640a975"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-first-meet-transcript/chunk-110.utf8.txt",
+      "sha256": "8675197997378f0685bfec5352586ab0399b4feeeed0bb2908c9878732f057c8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-000.utf8.txt",
+      "sha256": "3ed3deaa5905277c6ee8dda2dab190b1b23c5053457d668fc0429b5814abc68f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-001.utf8.txt",
+      "sha256": "f8c50eb6736d80f740f5b6ddc4f7ce8c68a15ae84ddb7d70abda4df3e3e52f14"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-002.utf8.txt",
+      "sha256": "39140f8a4270b2eb6a55b011acbb7e938acc97e2ab6cb7c18b2bae03455eb0b2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-003.utf8.txt",
+      "sha256": "3ab49b597a389d6b349f3b5eec5e2887e2435a2e7b3e3f61c54dfc482db95fbf"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-004.utf8.txt",
+      "sha256": "835e29286512684b0885d8a2f3355615ef8c04bc0042f4bfcb899aa21aa18da2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-005.utf8.txt",
+      "sha256": "1d1ba964ed43801ba252600e5ea58b2f1e2707173e8ef47d0bdaa226df92bfaf"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-006.utf8.txt",
+      "sha256": "8dd1e53e46106887edfdc59adc1af46f51e1ded6e43b88d4996d709ebf00012f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-007.utf8.txt",
+      "sha256": "d535b83afbaf88b86b54d11310e2b8c477f6dd0e65fbf2bd989a7e7d6e1232d4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-008.utf8.txt",
+      "sha256": "abb33690111b1779c337142678e4bbed17999d6d04f600dec64946fba15021bd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-009.utf8.txt",
+      "sha256": "90bb167838e3e2254e6aae62d7a1d8f3b75f179918d66d8a623ce20149340713"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-010.utf8.txt",
+      "sha256": "5f9c096ffcfe7032f15a5801e325079fd29a5af5aa4f3bc18b92392d0ac83d25"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-011.utf8.txt",
+      "sha256": "624abf3c8bdb1f0988aeb7c6d5239f9d89c89bf4223a74d9172a2a223f57aca2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-012.utf8.txt",
+      "sha256": "282485b9bd88f4ccb332a0268f47ff298fc986804e745e68403608e6063c4685"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-013.utf8.txt",
+      "sha256": "2e5b1bbcddb32b855774981b36c030ad9ea4a00b983bd9e0417adce1dc9e5641"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-014.utf8.txt",
+      "sha256": "4a5c3b6d318161628f253ff475a1979a5f43f5d9332e29eb6550453d86a29383"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-015.utf8.txt",
+      "sha256": "e7183ffa56de4657f7fcc25eb603005bae43ab2ebf37120a910e7df948309750"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-016.utf8.txt",
+      "sha256": "c9474d0e7e469ff671f8a112b649a6578b1a647cba09cfa248f108daa8e88d64"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-017.utf8.txt",
+      "sha256": "37f833faa7b04d4e862b52c8443df9ec19c5fb41c4a856981ee4a7908fa516c8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-018.utf8.txt",
+      "sha256": "0266f7e62d47d55f6f29d983e2dfcf45515e46acf2fff0d1235d80caf1a7dd31"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm-presentation-2025-02-22/chunk-019.utf8.txt",
+      "sha256": "7366534da08f9b20ded79b9d10e0c74e861815cb25726de2a2365e190dcf06c5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-000.utf8.txt",
+      "sha256": "dadc33314ec03c9e89debdbef120e97d328c28b09f5eed9cae51d7c4505c3646"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-001.utf8.txt",
+      "sha256": "007480fa077f8a181e1d28ba36c2398cbc5a46e7d8c925e0403582bd9bbc295d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-002.utf8.txt",
+      "sha256": "548eca05b696c885f5a177c8697b38c294220c2d6a1c5aa97ae62ba1cf2e6402"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-003.utf8.txt",
+      "sha256": "d94aef2c8a9d4eace6217674d91582155cc153172842be5fb7005c545e3cfde6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-004.utf8.txt",
+      "sha256": "6f404c5cace3f8ac1027d6d66a3fcc0f3f62227491c60bddfc7bfc1c30360869"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-005.utf8.txt",
+      "sha256": "13d6331d07cda3348b82b24fc60003a7c139c5f589cb73edab73b883e00ea832"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-006.utf8.txt",
+      "sha256": "2e9fd5bf00e409f03b09c7bb105caa3a9a36d2de082bb9d16b115c8d440bfc0e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-007.utf8.txt",
+      "sha256": "c8bafac386010611abd2a9034f84187cf9096db2c121d4f0a8e7fd624a20b516"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-008.utf8.txt",
+      "sha256": "ea93d4492d71134d4c9615643a519eed37ae564094af7286eed5b7d267caad8e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-009.utf8.txt",
+      "sha256": "641d5211d8b8ef55c877cc309707a4cce818e3be59aab6bcbfcd245d17433822"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-010.utf8.txt",
+      "sha256": "c95080551cd3f1dc14a0d49c6352e70c1789fc1a287e7d13fd4971f0d6dd6070"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-011.utf8.txt",
+      "sha256": "f40b3045a80c80f31d8b27213b8101e501b96bbe999e7906659cb829c24512ed"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-012.utf8.txt",
+      "sha256": "e43d1f4ce85ac7d79aeca3613be440a518dba3866b82179a13264c20e138e568"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-013.utf8.txt",
+      "sha256": "6df4cd1524f91ad28661de5bf44f16743bb8f9af100ba1a8d1fd3177bb7cc488"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-014.utf8.txt",
+      "sha256": "797578ef1151d409888f8d3e231aad29908affbc33321fa98aecfdd346114577"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-015.utf8.txt",
+      "sha256": "83f9c28742836ef20232cf17b6b0c7c2cbd4f81d294e2dec18a528e2721dca29"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-016.utf8.txt",
+      "sha256": "888fd145d2966710d9a791c2e5bfc4f059df9d3065c8852595d1577360c41976"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-017.utf8.txt",
+      "sha256": "d6411f8a2647f6cfb8cf6633963fb68405f14a957a5fd043519c6516df7c63ff"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-018.utf8.txt",
+      "sha256": "c8a6687e757b6d92d8675decbfb032d21a94dbcb58f0e5377d0e5a34e2164648"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-019.utf8.txt",
+      "sha256": "d2d5f4102cea0fd443864c7c792c01d22c2151bb5f542c860f13fd1fc4316099"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-020.utf8.txt",
+      "sha256": "238f94f1c5b98f1e6562b04167ae26888bf72bef54f1035d13e1eb3bf40c0d33"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-021.utf8.txt",
+      "sha256": "8b3144d4950ca04b6d5d8e32bbfb506d1a5a806550e71f95296a471693205fcf"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-022.utf8.txt",
+      "sha256": "d519f292758ac101d52e559e365fd3e65864af080f7cd501d7838a356ada19b1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-023.utf8.txt",
+      "sha256": "ea0c74dd9cb4c62c886275b0326784d4d271b1134074f84e059e54d5389f52ff"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-024.utf8.txt",
+      "sha256": "7253d85c023583a96b3dac810bd276f4f62d259be25353ac507564113934e472"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-025.utf8.txt",
+      "sha256": "dd49efb0e23717b77d54222e986ebad381ad4d7496a878854caba7c57a95e877"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-026.utf8.txt",
+      "sha256": "5f0417f0d4fb0a781e37f03150b5c7affcafb71b50708392c3417e48ad70de9e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-027.utf8.txt",
+      "sha256": "f2ca2154ed95876fc363d8074a7d6e91c24cd79d052742ec055d290456b338c9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-028.utf8.txt",
+      "sha256": "87831ec270233d930f8da118c6507ef6ec417a92edf935848ebf48266a8792de"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-029.utf8.txt",
+      "sha256": "4c01cc7738876bc64ec4cae39f3bef5cebd1a28525d1907182c49cef40ed54a5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-030.utf8.txt",
+      "sha256": "e1ce385baf62f1722b1ec69eab8fb995ad09077187d533f90b92b0193cfa8ecf"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-031.utf8.txt",
+      "sha256": "bc10d8d0d7eb6808c3ec1aac52a4a063908100b420477bf0d0573fa4b3f54e93"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-032.utf8.txt",
+      "sha256": "4d56342870b33b9b23cad94243b4ba98d7420392baa375f1cf991e3ef5b91441"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-033.utf8.txt",
+      "sha256": "eac3a92a82c283c9c5498287cb0a0d7e297a4e6d517eba0a73798fbbc0386b42"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-034.utf8.txt",
+      "sha256": "3dbebb424420261a2210a6f1b939ddf37b054d554f14d5ebd20bd06bc58f5db7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-035.utf8.txt",
+      "sha256": "1685e66f4a8b14f1f657845dfc17344ce2e01d95ce6a11a9724b4885dc844aba"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-036.utf8.txt",
+      "sha256": "fe061ec0f61cfe22b350d53925b872b58b9ff265502162034f1391ce5fa58217"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-037.utf8.txt",
+      "sha256": "463465f45a2efae7c89a8d634c0251805ac1ea470ca68a9487276e73a9a50a8f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-038.utf8.txt",
+      "sha256": "c1528eb8546c746f9a038fde6dc471413ca479266956803223bb8f79a0d052cd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-039.utf8.txt",
+      "sha256": "6d075c985ff81e0f8e124d54ad366308fdd92bc7a4e96a61766e04b9fcd1f0fa"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-040.utf8.txt",
+      "sha256": "a4f7c7edd67c86bbf2ddf405e07ce2825886f1cecad522026ec5252ef9ed4c31"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-041.utf8.txt",
+      "sha256": "0c08b21bc19714a09814dcdbe8438785835075bff51069f8ff1e20a70e8473ba"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-042.utf8.txt",
+      "sha256": "a83df10a192828c67df087f47128690cb97af9db240ad86e5382ad8841028a44"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-043.utf8.txt",
+      "sha256": "1f5f04ba650029cf312bb748f46151af926536d45f4eb620c114d36018f7339a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-044.utf8.txt",
+      "sha256": "6c8ddff3a9d6f400d3f34a651bb7b4e85f7273639f839c13d7543dffd5876eac"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-045.utf8.txt",
+      "sha256": "dea174ceff5c9ef599bd72ab5e1acc509af128c168d4478954e061a21079cdc3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-046.utf8.txt",
+      "sha256": "894c82b213d490ae5d385aed2ec47bfb348abf2a86b93d47219c54037090ed39"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-047.utf8.txt",
+      "sha256": "bd543542124ca53740aad572bd484e8acad09657c10c6cd4e9d91886d1ab1dff"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-048.utf8.txt",
+      "sha256": "514d9d04e9aaae2b213a287db35c771c6a8f3ef81d7ded7ff85968dd79dc3528"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-049.utf8.txt",
+      "sha256": "fd1acbd5087e8e3c0ae7ba34c38dc84e114e40a840c8c82691a5b350359e01bb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-050.utf8.txt",
+      "sha256": "9cc7a4e706f74800269e89ebb7883fb366dd1676c4258e0302896addea077fc7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-051.utf8.txt",
+      "sha256": "8f3bca1deaf18dffdc08eafed7824fe09ee2157d9e34c5ef2e4cfe8e1d12c65a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-052.utf8.txt",
+      "sha256": "990b437e55393300c4af5876ab0bd6cdc382feb191e288ac5e2f2056fb120f40"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-053.utf8.txt",
+      "sha256": "cbd5dd929947044ee31c0ee4514eb5fd1677c1d04281160549bd295fb8e8b90f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-054.utf8.txt",
+      "sha256": "91dcd7d1d5a7c25682fd7e74cdfb0b965658ad408d65be0e050b5fd4e21603e5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-055.utf8.txt",
+      "sha256": "6fff3c73087a577371cc54973543b4743f1348dedcbf651896bf994c8477738c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-056.utf8.txt",
+      "sha256": "e6390e3841673861950ba7e37637ea581971940f6b0aa80ad12d111e16635de2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-057.utf8.txt",
+      "sha256": "1a48c03f7a3d3372562d233f083504b793092a747fb7a9fe9de1f5d91e35aea8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-058.utf8.txt",
+      "sha256": "e3b0e874e8efedf4cf16f25edcac9ad5d4d9ad46d2282ea8098ced4cd7e012ce"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-059.utf8.txt",
+      "sha256": "a16b73f51e12527beda927b69e0ddbe19fc4d56657ba2b93e1d14f052679ba66"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-060.utf8.txt",
+      "sha256": "8d443345198e288550d9bd38a2874de8f6612c4748eff45f20a293e1fd482049"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-061.utf8.txt",
+      "sha256": "9882e6caa7a3692a22fd5c6c35692fce1e61e11120235541fd02db33c1edc45c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-062.utf8.txt",
+      "sha256": "808f10cff764ef657329e05743128c4db4554f75c2489875882df06b4f1b100d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-063.utf8.txt",
+      "sha256": "f349baf90bd5dbc7d061540ced3b9e351e9acec4d1bbfef98126e957e84bd85a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-064.utf8.txt",
+      "sha256": "aec5bdc71c609d1de87345d0121a69f3f6b44d514b8ab63bdcb1d8bd6f2f0c55"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-065.utf8.txt",
+      "sha256": "488ccc807850439d0d7b2ca778ed925636c67c11fd43da2a064ff6feca70b58d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-066.utf8.txt",
+      "sha256": "309b77c370940a7061fbba6c1fde9a656dfe6bf9047dfc73b4c4e2477bbc9d6f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-067.utf8.txt",
+      "sha256": "ab9594157389d3f2961916e1c4716e218ed8895f7716c610b1f57496d0b70eb7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-068.utf8.txt",
+      "sha256": "e8dbc1f0af5bff2f3e95c2b21df27b8e72739292e22b452d86339d3f5eba2b1f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-069.utf8.txt",
+      "sha256": "454edab627c8e72fcd4f8d3b12cf6e76e8bc6b2ec291c1a1bf0f1c9d13698c95"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-070.utf8.txt",
+      "sha256": "5f834b919f77deaa65c954f442a784f410ded335af3ba432b92444d5cfecb630"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-071.utf8.txt",
+      "sha256": "60c62fcac66433da0442e1e4f2d392fb982c16a6f07c9356f12b0fb601ca2a1d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-072.utf8.txt",
+      "sha256": "1c7ca777e84ee573c86b31107fac6f8ae6da439c79add305a8a4fc173f8ac610"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-073.utf8.txt",
+      "sha256": "2655b858317cc6ad213ccc46e347a8f0b2ebdbd1d84f293572e79148581ae541"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-074.utf8.txt",
+      "sha256": "c54d4f8d29e8b3fd84cb0457b95caf571dd0c64de65411d8af1867a5ab7f2eda"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-075.utf8.txt",
+      "sha256": "38750193ea6b0c5bfcac65d49e17df85c8b39876a0b05e335a2e2ac027749d80"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-076.utf8.txt",
+      "sha256": "cf65bfc2b601e5fca6b6e24baa8b5e3a0015171766a9ca59831fe2359c01d0ad"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-077.utf8.txt",
+      "sha256": "f0173b4e07348b7a263fd2b952c40156c2e1016ba83f47a93e16435b23168f19"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-078.utf8.txt",
+      "sha256": "0f972dfabf59e792784e22f7f5f51e82e527c8ae38d9c2cebbcd8d2363dedcd2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-079.utf8.txt",
+      "sha256": "9f877978e92a6a1b1ecff7339f0a9edffdbb9037167bd7a5250ff99e27c8c032"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-080.utf8.txt",
+      "sha256": "5f73a1f2a50138a87b537f68ead59147ab5645a1df4fa852875bdefdac82cf31"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-081.utf8.txt",
+      "sha256": "2121d8fb1e40bbe14aec4db1c72b4578b3e6279e714091a2f60d42b0e667821c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-082.utf8.txt",
+      "sha256": "34544bae2fdc3e8b41c7a93b865c351af332a3bd5317ff0c78e45afa20c7b9e5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-083.utf8.txt",
+      "sha256": "6d3a033f1eda2e5bce9c3582345b7043126c59d144b07f9e11104b6ca936e12a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-084.utf8.txt",
+      "sha256": "1341da4d48eb90dfe4225a644908413eb8a5fed1395311277b4b74ab7d45d3dc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-085.utf8.txt",
+      "sha256": "a9fb2aa14fbc16ca8af303ee60ac30aef534748dd0d88bf85405e3c9100cfba4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-086.utf8.txt",
+      "sha256": "0e46320678cb55c06ce4ebce39755f61f04e9908ccb7e7e27735fb9d1a7bf686"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-087.utf8.txt",
+      "sha256": "0623435ecbb113291b385da3c379c7e404c73076dce17469cfde9ac2561b5545"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-088.utf8.txt",
+      "sha256": "e51f7d9e77af0bf57f884996a7eca51c4c2185491d7cf1d84038fa9c3855e70a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-089.utf8.txt",
+      "sha256": "28bd451733c6d923921be84109ccb7117549ead5a1c614ba9f424faf344e685b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-090.utf8.txt",
+      "sha256": "c808b8bbfc8ec9106426b8a8cb5c41e2d1821d576469d219770206aa4204f103"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-091.utf8.txt",
+      "sha256": "5533b773423fcf07323a4d4e9ff4ffb225e0b84617d87e8b3dd912302ccdb056"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-092.utf8.txt",
+      "sha256": "005ff5d74c420c0ee7c8ecad1f33d8ad85ddf07ded077fa0488137c26ae62028"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-093.utf8.txt",
+      "sha256": "3a6d13e754bbf00b580a484da80d4a66deb24134df6c584ca1b232555b3c8e1e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-094.utf8.txt",
+      "sha256": "edeb0a51615903b030826bf734003a39944813d9faac468c2756b7a54c7940ac"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-095.utf8.txt",
+      "sha256": "5625927c32acf1da1c78457a0a06985287ca7837c8db9f6b43e1cf4035745893"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-096.utf8.txt",
+      "sha256": "38d6a463b6a8fa5d259f6e4159f6c9e360f97c1cabbd3c0e3534c0c2e19a5451"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-097.utf8.txt",
+      "sha256": "2e65dd8702dddf890b999e92beb72c34538621290ca48022a74969e547f162ea"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-098.utf8.txt",
+      "sha256": "0ce1da12c8e75fa47c81baca087f589f75bdfd39996bba3802c10c366256cdc9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-099.utf8.txt",
+      "sha256": "ccede256df57a2bd7b83caeb7ada7a9614853bea0db2974c7450f478d14f966f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-100.utf8.txt",
+      "sha256": "960636dfc301245e287de1347fb8a078f72ecbb48b15beb036f071a1e8778f83"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-101.utf8.txt",
+      "sha256": "1ff6b55e5f0040c3e2ba927c926be8727249cf3eb2287599f9bfaa92b48b7052"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-102.utf8.txt",
+      "sha256": "674c2295205852f3cc9c61c56da92e7c1b174c3fd4d1c6e4543b8df74258e9cb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-103.utf8.txt",
+      "sha256": "a7b78106f8831a15e9b24b57f7a032a10f7a3b66f74c9788febee14648585efc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-104.utf8.txt",
+      "sha256": "c2d5f8dfd98f3760280125f65e02f66a184a74ea3eb14ec5818786d752c630fe"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-105.utf8.txt",
+      "sha256": "f9c5b09b368c5ad2b7598f391964e5abfef3b14131cf293bbc9dc1cbc6ecd9f5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-106.utf8.txt",
+      "sha256": "019e6f40681ec9d8f6d8bdb072b0eccf429527cecad55b3674387cc1cb0a178f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-107.utf8.txt",
+      "sha256": "c2385a165cfa63709185ff38336fb9fd39b0d5195b6a40a7a37d2b9d7dff277c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-108.utf8.txt",
+      "sha256": "d3617b55a205b190a06e2b4d3fbbaba103fde6a63f2bdebe46eab69bd418b06e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-109.utf8.txt",
+      "sha256": "04d17b745fd872dd17c16e72e734913f44fdd583bc750ebab1986a3c21a667fc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-110.utf8.txt",
+      "sha256": "3226b51d91d74de9edf5be24a953a5b249d2d79bd605acb8cf042680aafc4656"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-111.utf8.txt",
+      "sha256": "e384036878a8db20912a90aab03839eacf3b20045933877ebeeeab85d144373b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-112.utf8.txt",
+      "sha256": "83ef5f3d6723d8aadf36b88c7e190792101b1a4eac7d119dadb06fe217cce1a1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-113.utf8.txt",
+      "sha256": "0f8294ea25451edb2ec9d8263fb88698fb01f9b83e631f5d2e5caa9088720ca1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-114.utf8.txt",
+      "sha256": "99cd57119c9182f24598b5022117ed18738e8f97d46baa5313d0cf0dcad4ff44"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-115.utf8.txt",
+      "sha256": "ac2c3599e70fefe7470696edd6861d618d2e5aa1cbe439da36f3911e7bb192b7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-116.utf8.txt",
+      "sha256": "02ff1dbc68a3da43410fb9903905bcdd935d8ad3027f588073189d60ad63f2c1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-117.utf8.txt",
+      "sha256": "d49701a5f8eccc74b313ee52bc41051060d3d20ebe9662fb19e1af6043d7b099"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-118.utf8.txt",
+      "sha256": "58636fad9c3456b2d629e3183b2c4738a2543cd98cb2445455b574175f3fc5ef"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-119.utf8.txt",
+      "sha256": "6233bbcdf77e9d7164d51ec611e230ce405f32009929321a2d691930ea5bd592"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-120.utf8.txt",
+      "sha256": "586b467b6565a485c698cf54c91c032b68703e813931ba322d4676077a1ce080"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-121.utf8.txt",
+      "sha256": "551359a2bb975ff9b3f0749911b33f9e9229304c8b9ba307e73af31bec494eb1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-122.utf8.txt",
+      "sha256": "1b0d6553b2a32ba904be8565b3ad9b01d3aef69af9e80c1cb6620a6e5bd41a31"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-123.utf8.txt",
+      "sha256": "8b03b84d1ad9cf05aeb6127ba04a73a5c7192947c0273c1bcc026e158bb05083"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-124.utf8.txt",
+      "sha256": "28ae34999f65dcb56b9ae7d18fda4c845e2021bd0de64edf62e0e67c88ca8a80"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-125.utf8.txt",
+      "sha256": "8d1afe454fd92287e01665fc54cf13537b8d6f21245ad356fd262b1cd05a29c5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-126.utf8.txt",
+      "sha256": "4c8abde199266d8fdf8fd7a28efea931f3dbdeb097a7ff16d4ac860d015a48e4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-127.utf8.txt",
+      "sha256": "5927fd9184f25cb2136bd458af43afe0a8f4a007ebfe1e251cc833bc213af0d9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-128.utf8.txt",
+      "sha256": "23732cc355e52f572b7f77476af279781a25d375f71f67ad946ece7ada8fabef"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-129.utf8.txt",
+      "sha256": "16a06f2116998fffeea003f9dc07290abe4090dc6fc3344e513ba09df4ee3b6d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-130.utf8.txt",
+      "sha256": "7daab4b02ec4ec2aaad922e56ec27a2cb57520da3e7ac85e5134e3d0d09a9ee5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-131.utf8.txt",
+      "sha256": "c129c4d1cff5138da122be30195d69eccf2483114535edf0f733ac9b2d413cec"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-132.utf8.txt",
+      "sha256": "0a66e139f160074a1a53529ffa93375c07285d76e5b079d2c5b5e98e9c294885"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-133.utf8.txt",
+      "sha256": "a2e7f7f814efce8d96a03ed533531f5a97cab74dbd3003642f5d550f619076dc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-134.utf8.txt",
+      "sha256": "24c21223cbf07eeddad1d3c704bcc2767843b68c1b593106ba48fa6f42a28ba9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-135.utf8.txt",
+      "sha256": "52f5be97afc65c991979219d3d535f4ee68f58a8c00dcad56ef231108b047b73"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-136.utf8.txt",
+      "sha256": "225bdb57abf07059ea9d72d68dce98de104c62112688b3ddfc19437c02aeaa19"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-137.utf8.txt",
+      "sha256": "486b44e921b6bf2cc64bf5da1a775efc45a8621ae458c6daa31de806502d4417"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-138.utf8.txt",
+      "sha256": "7ef45dc773dc950c28e5b415cb8f66cca19f5d14627a628a0e3819bca2b20842"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-139.utf8.txt",
+      "sha256": "0f58d8ecc75544e7658469b87fb448c0abffb795c912fbe5d0236c480857251c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-140.utf8.txt",
+      "sha256": "206f5a32770431327400817289e82e30a41156386a3d2b537aa92e4ec4438b46"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-141.utf8.txt",
+      "sha256": "8ade06e8bfbd1894ea12456894c848d0cebcf28a66e00c5b3962c458a355f515"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-142.utf8.txt",
+      "sha256": "f51ab60c6331387685a07ca1bd75688a3576a00c3afe6cfd4b5c73575901e2b9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-143.utf8.txt",
+      "sha256": "709ee62af691bbefc147f2a54eaf6fcc88a362464e9653078005155954df9d63"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-144.utf8.txt",
+      "sha256": "f4251b4e0ad8dd3b6c78d447f34d7f2adb14c2473e94a1f0de91325bbb41e312"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-145.utf8.txt",
+      "sha256": "110814e7d8c61b34934ebf0771ca1af76a5a4b34578744cf54071cddd0cbb50e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-146.utf8.txt",
+      "sha256": "1be82672af1fca6c7bc201ecf117627f88cafa72e94ee57b3ae2584c3c7a69f9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-147.utf8.txt",
+      "sha256": "df17684d9794eb785255fd4cb84e42275b79622a7190eb08cb1ac20631a50488"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-148.utf8.txt",
+      "sha256": "9e18aa04111a3370636b9832e16f87cb6466b0ce67a8efd08b64ac6b272dd051"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-149.utf8.txt",
+      "sha256": "a4f3d11379fba8570e2efb176e87331bc9042d986edf236298e54e80ae229476"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-150.utf8.txt",
+      "sha256": "0a6e8f3998d55b1ce0d92653057509144c358f16f5bde5ca9e46f56d3c9a81e8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-151.utf8.txt",
+      "sha256": "5386d3d036eae8ea71c8269cd1c33006251720375fa426787c68a37953253218"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-152.utf8.txt",
+      "sha256": "170b7e07294b7864f0507df8efbb6935609cc4e8b250f9fbbe7db639ce839fe8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-153.utf8.txt",
+      "sha256": "f8e90a5af42cd26563d39af09a73b35c5024520d0960a10eceedd7e73272ba35"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-154.utf8.txt",
+      "sha256": "577e65a3f63c8d7ce8af984eec7468c46f10326abe42c9ed41ef972b72f5a2e9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-155.utf8.txt",
+      "sha256": "330983469b3469dbe58b0825659583c01969e5e5bb588ee09c84a11b5f01196f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-156.utf8.txt",
+      "sha256": "79d42c0297f27a83c6b83ba51106d6885aeb1b76e7ef6aa1ed38e0a734f62ff9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-157.utf8.txt",
+      "sha256": "fa2f9248f3b87031ae9b7a425bcf5359d0b80e7c94b1e521b191e86ec2c8cee0"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-158.utf8.txt",
+      "sha256": "b47df484263657631aa332c910fa0f29e68cf427adfa35294b603b6360885d32"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-159.utf8.txt",
+      "sha256": "bd3cf0133e932110260ba0363eea6f9ca2218cc5b549ccc7e1ade7d67d3cb4e1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-160.utf8.txt",
+      "sha256": "fc0f1024b2e0d2fb0eac1a33f1d37ddd53d7d19f5dfc60b7a047a3005b7144ca"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-161.utf8.txt",
+      "sha256": "b3ca0cf2a7cbcbecbd1933ce567d765ed592ff5b5e119d54e3a83e00b88c65d6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-162.utf8.txt",
+      "sha256": "f1c1a803936c7e62a641c48d04826163d446eeb43a4179ac1bb974fa429ebac3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-163.utf8.txt",
+      "sha256": "ce3cc463e722976c4b9900b8cc2c82ab6662bc8ae9669155ca472aafc86202ed"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-164.utf8.txt",
+      "sha256": "382f88406fd0ad86646ab12197dc3f26f07bc77ef2b28cf1ed182551dd324638"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-165.utf8.txt",
+      "sha256": "2e2b0feb7bfc875328bc975bf63888281df73f9aec8bcf746e4a2b580133bb0d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-166.utf8.txt",
+      "sha256": "ba6efcba5f1476795e5505bfbc96b36c06eef89134f065b0c414d4f432529b5e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-167.utf8.txt",
+      "sha256": "d0e409532b08fef23731684ecc5efb302c2fc87ba285e832e84330c574a935f9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-168.utf8.txt",
+      "sha256": "b59352a972ae978ed5963f4de45ec28780af8c486f07f8caedf43f993502137b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-169.utf8.txt",
+      "sha256": "08bd6cf2578789cd726fbe54c90857b03f099a3b2e4176ed809749d7d61620ba"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-170.utf8.txt",
+      "sha256": "ec7e63d0b705d6e1e1b15e2bb8ffafed4464c9f8960491a19395de46fc08ca81"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-171.utf8.txt",
+      "sha256": "f7ff5d8e6066d2b6a8cdbd54c11fbbe2bb8b9d14775fbe843b359979e21a74c0"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-172.utf8.txt",
+      "sha256": "1d66181c06733852fa5a279844938f686b7da8bfb9fc852fbe96073269054828"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-173.utf8.txt",
+      "sha256": "b8135dfa17f4a340bb179f5545afbcb4f2ad101cacb3e11d3b5895911f5d3dca"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-174.utf8.txt",
+      "sha256": "fb82c29dda798f7ff16499fb8a69dfa1157cdd06d1e821f3d75acc25b4a12e38"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-175.utf8.txt",
+      "sha256": "e390768ad7f4a3022ba60021f98e627cd41010650a303799b779a566199eea1a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-176.utf8.txt",
+      "sha256": "57f6d79c8f0579b6ecb5845928c8e8142be3a777167fd6a1ee01c29d43e35945"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-177.utf8.txt",
+      "sha256": "75dabac09b1e9882eccb64d24648999642c29993b8a1920afec37c9e08183594"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-178.utf8.txt",
+      "sha256": "faf28cdd53639749f22b328a31a1f86f72a0481875d5a98d45cf1cca62373283"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-179.utf8.txt",
+      "sha256": "0d15f5567de189687954b4c241cda1070b8582fac9e7347210cb480e62adb47c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-180.utf8.txt",
+      "sha256": "ae035126664148a79d7a966874b9183619e8908e8a6aafd9bf673c4c3313a299"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-181.utf8.txt",
+      "sha256": "d98293fe6b8c443cafa188c106262f55d7bcaf804f8253768fa7f9b26889becb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-182.utf8.txt",
+      "sha256": "101395e4412b3b8f77b1638dc5b1d0ad23db6ed98970ed3f0a5b937b3d898309"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-183.utf8.txt",
+      "sha256": "645f2256eac7573196f89c229d4a166b74211cc3eca2449218622b845218b082"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-184.utf8.txt",
+      "sha256": "643f3d43feacfbf6e6d11596414b1210e25006f68b0fc0ace76c1fb455bb8f5b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-185.utf8.txt",
+      "sha256": "58152bd68e15dc08965583aa1bda592f852824bd5b9da5f0a8b822eebe94f524"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-186.utf8.txt",
+      "sha256": "543fe36e71771bac8a7cce4036ebdeedce031dce404a9531a6ba93a31eb7dff3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-187.utf8.txt",
+      "sha256": "fea42c0f04f12e0ca36d9de9e1e9bb5e1157234b239cb1e52c87d5193a67f99a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-188.utf8.txt",
+      "sha256": "acd006f4b18bfd7cba132849409883a8bfa01fc09fb7a2688ac07af9e4b003d6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-189.utf8.txt",
+      "sha256": "b555a27c6bb8e7e4cedc551bb3af91e9c31f8412e7d005174c0d067c260716a9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-190.utf8.txt",
+      "sha256": "a09835ce49e644acc2b0a0358a812ce6687a9bd85aa5b76a21b4f13ecf145abe"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-191.utf8.txt",
+      "sha256": "96a731fc16fc327f23a43522f087b271fcfe7e5de76bfbb3dd68e7a5b8069401"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-192.utf8.txt",
+      "sha256": "17fb7a30389d96ff562497a761965fa24cfe6988e6fbfa0883c92d2cd9d7fab8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-193.utf8.txt",
+      "sha256": "bf13c1a05c322824a0788b614d1568efcd1b921a2c32a52cdcb9a62d6857a388"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-194.utf8.txt",
+      "sha256": "462255979d00f05b6a16e1d6dacda37bf5b04a34beb22dfd6fc3684e8a20f6d2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-195.utf8.txt",
+      "sha256": "8b14f89097b9ba1265ca1201201bf3f1c760784b6ee926508f876b47d066f042"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-196.utf8.txt",
+      "sha256": "3d4aa103c5100237d5d6e2136f3337ccd25aecd488cb06a74b3aca8175d27ce0"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-197.utf8.txt",
+      "sha256": "815c3b88c99e0418680be27549e64ad65ef339ff3d050678afbb668b0ba0293d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-198.utf8.txt",
+      "sha256": "ee485a9cd120563ae1d1a6a9af88ecf42a25cd86272ee87d4f7ea41ce6beb6f6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-199.utf8.txt",
+      "sha256": "3b9dd52b74e5344e62cfc1af9d23fb1695c226426904bb660c63d9c1d2c50230"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-200.utf8.txt",
+      "sha256": "dcac3f58be63fbbc9102c6112bc507dfbce31b5753e9a22ebd0fe9abf14c227f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-201.utf8.txt",
+      "sha256": "cbc55e63879c94e9c055cff59bf59bcf5e1d97954c285e4cbe07699a0b571a43"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-202.utf8.txt",
+      "sha256": "01eb5a7538c2c9d7f3cf8def81b4e58caf65e869a6372541130a01587aa2458d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-203.utf8.txt",
+      "sha256": "493eeaae97b718560e1cf55bbb051595a936855db551821efecadc7ca0c118ae"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-204.utf8.txt",
+      "sha256": "83cc5e00dd4d7473b9c99768a1f3e0c7db85745de6fb1b9fa36dc940c0237093"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-205.utf8.txt",
+      "sha256": "d000099b77988bad409ec48c4d4a988a299435160affc74b3ef3998235d0d08f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-206.utf8.txt",
+      "sha256": "7451451790d5e43a01edbf5380797e14f11f66185a91180d9dbc813bc28fbb38"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-207.utf8.txt",
+      "sha256": "64aefa27e826b26f931bd153d9a916051f85de6fd953a6de5a6f26fb6805de9e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-208.utf8.txt",
+      "sha256": "4f184f3802980e8ef35f3d9fe385af2239f8d993fd33ee00f16fc97ba4900bd2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-209.utf8.txt",
+      "sha256": "0809cab8c0e9d7a9a0224047e5b501f21caed486f70e08219ad6bbcacaa2eddc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-210.utf8.txt",
+      "sha256": "e2d997bbb3dcd7d053d2e1917c8ec4026b2f309fc014bc3df38145461b7e9cfc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-211.utf8.txt",
+      "sha256": "3551d5f7d5e80d3be07d29779c8f1eb8e9bbdaa7477fa3c575b45dc1982b6e04"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-212.utf8.txt",
+      "sha256": "de90af0b3926b6d95a6228d9842cbcc7b825b81623d0c3448ef9894ea994f216"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-213.utf8.txt",
+      "sha256": "4d10ddf0b12b85a0aea63cd2afa47a349f17f1e79b8523d29307bf933793d1c7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-214.utf8.txt",
+      "sha256": "64acaae172533c4bbccaf32c67cc396bb94cc2afc8993afefc0ac6dc9052d4aa"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-215.utf8.txt",
+      "sha256": "ca4b211a4db6b5507813e0dd8e17bb51e528e7a413706588f504d653e1c481c7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-216.utf8.txt",
+      "sha256": "5bf2299bfa3b7f0a07bb0ea2712936650bf8d941503bc5eaf923bac7c923cf05"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-217.utf8.txt",
+      "sha256": "427b21c35d8fe034a4c97599feb63f1a89cb961d4e3fd5054d3949e6988f37e7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-218.utf8.txt",
+      "sha256": "da0ce12f1f6a74fd07baab3296f3fad244876f0d504a46ae48a5cee697c399b4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-219.utf8.txt",
+      "sha256": "de9e7bce61f9262f7083919f512f2d2eebd7a4773c90d1ea7c4432c3bf775f77"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-220.utf8.txt",
+      "sha256": "fae937060b7c2d3d45dc72fbd5e4234cc4974552529812ac76721928e4343d5d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-221.utf8.txt",
+      "sha256": "cbab75fb34267b1ac2c8bf5b7214dbfbea61d67fdd8f8a2315a1d1ac7a159f7c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-222.utf8.txt",
+      "sha256": "babc59b9d03c0e85a3d92733837e4115cf0f97628f6d0e88539c7f0236978491"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-223.utf8.txt",
+      "sha256": "8f04ae2933316f664911bc9270bebdf69b6a06cedbe7f574a0f31d213f408d7e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-224.utf8.txt",
+      "sha256": "6680fdef3145df547989c236e7f56b637ec4a4465f04799497b547c73abbab32"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-225.utf8.txt",
+      "sha256": "1c5ed4e063cf06113d2b77522f85086c0b268643ca8b3e9a98063f56c68beb63"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-226.utf8.txt",
+      "sha256": "334e7e54b9a90ea0d4bfe6f095ddbf5d5e32caca05a9cd7276f098d38eff9936"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-227.utf8.txt",
+      "sha256": "0021e26a42b3691d66e887b49ddf6582a8766747ff9e8dd1546704cf9b3d5637"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-228.utf8.txt",
+      "sha256": "b24d0ffbd4a3b49e7bf8531bb25338bffc9f149254b0ce01c2746852357567fd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-229.utf8.txt",
+      "sha256": "3396bdfb91f25d32cef23e7ee760165f9b35598e9a197a5833106c8d61daeb36"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-230.utf8.txt",
+      "sha256": "d77d926a8103d97e88295fc6859883142d9d3f9641d77a697d05e25de50c2d1a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-231.utf8.txt",
+      "sha256": "02722f18be912cbf8da5faead4fb8c93c882b72f929935414b157999153204e5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-232.utf8.txt",
+      "sha256": "98d41f20b678ed620251942013f616eebcf519a2179bc1227f5419ba180c8c34"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-233.utf8.txt",
+      "sha256": "cd4b45a4da7643a253dae9c2eb150c6c5d5ee934a92a1fbdc18c34660967363e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-234.utf8.txt",
+      "sha256": "31b4a33eff3c68a5e98e90c428ded422f4b887b0aa89c39432cc44a7fe5b506b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-235.utf8.txt",
+      "sha256": "1edb6a61d98676072268e09d042d2632dee0864622c23295c6d0e5a9f842e558"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-236.utf8.txt",
+      "sha256": "6b598c4877427f62fcf8d28690140bf44e5829aee3c705d159320b0e5fa43289"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-237.utf8.txt",
+      "sha256": "11ffbed810081baa8bc12792fbe1625e7ad40507cc2b4d1fe5df098b856e15df"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-238.utf8.txt",
+      "sha256": "c73c56be94419ce92ddff2ea0f70d9f00ee73d16ee3ff032f9fc14e1a945ee63"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-239.utf8.txt",
+      "sha256": "eba95012eb617aebc69898e5aeb753d87773f02edb56c332e7bbcc217ae14582"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-240.utf8.txt",
+      "sha256": "57a7460a52cc392a2063cce0e0961d5fec0571957f0fc7cc2dc107356227b506"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-241.utf8.txt",
+      "sha256": "23414966e25f349e24eabcee8cbe54bed091d08a28727f8bc40bf057a2a65379"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-242.utf8.txt",
+      "sha256": "73686b860e11ab7eea99dd0e08f5ebe6cc8cb43ceb520f7db0fc3e0ba3180201"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-243.utf8.txt",
+      "sha256": "cf1419d32752c017a623b8a06ff1e01b41e866a6afd83ab377c5abcaea08defa"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-244.utf8.txt",
+      "sha256": "944f6ce5bbe7fa57c173f272b15d5fe8ca87aca059ea77a4cea426d9975c4e59"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-245.utf8.txt",
+      "sha256": "f3cbc35e3739b105f31753e2c9f01bf824b76d7f1eef591a5da7470df3e93b45"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-246.utf8.txt",
+      "sha256": "d343ba75333d7529fd58379c8439cf0752c1a86be7f353c01fa1e4c0ba18d693"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-247.utf8.txt",
+      "sha256": "c3f8c06f957283cdafc442727c14d5ddd91c35f956770a98d6e46a752654ac04"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-248.utf8.txt",
+      "sha256": "8a44d6642127d1c2da8132f574859f317d1af5d4caa204a5dbf90b54db9429d3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-249.utf8.txt",
+      "sha256": "4ccc581499f058a0511a3912bb305b25e527a46c461ce5b9adc894449c8a6253"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-250.utf8.txt",
+      "sha256": "7b4a06cbe72def9de24557d8098883b7655f8daed91008d5f918749ab94dd1d6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-251.utf8.txt",
+      "sha256": "c11e9ece5c26300d33abb319456fd42df05bf2abcc069be911c3dbd582474daa"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-252.utf8.txt",
+      "sha256": "1607327905f5772634f95f5902bc44e694c1de35e3790c8b6bc96ea34eb6a98d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-253.utf8.txt",
+      "sha256": "fac5d674944f4ef10186742d60be64fb6ed6e79ab12cddff31cb679da2a4f9de"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-254.utf8.txt",
+      "sha256": "f9079a0220d908011bedec407e7fe8973aae46a570dfe64842c25460150e87cf"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-255.utf8.txt",
+      "sha256": "e58b3605a240daeaeb06fdfe839f7fbe857e958bd9e5fb7882832d0bdd9c6218"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-256.utf8.txt",
+      "sha256": "07e127fc925d1378d2347ea6b402b10d78511ca90c96fe9859491a35c5f18c7b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-257.utf8.txt",
+      "sha256": "9af92436f9ec0c7c4f285cd5be4b781e63c7ee314806dd73f400ceda54a53bb6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-258.utf8.txt",
+      "sha256": "f7768982065fc4c3c77fdae8d875808300d9855e767e70e49131626b84a81a58"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-259.utf8.txt",
+      "sha256": "72fea7f577411627d24104dcb19e1ebdba9e128b4f4ba96ba04816f8679743f7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-260.utf8.txt",
+      "sha256": "11fea09f88a872eeeb645d8f20b50c5bf45b8676965f2b4458d5e26ad041ce99"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-261.utf8.txt",
+      "sha256": "c9c3788b145c70b54773f389e99792bfae9e53cbf44893a3e7d0e89eb0748af1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-262.utf8.txt",
+      "sha256": "31917ab9b42cdcf44390a233ff7d25ced4dcd133b1081a79e9c183b982fd6773"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-263.utf8.txt",
+      "sha256": "e62f74405c52d7ae23e77672d2895d5532b01ea3928df493de56a9e5852d1146"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-264.utf8.txt",
+      "sha256": "6e1a38a3388d5358355c799f3594e66a0de1ccbf461e500cb4b8bab1b70e8a55"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-265.utf8.txt",
+      "sha256": "80b1daccea17d67c79d80ab205a095cc9e068d213408f1da6d0315623d6d640b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-266.utf8.txt",
+      "sha256": "f91dbcbac777238e8c80cd64171383a7ef79cd8f8d58df139d5b559d76934dab"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-267.utf8.txt",
+      "sha256": "a0cf16521ceabc1e76ddf983362f0a9f3062b05c1ed79c94892a332ccae961f7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-268.utf8.txt",
+      "sha256": "2b8b82fd3537b147af669af77dc0020c62ed2b53b83bb8fa7a6ce01a45571506"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-269.utf8.txt",
+      "sha256": "5d76bf39245321a8760b60b5d70da1a0ed9539a17741e09b107f471c6d569727"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-270.utf8.txt",
+      "sha256": "7467b9fa0fdfc463820cf670ecbc21803aacc5f57bc68bbe6aff230cc85f464a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-271.utf8.txt",
+      "sha256": "be10d0e1bc09843bbe329c61fff20170c05fd4ca7909f02d5b42a569f9126eaf"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-272.utf8.txt",
+      "sha256": "9be74400582185f1868fef318589f9cd036a1c8a05ad10953b2c3c34190661b1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-273.utf8.txt",
+      "sha256": "76e3099013be41281a9fdf11738c4911c8ce12e41db4e1a7443afa3705fa05dd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-274.utf8.txt",
+      "sha256": "29e1afade6964e6331adb5f0c3d48ea6177b5c0f6ec0f78906e5e667513eeb32"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-275.utf8.txt",
+      "sha256": "c804c13b6206f4ccd20cd7c4e719afd3bc344e129ff244eaae667a75e4187aa4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-276.utf8.txt",
+      "sha256": "cf5eab0eb7d3b02814d392002b207ca2233003532401e6f88d06c91e5e873843"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-277.utf8.txt",
+      "sha256": "b61fdfc167bb6997ab3aad43e4880cd3b3fbf9ec982d071342e711c9eb3ea2be"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-278.utf8.txt",
+      "sha256": "1d18d2ce7ba18c66276bcbea409f775969cfe3cbf8f5e410d2535addaf6e6c14"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-279.utf8.txt",
+      "sha256": "198112a8fde0ac466e3f042dc734120fb033860325feab6f36c0ae0fdd2cc85f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-280.utf8.txt",
+      "sha256": "95122afa36473a98e62ba756497313a5444f1bcf68158039960168ee3cfd151b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-281.utf8.txt",
+      "sha256": "7b751d71b13ec6376687017dc893ff1afd38d410a06fcb3bba9e532ed0dd39e5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-new-paradigm/chunk-282.utf8.txt",
+      "sha256": "ac7f6d934edec99282df15f7563058f1631776a4b8fa3d40e3364d6cdce48ea6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-000.utf8.txt",
+      "sha256": "46fc6587f4d5b4fa00dd49913e484456c06f3560c97fe418c13a7e888a3f88f8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-001.utf8.txt",
+      "sha256": "38662b9799cfa58a11b9c6e9a757e8b700765c68c8914edb2cead89bff857679"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-002.utf8.txt",
+      "sha256": "93f1d606494440a887edc8bc74fc9c5d21ee7a294f712c471d742bc1fee9166a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-003.utf8.txt",
+      "sha256": "ec6ce4acd69d048023c02243be78046af454b07cd46f1d779e86659724c4005d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-004.utf8.txt",
+      "sha256": "67636d52f485c7ae1da968dadb8e49c7f3690ced666f5e125ec4a92255bc84df"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-005.utf8.txt",
+      "sha256": "69c5e6f840fc4fe7cbb00a07ca2c16f07d34e3345b5a08131b1adef0e20960b5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-006.utf8.txt",
+      "sha256": "da89704eea3c56c6b5d7fcdaedd3b5418bf393ef1465221abc4e7e6f310b9e38"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-007.utf8.txt",
+      "sha256": "d4090d1dea3c114b606f253eb44ff3e07401f419a21e963add54b541983879dc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-008.utf8.txt",
+      "sha256": "8871694d82640ba97e72e6eb69e058aa9cfd171a16db1e80201862f9c6f9f4bf"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-009.utf8.txt",
+      "sha256": "06af631e578d70bf447ea564e9bf02597d10408f9deb63615321b4b33ce7ee00"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-010.utf8.txt",
+      "sha256": "63b26f4802cf4661aeae3f74c994594e37f62d9828a172875a4590740ee859da"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-011.utf8.txt",
+      "sha256": "61d176ea199c1b088a35b7814482fa5a717585ecb1897d07ec83ea3136aa9310"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-012.utf8.txt",
+      "sha256": "8d9fed00ccb7ad49a2e295f87fb5a2be0dff70ea50f751d78aced56892135148"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-013.utf8.txt",
+      "sha256": "748acc3a06318fa16b8cc3766ba617e88d2972813d79ab4aa159863a356cc054"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-014.utf8.txt",
+      "sha256": "556724e7c57d7f576c7816dc5d1910334b8bbf67330f59da0a6160c0538d9892"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-015.utf8.txt",
+      "sha256": "24d0997604f464f7a2550f2eabca5f6fca16b7edb5196cd92ee8064521c72d22"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-016.utf8.txt",
+      "sha256": "5351d71cb3ca4436de262b59c9d6d3ee8bb641f06eaf98336caf0a9252f6677c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-017.utf8.txt",
+      "sha256": "d915c76ae5ac1cf004a0377532dbcef5d39297bb82e56fac51b74d3df14aaf08"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-018.utf8.txt",
+      "sha256": "d8ccf0dd98447aaf4e291d38c628c25b1cdd37d71e1cc47018e7bc46203effcd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-019.utf8.txt",
+      "sha256": "40c2a622d63a165f5c2ae8e55f2933a9e313909faff9800743f5228ad7697d04"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-020.utf8.txt",
+      "sha256": "c18a26588cfd04c9d0fbbf8c8b45579e76af729d3536ab42f9708dc543c712c5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-021.utf8.txt",
+      "sha256": "1097a8049f8fcd311262acacb6030a2c8423ee664df58a8f8c63e0a0061dd9ab"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-022.utf8.txt",
+      "sha256": "b9e8d755b724d9500028e4cbd2214820005f60da11142ec171ab8643fc22fcea"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-023.utf8.txt",
+      "sha256": "63a7a221b02f40bf960952474df1d488b078a5a89cf51624d523237710b74efa"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-024.utf8.txt",
+      "sha256": "6ae912222c1441b19790c587b0b31bc44b03fe1b241b69e7ab5471789b535a23"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-025.utf8.txt",
+      "sha256": "555f74e2fcc831ed8520bf171d8e83901a57800c8157f8539caec00030d8822f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-026.utf8.txt",
+      "sha256": "9c2260e2e5076bbd19bdf18f28b308b531bfdeceb42f40b0aef91bab51e71be1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-027.utf8.txt",
+      "sha256": "2d222e731b020d4817aaaacbeaca0792a48022088a21f08990dbbfeee62cd131"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-028.utf8.txt",
+      "sha256": "77f71728bf2674e58d030f955273c2b80bf3a4c0eb33a4604a5d61ea948a91d1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-029.utf8.txt",
+      "sha256": "169ad1d5c52d7cecbdd35a9b6cc66de7e85a8eed13df12c269b671de4655edeb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-030.utf8.txt",
+      "sha256": "8f7c55da3f5aef3e75fa7db47e620e1474c6c6fe19cd8992b6e4855ad8fc7d31"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-031.utf8.txt",
+      "sha256": "1956409ac108c428144196289a7d51b905c0d77f2c89066c9b72e96478357671"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-032.utf8.txt",
+      "sha256": "3bcedfe238950220c5f391a33a6586af0bcf424bc54424c62a4e49ec5998c4fe"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-033.utf8.txt",
+      "sha256": "cca0daf03fdef80f2d73f08e4037ef3c7c5819c36aba6dd08415694b4a1e960c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-034.utf8.txt",
+      "sha256": "7e6b94040da100e61d5661eb9c47d32de87e27f6fdaf2407d5b714274e628851"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-035.utf8.txt",
+      "sha256": "e6f4dc5547e06016538c4bdfbec201b06d0abb90b33e142e1010852ebc74ea45"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-036.utf8.txt",
+      "sha256": "074e167ed955e302d12ebcbfaf9f351a7ddc32adb6676bcd45919077736c298d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-037.utf8.txt",
+      "sha256": "77aeaac65f59564fd633a57d3e3387e817b25488bd015b6698b7066cbff515d5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-038.utf8.txt",
+      "sha256": "a6cc2011f3893ea7dd445039f8e0cf5dbdb8f8516545c5e9796350089a27a734"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-039.utf8.txt",
+      "sha256": "187382fbee56c609a68a942c6b60274895f98d43438fa88e56a2f4bdb549057c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-040.utf8.txt",
+      "sha256": "29671d2541190b3cc3421f340b3a9bb46995a8580367a91b1665e38f80e470f5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-041.utf8.txt",
+      "sha256": "19067ac0cfee22cb784f6d05367f9f0476dd68cf66620ec3f2aa49068c6bd29a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-042.utf8.txt",
+      "sha256": "4f8f1740e924aa7c94d4d447f1987bce7043a0e577199ad7bbaf853c566501fb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-043.utf8.txt",
+      "sha256": "3489b8441787d0a103e2fded5c3532fab627ff10198ef74a19881b9cd5f4771f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-044.utf8.txt",
+      "sha256": "33e73885e3bb454bcdb5a179bca56c5bced04809f6d529406bcadf860efc444c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-045.utf8.txt",
+      "sha256": "6b489120123d017ca97721422d88720a880397aa1e5e3d11209aaa51d4ac846d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-046.utf8.txt",
+      "sha256": "a317416f69ae2e979e93e9528891ee9f01d70aff650af50ee3895dd7c4a9714a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-047.utf8.txt",
+      "sha256": "ae8dd537e51d03022fdd2cc3721e3c4fe9f10736455bc53338586e5e1d205052"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-048.utf8.txt",
+      "sha256": "866445dc4ebb5156d60b4f25dbb57f9b3f277aef3a7174e4b0b692d06a2853cc"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-049.utf8.txt",
+      "sha256": "05455902de8ce0a883b84bb6f5269ffd27f2c4d39bac2dcb89edb273b2b2936b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-050.utf8.txt",
+      "sha256": "650e967d95df547edf46b25bdb1240229f04b10f3ef180eb0769dc9a6f632b78"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-051.utf8.txt",
+      "sha256": "92b5bf389f0cc9057ee1cdabf4560d971ff1e8aaa1bbeb33bea11c94976ba348"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-052.utf8.txt",
+      "sha256": "b18eab9f171fe7966486b7b65a674d11dcddb56a7833f7f52a6d1c9516f99971"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-053.utf8.txt",
+      "sha256": "bb9b8699ecf1eb4d02a30790d9c6c98a6b47a310ed35c5f8adc57d86083a7413"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-054.utf8.txt",
+      "sha256": "fd0da7150410b7061fde8a4348f730dbd5f22ab56c040f5366ff3ca0417f0351"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-055.utf8.txt",
+      "sha256": "40b0e0f9a10e1c56ec800cff08df1d3e9b8b2f3acbbad4680eff80dacccfa8db"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-056.utf8.txt",
+      "sha256": "b4599743f21f708e79ba9e3818744c48948ff148262ce9e1cde7f70cd1d48899"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-057.utf8.txt",
+      "sha256": "a0422cc41c2f6d429e46a4f4e309669572201f8b68d273bcfb8fbfa71e53bc2c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-058.utf8.txt",
+      "sha256": "fb6b5fd1ddf560fce85e660c6ee8b10219fdc3329e45399a86ae882cb9b7120f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-059.utf8.txt",
+      "sha256": "836a2b37bcc8252e9c4a640b022b91289741aeeed9b738fb85db172e915e5856"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-060.utf8.txt",
+      "sha256": "7cb9a590edebe06ed79183d009c9aba5cd371b98628075b62ab9ccf3707b6402"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-061.utf8.txt",
+      "sha256": "fc87233f815a8312a83cc6321cc77ff97a974e90ce3a650d24f6908140ce8719"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-062.utf8.txt",
+      "sha256": "59fc34f15a0ccf5c786851f1c834417f1ab5e7c4b1ad3b7fa3e216311f61942b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-063.utf8.txt",
+      "sha256": "3e5c62aa0f46fb9b86dd6bda856a22bab1f80afb19454ade6457f1fc43809461"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-064.utf8.txt",
+      "sha256": "b3be58f91f8923ad9a206c535528285a1e75bd21dbc06491d798faa0494f23a6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-065.utf8.txt",
+      "sha256": "226e4d90e92e57a5a9875182621b4d427ea75a68d416d6df8c543d8c6da666d1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-066.utf8.txt",
+      "sha256": "1f68b3375e329d53a6b96e068610478b9a20ff4e4262c3d426c22851c9b0b925"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-067.utf8.txt",
+      "sha256": "863771d6f0ad41eecba7f99250288fc5713335e417a912c6b8e292ae21ac4186"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-068.utf8.txt",
+      "sha256": "4f0131eaa3a396e08109ef191d32cd2c8abbf985e7d84e8bb90922b703b9cc31"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-069.utf8.txt",
+      "sha256": "01f2c76478c58c86b3daf1e85be277125d5dc9615afb624d7ac25c1448f99375"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-070.utf8.txt",
+      "sha256": "380d4899fc1ab242a748f532039a8a232346995fe5093e75b3db98e235e6c203"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-071.utf8.txt",
+      "sha256": "d75494c7228a665abbbbc243c39f378bb26824f9cefbc5ee19039ad3e859fc48"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-072.utf8.txt",
+      "sha256": "ccbe956d4023abab66584bb8e2bba892b3d844df6854135e53375cc2012ffe18"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-073.utf8.txt",
+      "sha256": "ca9ef84b46a12f46a838e5ad963cef5e6d2ffe428d6c389de011adc4d1a60c27"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-074.utf8.txt",
+      "sha256": "1285c7fc35e4780b626e7f6249accb08f3fce9f5afdede366a7fd6fdf5a99245"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-075.utf8.txt",
+      "sha256": "c1b98a12f6ba78b55523059144aa143d7de6efa2d2881204b3d38ad798d1137a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-076.utf8.txt",
+      "sha256": "3c4ae1000d1408848a2c3ce04bfb3f33dacb65cd9970b2e84c41a4879a4ca3e3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-077.utf8.txt",
+      "sha256": "e43798cdd2721e637bca73d07b6ac8dded770c05ff4e98fd5b2a6a12bcbe6f6f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-078.utf8.txt",
+      "sha256": "32961f76a4228cb7790853fe3920936f6a68278267bcf3bb4e1d909ce21929c6"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-079.utf8.txt",
+      "sha256": "9b3e7d93a640e43e338b08e1cf7a6c30608838e606f7f11ab714a060fdb568e8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-080.utf8.txt",
+      "sha256": "6e8d0b978ce46a8dab7c3c46a6fbdca2b8fa15cf63d20f0038643585b9018987"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-081.utf8.txt",
+      "sha256": "8eb8e84d94ecc9eae6653343238ec28ec653bc675e4ccae37de4c26228ac27cd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-082.utf8.txt",
+      "sha256": "197c110589674dceb3d0c459da6e850706292ba650c2b69f22addf128526093d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-083.utf8.txt",
+      "sha256": "2a3497cb9816459caf1541ada17dbe13e84c010d6e13f21fb5e09b013d2cf3ef"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-084.utf8.txt",
+      "sha256": "e0d57b8178c1384e8fa0b60e5dce9bbc7657c77312fa853398df26e502821355"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-085.utf8.txt",
+      "sha256": "2102716d5b2d286215b2f2e51fe3967f70d6c8608a2b7c2f84b820ba6eed743f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-086.utf8.txt",
+      "sha256": "4fbcdc633ec8758be7143a365a4eb39f29b2147a18800d55b14b8bdb9bb75d27"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-087.utf8.txt",
+      "sha256": "0d0a104fe4e3c1dfdaea8afc0b8d9d46c5b09954a03b9c364f9d6563c3f2ff09"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-088.utf8.txt",
+      "sha256": "9222acc66341eb727c21e51f30d64e0577e34831cdad55e74d54e76114170643"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-089.utf8.txt",
+      "sha256": "6c76e90690ec6d977c89f5c6e467c4367d150b2350597de9e9335964407278b9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-090.utf8.txt",
+      "sha256": "3cbc80de6a465cb29def8469b3efe1482aa6ccb030e5daa70e3d9da48d28a564"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-091.utf8.txt",
+      "sha256": "5b4e572c485457b5dff9859a86b5d2bf10d2ae0a7d306c1b044dd4d38ecae0ea"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-092.utf8.txt",
+      "sha256": "664671715899bab5579e62ed2d053d47de10ef6abc43e0977d07f4565bc4a284"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-093.utf8.txt",
+      "sha256": "1751e38969431df10ba4fd93318aa7f94d26ccc7d09f7499f89cda565e7053ca"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-094.utf8.txt",
+      "sha256": "d030b1c2fe4091fd575f91b59be463ca9f01e3f198d93f3b16e9c453cd5ee4ad"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-095.utf8.txt",
+      "sha256": "fd077ea973e99f372cfb86d8f144c4dc56cd7e878ba43d593678de6f4e0b24ba"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-096.utf8.txt",
+      "sha256": "9daa30b9e302709cb72bfd3b0a10761b93e14f1eeb410577872a060cea778a23"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-097.utf8.txt",
+      "sha256": "b2727e624dceb745592ee95f29b319f19b27b17585ad4ae60241fa8df940fdbd"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-098.utf8.txt",
+      "sha256": "8ea8afc8d86355b07b8fb0fc3f27fd23409d793db720b33c4d67d7f8f8413503"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-099.utf8.txt",
+      "sha256": "dec8d1c7925e349159add2b570792cd2baffce860188e970f101f49407ec499f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-100.utf8.txt",
+      "sha256": "cd4fc65c6b488d631c04a9d6242a3ef6a21223508c68b44239091b6fe619ebc2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-101.utf8.txt",
+      "sha256": "7cb9cf7cb3df061bb3a597720187a2d1510f0a40dc6f91f1c80b42062b76b551"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-102.utf8.txt",
+      "sha256": "f3f99a16aa0c06232c76523541101be5c7096dd081da809aaf69bd321ee1c194"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-103.utf8.txt",
+      "sha256": "cbe557e5cd53faa88f9cf9d26e356384785fd942cf9c4fe5efe8414e79e62ff4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-104.utf8.txt",
+      "sha256": "5c191f98e7dbcf11288d37a4e2e7e46d5d59a568846d07d89d00e726b3f0c8c0"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-105.utf8.txt",
+      "sha256": "e0195ceabef41a243f9b8dc74d2891bac37e37be638e21defbb9c07cb62162d3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-106.utf8.txt",
+      "sha256": "81b89745a11ddf6a4b8a30364d9fbb8ac2ad37926320468a3e83960ac7c111da"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-107.utf8.txt",
+      "sha256": "ef375549d9321936cf6b87ae611666ae2f31d29df69b3f9308b22307e027347a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-108.utf8.txt",
+      "sha256": "5634c4da708fabeefc50e26da0567d646a4a6731851fe72aa9f902f624c89d54"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-109.utf8.txt",
+      "sha256": "d1c3a4e011765f7524cdbd28ea589888ff74586d13b5569b97f32537a38a4624"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-110.utf8.txt",
+      "sha256": "b7f01555695d48bfcfa4fd66752d579191403509c188d250b586336a305ecca3"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-111.utf8.txt",
+      "sha256": "e30c8587db5f07962aadf8f97f1ba1f657c0f11f65c7529e747ef8d030a00488"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-112.utf8.txt",
+      "sha256": "04cd1e00284a670992d942d23e508e9cc7c23440d8bedcccc728441ef6627e2c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-113.utf8.txt",
+      "sha256": "8f4c4de4f6772f2aad04de528c9a7806303603f29b6ea1fd5c9c3162040f9dd4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-114.utf8.txt",
+      "sha256": "541dcf38b97b2b01e4a680f23cf3725e259fb857f465214f0e6a890e5d60a835"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-115.utf8.txt",
+      "sha256": "b8f13191ff99886579811d85e2ed6ea9a7004db35ed5a445e6b7ec331bef1d11"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-116.utf8.txt",
+      "sha256": "4f4ecc4c2cbce3ace473cde1ea33a74b7f6923d3e47bc7653a73127464174283"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-117.utf8.txt",
+      "sha256": "6517e4044219ce857a0c4f250621dfe3854854f7cc6998135926d41d53180036"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-118.utf8.txt",
+      "sha256": "7fd072f8aa6c78a3680cdb798ce2e0e88089d2fcaae62a8645f62ddda45f033c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-119.utf8.txt",
+      "sha256": "0db670b800364d24b63edecb885d8ab3bd43863d07987d9896a892179932fb8f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-120.utf8.txt",
+      "sha256": "027f327d420429ff06996bb9e084e198ae8afdddbd8119f9a06ac8c42b8e1e4a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-121.utf8.txt",
+      "sha256": "55b5a0390c4a528ef418a8844248881bf81e002e4c5748debc7512cdba12627a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-122.utf8.txt",
+      "sha256": "31d92eba24a5b1f65aced66cb771b6611bdb19ab126ce6fa47d87ed0a65b1334"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-123.utf8.txt",
+      "sha256": "b23d5af00306e395091498e3bfa484999cca3dfa7de3d6a1410dafd071fe8d70"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-124.utf8.txt",
+      "sha256": "093b516d4888ad95f23add0e014a7fccdf2bc12866c08e72dfd897fe2717397c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-125.utf8.txt",
+      "sha256": "b0ce7d9c7cf2f12d5bd28ed05587a6433afd64650998774b1d59493c28ab8380"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-126.utf8.txt",
+      "sha256": "3b79ae0251456fe3b1912ebe6c33b77c8fcdfaf49ca43f2ff99937bb30506b67"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-127.utf8.txt",
+      "sha256": "562d41aa9a2849a93944e5b67d73b1e0af3d69ed3fcdb7292106b904fc456ffb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-128.utf8.txt",
+      "sha256": "aa2ade266321b3bad0449627abb37f5549fea7a1a26dab3f6b1ebfa46cdc771d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-129.utf8.txt",
+      "sha256": "29e3f8267b6bca12ac293108e90c3d6762f02c25addf3da15909a5afbf0feb49"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-130.utf8.txt",
+      "sha256": "6c869ba649158d977ff4593e9d1a44557429b6a1d2d6f5779eec5d448e6ce2fe"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-131.utf8.txt",
+      "sha256": "c0d98ce2c96f19d86075d0c0f39fc882582d6f3e5e005b950b8a550c0137ce59"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-132.utf8.txt",
+      "sha256": "91f354d6d030bef10778155d1b0c7984c712e63c976dcedf69edd63e7502aadb"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-133.utf8.txt",
+      "sha256": "79808b2cfde73834e0efd666e2a2486825eab1903913d03628cafebc2505af9a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-134.utf8.txt",
+      "sha256": "5d68d9b2b98a55e0e7c58f4483d6ea0bfbe9fef407e1ee72e1abe50629896462"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-135.utf8.txt",
+      "sha256": "07a1c0962f4b245fc285f4e84a4b25c0846f677d07efc5a5f6e1bfba8e4136e9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-136.utf8.txt",
+      "sha256": "39ef6cbd8e3c51e2c6506a8520ca842f9e5335af765f683a2d20a10f9003165b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-137.utf8.txt",
+      "sha256": "ea4beb6283bdf88f82170df93b888eb4a477eba8ae1e2f1b0dd2155428ea97a1"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-138.utf8.txt",
+      "sha256": "a7002067c32336dba7540d9759f6cd5e20121df126d911f46332b1ddbd731557"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/passages/maslow-second-meet-transcript/chunk-139.utf8.txt",
+      "sha256": "e4b650bb5e56e219db32b72d16dc758fb5796912458f43f509a848ac6b62bf65"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/forensic_manifest_37.jsonl",
+      "sha256": "b334bd0d6ff219f2c28628ac43eceec466c083cf4d220ee492f6332fc3f12c28"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-00.utf8.txt",
+      "sha256": "2b216aa34c7b6089584ad94ec4a078a1c12201109bb43a770862800f14b63541"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-01.utf8.txt",
+      "sha256": "3507581d6627a91d2069aed70a255befdfe593f7804e00b121d84e0dd56cfbee"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-02.utf8.txt",
+      "sha256": "4a5f3d7d34d3cb331e44c36506defc37873d52d3290695048b7e0d4549537caa"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-03.utf8.txt",
+      "sha256": "15316e46af3306983d088e0523e0a610cab53ecf14f1c3e69f9266eb6e29bd72"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-04.utf8.txt",
+      "sha256": "ae227f42c42f60b68c9a87d601e47f2e2ffbebbcbcb3df161bb52f43e94823e5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-05.utf8.txt",
+      "sha256": "34959b5b21783c6aab3ca9704ca47ad30b1e6005a4156b874d643111fba81518"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-06.utf8.txt",
+      "sha256": "3c6e119a53dbcf5f44a44b6dd16bc3526c1aaf16d02514cc4a5068e35f70f05f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-07.utf8.txt",
+      "sha256": "da79dd4cd95db90cf514d36b0c3605884bc5442219a8d2fc52a0e1c731dead35"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-08.utf8.txt",
+      "sha256": "9e03e9e968eae6cf799d567552e9b83a475112a336c1d579b0979b67a0015353"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-09.utf8.txt",
+      "sha256": "76b7ceb2d3ba49ecb2112cedac9f6619b07dee1c8df84d239363ddd567fe01d2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-10.utf8.txt",
+      "sha256": "08172d0d83e4d7442868d2d64b7a0e8bbce655a1319187c02fcec1d113dc5559"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-11.utf8.txt",
+      "sha256": "2dca81c8726b204cfd7d41c977d099d03d419178c1cf2a1d1eb2eeeb8d189e24"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-12.utf8.txt",
+      "sha256": "c48a471756c5ac31728c4d3c77144cc7b5c3eac22ec46de2fd7ea0654666c1a8"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-13.utf8.txt",
+      "sha256": "8ac4efdd11f66bca425b4c89e144cb561bd2a9940262738460b6699cf6d3dd93"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-14.utf8.txt",
+      "sha256": "d8b6b7781c01223c7f9daf6020f7c63eac93287e7e81dc5ef40923afd4448726"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-15.utf8.txt",
+      "sha256": "5107b74ada5f493cf8db2edb95109f024c4721732b2673a88d20733af9225aef"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-16.utf8.txt",
+      "sha256": "555129b349c993a3cbc7c6f992134989e9cb74b6d598fc7bb008b06c77a4b685"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-17.utf8.txt",
+      "sha256": "8e89e027c14165afbae8095a17cb3f94b9117c2730111d6b8685508fd669212f"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-18.utf8.txt",
+      "sha256": "7a733bd2e77f486bf4ddec835f21cbf7fd0f5c31c65ba17825cf3b57e4c89a0a"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-19.utf8.txt",
+      "sha256": "c085056418cc566455a833c41646a71c97346854d38eebcca5adb90106edd4b7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-20.utf8.txt",
+      "sha256": "d68261bd7b2ad33220055eaffc31b4a3d0f3033210e80d4708167eac80e460e4"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-21.utf8.txt",
+      "sha256": "7617a214f9b4b9b95cc8def3ce2b0ccb0421dd6f56bc293b3186a8696d57f8ac"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-22.utf8.txt",
+      "sha256": "6eb7c0963948fd95f79215ace1cfb546746452077d208d123e80cdb07370975c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-23.utf8.txt",
+      "sha256": "6c17b89e7dd618cec2646b1f295539adc93724017630cac7e8d2f3ef7960b3a0"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-24.utf8.txt",
+      "sha256": "039ab1ea1966177c6adc308b22f1362380a4f267d03db05b355055d89113d7ef"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-25.utf8.txt",
+      "sha256": "44b6777544def86a53b7747f313929138281061ba62e6e1e544cc4f907cd501d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-26.utf8.txt",
+      "sha256": "97c4afb61947b15ea0a993a272be769d3e948e61638d5c88700d4aebf88993da"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-27.utf8.txt",
+      "sha256": "96bcaf7fc84939db7022aef97183d939db036ad1c768be30f69e3ec246da3351"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-28.utf8.txt",
+      "sha256": "1aeb3b84153f443a858cb79f66075826c1d552b5dcb4f495c696cbc17ed4453e"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-29.utf8.txt",
+      "sha256": "c07c47660cd1cd1c4c9b4bfbeb14ac027fec70ef24f10ebec521e4e22e5f859b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-30.utf8.txt",
+      "sha256": "efbce7bf7bbe6f2ca66cde2e7cc1a977acdff4888975a233158b4bc8b1b2d5d2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-31.utf8.txt",
+      "sha256": "f18ae23fb22425362fde2f80611438a9e3245930c946a83aa3585eb937042e7d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-32.utf8.txt",
+      "sha256": "6d4c0da81e918661bde837807a9dcfffbe946c7563002b5d7a57c2b0c99794a2"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-33.utf8.txt",
+      "sha256": "cc5d331429cba3c0784d712b6c1702d00ccbc50d2ab6c2883cce873dee6b4e1c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-34.utf8.txt",
+      "sha256": "9efe9e217085df9d4580f998a4c0e038dbe2fcbe761d3568c322d9e5330931d9"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-35.utf8.txt",
+      "sha256": "5429d8f8387c2b1e91f18bd6d47377ae12c72ab8e774e258db131e6d0686f731"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/passages/chunk-36.utf8.txt",
+      "sha256": "18ee91aff240371c1bea833a111528e72c8e794b15509a0b3a01bf654d5e262d"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/owner-acceptance/B1_OWNER_ACCEPTANCE_2026-10-07.md",
+      "sha256": "74c0262980ddedc22a0ffc377af64077b26e78169a08fa4731d4bb2e7df5aa3c"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/owner-acceptance/B2_OWNER_ACCEPTANCE_2026-10-07.md",
+      "sha256": "3774550ce7ef92078feb09dc0001c587409515e2ec2f0c65b375af7b403daaf7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/reports/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_MASLOW_NON_QA_HISTORICAL_B1_RECOVERY_1_IV1_REPORT_2026-10-07.md",
+      "sha256": "f9a58ad7ce974576cdfc6beb461838e0bd30e1abeccdc430c36aa62428051c88"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/reports/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_MASLOW_NON_QA_HISTORICAL_B1_RECOVERY_1_REPORT_2026-10-07.md",
+      "sha256": "e5e0f3f5dd9b89fe779dc87279108738f97e4628d511104500a34ab90cfe6bd5"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/reports/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_MASLOW_QA_HISTORICAL_B2_RECOVERY_1_IV1_REPORT_2026-10-07.md",
+      "sha256": "634af5e9efce2216731f4c883b6983094e026958a1dbe5d32b115729f46c1fde"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/reports/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_MASLOW_QA_HISTORICAL_B2_RECOVERY_1_REPORT_2026-10-07.md",
+      "sha256": "bdf19754a2e348419707f4c2820208338a7daf950900d657dfff2cb03672e655"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/holdout.gold.v1.jsonl",
+      "sha256": "50d408206e27970923b9fd675834086968ed7852146b32c4a35139a5bae6fc59"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/holdout.v1.jsonl",
+      "sha256": "fb70cefeeb7e917b013640a163fde819c8ba9a22f7544c91dd92f4865a5260f7"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/manifest.v1.json",
+      "sha256": "bdd4a9c8d730325e3b2360fb3250a75cd83b52bec044270e0df04a367338ad7b"
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/schema.v1.json",
+      "sha256": "7fa8042244f56afc17d3bdec3eff56d3b258a47ed43dfc92cef4dca07930560d"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "5765c51d7d5f51393284a882444a3ffabbffba8ff328617de037f682a96796ff"
+    },
+    {
+      "path": "package.json",
+      "sha256": "f3568d3812e0f27035b0ee1f9e65a4c5d82fd9014bfebfcd983050203ba24101"
+    },
+    {
+      "path": "src/app/api/chat/route.ts",
+      "sha256": "30f9ac6efa2f38ce51fe13e0afd41e2b819f80299f6d9f4c9e0859bbe725b359"
+    },
+    {
+      "path": "src/app/api/tikhon/courses/route.ts",
+      "sha256": "fbfa8d3c7c7693d3c4138bb8c5e1872cadb23807a77ec23be84254cfeb6bdda2"
+    },
+    {
+      "path": "src/app/api/tikhon/schedule-ics/route.ts",
+      "sha256": "e7a461ce61ab72f4aa0019e7941911bf3fdd40c5ec534d4ca4a42e91bce42f92"
+    },
+    {
+      "path": "src/app/api/tikhon/schedule/route.ts",
+      "sha256": "c3d76d481f17d8baf37f4fdd9f0cca69834b9f4ee03662624f9f804b4544510c"
+    },
+    {
+      "path": "src/app/api/tikhon/send-schedule/route.ts",
+      "sha256": "0358bc0bada34842679e49996fe13d2e8e326849909793e9f40071749f111c21"
+    },
+    {
+      "path": "src/app/api/tikhon/student-status/route.ts",
+      "sha256": "900514c2d502836a3c93707b6eefe842d32a4ab0ae616315fe58806941e20c51"
+    },
+    {
+      "path": "src/app/api/tikhon/submit-application/route.ts",
+      "sha256": "1ed502e4bf846921b711b4d809d3398490d8988a55013fc556fc1583f116c541"
+    },
+    {
+      "path": "src/app/api/tikhon/waitlist/route.ts",
+      "sha256": "9a36100338ad1a9a4673c568c9172730abee920577378d057532294c9e11950e"
+    },
+    {
+      "path": "src/app/globals.css",
+      "sha256": "c89a6ddf3d85b8345ecf7063280c81cc48968ca59cea36071985aedba1f6dd34"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "sha256": "8f9c70348f756b27b315550d3c4239600319edc7f5de31a8e6309fe9acb55fcc"
+    },
+    {
+      "path": "src/app/page.tsx",
+      "sha256": "fb07af80fb40093e56b9ff6bf96865329a1af6ddc4fc80ba24cc89f84fb2812b"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/calendar-hub.tsx",
+      "sha256": "5f5a3cb91a18467c54d12dd21e9cf912eb3e016d214bcb5444e02fe1ce906876"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/calendar.ts",
+      "sha256": "20fdc76c0ff0c7ba1ed4a16048db35afc588ec03c4e6913d8ef039beb50eca00"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/helpers.ts",
+      "sha256": "004f0553baaf0451210c6e8361ca11fcb64cda0859636977597a68625e21f7a0"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/layout.tsx",
+      "sha256": "c568b232abba9e74d0857468d922778a68c3a11a97fdeb1e6d3174f2c6712190"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/legal-entity-flow.tsx",
+      "sha256": "19f7130d0f68dd8efeaac98d720be414574d4680c4abc522956238c6c8183192"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/legal-entity-helpers.ts",
+      "sha256": "5e364832e7da797377de75d2e9572003779e6cb6ce36e0e47cd70b88acd3e6ca"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/miniapp.module.css",
+      "sha256": "be9065bc587926be20efddb6528452caf273f4763961c9d3a633a42c4e55ab1f"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/navigator-dialogue.tsx",
+      "sha256": "c2deb9653a3351f9adb9e0917b5f4d8b7136aca5d774024e222d8850774f73b5"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/page.tsx",
+      "sha256": "6d534285d592e488302b631f2d26768d42e7836252fd5959c794addf77340bad"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/schedule-panel.tsx",
+      "sha256": "cac0eb07c4dc477338101e9d69998fe2d4bb1cb813320b930492429646724ada"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/schedule.ts",
+      "sha256": "39658b3f0a82bc83742a03ae5fdc6f1c40658685fb53b0da4fc62445c322bba9"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/submission-screen.tsx",
+      "sha256": "1d1301cf5223dc51517304184058e4bf6cf4466300cfab5e034862e8cedeff1a"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/submission.ts",
+      "sha256": "36c507985b1700f04cae66d81b68e31e6762d1cf3f70cfc3aad7ef4eea14ca66"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/waitlist-panel.tsx",
+      "sha256": "51a714b3d5aa3c96609fa02bef04e9ee17bbfb8b2bf58380502498e07b65f6a9"
+    },
+    {
+      "path": "src/app/tikhon-miniapp-pilot/waitlist.ts",
+      "sha256": "94cd476dc6d722004bcd35c7fa7ada11a4df224be979f37141a5ca2b02c96ac7"
+    },
+    {
+      "path": "src/components/chat/academy-manager-card.tsx",
+      "sha256": "b780905d0635c1d8817a4ef3939a17a075cdc7f36805b3b1d9e3c9246dc338f4"
+    },
+    {
+      "path": "src/components/chat/chat-interface.tsx",
+      "sha256": "b2feefaf2dbe61ae2d8d87720ea6fabd5aa2a354cbb97517f4ce618d93f4e053"
+    },
+    {
+      "path": "src/components/chat/chat-message.tsx",
+      "sha256": "5c964036d6bd9f21160aa8792646095897d6caca4a623adb774cd0942250bfc5"
+    },
+    {
+      "path": "src/components/chat/message-composer.tsx",
+      "sha256": "87ae15e35d2971b2c2f0f483d9df46f3ca0c8eac2ebfe48f3a0647649ee8991e"
+    },
+    {
+      "path": "src/components/chat/message-linkifier.ts",
+      "sha256": "358a6c8235d1b21a3521e5bc28f29798bff255d5a65b6e6fb871468660a023ed"
+    },
+    {
+      "path": "src/components/chat/types.ts",
+      "sha256": "d69721d7b6e1fb25174eb49591ab42a70c69264aaf5a2b56cf5c6d92d88f605f"
+    },
+    {
+      "path": "src/lib/academy/commercial-authority.ts",
+      "sha256": "23a8b93de016a9e4f990d6ca43494686707119d7b396b8cbea77d93cffe9e163"
+    },
+    {
+      "path": "src/lib/academy/contact-policy.ts",
+      "sha256": "928d91a9b7999a2876c5cb7b908a11d3e64780b1ffcfb2836a6ebff692c4df08"
+    },
+    {
+      "path": "src/lib/academy/course-catalog.ts",
+      "sha256": "97afb9a1c9d7a88b806e72bf2088920f04915bdec416b51a1046025557bc7875"
+    },
+    {
+      "path": "src/lib/academy/course-identity-scope.ts",
+      "sha256": "db0a2bf1608fd198bd7da07ac009fa085d3fc5192777b1caa8485a324d7e5e5e"
+    },
+    {
+      "path": "src/lib/academy/course-reference.ts",
+      "sha256": "2f5032b7341cbcbae725904142795725111d0d4f683055eb22222fa3df2f34b5"
+    },
+    {
+      "path": "src/lib/academy/payment-policy.ts",
+      "sha256": "72036a2b83755d30a7bb1e9e08a059c6114b0d78a4843aaa8ad14553d022e0bb"
+    },
+    {
+      "path": "src/lib/academy/public-course-outcomes.ts",
+      "sha256": "763341ec8d021805c74e01f106c27908f310a2485254083313f9fb53c69c75b1"
+    },
+    {
+      "path": "src/lib/chat-api.ts",
+      "sha256": "2f9a14bc9263b22ac1b270ebf94567e8f5b1ca1f2125c9b6a4d08288e4098bc0"
+    },
+    {
+      "path": "src/lib/chat-contract.ts",
+      "sha256": "644888702a0d0ce726086c0e79150164db951823080ac498dd272794e77ad4da"
+    },
+    {
+      "path": "src/lib/ingestion/adapters.ts",
+      "sha256": "db239e3371c84c67a5f7ae0821ba7c0ffdf98cce548b26edd65b574ea1aaa837"
+    },
+    {
+      "path": "src/lib/ingestion/build-ingestion-plan.ts",
+      "sha256": "e008dae857ef921953f07e1e7cb672e90e7e91551728f1657c024be78e18b049"
+    },
+    {
+      "path": "src/lib/ingestion/chunker.ts",
+      "sha256": "a0ebd5a549bce83761c57a056671cde539cdb83049d8bb641fbedaccda49eb26"
+    },
+    {
+      "path": "src/lib/ingestion/hash.ts",
+      "sha256": "5c154cd082bbdcd9ec40c82096e4bd5ef30cf6726e507504690f2d98f83e2a88"
+    },
+    {
+      "path": "src/lib/ingestion/index.ts",
+      "sha256": "ad72aa09870398111f9c583a03a715acae7eaa26eafcbf6cf7e18078848f5f11"
+    },
+    {
+      "path": "src/lib/ingestion/normalization.ts",
+      "sha256": "3c945005683ad9738f783b5d6f60dbc5e69fdfc1ac5e8b6f32d883614ec28e0f"
+    },
+    {
+      "path": "src/lib/ingestion/types.ts",
+      "sha256": "4b857a129efea6f78df1a17742f908a76f68c38a8f41e9bead4b5d57fa29f67b"
+    },
+    {
+      "path": "src/lib/ingestion/validation.ts",
+      "sha256": "e30841f04bed2365d36c0c3c1bc59de45928ceed31bfc84f8b77067dfea3e2c8"
+    },
+    {
+      "path": "src/lib/knowledge/embeddings/cohere-embed.ts",
+      "sha256": "f3a697a9bdc74fc3f61048d353c4c444626ab762ef2ec099eefa31ee893fe082"
+    },
+    {
+      "path": "src/lib/knowledge/embeddings/cohere-query.ts",
+      "sha256": "e0fdfd29ea1d6c5fb649880028e0d087fe16662245fe5e9818493c404b35932e"
+    },
+    {
+      "path": "src/lib/knowledge/orchestration/ingest-knowledge-document.ts",
+      "sha256": "2f87010a7326e78bf636c6a4be57397abd1ef1538d2a3341718b4f890d02db47"
+    },
+    {
+      "path": "src/lib/knowledge/persistence/finalize-document-embeddings.ts",
+      "sha256": "18fd3db6538a79c5c9804aa94e6c1420cbdb5baddc7c7d9381ce4ca6978d6e8b"
+    },
+    {
+      "path": "src/lib/knowledge/persistence/ingestion-resume-state.ts",
+      "sha256": "711fd33de6937c93d07e4b869b56f6685bb8ff82117079cb6216ddbe42af9a33"
+    },
+    {
+      "path": "src/lib/knowledge/persistence/payload.ts",
+      "sha256": "867a03ac886a145085b46eb943715b54ccd8a40e168969f146865532029f0d2e"
+    },
+    {
+      "path": "src/lib/knowledge/persistence/persist-ingestion-plan.ts",
+      "sha256": "a18262fdd743aefd40f079c22ecf6706618af2fc1a74d4a3e6b66e08d84af1a0"
+    },
+    {
+      "path": "src/lib/knowledge/persistence/storage-path.ts",
+      "sha256": "34a25bb4d2e064d27c6affca94d30fcc76b6f7a1580f9e758e77586bc911c18d"
+    },
+    {
+      "path": "src/lib/knowledge/retrieval/authority-resolver.ts",
+      "sha256": "75ca2aab7a8071cc9a47739cdb79df0804ed94ea87d8e24ead405f9b2106c5cf"
+    },
+    {
+      "path": "src/lib/knowledge/retrieval/course-source-bindings.ts",
+      "sha256": "bdb3e2c36536edcf6c1c80c8562f2e92c0f967cc1946e1017b41f9ef1a0d29b8"
+    },
+    {
+      "path": "src/lib/knowledge/retrieval/evidence-selector.ts",
+      "sha256": "628e7ecbb44740c7f8ca86945950450232a16f053fed631691559215204f8274"
+    },
+    {
+      "path": "src/lib/knowledge/retrieval/retrieve-course-knowledge.ts",
+      "sha256": "724805c78694768dbbc4fa0aa6c32e49c4939300083b340ab2d8d82899ccff21"
+    },
+    {
+      "path": "src/lib/knowledge/storage/original-file.ts",
+      "sha256": "5bdd5f0a14165914823f9aeec4a6aeedc00c74d2417c54afb7a9111191c075a2"
+    },
+    {
+      "path": "src/lib/knowledge/transport/request-signal.ts",
+      "sha256": "59a6229ea608ab7eafcb436bf2b6d20aa88572956c4bf786675da7d8c0a13f3e"
+    },
+    {
+      "path": "src/lib/navigation/answer-composer.ts",
+      "sha256": "0665ca387cfdd1f7be5d01d95b51d3e15841374ffeb6cd5bc9fed351d262507e"
+    },
+    {
+      "path": "src/lib/navigation/conversation-act-router.ts",
+      "sha256": "d52dc86f78c4bdb043b53599643be8bcc5857a33f9573e2d5cca461e7b90b462"
+    },
+    {
+      "path": "src/lib/navigation/conversation-control-kernel.ts",
+      "sha256": "9713fc1a4532985addbd569f7350b4089b423c8a2173554f3bf5328b896a8825"
+    },
+    {
+      "path": "src/lib/navigation/conversation-control-phrases.ts",
+      "sha256": "e9dd7333c24d46d797e6496b043fc133d8c8e099d5b464da7220389b36004d14"
+    },
+    {
+      "path": "src/lib/navigation/conversation-profile-control.ts",
+      "sha256": "a7915cfcb3aaf826c032df737f6be62872e934c9c142051aeb18ac90b085fc80"
+    },
+    {
+      "path": "src/lib/navigation/conversation-profile.ts",
+      "sha256": "62fe432fa34af968d28d5b3dbd4e43d7cf7d3793adf73bcad813c7a5eefc111d"
+    },
+    {
+      "path": "src/lib/navigation/conversation-repair.ts",
+      "sha256": "9a9a42adfc03414553d012ac939448adba07f1dfa6b56014a5eb2d39816350e0"
+    },
+    {
+      "path": "src/lib/navigation/conversation-response.ts",
+      "sha256": "63f1a1220190bdc9a9b4c437ec71f2b8c1577493fbe02293b7d1db362d5a81a5"
+    },
+    {
+      "path": "src/lib/navigation/conversation-state.ts",
+      "sha256": "e640c8fe40798769ff0a316029b6bfd93c44f28b2820bfb1d47b90128fc6649b"
+    },
+    {
+      "path": "src/lib/navigation/conversation-turn-control.ts",
+      "sha256": "e107c072327c1675a6f84ea08d041ee84cc4e1fd947d043d660cb33c493b639a"
+    },
+    {
+      "path": "src/lib/navigation/deepseek-client.ts",
+      "sha256": "ad2394d901b87d8f8c7665b0ccc3d245f377f794a0b1f2776b1a7b5a7108ba2a"
+    },
+    {
+      "path": "src/lib/navigation/execution-control.ts",
+      "sha256": "e3045a1652e7615e9cec987e636ec9027bb19abf12052ae2f11be598a53aff15"
+    },
+    {
+      "path": "src/lib/navigation/failure-capture.ts",
+      "sha256": "1746094966361259d00cae515369a6e6305b7a46d7218ae7c114a4cd61ed249a"
+    },
+    {
+      "path": "src/lib/navigation/follow-up-grounding.ts",
+      "sha256": "c27d569cbe2706366bd52aca5ae9ea5adacb83234ff4c4a8a940c00b8cbeae28"
+    },
+    {
+      "path": "src/lib/navigation/follow-up-query.ts",
+      "sha256": "b3e60e94858b06b2a8311ae838645c19568b99b65b679ff93299fc832d7ff0d1"
+    },
+    {
+      "path": "src/lib/navigation/handoff.ts",
+      "sha256": "cc73504c9d0233a2ca4146ec780351c914a3591b892b94c49f7adebc11f6bec8"
+    },
+    {
+      "path": "src/lib/navigation/navigation-decision.ts",
+      "sha256": "3a3f3ebf589c5d852863e61c88962beac3b13fd32b27a080a403bb7fcf487460"
+    },
+    {
+      "path": "src/lib/navigation/navigator-observability.ts",
+      "sha256": "129a46c9a779eef070216d1409de7f346c57dbb2a4cdf227d1d10ac284fd1a27"
+    },
+    {
+      "path": "src/lib/navigation/orchestrate-navigation.ts",
+      "sha256": "6230d9b74e7f372fe0d9945844642d6317a545280d2be977dcb0a99a03c8d6a5"
+    },
+    {
+      "path": "src/lib/navigation/router.ts",
+      "sha256": "e02594db9b1f76097d791fd6bc7f2d107a083bd838c734691db2907ea291307d"
+    },
+    {
+      "path": "src/lib/navigation/technical-error.ts",
+      "sha256": "ace4b1b0e25f827b96684598fc8fc9962dd2825d4840ff036b1e08e4b99db3c6"
+    },
+    {
+      "path": "src/lib/supabase/server/http-client.ts",
+      "sha256": "613471dc1954aebb71f19d24e8e211af5e2f78846b679124c624db66613b29a3"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "f399e24188640b031f844ec7c0285e65450e697b2daa5790e1cb801818fcc955"
+    }
+  ],
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "benchmarkMemberChecks": [
+    {
+      "path": "README.md",
+      "declared": "270e72f29ae8922f7b2b5ce2e529d18c194891ac8c8193c8b3eb888c356b1436",
+      "observed": "270e72f29ae8922f7b2b5ce2e529d18c194891ac8c8193c8b3eb888c356b1436",
+      "matches": true,
+      "semanticDecoded": true
+    },
+    {
+      "path": "schema.v1.json",
+      "declared": "7fa8042244f56afc17d3bdec3eff56d3b258a47ed43dfc92cef4dca07930560d",
+      "observed": "7fa8042244f56afc17d3bdec3eff56d3b258a47ed43dfc92cef4dca07930560d",
+      "matches": true,
+      "semanticDecoded": true
+    },
+    {
+      "path": "development.v1.jsonl",
+      "declared": "5be942a2f46ee1d4530dc025905853d4adeb478b54b5e8ed3318e5cbc4ecbb05",
+      "observed": "5be942a2f46ee1d4530dc025905853d4adeb478b54b5e8ed3318e5cbc4ecbb05",
+      "matches": true,
+      "semanticDecoded": true
+    },
+    {
+      "path": "development.gold.v1.jsonl",
+      "declared": "4069ed35a056c28bc16610b915269555ad49a6c065131bb72728738127e51303",
+      "observed": "4069ed35a056c28bc16610b915269555ad49a6c065131bb72728738127e51303",
+      "matches": true,
+      "semanticDecoded": true
+    },
+    {
+      "path": "holdout.v1.jsonl",
+      "declared": "fb70cefeeb7e917b013640a163fde819c8ba9a22f7544c91dd92f4865a5260f7",
+      "observed": "fb70cefeeb7e917b013640a163fde819c8ba9a22f7544c91dd92f4865a5260f7",
+      "matches": true,
+      "semanticDecoded": false
+    },
+    {
+      "path": "holdout.gold.v1.jsonl",
+      "declared": "50d408206e27970923b9fd675834086968ed7852146b32c4a35139a5bae6fc59",
+      "observed": "50d408206e27970923b9fd675834086968ed7852146b32c4a35139a5bae6fc59",
+      "matches": true,
+      "semanticDecoded": false
+    },
+    {
+      "path": "adversarial-safety.v1.jsonl",
+      "declared": "5d3308c52896d9e8584e11246060d8ada60dd058e1eb625b6f03ce14def39942",
+      "observed": "5d3308c52896d9e8584e11246060d8ada60dd058e1eb625b6f03ce14def39942",
+      "matches": true,
+      "semanticDecoded": false
+    },
+    {
+      "path": "adversarial-safety.gold.v1.jsonl",
+      "declared": "e3d1c637cdb9508b22baa2ba182f5da6543ac52259bf231b73c0dbb1ffb45b74",
+      "observed": "e3d1c637cdb9508b22baa2ba182f5da6543ac52259bf231b73c0dbb1ffb45b74",
+      "matches": true,
+      "semanticDecoded": false
+    }
+  ],
+  "protectedContentsDecoded": false,
+  "originalCheckoutModified": false
+}

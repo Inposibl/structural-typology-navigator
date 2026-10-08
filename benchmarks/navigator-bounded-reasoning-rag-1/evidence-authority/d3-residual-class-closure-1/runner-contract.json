@@ -1,0 +1,142 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "PRODUCT_RUNNER",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "entrypoint": {
+    "module": "src/app/api/chat/route.ts",
+    "moduleIdentity": {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/app/api/chat/route.ts",
+      "sha256": "30f9ac6efa2f38ce51fe13e0afd41e2b819f80299f6d9f4c9e0859bbe725b359",
+      "bytes": 16235
+    },
+    "callable": "handleChatRequest(request: Request, dependencies: ChatRouteDependencies = {}): Promise<Response>",
+    "sourceLines": {
+      "signature": 353,
+      "orchestrate": 427,
+      "errorResponse": 507,
+      "POST": 542
+    },
+    "HTTPBoundary": "POST /api/chat delegates to handleChatRequest. Candidate uses direct callable as explicitly identified entrypoint; does not exercise Next/shared Host/Origin middleware.",
+    "invocation": "In a fresh item child Node process started with pinned tsx and explicit source tsconfig: import module, construct standards Request(\"http://127.0.0.1/api/chat\", {method:\"POST\",headers:{\"content-type\":\"application/json\",\"content-length\":String(Buffer.byteLength(bodyUtf8))},body:JSON.stringify(body),signal:deadlineSignal}); await handleChatRequest(request) with no dependency injection; read Response.arrayBuffer() once. URL is an in-memory Request label, no local server/contact. Serialize body once to bodyUtf8=JSON.stringify(body); Request.body uses that exact string and capture hashes its UTF-8 bytes. Reject input fixture over verified limits; never truncate.",
+    "dependencies": "Do not inject orchestrate, retrieval, evidence selector, provider or cached outputs. Default source path must execute unchanged.",
+    "invocationCommandTemplate": "Future exact command: PINNED_NODE --import VERIFIED_TEST_BASE/node_modules/tsx/dist/loader.mjs FUTURE_RUNNER.mts, with TSX_TSCONFIG_PATH=VERIFIED_TEST_BASE/tsconfig.json and TSX_DISABLE_CACHE=1. Placeholder paths are required future bound physical inputs, not commands executed here."
+  },
+  "inputSchema": {
+    "topLevelKeys": [
+      "messages",
+      "profile",
+      "conversationState",
+      "requestId"
+    ],
+    "additionalKeysAllowed": false,
+    "messages": {
+      "minItems": 1,
+      "maxItems": 40,
+      "roles": [
+        "user",
+        "assistant"
+      ],
+      "content": "Nonblank string, <=4000 JavaScript UTF-16 code units; final role must be user; exact frozen text retained."
+    },
+    "maxRequestBytes": 200000,
+    "profile": {
+      "candidateNeutralCompletedProfile": {
+        "displayName": null,
+        "addressMode": "VY",
+        "nameDeclined": true,
+        "pendingUserRequest": null
+      },
+      "reason": "Avoid synthetic name collection; this is explicitly disclosed candidate transport initialization, requires contract IV/Owner acceptance. Do not invent a human name or course binding."
+    },
+    "conversationState": "Omit on first invocation so pinned normalizeConversationStatePayload initializes blank state. No seed courseMatch, selectedCourseId, pending flow, quality signals or prior output. Same-item fixture context is supplied as frozen messages, without reconstructing structured state from assistant prose.",
+    "requestId": "Lowercase full SHA-256 hex of UTF-8 JSON.stringify([runId, opaqueItemToken, 1]); all64 characters, no truncation. Non-secret identity input only. Exact source pattern ^[A-Za-z0-9_-]{1,64}$ at conversation-state.ts:473; colon-delimited identity is invalid and prohibited."
+  },
+  "conversion": {
+    "question": "Only exact frozen question. courseId is accounting/scoring metadata; never prepend course labels or force selectedCourseId.",
+    "context": "Trusted intake supplies exact same-item conversationContext from frozen record. Parse each prefix exactly \"user: \" or \"assistant: \"; remove only that prefix, preserve remaining content. Unknown prefix/over-limit fixture is INPUT_CONVERSION_FAILURE; no guessing/truncation.",
+    "serialization": "messages = parsed context in original order followed by {role:\"user\",content:question}. No synthetic system/developer messages, benchmark rubric, evidence IDs, gold, required/prohibited propositions or trap flags.",
+    "goldLeakageControl": "Intake projects question/context only for product worker. Joining by item ID is privileged outside worker; gold never enters child environment/argv/files/stdin."
+  },
+  "output": {
+    "success": "Response status200 and JSON ChatSuccessResponse {message:string,profile:ConversationProfile,conversationState:ConversationState,contactCard:AcademyContactCard|null,resetConversation:boolean}. Validate pinned source types at implementation; preserve full exact raw bytes.",
+    "error": "415 UNSUPPORTED_MEDIA_TYPE; 413 REQUEST_TOO_LARGE; 400 INVALID_JSON/INVALID_REQUEST. Technical response {error:{code:\"NAVIGATOR_TECHNICAL_ERROR\",message,retryable,conversationState}} status503 if retryable else500. Product catch begins inside orchestration; exceptions before it must be captured as thrown invocation failures.",
+    "header": "X-Navigator-Request-Id is product-generated UUID independent of runner requestId; capture without replacing request identity.",
+    "malformed": "Capture exact bytes/status first; invalid JSON/missing typed fields => MALFORMED_OUTPUT, causal classification required, no extraction of a guessed answer."
+  },
+  "isolation": {
+    "process": "Fresh process and fresh item scratch directory per item; sequential one-worker execution. No server singleton, module cache, conversation/profile object, semantic cache, prior retrieval/evidence/output reused.",
+    "env": "Empty explicit child environment allowlist in environment-contract.json; no .env file loading, no inherited NODE_OPTIONS/proxy/provider credentials.",
+    "session": "Per-item input and state only. Freeze fixtures before run. No cross-item result access. No cookies/Telegram/payment/Tikhon session.",
+    "cache": "No copied .next/application caches. Pure immutable source/dependencies may be shared read-only; create/destroy mutable child state per item.",
+    "cleanup": "Terminate/reap child and descendants after raw capture; revoke scoped credentials, close request streams, seal receipt, remove only its named transient scratch directory after confirming preserved raw evidence. Do not delete evidence on failure."
+  },
+  "ordering": "Privileged controller: DEVELOPMENT, HOLDOUT, ADVERSARIAL_SAFETY; within each split ascending frozen item ID byte order. Mixed adversarial visibility is read only by privileged intake, never inferred from numbering. Worker receives opaque token; private controller links to id/split.",
+  "attempts": {
+    "primary": "Exactly one product invocation per frozen item in an authorized FULL123 run.",
+    "harnessRetries": 0,
+    "sourceRetries": "Preserve pinned bounded Cohere retries; separately record each outbound attempt and first failure.",
+    "retryEligibility": "No harness retry in this candidate. Product retryable flag is evidence, not permission. A future change requires explicit separately bound Owner policy before run; never retry on score or missing desired answer."
+  },
+  "completion": {
+    "success": "Captured valid response, complete raw receipt and cleanup; scoring may still FAIL/UNRESOLVED.",
+    "stop": "Shared admission failure, credential/privacy/outbound violation, authority/map drift, evidence capture loss or compromised isolation causes global stop; remaining items receive NOT_EXECUTED_AUTHORIZED_STOP records. Ordinary product failure continues to next item; preserve all failures.",
+    "admission": "Do not begin while any mandatory binding in test-base-contract is missing, including complete accepted D3 map and authoritative item deadline."
+  },
+  "failureTaxonomy": {
+    "INVOCATION_ERROR": "Thrown exception/process failure; preserve stage before causal assignment.",
+    "PRODUCT_ERROR": "Valid request rejected or product semantic behavior fails; product result remains evidence.",
+    "PROVIDER_FAILURE": "Upstream transport/status/response failure; infrastructure domain unless independently shown product fault.",
+    "TIMEOUT": "Distinct terminal outcome; retain component vs outer deadline indicators.",
+    "INFRASTRUCTURE_FAILURE": "State/env/network/capture/process admission failure; no automatic product-quality FAIL.",
+    "MISSING_OUTPUT": "No bytes or missing message; retain exit/status/timing.",
+    "MALFORMED_OUTPUT": "Exact bytes preserved; no guessed parse; causal assignment separate."
+  },
+  "rawCapture": {
+    "receiptFields": [
+      "runId",
+      "itemId",
+      "opaqueExecutionToken",
+      "split",
+      "visibility",
+      "inputMemberSha256",
+      "goldItemIdentityReference",
+      "fixtureProjectionSha256",
+      "requestBodySha256",
+      "requestId",
+      "attemptId",
+      "attemptNumber",
+      "processId",
+      "processExitStatus",
+      "responseStatus",
+      "responseHeadersAllowlisted",
+      "rawResponsePath",
+      "rawResponseSha256",
+      "decodedMessageSha256",
+      "errorCode",
+      "errorStage",
+      "errorPayloadSafe",
+      "startedAtUtc",
+      "endedAtUtc",
+      "monotonicDurationMs",
+      "deadlineMs",
+      "timeoutObserved",
+      "abortObserved",
+      "providerAttemptReceiptRefs",
+      "harnessRetryRecord",
+      "terminalState",
+      "scoringState",
+      "stopAuthorityRef",
+      "cleanupReceipt"
+    ],
+    "raw": "Exact request UTF-8 body and response bytes plus digests, exit code/error/timing; raw child console data may be credential-contaminated and cannot be assumed safe.",
+    "safeLogging": "Never persist request Authorization/apikey headers, credential values, environment dumps or hashes of credentials. Network instrument records endpoint classification, method, timing/status, attempt and safe payload/digest only. Protected request/answer content stays restricted.",
+    "atomic": "Persist raw bytes then atomic completion receipt; on crash controller synthesizes explicit failure receipt. Seal first failures even if internal provider retry succeeds."
+  },
+  "executionAuthorizedNow": false
+}

@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "FUTURE_IMPLEMENTATION_SURFACE",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "files": [
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/intake.py",
+      "responsibility": "Trusted frozen manifest/visibility/question-context projection; gold not delivered to worker.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/runner.mts",
+      "responsibility": "Fresh child imports unchanged handleChatRequest; exact raw bytes/receipt; no orchestrate override.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/capture.mts",
+      "responsibility": "Network attempt/error/timing and safe console capture installed before product import.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/evidence-resolver.mts",
+      "responsibility": "Historical manifest/receipt resolution, hash/locator/gold binding.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/d3-map-consumer.mts",
+      "responsibility": "Digest/acceptance/coverage validation and quotient counting only; no new semantic grouping.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/d4-provenance.mts",
+      "responsibility": "Schema/spans/course/source/document/chunk/hash/gold deterministic checks.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/adjudicator-interface.py",
+      "responsibility": "Independent claim census and support request/receipt transport; no self-adjudication.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/scorer.py",
+      "responsibility": "Nine accepted dimension/gate records and diagnostics from frozen gold/reviewer evidence.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/accounting.py",
+      "responsibility": "Exactly-one terminal result and partition/attempt/run closure validation.",
+      "implementedNow": false
+    },
+    {
+      "path": "benchmarks/navigator-bounded-reasoning-rag-1/execution-contract-runtime/schemas.json",
+      "responsibility": "Request/receipt/accounting interfaces and artifact digest dependencies.",
+      "implementedNow": false
+    }
+  ],
+  "productSourceChangesTarget": 0,
+  "productEntrypointModifiedNow": false,
+  "sourceDependencies": [
+    "src/app/api/chat/route.ts::handleChatRequest and default orchestration transitively",
+    "src/lib/ingestion pure offline authority-reproduction modules",
+    "tsconfig alias resolution and exact lockfile-resolved tsx",
+    "Source chat/profile/conversation types and validation as authoritative request contract"
+  ],
+  "rawCaptureDependency": "Route observability exposes selected evidence identity and bounded status, but not every internal provider failure/response body. Future capture must wrap standard fetch before import without altering bytes/retries/result, or use independently verified nonmutating boundary instrumentation. If complete raw evidence cannot be preserved without a shared-source edit, record CROSS_SESSION_SHARED_SURFACE_CONFLICT and stop implementation.",
+  "protectedSharedSurfaces": [
+    "Navigator chat API route",
+    "shared request middleware",
+    "conversation serialization",
+    "generic user-text normalization",
+    "Tikhon handoff contract",
+    "Telegram adapter routing",
+    "shared Host/Origin handling",
+    "Caddy routing"
+  ],
+  "sharedSurfacePolicy": "None modified or proposed for authorized writing. Necessary direct import boundary is existing callable, avoids changing middleware. Any unavoidable edit to listed surfaces requires separate bounded act; flag CROSS_SESSION_SHARED_SURFACE_CONFLICT.",
+  "runtimeDBDependency": "Isolated database schema/RPC/data/embedding snapshot provisioning is separate authorized infrastructure work, not these files or this act.",
+  "implementationAllowedNow": false
+}

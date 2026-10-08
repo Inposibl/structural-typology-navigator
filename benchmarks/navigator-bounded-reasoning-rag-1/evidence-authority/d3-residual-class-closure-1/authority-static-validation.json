@@ -1,0 +1,217 @@
+{
+  "kind": "AUTHOR_STATIC_CHECK_NOT_INDEPENDENT_IV",
+  "benchmarkExecutions": 0,
+  "providerCalls": 0,
+  "productionContact": 0,
+  "networkAttempts": 0,
+  "universeCount": 1999,
+  "nonMaslowCount": 1408,
+  "maslowCount": 591,
+  "excludedPDSCount": 125,
+  "checks": [
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/NormaSituations_CANONICAL.md",
+      "canonicalSha256": "cc06e7ad72492481e0b252ea03269ec0dad739ae18b6f2c7d350b712ea40fdd9",
+      "documentId": "246cd5bf-7a2f-4f3d-9b4d-3138c669b9b0",
+      "chunks": 103,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Normative-Situation.md",
+      "canonicalSha256": "ee93e31587090a0104141e2590bd8e36a2f86e9d28bf3ace21db1a3f8d54e371",
+      "documentId": "8c5eb793-ddab-4c80-a945-793ecfcb571a",
+      "chunks": 8,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Arts_like_methodology_CANONICAL.md",
+      "canonicalSha256": "9147fb784fff9cb5c1d1856ac8cf179d80c45a8705564d4c28adadef31b5ef66",
+      "documentId": "29454f75-283c-4ad0-8c8c-4ee6e167c66a",
+      "chunks": 68,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/MethodologyOfLeadersContemplates_CANONICAL.md",
+      "canonicalSha256": "84960b8df1a0b2d1adc4d89c81023ea2fc1f82d795da841a57781ec1c5dda9a1",
+      "documentId": "33b786ec-f8d8-436c-a218-1eae92283eca",
+      "chunks": 37,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Play-and-Creativity.md",
+      "canonicalSha256": "4cc16361ebdc210fb0e6619ea8c6c5fb2c17300dc32af964d462469b111150d7",
+      "documentId": "93fa5e83-8904-4a47-92f5-a297ef041d18",
+      "chunks": 5,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/LevelOfCons_Protections_of_Perception_CANONICAL.md",
+      "canonicalSha256": "124a5da4de652d47371c9db9228f4f1028d2d80278b91687eaa048fed8ceaf7a",
+      "documentId": "73cdcbfa-e539-404c-a17e-190a4505816d",
+      "chunks": 28,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Levels_of_Consciousness_FOUNDATIONAL_CANONICAL.md",
+      "canonicalSha256": "5893b1bc03ec372e6c40ea637d412cc2ab6fe0ed8cdca4bae18fed9c93c0371a",
+      "documentId": "3fe3c262-4f80-478b-bfb8-b4a90dde5ffe",
+      "chunks": 75,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Levels-of-Consciousness.md",
+      "canonicalSha256": "a9852ba6856a243f66ac59641933b6371f2efef5a6007d43e46dc471a9482e37",
+      "documentId": "95db6f87-bf83-4d24-838c-b4a642014f57",
+      "chunks": 6,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/LevelsOfConsciousness_Transcript_CANONICAL.md",
+      "canonicalSha256": "7faebe8af8ea37422042a7c6624b2cf04053b6b888af852f46a83d5285533f42",
+      "documentId": "bbc34417-b81e-4c2c-97b3-9a095e4f4a6e",
+      "chunks": 92,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Stages_of_Professionalization_Presentation_CANONICAL.md",
+      "canonicalSha256": "9e1e6495ff62b0dfbe52f64b582fa8b242131216ec2b0195953db10c5d810a2e",
+      "documentId": "09b593c7-50ee-4778-be5a-a54c250d285c",
+      "chunks": 9,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": false
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/StagesOfProfessionalization_CANONICAL.md",
+      "canonicalSha256": "05d758a3444ed4c883f91ce63aa8820aa00005127b2d13e9da9e722e1b50c3c8",
+      "documentId": "98d080ea-81f8-4f90-b8f6-e4b76b175e10",
+      "chunks": 116,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": false
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_01_CANONICAL.md",
+      "canonicalSha256": "68ca1c89488a356b8960d85804d77c50cdd716a105646e50e68ef81f17d63dae",
+      "documentId": "280de37d-5a83-414a-9cf8-d2c216e64622",
+      "chunks": 39,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_02_Stages_of_Development_CANONICAL.md",
+      "canonicalSha256": "04d8d2f077a73efea8b1a8c6e434729acec674e0c3e5473971a24f6eab6db5fd",
+      "documentId": "9800d671-de61-4522-a3f9-a710530ed5db",
+      "chunks": 45,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_03_Levels_of_Consciousness_CANONICAL.md",
+      "canonicalSha256": "a9b86d3c3ab25ab83e1b8b243eae4072b7026f4237cf2ee0e292e08ecb2ca780",
+      "documentId": "86abbb19-76f6-42e9-8c91-b310644b2a53",
+      "chunks": 75,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_04_CANONICAL.md",
+      "canonicalSha256": "707d2cafd99855d681c75b344743664d74727652919526d181d84c162271cc4f",
+      "documentId": "d5e513e0-3d94-43a5-896f-f1a1c3442aa2",
+      "chunks": 72,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_05_CANONICAL.md",
+      "canonicalSha256": "fa02cdfb6f393875adc3a7d7fee628ccfa72a7f194e82f5968fda2f4e2b4f511",
+      "documentId": "6662977f-c490-4d9b-be45-f540e554edd8",
+      "chunks": 68,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_06_CANONICAL.md",
+      "canonicalSha256": "dc6fa75c5cce552d476709babe161d1492632c34f9ef77a46d44fae983128d41",
+      "documentId": "48ea5a08-ef95-4a9c-89e6-3dcc690e3df4",
+      "chunks": 54,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_07_CANONICAL.md",
+      "canonicalSha256": "36aef0d658d5ace1e4328ba63b810bc8bc70e3cb16a68689c826f110e255e305",
+      "documentId": "360c1121-ab1c-4cf6-b148-5cbe5b507fea",
+      "chunks": 113,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_08_CANONICAL.md",
+      "canonicalSha256": "110c57cacce869c3f20c59bc37209518857ca318784c002ee7c6e6e63ff9c147",
+      "documentId": "870ff16c-1aba-49fe-bbc5-16961dda20e2",
+      "chunks": 40,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_09_12_CANONICAL.md",
+      "canonicalSha256": "087383626c0fe8dbe247a529cb3745f8d903cb24b89d2f2cd812163b61ae9593",
+      "documentId": "cc56f4f1-c9f9-4532-8ccb-091680f7eed4",
+      "chunks": 307,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_13_CANONICAL.md",
+      "canonicalSha256": "db3e4ecf1fc63a3b76fdd66aa62d2eb245484da764ed8f84c60b3d8b590ce3e9",
+      "documentId": "33792332-fb67-42a9-aba6-39108ebe90cb",
+      "chunks": 57,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_14_CANONICAL.md",
+      "canonicalSha256": "794c652136c4402b8dedff54c1c5843b9af1469b388cd6e2493e63d1193477b3",
+      "documentId": "d4b78ebe-e0bf-486b-8486-e8b8f5a6020f",
+      "chunks": 73,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/ST_15_CANONICAL.md",
+      "canonicalSha256": "2dfeef93e1f1d98dc9ba044a1ab91638a4ed8d2a654d8664f94d23bb0dcaf6b5",
+      "documentId": "c09c77ca-2fb9-410b-835c-e733545cb3c0",
+      "chunks": 31,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "canonicalPath": "/Users/entp_psyche/Desktop/Academy Texts Corpus/Structural-Typology.md",
+      "canonicalSha256": "d8b58a7c0448d169f3d51f959528a888ade5255697062fe967f06c1d6f2282b7",
+      "documentId": "6520088b-f78b-449b-81bb-c63abe0e6a2a",
+      "chunks": 12,
+      "allContentHashesMatch": true,
+      "inBoundUniverse": true
+    },
+    {
+      "manifestPath": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b1/forensic_manifest_554.jsonl",
+      "manifestSha256": "54b692f10147dc2714d8f2e49fa2c98ead68e80955c59f34e705f45651381414",
+      "passages": 554,
+      "allContentHashesMatch": true
+    },
+    {
+      "manifestPath": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/maslow-historical-v1/b2/forensic_manifest_37.jsonl",
+      "manifestSha256": "b334bd0d6ff219f2c28628ac43eceec466c083cf4d220ee492f6332fc3f12c28",
+      "passages": 37,
+      "allContentHashesMatch": true
+    }
+  ]
+}

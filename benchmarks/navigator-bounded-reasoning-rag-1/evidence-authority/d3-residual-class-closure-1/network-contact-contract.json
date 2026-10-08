@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "NETWORK_CONTACT",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "currentActAllowedContacts": [],
+  "futureAllowlist": [
+    {
+      "service": "DeepSeek product calls",
+      "scheme": "https",
+      "host": "api.deepseek.com",
+      "port": 443,
+      "method": "POST",
+      "path": "/chat/completions",
+      "model": "deepseek-flash",
+      "source": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/navigation/deepseek-client.ts",
+        "sha256": "ad2394d901b87d8f8c7665b0ccc3d245f377f794a0b1f2776b1a7b5a7108ba2a",
+        "bytes": 5560
+      },
+      "purpose": "Routing/evidence selection/composition/product grounding through pinned implementation; not final independent D4 adjudication."
+    },
+    {
+      "service": "Cohere query embedding",
+      "scheme": "https",
+      "host": "api.cohere.com",
+      "port": 443,
+      "method": "POST",
+      "path": "/v2/embed",
+      "model": "embed-v4.0",
+      "outputDimension": 1024,
+      "inputType": "search_query",
+      "source": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/knowledge/embeddings/cohere-query.ts",
+        "sha256": "e0fdfd29ea1d6c5fb649880028e0d087fe16662245fe5e9818493c404b35932e",
+        "bytes": 6764
+      },
+      "purpose": "Necessary default product retrieval path; document ingestion is forbidden during execution."
+    },
+    {
+      "service": "Isolated TEST_BASE Supabase-compatible data service",
+      "host": null,
+      "port": null,
+      "mandatoryBoundInput": "Owner-authorized exact isolated endpoint/target identity before run; no host inferred from production receipts.",
+      "methodsAndPaths": [
+        {
+          "method": "GET",
+          "path": "/rest/v1/academy_course_sources",
+          "query": "Only expected course filter, active binding and source join/order from pinned source."
+        },
+        {
+          "method": "POST",
+          "path": "/rest/v1/rpc/match_course_knowledge_chunks",
+          "bodyKeys": [
+            "p_course_id",
+            "p_query_embedding",
+            "p_match_threshold",
+            "p_match_count"
+          ]
+        }
+      ],
+      "source": [
+        {
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/knowledge/retrieval/course-source-bindings.ts",
+          "sha256": "bdb3e2c36536edcf6c1c80c8562f2e92c0f967cc1946e1017b41f9ef1a0d29b8",
+          "bytes": 3627
+        },
+        {
+          "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/knowledge/retrieval/retrieve-course-knowledge.ts",
+          "sha256": "724805c78694768dbbc4fa0aa6c32e49c4939300083b340ab2d8d82899ccff21",
+          "bytes": 6749
+        }
+      ],
+      "permissions": "Read-only test snapshot/RPC; forbid all writes/DDL/storage/ingestion/admin operations."
+    }
+  ],
+  "forbiddenDestinations": [
+    "Production project mgtghkxebccahtqqyyjv and any production-linked credentials/endpoints",
+    "Telegram API",
+    "Tikhon transport",
+    "Payment endpoints",
+    "Academy enrollment/manager services",
+    "Vercel/deployment APIs",
+    "Supabase production/storage/admin endpoints",
+    "Unlisted destinations including redirects"
+  ],
+  "localOnly": "Direct Request invocation, source/receipt reads, hashing and raw capture. No HTTP server is required by proposed callable boundary.",
+  "enforcement": "OS/container egress firewall or enforced allowlist proxy bound before child launch; deny arbitrary DNS/IP/TLS destinations and redirects. Remove inherited proxies. Capture allowed attempt metadata safely. JS intent statements alone do not enforce isolation.",
+  "initializationNetwork": "Package download during separately authorized npm ci provisioning is not runtime egress. Registry exact destination authorization must be independently supplied; do not invent unrestricted build egress.",
+  "adjudicatorNetwork": "Independent reviewer service configuration, if any, is a separate Owner authorization; product DeepSeek allowlist does not authorize final semantic review contact.",
+  "unknownCriticalBindings": [
+    "Exact isolated data-service host/port/TLS identity",
+    "Provisioning package registry contact authority if an install is required"
+  ],
+  "executionAuthorizationNow": false,
+  "zeroProductionFallback": true
+}

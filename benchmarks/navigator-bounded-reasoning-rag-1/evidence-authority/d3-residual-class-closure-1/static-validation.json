@@ -1,0 +1,328 @@
+{
+  "kind": "AUTHOR_BOUNDED_STATIC_VALIDATION_NOT_INDEPENDENT_IV",
+  "syntax": "PASS",
+  "d4SchemaStructure": "PASS_DRAFT7_COMPATIBLE_SUBSET_AND_ALL_LOCAL_REFS_RESOLVED",
+  "requiredArtifactsPresent": 14,
+  "scoringDimensions": 9,
+  "nonCompensatoryGates": 9,
+  "accountingPartition": "49+50+24=123;10+14=24",
+  "universeCount": 1999,
+  "D3GroupProposalCount": 47,
+  "D3WitnessCount": 127,
+  "D3SemanticCompletion": "PASS_BOUNDED_CLASS_DISPOSITIONS_AND_FAIL_CLOSED_GUARDS",
+  "openEvidenceOccurrencesResolved": 110,
+  "artifactDigestRefsChecked": 74,
+  "sourceByteIdentitiesUnchanged": 697,
+  "repositoryClean": true,
+  "head": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkExecutions": 0,
+  "providerCalls": 0,
+  "productionContact": 0,
+  "overall": "D3_RESIDUAL_CLASS_CLOSURE_CANDIDATE_PENDING_INDEPENDENT_IV",
+  "preCorrectionArtifactDigests": {
+    "AUDIT.md": "e9a1d52fec0488987881b9efea6c914770b7563c35f859d532bcfafee07db96b",
+    "REPORT.md": "93679f7a20214cff0badccc4eb7fa7c49483c49fff671484cada1eea5c0d610c",
+    "author-command-record.json": "8cb03a3d66b7bf1e8fadd263ae28768dec0995062e7f57fb0c0ef9c2ddd96355",
+    "authoring-method/nbrr1_resume_author.py": "4a72ae69769f63f305a168dd1baa356b3b40d20aa2530d36eee99d3906b6bb46",
+    "authoring-method/nbrr1_resume_universe.mts": "00f61109ca07913d21dd530283341b1f4f3b0aceadb81b6b321cd66e93e89796",
+    "authoring-method/nbrr1_resume_validate.py": "3c5645afbb865b825f15faa25f3d05ce7aba1a8180180fc5586b105eaa1a24ae",
+    "authority-static-validation.json": "24ce9d0492e1effb0e36725680b67d5af9bba11215b2e6c4db8014e85e54d3c8",
+    "authorized-evidence-universe.jsonl": "0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e",
+    "blindness-access-matrix.json": "a1155d3271084dcfba9aca959c3b369be28721579ace36bb9ec56a56d31bdbf3",
+    "d3-counting-contract.json": "684184d4614e3a0c0380fd781e4c9f2cdc818c6b50eb1263f68051a4bfaff3d5",
+    "d3-semantic-equivalence-map.candidate.json": "ac810dffd9b4d94e5a9a89d073beb004409097f979e38a82e9f546e5ba8747c7",
+    "d4-hybrid-contract.json": "0c1e22be74e45c2232c2331ccc2c3397ddc640cc63e1524b3f20bd83198d5b05",
+    "d4-trace-schema.json": "3946af563075c1b6e15ca05c039783919c94eb3b1e2dff2a7da4a918e0ef5f8e",
+    "decision.json": "66e3743b61c2b3d348194e815f2d409809d22ab6d9bb91b93268203ab632dc00",
+    "environment-contract.json": "147d7221518595bcec86fab6f62fb07871fe7e455653cf4305c9a0cb19fc62d1",
+    "evidence-materialization-contract.json": "7e48d2b825b9a8b58f1ef5cc17be8cfad8bc8fbeb90d577003d2c24e8ed89c5b",
+    "full123-accounting-contract.json": "081a22e16a72bbaad2a9922b531a592caaad158297a7bd5eaab6cdabd22f5161",
+    "implementation-surface.json": "78642075c3bdeccf74f3a42e3e325543982cb8b9784cb0124ae3851c242f26d8",
+    "network-contact-contract.json": "422fd2d8433361ab667dd818566a3bddc2e3970aff16e18ff8528dcf20f90f03",
+    "open-evidence-resolution-validation.json": "89b1369671342692f397e052b7feaa20f5420ae06f5b56e5dd0ae98188a6eef1",
+    "package-identity.json": "64af022086860f1964d85665558a0efec927db63854b2211ed134c166997bbe0",
+    "provenance-index.json": "9bd0704a2afb78c91d62f73af06a942af03f8a8d4f65d3d88b41980cc158cf50",
+    "runner-contract.json": "7fba3e198b136c3107fefe31a8df7a8ea3c07845f66fc5aaba2846a1352abc9d",
+    "scoring-contract.json": "0d9eb96a3e32666d2ed8de5c9dc62d30b5e8897ebd8ea30db22648402be37456",
+    "source-verification.json": "675011947212859211b8ca91cf492701a5a6ee9c0f9a65cdf54b3b8519ce78fc",
+    "static-validation.json": "67968bfe28bbafd380048b73361977580f6e2eeb6974b1fd8eab4ff3cacf74f3",
+    "test-base-contract.json": "416b3ddbd0896ae3ca701e92fff5e5366713dc95644aa5d4c58a5f96131393bd",
+    "timeout-retry-contract.json": "52648a7c84aa3615de4a0d25b97d366d00f2ed1f64953610bad3c01e9e9c4253"
+  },
+  "D3Correction": {
+    "kind": "AUTHOR_FOCUSED_VALIDATION_NOT_INDEPENDENT_IV",
+    "structuralIntegrity": "PASS",
+    "witnesses": "PASS_PHYSICAL_BYTES_AND_HASHES",
+    "blindness": "PASS_CORPUS_ONLY_STRUCTURAL_SCAN_NO_PROTECTED_INPUTS",
+    "countingSpecificationExamples": "PASS_SYNTHETIC_SPECIFICATION_COUNTEREXAMPLES_ONLY",
+    "privilegedApplicabilityBinding": "NOT_CREATED_FUTURE_ACCEPTANCE_BOUNDARY",
+    "candidatePairs": 3276,
+    "pairDecisionCounts": {
+      "UNRESOLVED": 2755,
+      "NOT_EQUIVALENT": 503,
+      "EQUIVALENT": 18
+    },
+    "groups": 9,
+    "dispositionCounts": {
+      "UNRESOLVED_IDENTITY": 1982,
+      "PROCEDURALLY_DISTINCT": 2,
+      "GROUPED": 15
+    },
+    "unresolvedCandidateIdentities": 1997,
+    "unreviewedIdentityRows": 1982,
+    "universeCount": 1999,
+    "universeSha256": "0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e",
+    "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+    "scoringDimensions": 9,
+    "nonCompensatoryGates": 9,
+    "sourceIdentitiesUnchanged": 697,
+    "repositoryClean": true,
+    "D3MapComplete": false,
+    "semanticClosure": "FAIL_UNRESOLVED_CANDIDATE_ADJUDICATIONS",
+    "verdict": "BLOCKED_D3_ADJUDICATION_COVERAGE",
+    "counters": {
+      "BENCHMARK_EXECUTIONS": 0,
+      "PROVIDER_CALLS": 0,
+      "PRODUCTION_CONTACT": 0,
+      "PRODUCT_SOURCE_CHANGES": 0,
+      "BENCHMARK_MUTATIONS": 0,
+      "GIT_MUTATIONS": 0
+    },
+    "reproducibility": {
+      "generatorExecutions": 2,
+      "repeatBytesIdentical": true,
+      "candidatePairsSha256": "3d49600625db5fde1ebc209eaf4ccaafc4578db00ea8a6b03fc24740817ae904",
+      "generationReceiptSha256": "0c017b996847610d228c0a502dc4ce3b7afb2e6e94744e57434e097c26f1dd88",
+      "repeatCommandExitCode": 0
+    },
+    "negativeCompletenessAdmissionCheck": {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 d3-validate.py --require-complete",
+      "exitCode": 2,
+      "expected": "BLOCKED_D3_ADJUDICATION_COVERAGE",
+      "observed": "BLOCKED_D3_ADJUDICATION_COVERAGE"
+    }
+  },
+  "D3ProcedureImplementation": {
+    "kind": "AUTHOR_FOCUSED_VALIDATION_NOT_INDEPENDENT_IV",
+    "structuralIntegrity": "PASS",
+    "witnesses": "PASS_PHYSICAL_BYTES_AND_HASHES",
+    "blindness": "PASS_CORPUS_ONLY_STRUCTURAL_SCAN_NO_PROTECTED_INPUTS",
+    "countingSpecificationExamples": "PASS_SYNTHETIC_SPECIFICATION_COUNTEREXAMPLES_ONLY",
+    "privilegedApplicabilityBinding": "NOT_CREATED_FUTURE_ACCEPTANCE_BOUNDARY",
+    "candidatePairs": 3276,
+    "pairDecisionCounts": {
+      "PROCEDURALLY_EXCLUDED": 2329,
+      "NOT_EQUIVALENT": 503,
+      "UNRESOLVED": 426,
+      "EQUIVALENT": 18
+    },
+    "groups": 32,
+    "dispositionCounts": {
+      "UNRESOLVED_IDENTITY": 1964,
+      "GROUPED": 33,
+      "PROCEDURALLY_DISTINCT": 2
+    },
+    "unresolvedCandidateIdentities": 166,
+    "unreviewedIdentityRows": 1964,
+    "universeCount": 1999,
+    "universeSha256": "0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e",
+    "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+    "scoringDimensions": 9,
+    "nonCompensatoryGates": 9,
+    "sourceIdentitiesUnchanged": 697,
+    "repositoryClean": true,
+    "D3MapComplete": false,
+    "semanticClosure": "FAIL_UNRESOLVED_CANDIDATE_ADJUDICATIONS",
+    "verdict": "BLOCKED_D3_RESIDUAL_SEMANTIC_APPLICABILITY",
+    "counters": {
+      "BENCHMARK_EXECUTIONS": 0,
+      "PROVIDER_CALLS": 0,
+      "PRODUCTION_CONTACT": 0,
+      "BENCHMARK_MUTATIONS": 0,
+      "GIT_MUTATIONS": 0,
+      "PRODUCT_SOURCE_MUTATIONS": 0
+    },
+    "D3ProcedureImplementation": {
+      "partitionReproduced": "PASS",
+      "partitionCounts": {
+        "RULE_1": 1913,
+        "RULE_1_EXCEPTIONS": 45,
+        "RULE_2": 416,
+        "NONADJACENT_SENTENCE": 358,
+        "NONADJACENT_HIGH_LEXICAL_NO_SENTENCE": 23
+      },
+      "excludedPairs": 2329,
+      "originalPairs": 3276,
+      "overlapSpanRecords": 1958,
+      "disputedPairMembership": "PASS_ALL_THREE_CANONICAL_IDS",
+      "normalizedAnchorValues": 77,
+      "courseScopedAnchorCases": 85,
+      "anchorDecisionCounts": {
+        "EQUIVALENT_SCOPED": 23,
+        "SUBJECT_SCOPED_DISTINCT": 20,
+        "UNRESOLVED": 42
+      },
+      "unresolvedPairs": 426,
+      "unresolvedAnchorCases": 42,
+      "countingAdmissionCounterexamples": "PASS_ABSTRACT_CONTRACT_ONLY",
+      "historicalInputsUnchanged": "PASS",
+      "blindness": "PASS_CORPUS_ONLY_STRUCTURAL_CHECK_NOT_PROOF_OF_SEMANTIC_COMPLETENESS",
+      "semanticClosure": "FAIL_EXPLICIT_UNRESOLVED",
+      "verdict": "BLOCKED_D3_RESIDUAL_SEMANTIC_APPLICABILITY"
+    }
+  },
+  "currentAct": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1.D3-RESIDUAL-CLASS-CLOSURE-1",
+  "focusedValidationScope": "Author-only D3 validator, physical witnesses, frozen procedure, artifact identities and in-memory negative guards; no full canonical/application suite or independent IV.",
+  "strictAdmission": {
+    "D3MapComplete": true,
+    "independentlyVerified": false,
+    "ownerAccepted": false,
+    "executionAuthorized": false
+  },
+  "historicalValidationFields": [
+    "D3Correction",
+    "D3ProcedureImplementation",
+    "artifactDigestRefsChecked",
+    "openEvidenceOccurrencesResolved",
+    "preCorrectionArtifactDigests"
+  ],
+  "newProcedureGenerationReceipt": "d3-generation-receipt.json stays byte-identical historical input; new procedure is bound separately in owner decision/partition receipts and validator identity.",
+  "D3ResidualClassClosure": {
+    "kind": "AUTHOR_FOCUSED_VALIDATION_NOT_INDEPENDENT_IV",
+    "structuralIntegrity": "PASS",
+    "witnesses": "PASS_PHYSICAL_BYTES_AND_HASHES",
+    "blindness": "PASS_CORPUS_ONLY_STRUCTURAL_SCAN_NO_PROTECTED_INPUTS",
+    "countingSpecificationExamples": "PASS_ABSTRACT_DECLARATIVE_GUARDS_ONLY_NO_OPERATIONAL_AUTHORITY",
+    "privilegedApplicabilityBinding": "NOT_CREATED_FUTURE_ACCEPTANCE_BOUNDARY",
+    "candidatePairs": 3276,
+    "pairDecisionCounts": {
+      "PROCEDURALLY_EXCLUDED": 2329,
+      "NOT_EQUIVALENT": 503,
+      "BOUNDED_DISPOSITION": 426,
+      "EQUIVALENT": 18
+    },
+    "groups": 47,
+    "dispositionCounts": {
+      "UNRESOLVED_IDENTITY": 1964,
+      "GROUPED": 33,
+      "PROCEDURALLY_DISTINCT": 2
+    },
+    "unresolvedCandidateIdentities": 0,
+    "unreviewedIdentityRows": 1964,
+    "universeCount": 1999,
+    "universeSha256": "0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e",
+    "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+    "scoringDimensions": 9,
+    "nonCompensatoryGates": 9,
+    "sourceIdentitiesUnchanged": 697,
+    "repositoryClean": true,
+    "D3MapComplete": true,
+    "semanticClosure": "PASS_CANDIDATE_ONLY",
+    "verdict": "D3_RESIDUAL_CLASS_CLOSURE_CANDIDATE_PENDING_INDEPENDENT_IV",
+    "counters": {
+      "BENCHMARK_EXECUTIONS": 0,
+      "PROVIDER_CALLS": 0,
+      "PRODUCTION_CONTACT": 0,
+      "BENCHMARK_MUTATIONS": 0,
+      "GIT_MUTATIONS": 0,
+      "PRODUCT_SOURCE_MUTATIONS": 0
+    },
+    "D3ProcedureImplementation": {
+      "partitionReproduced": "PASS",
+      "partitionCounts": {
+        "RULE_1": 1913,
+        "RULE_1_EXCEPTIONS": 45,
+        "RULE_2": 416,
+        "NONADJACENT_SENTENCE": 358,
+        "NONADJACENT_HIGH_LEXICAL_NO_SENTENCE": 23
+      },
+      "excludedPairs": 2329,
+      "originalPairs": 3276,
+      "overlapSpanRecords": 1958,
+      "disputedPairMembership": "PASS_ALL_THREE_CANONICAL_IDS",
+      "normalizedAnchorValues": 77,
+      "courseScopedAnchorCases": 85,
+      "anchorDecisionCounts": {
+        "ATOMIC_COMPARISON_DECOMPOSITION": 3,
+        "BIBLIOGRAPHIC_TITLE_ONLY": 3,
+        "EQUIVALENT_SCOPED": 32,
+        "LOCAL_SUBJECT_SCOPED_DISTINCT": 8,
+        "NONMATERIAL_EDITORIAL": 6,
+        "NONMATERIAL_LABEL_STRIP": 5,
+        "NONMATERIAL_TABLE_HEADER": 2,
+        "QUALIFICATION_SCOPED_DISTINCT": 1,
+        "SOURCE_LABEL_CONFLICT": 5,
+        "SUBJECT_SCOPED_DISTINCT": 20
+      },
+      "unresolvedPairs": 0,
+      "unresolvedAnchorCases": 0,
+      "countingAdmissionCounterexamples": "PASS_ABSTRACT_CONTRACT_ONLY",
+      "historicalInputsUnchanged": "PASS",
+      "blindness": "PASS_CORPUS_ONLY_STRUCTURAL_CHECK_NOT_PROOF_OF_SEMANTIC_COMPLETENESS",
+      "semanticClosure": "PASS_BOUNDED_CANDIDATE_GUARDS",
+      "verdict": "D3_RESIDUAL_CLASS_CLOSURE_CANDIDATE_PENDING_INDEPENDENT_IV"
+    },
+    "D3ResidualClassClosure": {
+      "all426BoundedAnd42AnchorsClosed": true,
+      "anchorClassCounts": {
+        "ATOMIC_COMPARISON_DECOMPOSITION": 3,
+        "BIBLIOGRAPHIC_TITLE_ONLY": 3,
+        "EQUIVALENT_SCOPED": 9,
+        "LOCAL_SUBJECT_SCOPED_DISTINCT": 8,
+        "NONMATERIAL_EDITORIAL": 6,
+        "NONMATERIAL_LABEL_STRIP": 5,
+        "NONMATERIAL_TABLE_HEADER": 2,
+        "QUALIFICATION_SCOPED_DISTINCT": 1,
+        "SOURCE_LABEL_CONFLICT": 5
+      },
+      "pairClassCounts": {
+        "ALREADY_RESOLVED_PROPOSITION_SCOPE": 22,
+        "STRUCTURAL_SPAN_ONLY": 250,
+        "NO_SHARED_SUBSTANTIAL_SENTENCE": 50,
+        "LIST_COMPARISON": 23,
+        "ATOMIC_CONFLICT_SPAN": 19,
+        "TYPE_LEVEL_TEMPLATE": 62
+      },
+      "reviewerPairAggregate": "CHALLENGED_62_19_VERSUS_65_16_NO_FORCED_MEMBERSHIP",
+      "physicalOccurrenceAndContextChecks": 807,
+      "localSubjectBindingsChecked": 36,
+      "noSentenceSubclassCounts": {
+        "RULE_1_EXCEPTIONS": 27,
+        "NONADJACENT_HIGH_LEXICAL_NO_SENTENCE": 23
+      },
+      "admissionGuards": 519,
+      "newGroups": 15,
+      "totalGroups": 47,
+      "historicalPairAndAnchorBytes": "PASS_EXACT",
+      "historicalGroups": "PASS_ALL32_UNCHANGED",
+      "unchangedPassageStates": "1964 UNCLOSED +33 GROUPED +2 PROCEDURALLY_DISTINCT",
+      "nicknameClaims": 11,
+      "countingAuthority": "CANDIDATE_ONLY_NOT_OWNER_ACCEPTED",
+      "wholePassageOntologyClaimed": false,
+      "strictCompleteness": "PASS_BOUNDED_DISPOSITIONS_AND_FAIL_CLOSED_GUARDS"
+    }
+  },
+  "D3ResidualNegativeValidation": {
+    "kind": "AUTHOR_IN_MEMORY_NEGATIVE_VALIDATION_NOT_INDEPENDENT_IV",
+    "candidateMutation": false,
+    "cases": [
+      {
+        "case": "MISSING_ONE_PAIR_DISPOSITION",
+        "result": "REJECTED_EXPECTED"
+      },
+      {
+        "case": "MISSING_PAIR_GUARD",
+        "result": "REJECTED_EXPECTED"
+      },
+      {
+        "case": "MISSING_MEMBERSHIP_RECORD",
+        "result": "REJECTED_EXPECTED"
+      },
+      {
+        "case": "CROSS_TYPE_GROUP_CONFLICT",
+        "result": "REJECTED_EXPECTED"
+      }
+    ]
+  },
+  "initialStrictCompleteness": "exit 2, BLOCKED_D3_RESIDUAL_SEMANTIC_APPLICABILITY, 42 unresolved anchors and 426 pairs"
+}

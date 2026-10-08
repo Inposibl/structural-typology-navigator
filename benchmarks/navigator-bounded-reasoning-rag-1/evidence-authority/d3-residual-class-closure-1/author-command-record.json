@@ -1,0 +1,50 @@
+{
+  "kind": "AUTHOR_ACTION_RECORD_NOT_INDEPENDENT_IV",
+  "writeScope": "New candidate directory outside both product repositories and named author scratch files under /private/tmp only.",
+  "benchmarkExecutions": 0,
+  "providerCalls": 0,
+  "productionContact": 0,
+  "principalCommands": [
+    {
+      "command": "env -i PATH=/usr/bin:/bin TSX_DISABLE_CACHE=1 /Users/entp_psyche/.nvm/versions/node/v22.23.2/bin/node --import /Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/node_modules/tsx/dist/loader.mjs /private/tmp/nbrr1_resume_universe.mts",
+      "exitCode": 0,
+      "result": "1999 bound passage identities;1533 non-Maslow/591 Maslow hashes;networkAttempts0"
+    },
+    {
+      "command": "python3 /private/tmp/nbrr1_resume_author.py",
+      "exitCode": 1,
+      "result": "Initial syntax failure from reserved keyword pass in author utility; no candidate files emitted by that invocation."
+    },
+    {
+      "command": "python3 /private/tmp/nbrr1_resume_author.py",
+      "exitCode": 0,
+      "result": "After AST-checked reserved-keyword fix:18 JSON files;697 source byte identities match controlling SHA;repositoryClean."
+    },
+    {
+      "command": "python3 /private/tmp/nbrr1_resume_validate.py",
+      "exitCode": 0,
+      "result": "Structural checks PASS;D3 complete semantic map FAIL explicitly incomplete;110 open occurrences resolved."
+    }
+  ],
+  "readOnlyReconnaissance": "Exact individual cat/rg/sed/git/python command invocations and outputs are retained in this chat tool transcript; this file journals principal executed author/static-validation commands, not an invented exhaustive shell log.",
+  "amendments": [
+    {
+      "artifact": "runner-contract.json",
+      "change": "Replace invalid colon request identity by full non-secret SHA256 hex64 matching pinned source pattern; explicit TSX_TSCONFIG_PATH; exact serialized Content-Length; receipt field name corrected."
+    },
+    {
+      "artifact": "environment-contract.json",
+      "change": "Explicit TSX_TSCONFIG_PATH allowlisted and locally confirmed in installed pinned tsx."
+    },
+    {
+      "artifact": "decision.json",
+      "change": "Record1991 unreviewed D3 passage identities explicitly."
+    },
+    {
+      "artifact": "evidence-materialization-contract.json",
+      "change": "Record actual110 open DEVELOPMENT occurrence resolution with0 missing/locator mismatches."
+    }
+  ],
+  "selfVerificationOnly": true,
+  "independentVerifierContacted": false
+}

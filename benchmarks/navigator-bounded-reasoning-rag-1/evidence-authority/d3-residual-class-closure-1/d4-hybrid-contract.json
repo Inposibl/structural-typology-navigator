@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "D4_HYBRID",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "prior": {
+    "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1/d4-hybrid-contract.json",
+    "sha256": "be87bbf9d1794cddf8be7dffecbd0ab4d5568d122069cf152776d4f8e037e76a",
+    "bytes": 2625
+  },
+  "traceSchema": {
+    "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_EXECUTION_CONTRACT_CLOSURE_1_CORR1_RESUME_1/d4-trace-schema.json",
+    "sha256": "3946af563075c1b6e15ca05c039783919c94eb3b1e2dff2a7da4a918e0ef5f8e",
+    "bytes": 5376
+  },
+  "claimRepresentation": {
+    "rawAnswer": "Exact decoded product message bound to exact response bytes/digest; no editor-normalized answer.",
+    "offsets": "Half-open UTF-8 byte offsets in encoded decoded-message string, separately bound to rawOutputSha256.",
+    "atomicity": "Split distinct subjects, predicates, polarity, modalities, conditions, numeric claims, attribution and authority statements; implied material conclusions count. Keep necessary context/qualifiers.",
+    "inventory": "Independent reviewer checks exhaustive material-claim census; an omitted unsupported claim invalidates the adjudication."
+  },
+  "passageRepresentation": "Exact authorized historical UTF-8 bytes with identity, locator, hash, authority relation and gold pointer; permitted passage sets never widened to document/question/current record.",
+  "materialBoundary": "A claim about Academy content, material course facts, provenance, authority or inferred conclusion that affects the answer. Greetings/style/preferences are nonmaterial. Abstention boundary assertions are checked against frozen answerability/expectedAbstentionBoundary; never fabricated as Academy passage support.",
+  "d4A": {
+    "trace": [
+      "item",
+      "course",
+      "source",
+      "historical document",
+      "explicit chunk identity/locator",
+      "exact historical passage",
+      "exact SHA256",
+      "frozen gold authority/proposition scope"
+    ],
+    "checks": [
+      "Validate schema plus span bounds and byte substring equality.",
+      "Verify benchmark/gold member/item hashes, exact authority artifact identities and authorized evidence resolution.",
+      "Confirm each material Academy claim cites authorized gold/positive alternative evidence of correct course and appropriate proposition scope; negative controls are rejected.",
+      "Check frozen supportsPropositions references and preserve scoped corrections; role labels are semantic enums, not numerical ranks."
+    ],
+    "passRule": "All applicable identity checks PASS; null unresolved required binding cannot pass.",
+    "abstention": "No Academy factual claim: identity checks may be NOT_APPLICABLE. Item-level PASS requires independent confirmation of the empty Academy-claim census; unsupported positive claims cannot be hidden as abstention."
+  },
+  "d4B": {
+    "adjudicator": "Owner-authorized independent semantic reviewer; neither runner/scorer implementation author nor contract author can be final adjudicator.",
+    "inputs": [
+      "Immutable raw answer and exhaustive atomic claim inventory",
+      "Exact authorized passage bytes and checked D4-A trace",
+      "Relevant frozen required/prohibited propositions, acceptable alternatives, answerability, inference boundaries and scoped correction in restricted scorer stage only"
+    ],
+    "supportRelation": "The passage entails the entire material claim under its actual course/subject/conditions, without external knowledge or unauthorized premise. Several authorized passages may jointly support a synthesis; preserve which span supports each conjunct.",
+    "judgments": {
+      "SUPPORTED": "All material parts entailed with qualifications preserved.",
+      "PARTIAL": "Only some components supported; split to atomic parts and preserve unsupported remainder; never automatic PASS.",
+      "UNSUPPORTED": "No authorized support for at least one material claim.",
+      "CONTRADICTED": "Authorized passage conflicts with claim, including lost caveat or wrong polarity.",
+      "AMBIGUOUS": "Available passage cannot resolve support with confidence; scoring unresolved, not PASS.",
+      "ABSTAINED": "Reviewer declines judgment; requires another authorized independent reviewer before closure.",
+      "ADJUDICATION_FAILURE": "Missing/corrupt inputs, output, reviewer identity or receipt; scoring failure, not product-quality failure by default."
+    },
+    "outputFields": [
+      "itemId",
+      "claimId",
+      "answerSpan",
+      "claimText",
+      "material",
+      "authorizedPassageIds",
+      "supportSpans",
+      "D4-A check receipt digest",
+      "judgment",
+      "rationale",
+      "reviewerId",
+      "independence attestation",
+      "input digest",
+      "timestamp",
+      "adjudication receipt digest"
+    ],
+    "abstention": "Evaluate refusal/named gaps against exact frozen boundary. A model refusing a required answer is recorded in D2/D7/D8; it cannot receive invented positive passage support."
+  },
+  "passRule": "D4_PASS = D4_A_PASS AND D4_B_PASS. Every applicable material Academy claim must be SUPPORTED; PARTIAL/UNSUPPORTED/CONTRADICTED fail support, AMBIGUOUS/ABSTAINED/ADJUDICATION_FAILURE block a final result. No compensation.",
+  "evidencePreservation": "Store raw answer, inventory revisions, exact cited passage bytes/digests, offsets, identity check receipts, reviewer outputs and disagreement history immutably. No post-hoc answer/gold edits.",
+  "independentAccess": "Least privilege restricted scorer package and audit store after run output freeze; read-only access to all relevant evidence and gold. D3 authors receive no item/gold selection. Implementation authors receive open fixtures only.",
+  "failureSeparation": "Wrong product claims produce dimension/gate failures; absent evidence authority or failed reviewer infrastructure produces scoring/authority failure with quality undecided. Never uncertainty->PASS."
+}

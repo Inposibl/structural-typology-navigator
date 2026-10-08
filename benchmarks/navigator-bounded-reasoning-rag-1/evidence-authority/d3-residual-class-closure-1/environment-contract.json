@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "ENVIRONMENT",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "runtime": {
+    "node": "v22.23.2",
+    "npm": "10.9.8",
+    "basis": "Observed locally this session and historical dependency receipt; candidate runtime pin, not acceptance of obsolete EXACT30 path.",
+    "historicalReceipt": {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/execution-infrastructure/NAVIGATOR_BOUNDED_REASONING_RAG_1_POST_RECONCILIATION_TESTING_1_TEST_BASE_AND_EXACT30_1/dependency-receipt.json",
+      "sha256": "a5d7abee91462b826ac85c32a56d9ee93f2a991b56b7e7d5721a82acbe01ac86",
+      "bytes": 1286
+    },
+    "sourceEnginesConstraint": "package.json has no engines pin. Do not infer one from @types/node.",
+    "packageManager": "npm",
+    "packageJson": {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/package.json",
+      "sha256": "f3568d3812e0f27035b0ee1f9e65a4c5d82fd9014bfebfcd983050203ba24101",
+      "bytes": 894
+    },
+    "lockfile": {
+      "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/package-lock.json",
+      "sha256": "5765c51d7d5f51393284a882444a3ffabbffba8ff328617de037f682a96796ff",
+      "bytes": 237177
+    },
+    "install": "Future isolated provisioning only: npm ci with exact lockfile; no update/audit-fix/global installs/dependency copy. Not executed in this act.",
+    "loader": "Pinned source tsconfig and lockfile-resolved tsx, no cache writes to controlling repository."
+  },
+  "requiredInputs": [
+    "SUPABASE_URL",
+    "SUPABASE_SECRET_KEY",
+    "COHERE_API_KEY",
+    "DEEPSEEK_API_KEY"
+  ],
+  "credentialProof": "Presence/nonempty booleans and credential source/target attestation only. Do not print values or lengths; never hash credentials. SUPABASE_SECRET_KEY modern sb_secret_ format verified internally, report only formatValid boolean.",
+  "processEnvironment": {
+    "mode": "Construct from empty environment, no unrestricted inherit.",
+    "allowlist": [
+      "PATH pinned runtime directory plus /usr/bin:/bin",
+      "NODE_ENV=production",
+      "TZ=UTC for receipts only; frozen item text unaffected",
+      "TSX_DISABLE_CACHE=1",
+      "SUPABASE_URL scoped isolated TEST_BASE endpoint",
+      "SUPABASE_SECRET_KEY scoped isolated test database only",
+      "COHERE_API_KEY dedicated authorized run scope",
+      "DEEPSEEK_API_KEY dedicated authorized run scope",
+      "TSX_TSCONFIG_PATH exact verified TEST_BASE tsconfig.json path"
+    ],
+    "forbidden": [
+      "NODE_OPTIONS",
+      "DOTENV_CONFIG_PATH",
+      "HTTP_PROXY",
+      "HTTPS_PROXY",
+      "ALL_PROXY",
+      "production Supabase key/URL",
+      "Telegram/Tikhon tokens",
+      "payment credentials",
+      "OpenAI/Anthropic unrelated keys"
+    ],
+    "envFiles": "No .env*, shell profile, user credential store or Next dotenv preload. Direct callable invocation does not authorize loading production env."
+  },
+  "requiredLocalState": [
+    "Immutable verified controlling source and locked dependencies",
+    "Complete historical evidence authority and universe digest",
+    "Accepted complete D3 map",
+    "Read-only frozen question fixtures delivered by trusted intake",
+    "Isolated read-only database state sufficient for default product course-source queries/RPC",
+    "Per-item private scratch and restricted immutable output store"
+  ],
+  "initialization": "Admission verifies source/benchmark/lock/runtime/contract identities, destination ownership/permissions, allowed service identities and present mandatory inputs. Missing/unknown input fails before first item.",
+  "databaseReadiness": "No authorized isolated NBRR1 runtime database snapshot/endpoint attestation was found in inspected sources. Historical ingestion receipts are gold authority, not a provisioned runtime DB/embedding snapshot. Future authorized provisioning must bind runtime rows/vectors/course-source state independently; no production fallback.",
+  "statusForExecution": "BLOCKED_REQUIRED_RUNTIME_DATABASE_AND_DEADLINE_BINDINGS",
+  "localAuthoringCounters": {
+    "BENCHMARK_EXECUTIONS": 0,
+    "PROVIDER_CALLS": 0,
+    "PRODUCTION_CONTACT": 0
+  }
+}

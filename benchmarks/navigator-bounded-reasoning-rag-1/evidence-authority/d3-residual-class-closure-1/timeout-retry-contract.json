@@ -1,0 +1,87 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "TIMEOUT_RETRY",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "implementationAuthority": {
+    "deepseek": {
+      "source": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/navigation/deepseek-client.ts",
+        "sha256": "ad2394d901b87d8f8c7665b0ccc3d245f377f794a0b1f2776b1a7b5a7108ba2a",
+        "bytes": 5560
+      },
+      "perCallTimeoutMs": 45000,
+      "timerCoverage": "Fetch plus response.json until finally; request external AbortSignal is forwarded.",
+      "clientRetries": 0,
+      "fetchCatchClassification": "All caught fetch exceptions become ABORTED in pinned code; do not infer timeout versus network solely from that code."
+    },
+    "cohereQuery": {
+      "source": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/knowledge/embeddings/cohere-query.ts",
+        "sha256": "e0fdfd29ea1d6c5fb649880028e0d087fe16662245fe5e9818493c404b35932e",
+        "bytes": 6764
+      },
+      "perAttemptTimeoutMs": 60000,
+      "maxRetries": 2,
+      "maxAttempts": 3,
+      "retryStatuses": [
+        429,
+        500,
+        503,
+        504
+      ],
+      "retryKinds": [
+        "NETWORK_ERROR before response",
+        "TIMEOUT while waiting for fetch"
+      ],
+      "noRetryKinds": [
+        "External ABORTED",
+        "Non-retryable status",
+        "INVALID_RESPONSE/parse/vector failure"
+      ],
+      "delayFormula": "min(500*2**(attempts-1),8000) milliseconds; with default two retries delays500,1000. Preserve exact source behavior, including requestSignal cleanup in finally after retry wait.",
+      "scope": "Product-internal query retries; not harness retries or ingestion embed retry policy."
+    },
+    "supabase": {
+      "source": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/supabase/server/http-client.ts",
+        "sha256": "613471dc1954aebb71f19d24e8e211af5e2f78846b679124c624db66613b29a3",
+        "bytes": 6478
+      },
+      "perRequestTimeoutMs": 15000,
+      "retries": 0
+    },
+    "productGroundingRepair": {
+      "source": {
+        "path": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1/src/lib/navigation/conversation-response.ts",
+        "sha256": "63f1a1220190bdc9a9b4c437ec71f2b8c1577493fbe02293b7d1db362d5a81a5",
+        "bytes": 58870
+      },
+      "maxRepairCompositions": 1,
+      "maxAudits": 2,
+      "rule": "One semantic repair on same evidence is product behavior; not a harness retry. Preserve failed primary and both audit receipts where observable."
+    }
+  },
+  "outerItemDeadlineMs": null,
+  "outerDeadlineStatus": "UNKNOWN_NO_ACCEPTED_NUMERIC_AUTHORITY_FOUND; mandatory pre-run binding; no sum of provider maxima invented as item deadline.",
+  "adjudicationDeadlineMs": null,
+  "adjudicationDeadlineStatus": "Independent reviewer deadline/recovery policy requires explicit pre-run binding; no invented value.",
+  "harness": {
+    "maxRetries": 0,
+    "eligibility": "None under this candidate; preserve first invocation outcome. Confidence reruns and retry-until-green forbidden.",
+    "sourceRetryAccounting": "Network capture records each internal provider attempt including first failure, retry delay and terminal outcome; count separately from one item invocation.",
+    "timeoutAction": "At bound outer deadline controller aborts, terminates/reaps child, preserves partial bytes and records TIMEOUT even if product callback later produces bytes. Grace period numeric value also requires authority before execution.",
+    "stopOnCaptureFailure": true
+  },
+  "failureEvidence": "Append-only first-failure record survives internal retry success. Product retryable flag must not trigger a new item invocation.",
+  "unknownCriticalValues": [
+    "outerItemDeadlineMs",
+    "childTerminationGraceMs",
+    "independentAdjudicationDeadlineMs"
+  ]
+}

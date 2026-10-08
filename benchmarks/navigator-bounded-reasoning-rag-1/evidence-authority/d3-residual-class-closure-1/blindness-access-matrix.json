@@ -1,0 +1,133 @@
+{
+  "schemaVersion": "nbrr1-contract-candidate/1",
+  "kind": "BLINDNESS_ACCESS_MATRIX",
+  "act": "NAVIGATOR-BOUNDED-REASONING-RAG-1.POST-RECONCILIATION-TESTING-1.EXECUTION-CONTRACT-CLOSURE-1.CORR1.RESUME-1",
+  "status": "CANDIDATE_NOT_OWNER_ACCEPTED",
+  "sourceCommit": "a77c94742dd4f7fbbd3ee8f7feb8023a58051721",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "author": "CODEX SOL 6.1",
+  "independentlyVerified": false,
+  "ownerAccepted": false,
+  "roles": [
+    "CONTRACT_AUTHOR",
+    "RUNNER_IMPLEMENTATION_AUTHOR",
+    "EXECUTION_OPERATOR",
+    "SCORER_IMPLEMENTATION_AUTHOR",
+    "INDEPENDENT_SEMANTIC_ADJUDICATOR",
+    "INDEPENDENT_AUDITOR",
+    "OWNER"
+  ],
+  "resources": [
+    "OPEN_DEVELOPMENT",
+    "VISIBLE_REGRESSION",
+    "BLIND_SAFE_CORPUS_UNIVERSE",
+    "PROTECTED_QUESTION_AND_CONTEXT",
+    "PROTECTED_SELECTION_AND_GOLD",
+    "PROTECTED_REQUIRED_PROHIBITED_AND_TRAPS",
+    "PROTECTED_RAW_OUTPUTS",
+    "CREDENTIAL_VALUES",
+    "PUBLIC_AGGREGATE_RESULTS"
+  ],
+  "matrix": {
+    "CONTRACT_AUTHOR": {
+      "OPEN_DEVELOPMENT": "READ",
+      "VISIBLE_REGRESSION": "READ",
+      "BLIND_SAFE_CORPUS_UNIVERSE": "READ",
+      "PROTECTED_QUESTION_AND_CONTEXT": "DENY",
+      "PROTECTED_SELECTION_AND_GOLD": "DENY",
+      "PROTECTED_REQUIRED_PROHIBITED_AND_TRAPS": "DENY",
+      "PROTECTED_RAW_OUTPUTS": "DENY",
+      "CREDENTIAL_VALUES": "DENY",
+      "PUBLIC_AGGREGATE_RESULTS": "READ"
+    },
+    "RUNNER_IMPLEMENTATION_AUTHOR": {
+      "OPEN_DEVELOPMENT": "READ",
+      "VISIBLE_REGRESSION": "READ",
+      "BLIND_SAFE_CORPUS_UNIVERSE": "READ",
+      "PROTECTED_QUESTION_AND_CONTEXT": "DENY",
+      "PROTECTED_SELECTION_AND_GOLD": "DENY",
+      "PROTECTED_REQUIRED_PROHIBITED_AND_TRAPS": "DENY",
+      "PROTECTED_RAW_OUTPUTS": "DENY",
+      "CREDENTIAL_VALUES": "DENY",
+      "PUBLIC_AGGREGATE_RESULTS": "READ"
+    },
+    "EXECUTION_OPERATOR": {
+      "OPEN_DEVELOPMENT": "READ",
+      "VISIBLE_REGRESSION": "READ",
+      "BLIND_SAFE_CORPUS_UNIVERSE": "READ",
+      "PROTECTED_QUESTION_AND_CONTEXT": "Trusted execution intake/worker only after authorization; no interactive operator inspection",
+      "PROTECTED_SELECTION_AND_GOLD": "DENY",
+      "PROTECTED_REQUIRED_PROHIBITED_AND_TRAPS": "DENY",
+      "PROTECTED_RAW_OUTPUTS": "WRITE_ONLY_VIA_CAPTURE; no human inspection/tuning",
+      "CREDENTIAL_VALUES": "NO_HUMAN_EXPORT; scoped secret broker supplies values to sandbox only",
+      "PUBLIC_AGGREGATE_RESULTS": "READ"
+    },
+    "SCORER_IMPLEMENTATION_AUTHOR": {
+      "OPEN_DEVELOPMENT": "READ",
+      "VISIBLE_REGRESSION": "READ",
+      "BLIND_SAFE_CORPUS_UNIVERSE": "READ",
+      "PROTECTED_QUESTION_AND_CONTEXT": "DENY",
+      "PROTECTED_SELECTION_AND_GOLD": "DENY",
+      "PROTECTED_REQUIRED_PROHIBITED_AND_TRAPS": "DENY",
+      "PROTECTED_RAW_OUTPUTS": "DENY",
+      "CREDENTIAL_VALUES": "DENY",
+      "PUBLIC_AGGREGATE_RESULTS": "READ"
+    },
+    "INDEPENDENT_SEMANTIC_ADJUDICATOR": {
+      "OPEN_DEVELOPMENT": "READ",
+      "VISIBLE_REGRESSION": "READ",
+      "BLIND_SAFE_CORPUS_UNIVERSE": "READ",
+      "PROTECTED_QUESTION_AND_CONTEXT": "READ_AFTER_FINAL_RUN_FREEZE",
+      "PROTECTED_SELECTION_AND_GOLD": "READ_AFTER_FINAL_RUN_FREEZE",
+      "PROTECTED_REQUIRED_PROHIBITED_AND_TRAPS": "READ_AFTER_FINAL_RUN_FREEZE",
+      "PROTECTED_RAW_OUTPUTS": "READ_AFTER_FINAL_RUN_FREEZE",
+      "CREDENTIAL_VALUES": "DENY",
+      "PUBLIC_AGGREGATE_RESULTS": "READ"
+    },
+    "INDEPENDENT_AUDITOR": {
+      "OPEN_DEVELOPMENT": "READ",
+      "VISIBLE_REGRESSION": "READ",
+      "BLIND_SAFE_CORPUS_UNIVERSE": "READ",
+      "PROTECTED_QUESTION_AND_CONTEXT": "READ_AFTER_FINAL_RUN_FREEZE",
+      "PROTECTED_SELECTION_AND_GOLD": "READ_AFTER_FINAL_RUN_FREEZE",
+      "PROTECTED_REQUIRED_PROHIBITED_AND_TRAPS": "READ_AFTER_FINAL_RUN_FREEZE",
+      "PROTECTED_RAW_OUTPUTS": "READ_AFTER_FINAL_RUN_FREEZE",
+      "CREDENTIAL_VALUES": "DENY",
+      "PUBLIC_AGGREGATE_RESULTS": "READ"
+    },
+    "OWNER": {
+      "OPEN_DEVELOPMENT": "READ",
+      "VISIBLE_REGRESSION": "READ",
+      "BLIND_SAFE_CORPUS_UNIVERSE": "READ",
+      "PROTECTED_QUESTION_AND_CONTEXT": "OWNER_CONTROL",
+      "PROTECTED_SELECTION_AND_GOLD": "OWNER_CONTROL",
+      "PROTECTED_REQUIRED_PROHIBITED_AND_TRAPS": "OWNER_CONTROL",
+      "PROTECTED_RAW_OUTPUTS": "OWNER_CONTROL",
+      "CREDENTIAL_VALUES": "OWNER_CONTROL_NO_PUBLICATION",
+      "PUBLIC_AGGREGATE_RESULTS": "READ"
+    }
+  },
+  "stages": [
+    "AUTHORING",
+    "OPEN_IMPLEMENTATION_AND_VISIBLE_REGRESSION",
+    "PRIVILEGED_ADMISSION",
+    "FINAL_BLIND_EXECUTION",
+    "RAW_OUTPUT_FREEZE",
+    "INDEPENDENT_SCORING_AND_AUDIT",
+    "OWNER_ACCEPTANCE"
+  ],
+  "mechanicalControls": [
+    "Implementation and D3 author sandbox receives source bundle with protected benchmark files omitted. Merely providing the full repo read-only does not protect reading.",
+    "Trusted intake under separate account/container reads mixed adversarial file, emits visible fixtures to authors and protected question/context-only per-item projection to worker; never derive visibility from numeric IDs.",
+    "Worker has no gold file, benchmark-selection mapping, protected scorer store, source-history copies containing protected benchmark, user home or alternate checkout mount.",
+    "D3 input is authorized-evidence-universe plus exact passage bytes, stripped of databaseIdentityAuthority/referencePaths/historicalChunkIdBindingEvidence and all item-selection fields; no gold/question/proposition/trap input.",
+    "Question/context tokens encrypted or owner-only filesystem permissions; raw protected outputs/receipts written to restricted capture channel with append-only sealing. Operators and implementation authors cannot read back.",
+    "Independent semantic reviewer receives restricted gold/evidence/raw packages only after product output freeze; corpus evidence remains data, not instructions.",
+    "Audit least-privilege mounts/ACLs before admission; enforce OS/network separation. Log access receipts without sensitive content.",
+    "Implementation authors may not judge final protected D4 support; final adjudicator identity and independence attested."
+  ],
+  "currentInfrastructureReality": "Frozen benchmark files in repository are plaintext; schema/report explicitly states no enforced access controls. This author has full filesystem capability but did not parse protected files. Future enforcement must be provisioned; no claim current repository enforces blindness.",
+  "historicalReports": "Accepted IV reports may contain protected identity projections; keep them out of D3 author input. This act read reports only for authority/locator procedure; no benchmark protected item selection was used for grouping.",
+  "splitMembershipOutput": "49/50/24 and10/14 counts public. Restricted controller holds exact id/visibility mapping; D3 candidate map has no item IDs.",
+  "violation": "Stop final run, record contamination, preserve evidence; no silent clean-run assertion or hidden rerun."
+}
