@@ -1,0 +1,2139 @@
+{
+  "act": "NBRR1.D3-OPTION-P-D3COORD-FIELD-MAPPING-1.CONTRACT-1",
+  "protectedGoldUsed": false,
+  "schemaVersion": "nbrr1-d3coord-field-mapping-vectors/1",
+  "status": "CANDIDATE_PENDING_INDEPENDENT_IV",
+  "syntheticOnly": true,
+  "vectorCount": 28,
+  "vectors": [
+    {
+      "caseNumber": 1,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 1,
+        "conditions": [],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": 1,
+        "failureCode": null,
+        "groupIdentityCount": 1,
+        "numerator": 1,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 1,
+        "reasons": [],
+        "score": "1/1",
+        "unitKeys": [
+          {
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-1",
+            "unitKey": "1169297f75e171b85e2b9d92186e4a494490331f915713190f8dbb20a1c69a60",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "EQUIVALENCE_GROUP",
+              "polarity": "POL-G",
+              "propositionIdentity": "GROUP-1",
+              "qualifications": [
+                "QUAL-G"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": "REL-G",
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-G"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": false,
+      "id": "V01",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-G",
+            "courseId": "COURSE-A",
+            "decision": "EQUIVALENT_SCOPED",
+            "groups": [
+              {
+                "accepted": true,
+                "countingWeight": 1,
+                "courseId": "COURSE-A",
+                "groupId": "GROUP-1",
+                "materialSubject": "SUBJ-G",
+                "polarity": "POL-G",
+                "qualifications": "QUAL-G",
+                "relationPredicate": "REL-G"
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "An accepted group contribution uses groupId and emits no D3COORD.",
+      "sourceReference": "synthetic EQUIVALENT_SCOPED",
+      "title": "Group identity"
+    },
+    {
+      "caseNumber": 2,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 2,
+        "conditions": [],
+        "coordinates": [
+          {
+            "anchorId": "ANCH-S",
+            "coordinateKind": "TYPE_SUBJECT",
+            "courseId": "COURSE-A",
+            "polarity": "AS_STATED_WITH_TYPE_CONTEXT",
+            "qualifications": [
+              "QUAL-SHARED-1"
+            ],
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": "REL-S",
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-1"
+          },
+          {
+            "anchorId": "ANCH-S",
+            "coordinateKind": "TYPE_SUBJECT",
+            "courseId": "COURSE-A",
+            "polarity": "AS_STATED_WITH_TYPE_CONTEXT",
+            "qualifications": [
+              "QUAL-SHARED-1"
+            ],
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": "REL-S",
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-2"
+          }
+        ],
+        "d3coordCount": 2,
+        "denominator": 2,
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": 2,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 2,
+        "reasons": [],
+        "score": "2/2",
+        "unitKeys": [
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-5520d509c5c418bcbb2a69bb22bd96dd138e20dbac92cf008885ad44745f79bb",
+            "unitKey": "40929e92205bda313de7969ebc83c9dc391b944eab854bcbaa853cd2e10e48f5",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": "AS_STATED_WITH_TYPE_CONTEXT",
+              "propositionIdentity": "D3COORD-5520d509c5c418bcbb2a69bb22bd96dd138e20dbac92cf008885ad44745f79bb",
+              "qualifications": [
+                "QUAL-SHARED-1"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": "REL-S",
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-1"
+            },
+            "weight": 1
+          },
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-b59ebae076b17ad2ebc15325aa5b46cc204a0ca9a5b7950ae68548e353d08961",
+            "unitKey": "8118bf63bfc3c34f1a8dbdfc8265d305b27fb8d651249da251d8c502c6b2c1ea",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": "AS_STATED_WITH_TYPE_CONTEXT",
+              "propositionIdentity": "D3COORD-b59ebae076b17ad2ebc15325aa5b46cc204a0ca9a5b7950ae68548e353d08961",
+              "qualifications": [
+                "QUAL-SHARED-1"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": "REL-S",
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-2"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": false,
+      "id": "V02",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-S",
+            "carriers": [
+              {
+                "bindingSubject": null,
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              },
+              {
+                "bindingSubject": null,
+                "memberId": "M2",
+                "typeSubjectContextSubject": "SUBJ-1"
+              },
+              {
+                "bindingSubject": null,
+                "memberId": "M3",
+                "typeSubjectContextSubject": "SUBJ-2"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "SUBJECT_SCOPED_DISTINCT",
+            "materialSubject": [
+              "SUBJ-2",
+              "SUBJ-1"
+            ],
+            "polarity": "AS_STATED_WITH_TYPE_CONTEXT",
+            "qualifications": "QUAL-SHARED-1",
+            "relationPredicate": "REL-S",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Each published subject token is one TYPE_SUBJECT coordinate. A repeated token collapses. The array is not one subject.",
+      "sourceReference": "synthetic SUBJECT_SCOPED_DISTINCT",
+      "title": "Subject-list split"
+    },
+    {
+      "caseNumber": 3,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 2,
+        "conditions": [],
+        "coordinates": [
+          {
+            "anchorId": "ANCH-L",
+            "coordinateKind": "LOCAL_SUBJECT",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": null,
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-1"
+          },
+          {
+            "anchorId": "ANCH-L",
+            "coordinateKind": "LOCAL_SUBJECT",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": null,
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-2"
+          }
+        ],
+        "d3coordCount": 2,
+        "denominator": 2,
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": 2,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 2,
+        "reasons": [],
+        "score": "2/2",
+        "unitKeys": [
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-149d3edf5abfd15938bb6ceb0428d1c4f70e6b0108cb42b73d87d61e4363ace2",
+            "unitKey": "b53f762617b7e737526bb07edcaba394fbc8dbfa02be8f39ca2d9cbac050b3d9",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-149d3edf5abfd15938bb6ceb0428d1c4f70e6b0108cb42b73d87d61e4363ace2",
+              "qualifications": null,
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-2"
+            },
+            "weight": 1
+          },
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-747ea25d27488d46451cf136bba96c26db6917c18d1c15bcd2921080be743a0b",
+            "unitKey": "db1ec243cebe68b6a2ae68ef3ed4d3cf91eb88683d9c1786d5b820c241e9a915",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-747ea25d27488d46451cf136bba96c26db6917c18d1c15bcd2921080be743a0b",
+              "qualifications": null,
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-1"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": false,
+      "id": "V03",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-L",
+            "carriers": [
+              {
+                "bindingSubject": "SUBJ-1",
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              },
+              {
+                "bindingSubject": "SUBJ-2",
+                "memberId": "M2",
+                "typeSubjectContextSubject": null
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Binding subject is the source. A null typeSubjectContext does not block a single-token subject. Distinct tokens stay distinct.",
+      "sourceReference": "synthetic LOCAL_SUBJECT_SCOPED_DISTINCT",
+      "title": "Local-subject per-carrier resolution"
+    },
+    {
+      "caseNumber": 4,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 2,
+        "conditions": [],
+        "coordinates": [
+          {
+            "anchorId": "ANCH-Q",
+            "coordinateKind": "QUALIFICATION",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": [
+              "QUAL-TOKEN-1"
+            ],
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-1"
+          },
+          {
+            "anchorId": "ANCH-Q",
+            "coordinateKind": "QUALIFICATION",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": [
+              "QUAL-TOKEN-2"
+            ],
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "UNKNOWN"
+          }
+        ],
+        "d3coordCount": 2,
+        "denominator": 2,
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": 2,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 2,
+        "reasons": [],
+        "score": "2/2",
+        "unitKeys": [
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-e85bb4ac289a86e1792583ef65e1b79558fa84e0f440ae098287474d1d468f2a",
+            "unitKey": "0b4fefc05d56f453ffe483ad85643f4feb905e546894bd8319dbf620958693dd",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-e85bb4ac289a86e1792583ef65e1b79558fa84e0f440ae098287474d1d468f2a",
+              "qualifications": [
+                "QUAL-TOKEN-2"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "UNKNOWN"
+            },
+            "weight": 1
+          },
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-eac0cb62086ff3ce7ffb792cc36b34fe5dd9f0154bdad371dfd06ef3c4f54e7b",
+            "unitKey": "8c2fd837c3f74646117494bf4b5c0bbf61f3ba32ca763a31ef6963a4c09978cb",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-eac0cb62086ff3ce7ffb792cc36b34fe5dd9f0154bdad371dfd06ef3c4f54e7b",
+              "qualifications": [
+                "QUAL-TOKEN-1"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-1"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": false,
+      "id": "V04",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-Q",
+            "courseId": "COURSE-A",
+            "decision": "QUALIFICATION_SCOPED_DISTINCT",
+            "qualifiedPropositions": [
+              {
+                "memberId": "M1",
+                "predicateWitnessText": "WITNESS-PREDICATE-DO-NOT-HASH",
+                "qualification": "QUAL-TOKEN-1",
+                "qualificationWitnessText": "WITNESS-QUALIFICATION-DO-NOT-HASH",
+                "subject": "SUBJ-1",
+                "typeInferencePermitted": true
+              },
+              {
+                "memberId": "M2",
+                "predicateWitnessText": "WITNESS-PREDICATE-DO-NOT-HASH",
+                "qualification": "QUAL-TOKEN-2",
+                "qualificationWitnessText": "WITNESS-QUALIFICATION-DO-NOT-HASH",
+                "subject": "UNKNOWN",
+                "typeInferencePermitted": false
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Each qualified proposition is one QUALIFICATION coordinate. UNKNOWN stays UNKNOWN. Witness text stays outside the payload.",
+      "sourceReference": "synthetic catalogue 47 shape",
+      "title": "Qualification split"
+    },
+    {
+      "caseNumber": 5,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 1,
+        "conditions": [],
+        "coordinates": [
+          {
+            "anchorId": "ANCH-R",
+            "coordinateKind": "LOCAL_SUBJECT",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": null,
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-1"
+          }
+        ],
+        "d3coordCount": 1,
+        "denominator": 1,
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": 1,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 1,
+        "reasons": [],
+        "score": "1/1",
+        "unitKeys": [
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-16e7d818ecd6d1fc979f8ab8703d54ed8434dfc3dbd151b9dc15e330e6d9cea0",
+            "unitKey": "7f4b16e8acd1b6bb489e1dad8b1db483bcd9644f3b75e1cab4188ac19efb0ad1",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-16e7d818ecd6d1fc979f8ab8703d54ed8434dfc3dbd151b9dc15e330e6d9cea0",
+              "qualifications": null,
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-1"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": false,
+      "id": "V05",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-R",
+            "carriers": [
+              {
+                "bindingSubject": "SUBJ-1",
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              },
+              {
+                "bindingSubject": "SUBJ-1",
+                "memberId": "M2",
+                "typeSubjectContextSubject": "SUBJ-1"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Two carriers of one anchor, course, and subject token produce one coordinate.",
+      "sourceReference": "synthetic repeated local subject",
+      "title": "Repeated proposition"
+    },
+    {
+      "caseNumber": 6,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 2,
+        "conditions": [],
+        "coordinates": [
+          {
+            "anchorId": "ANCH-Q2",
+            "coordinateKind": "QUALIFICATION",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": [
+              "QUAL-TOKEN-1"
+            ],
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-1"
+          },
+          {
+            "anchorId": "ANCH-Q2",
+            "coordinateKind": "QUALIFICATION",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": [
+              "QUAL-TOKEN-2"
+            ],
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-2"
+          }
+        ],
+        "d3coordCount": 2,
+        "denominator": 2,
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": 2,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 2,
+        "reasons": [],
+        "score": "2/2",
+        "unitKeys": [
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-7b0b50237dcc18af1045bdfa53298d49e0a1285007f1ea241bd20985b3e1b0a8",
+            "unitKey": "66c48c2148e57c09862181f036880ce2c3fdec58a03d450b632159cc450634a9",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-7b0b50237dcc18af1045bdfa53298d49e0a1285007f1ea241bd20985b3e1b0a8",
+              "qualifications": [
+                "QUAL-TOKEN-1"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-1"
+            },
+            "weight": 1
+          },
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-a976e22e71cfe3cfac71287c224315598ace527518f7c64dfb73a79b811aba8d",
+            "unitKey": "d82372e218c977db016153c25c0496094350e85c4a80fb840903daa6aa129da0",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-a976e22e71cfe3cfac71287c224315598ace527518f7c64dfb73a79b811aba8d",
+              "qualifications": [
+                "QUAL-TOKEN-2"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-2"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": false,
+      "id": "V06",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-Q2",
+            "courseId": "COURSE-A",
+            "decision": "QUALIFICATION_SCOPED_DISTINCT",
+            "qualifiedPropositions": [
+              {
+                "memberId": "M1",
+                "qualification": "QUAL-TOKEN-1",
+                "subject": "SUBJ-1",
+                "typeInferencePermitted": true
+              },
+              {
+                "memberId": "M1",
+                "qualification": "QUAL-TOKEN-2",
+                "subject": "SUBJ-2",
+                "typeInferencePermitted": false
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "One carrier can publish two qualified propositions. They remain two coordinates.",
+      "sourceReference": "synthetic one-carrier qualification pair",
+      "title": "Two propositions in one carrier"
+    },
+    {
+      "caseNumber": 7,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "MISSING_DISCRIMINATOR"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": false,
+      "id": "V07",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "courseId": "COURSE-A",
+            "decision": null,
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "No group, subject token, or qualification produces no coordinate.",
+      "sourceReference": "synthetic unresolved contribution",
+      "title": "Missing discriminator"
+    },
+    {
+      "caseNumber": 8,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "CONFLICTING_SUBJECT_PATHS"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": false,
+      "id": "V08",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-68",
+            "carriers": [
+              {
+                "bindingSubject": "ENTP",
+                "memberId": "M1",
+                "typeSubjectContextSubject": "ENTP"
+              },
+              {
+                "bindingSubject": "ENFP",
+                "memberId": "M2",
+                "typeSubjectContextSubject": "ENTP"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "frozenPattern": "catalogue 68",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Binding subject ENFP and typeSubjectContext subject ENTP fail the whole item. The agreeing ENTP carrier is not emitted.",
+      "sourceReference": "catalogue 68 pattern; synthetic member ids",
+      "title": "Conflicting subject paths"
+    },
+    {
+      "caseNumber": 9,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 1,
+        "conditions": [],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": 1,
+        "failureCode": null,
+        "groupIdentityCount": 1,
+        "numerator": 1,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 1,
+        "reasons": [],
+        "score": "1/1",
+        "unitKeys": [
+          {
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-2",
+            "unitKey": "2cc23af3cd01347728f6e4537ac60921ba68f0be70072a3b917b4267d7289421",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "EQUIVALENCE_GROUP",
+              "polarity": null,
+              "propositionIdentity": "GROUP-2",
+              "qualifications": null,
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": "SCOPE-1",
+              "subject": null
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": false,
+      "id": "V09",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-QNT",
+            "courseId": "COURSE-A",
+            "decision": "EQUIVALENT_SCOPED",
+            "groups": [
+              {
+                "accepted": true,
+                "countingWeight": 1,
+                "courseId": "COURSE-A",
+                "groupId": "GROUP-2",
+                "scopeId": "SCOPE-1"
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Absent quantification becomes NOT_STATED_ON_ACCEPTED_RECORD. Absent group semantic fields stay null. The group id still identifies the unit.",
+      "sourceReference": "synthetic group without quantification",
+      "title": "Missing quantification"
+    },
+    {
+      "caseNumber": 10,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "MULTI_TOKEN_HEADING_PROSE"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": false,
+      "id": "V10",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "D3ANCH-5df251cda236184cb35bd620964710d885ba64a27109b2862b456a1edc3e223f",
+            "carriers": [
+              {
+                "bindingSubject": "CLAUSE ALPHA BETA",
+                "memberId": "M1",
+                "typeSubjectContextSubject": null
+              },
+              {
+                "bindingSubject": "CLAUSE ALPHA BETA",
+                "memberId": "M2",
+                "typeSubjectContextSubject": null
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "frozenPattern": "catalogue 25",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "A multi-token heading clause in the subject slot is not hashed. Catalogue 25 stays unconsumable.",
+      "sourceReference": "D3ANCH-5df251cda236184cb35bd620964710d885ba64a27109b2862b456a1edc3e223f",
+      "title": "Prose-only subject"
+    },
+    {
+      "caseNumber": 11,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 2,
+        "conditions": [],
+        "coordinates": [
+          {
+            "anchorId": "ANCH-CA",
+            "coordinateKind": "LOCAL_SUBJECT",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": null,
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-1"
+          },
+          {
+            "anchorId": "ANCH-CB",
+            "coordinateKind": "LOCAL_SUBJECT",
+            "courseId": "COURSE-B",
+            "polarity": null,
+            "qualifications": null,
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "SUBJ-1"
+          }
+        ],
+        "d3coordCount": 2,
+        "denominator": 2,
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": 2,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 2,
+        "reasons": [],
+        "score": "2/2",
+        "unitKeys": [
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-2fb9cf4467a0bf810b8f218028d30f7fe778667b817db494ec6721a5968ec033",
+            "unitKey": "962915705cbeaa6310e67acd35daccb5243f0d92727afb23ece1143fe2451998",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-2fb9cf4467a0bf810b8f218028d30f7fe778667b817db494ec6721a5968ec033",
+              "qualifications": null,
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-1"
+            },
+            "weight": 1
+          },
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-261363bda22e89b6dca86f12da760c441c6efda861baee99fae95e28798a011c",
+            "unitKey": "ec4c9f8aa6c9ecfbac1fb972ef1d29d8fdb00029bcadf93641d935a389fec740",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-B",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-261363bda22e89b6dca86f12da760c441c6efda861baee99fae95e28798a011c",
+              "qualifications": null,
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "SUBJ-1"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": false,
+      "id": "V11",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-CA",
+            "carriers": [
+              {
+                "bindingSubject": "SUBJ-1",
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "semanticCourseId": "COURSE-A"
+          },
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-CB",
+            "carriers": [
+              {
+                "bindingSubject": "SUBJ-1",
+                "memberId": "M2",
+                "typeSubjectContextSubject": "SUBJ-1"
+              }
+            ],
+            "courseId": "COURSE-B",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "semanticCourseId": "COURSE-B"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "courseId is inside the coordinate and the unit key. The same token in two courses is two coordinates.",
+      "sourceReference": "synthetic two-course pair",
+      "title": "Same nominal subject in different courses"
+    },
+    {
+      "caseNumber": 12,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "UNKNOWN_GROUP"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": false,
+      "id": "V12A",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-U",
+            "courseId": "COURSE-A",
+            "decision": "EQUIVALENT_SCOPED",
+            "groups": [
+              {
+                "accepted": false,
+                "countingWeight": 1,
+                "courseId": "COURSE-A",
+                "groupId": "GROUP-NOT-PUBLISHED",
+                "materialSubject": "SUBJ-G",
+                "polarity": "POL-G",
+                "qualifications": "QUAL-G",
+                "relationPredicate": "REL-G"
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "A group id outside the frozen 47 is not a coordinate and is not created.",
+      "sourceReference": "synthetic unknown group",
+      "title": "Unknown group"
+    },
+    {
+      "caseNumber": 12,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "UNKNOWN_ANCHOR"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V12B",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": false,
+            "anchorId": "ANCHOR-NOT-PUBLISHED",
+            "carriers": [
+              {
+                "bindingSubject": "SUBJ-1",
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "An anchor outside the frozen 85 is not given a D3COORD from its token.",
+      "sourceReference": "synthetic unknown anchor",
+      "title": "Unknown anchor"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 2,
+        "conditions": [],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": 2,
+        "failureCode": null,
+        "groupIdentityCount": 2,
+        "numerator": 2,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 2,
+        "reasons": [],
+        "score": "2/2",
+        "unitKeys": [
+          {
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-CELL-1",
+            "unitKey": "42e126455908c0ac521112a1bf13263bcc409acc7c6c22997b427627281a74fa",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "EQUIVALENCE_GROUP",
+              "polarity": "POL-G",
+              "propositionIdentity": "GROUP-CELL-1",
+              "qualifications": [
+                "QUAL-G"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": "REL-G",
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "CELL-1"
+            },
+            "weight": 1
+          },
+          {
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-CELL-2",
+            "unitKey": "f456071606d9bb7325b91ae207fc6239c399eea018c8fa7b45a0a60ce1c2214a",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "EQUIVALENCE_GROUP",
+              "polarity": "POL-G",
+              "propositionIdentity": "GROUP-CELL-2",
+              "qualifications": [
+                "QUAL-G"
+              ],
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": "REL-G",
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "CELL-2"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": true,
+      "id": "V13",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-C",
+            "atomicCells": [
+              {
+                "groupId": "GROUP-CELL-1",
+                "subject": "CELL-1"
+              },
+              {
+                "groupId": "GROUP-CELL-2",
+                "subject": "CELL-2"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "ATOMIC_COMPARISON_DECOMPOSITION",
+            "groups": [
+              {
+                "accepted": true,
+                "countingWeight": 1,
+                "courseId": "COURSE-A",
+                "groupId": "GROUP-CELL-1",
+                "materialSubject": "CELL-1",
+                "polarity": "POL-G",
+                "qualifications": "QUAL-G",
+                "relationPredicate": "REL-G"
+              },
+              {
+                "accepted": true,
+                "countingWeight": 1,
+                "courseId": "COURSE-A",
+                "groupId": "GROUP-CELL-2",
+                "materialSubject": "CELL-2",
+                "polarity": "POL-G",
+                "qualifications": "QUAL-G",
+                "relationPredicate": "REL-G"
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Two accepted comparison groups produce two group identities and zero D3COORD values.",
+      "sourceReference": "synthetic ATOMIC_COMPARISON_DECOMPOSITION",
+      "title": "Group precedence over atomic cells"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 1,
+        "conditions": [],
+        "coordinates": [
+          {
+            "anchorId": "ANCH-U2",
+            "coordinateKind": "LOCAL_SUBJECT",
+            "courseId": "COURSE-A",
+            "polarity": null,
+            "qualifications": null,
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "relationPredicate": null,
+            "schema": "nbrr1-d3-accepted-distinct-coordinate/1",
+            "subject": "UNKNOWN"
+          }
+        ],
+        "d3coordCount": 1,
+        "denominator": 1,
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": 1,
+        "outcome": "SCORED",
+        "precedenceUnsettled": false,
+        "quotientEmitted": true,
+        "rCardinality": 1,
+        "reasons": [],
+        "score": "1/1",
+        "unitKeys": [
+          {
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "D3COORD-3b151796fc325d89d49d211f71c69956de696dc43f33b4337fe0ea86b4aa7ba9",
+            "unitKey": "a5e30d0bc26666b1843a2768211434ac55969a506c061b356c5e8e3d8e1273d2",
+            "unitPayload": {
+              "benchmarkIdentity": "BENCH-SYN",
+              "countingContextId": "CTX-SYN-1",
+              "courseId": "COURSE-A",
+              "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+              "polarity": null,
+              "propositionIdentity": "D3COORD-3b151796fc325d89d49d211f71c69956de696dc43f33b4337fe0ea86b4aa7ba9",
+              "qualifications": null,
+              "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+              "relationPredicate": null,
+              "schema": "nbrr1-d3-option-p-unit/1",
+              "scopeId": null,
+              "subject": "UNKNOWN"
+            },
+            "weight": 1
+          }
+        ]
+      },
+      "extension": true,
+      "id": "V14",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-U2",
+            "carriers": [
+              {
+                "bindingSubject": "UNKNOWN",
+                "memberId": "M1",
+                "typeSubjectContextSubject": null
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "A null typeSubjectContext leaves a published UNKNOWN token unchanged.",
+      "sourceReference": "synthetic UNKNOWN local subject",
+      "title": "Null context and literal UNKNOWN"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_MAP_SCOPE_AMBIGUOUS"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "COURSE_MISMATCH"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_MAP_SCOPE_AMBIGUOUS",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V15",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-CM",
+            "carriers": [
+              {
+                "bindingSubject": null,
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "SUBJECT_SCOPED_DISTINCT",
+            "materialSubject": [
+              "SUBJ-1"
+            ],
+            "polarity": "AS_STATED_WITH_TYPE_CONTEXT",
+            "qualifications": "QUAL-SHARED-1",
+            "relationPredicate": "REL-S",
+            "semanticCourseId": "COURSE-B"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "anchor.courseId and semanticAnalysis.courseId must be equal. Neither path is preferred.",
+      "sourceReference": "synthetic course mismatch",
+      "title": "Course mismatch"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_MAP_SCOPE_AMBIGUOUS"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "SUBJECT_INVENTORY_DISCREPANCY"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_MAP_SCOPE_AMBIGUOUS",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V16",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-D",
+            "carriers": [
+              {
+                "bindingSubject": null,
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "SUBJECT_SCOPED_DISTINCT",
+            "materialSubject": [
+              "SUBJ-1",
+              "SUBJ-2"
+            ],
+            "polarity": "AS_STATED_WITH_TYPE_CONTEXT",
+            "qualifications": "QUAL-SHARED-1",
+            "relationPredicate": "REL-S",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "The subject list and the carrier subject set disagree. The whole item fails. SUBJ-1 is not emitted alone.",
+      "sourceReference": "synthetic inventory discrepancy; none observed on the frozen 20",
+      "title": "Subject inventory discrepancy"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_ACCEPTED_AUTHORITY_CONFLICT"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "SUBJECT_LIST_COLLAPSE"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          "SUBJECT_LIST_COLLAPSED"
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V17",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "collapseSubjectList": true,
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-S",
+            "carriers": [
+              {
+                "bindingSubject": null,
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              },
+              {
+                "bindingSubject": null,
+                "memberId": "M2",
+                "typeSubjectContextSubject": "SUBJ-2"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "SUBJECT_SCOPED_DISTINCT",
+            "materialSubject": [
+              "SUBJ-1",
+              "SUBJ-2"
+            ],
+            "polarity": "AS_STATED_WITH_TYPE_CONTEXT",
+            "qualifications": "QUAL-SHARED-1",
+            "relationPredicate": "REL-S",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Collapsing a subject array into one coordinate is an authority conflict.",
+      "sourceReference": "synthetic prohibited collapse",
+      "title": "Subject-list collapse attempt"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_QUALIFICATION_SCOPE_COLLAPSE"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "QUALIFICATION_COLLAPSE"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_QUALIFICATION_SCOPE_COLLAPSE",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V18",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "collapseQualifications": true,
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-Q",
+            "courseId": "COURSE-A",
+            "decision": "QUALIFICATION_SCOPED_DISTINCT",
+            "qualifiedPropositions": [
+              {
+                "memberId": "M1",
+                "qualification": "QUAL-TOKEN-1",
+                "subject": "SUBJ-1",
+                "typeInferencePermitted": true
+              },
+              {
+                "memberId": "M2",
+                "qualification": "QUAL-TOKEN-2",
+                "subject": "UNKNOWN",
+                "typeInferencePermitted": false
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Collapsing two qualified propositions is D3_QUALIFICATION_SCOPE_COLLAPSE.",
+      "sourceReference": "synthetic prohibited qualification collapse",
+      "title": "Qualification collapse attempt"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_ACCEPTED_AUTHORITY_CONFLICT"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "GROUP_AND_COORDINATE_DOUBLE_COUNT"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V19",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-G",
+            "courseId": "COURSE-A",
+            "decision": "EQUIVALENT_SCOPED",
+            "groups": [
+              {
+                "accepted": true,
+                "countingWeight": 1,
+                "courseId": "COURSE-A",
+                "groupId": "GROUP-1",
+                "materialSubject": "SUBJ-G",
+                "polarity": "POL-G",
+                "qualifications": "QUAL-G",
+                "relationPredicate": "REL-G"
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1",
+        "demandAdditionalCoordinate": true
+      },
+      "rule": "A demand to add a D3COORD beside an accepted group identity fails the item. No partial group key is returned.",
+      "sourceReference": "synthetic double count",
+      "title": "Group and coordinate double count"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_SOURCE_TYPE_LABEL_CONFLICT"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "ENFP_ENTP_ATTRIBUTION_CONFLICT"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_SOURCE_TYPE_LABEL_CONFLICT",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V20",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-SL",
+            "courseId": "COURSE-A",
+            "decision": "SOURCE_LABEL_CONFLICT",
+            "disputedSubjects": [
+              "ENTP",
+              "ENFP"
+            ],
+            "groupAcrossConflictPermitted": false,
+            "semanticCourseId": "COURSE-A",
+            "unrepaired": true
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "The five SOURCE_LABEL_CONFLICT anchors emit no coordinate from disputedSubjects.",
+      "sourceReference": "synthetic ENFP/ENTP attribution conflict",
+      "title": "Source-label attribution conflict"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [],
+        "cCardinality": 0,
+        "conditions": [],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": 0,
+        "diagnostic": "EMPTY_DENOMINATOR",
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": 0,
+        "outcome": "NOT_APPLICABLE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V21",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-N",
+            "courseId": "COURSE-A",
+            "creditNonmaterial": false,
+            "decision": "BIBLIOGRAPHIC_TITLE_ONLY",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "A nonmaterial decision emits no coordinate. With no other material and no credit demand, C is empty.",
+      "sourceReference": "synthetic nonmaterial; the same rule covers all four nonmaterial decisions",
+      "title": "Nonmaterial exclusion"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_NONMATERIAL_INDEPENDENT_CREDIT"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "NONMATERIAL_INDEPENDENT_CREDIT"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_NONMATERIAL_INDEPENDENT_CREDIT",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V22",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-N2",
+            "courseId": "COURSE-A",
+            "creditNonmaterial": true,
+            "decision": "NONMATERIAL_EDITORIAL",
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Crediting a nonmaterial span as a unit fails before a quotient.",
+      "sourceReference": "synthetic nonmaterial credit",
+      "title": "Nonmaterial credited as a unit"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_ACCEPTED_AUTHORITY_CONFLICT"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "PASSAGE_SINGLETON"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          "PASSAGE_SINGLETON_FALLBACK"
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V23",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-G",
+            "courseId": "COURSE-A",
+            "decision": "EQUIVALENT_SCOPED",
+            "groups": [
+              {
+                "accepted": true,
+                "countingWeight": 1,
+                "courseId": "COURSE-A",
+                "groupId": "GROUP-1",
+                "materialSubject": "SUBJ-G",
+                "polarity": "POL-G",
+                "qualifications": "QUAL-G",
+                "relationPredicate": "REL-G"
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1",
+        "passageSingletonAttempt": true
+      },
+      "rule": "A passage id is not a fallback key.",
+      "sourceReference": "synthetic prohibited singleton",
+      "title": "Passage singleton attempt"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_ACCEPTED_AUTHORITY_CONFLICT"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "VECTOR_KEY"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          "VECTOR_KEY_FALLBACK"
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V24",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-G",
+            "courseId": "COURSE-A",
+            "decision": "EQUIVALENT_SCOPED",
+            "groups": [
+              {
+                "accepted": true,
+                "countingWeight": 1,
+                "courseId": "COURSE-A",
+                "groupId": "GROUP-1",
+                "materialSubject": "SUBJ-G",
+                "polarity": "POL-G",
+                "qualifications": "QUAL-G",
+                "relationPredicate": "REL-G"
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1",
+        "vectorKeyAttempt": true
+      },
+      "rule": "A v2 or v3 contribution vector is not a fallback key.",
+      "sourceReference": "synthetic prohibited vector key",
+      "title": "Contribution-vector attempt"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_ACCEPTED_AUTHORITY_CONFLICT"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "WITNESS_TEXT_USED_AS_IDENTITY"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V25",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-Q",
+            "courseId": "COURSE-A",
+            "decision": "QUALIFICATION_SCOPED_DISTINCT",
+            "qualifiedPropositions": [
+              {
+                "memberId": "M1",
+                "predicateWitnessText": "WITNESS-PREDICATE-DO-NOT-HASH",
+                "qualification": "QUAL-TOKEN-1",
+                "subject": "SUBJ-1",
+                "typeInferencePermitted": true
+              }
+            ],
+            "semanticCourseId": "COURSE-A"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1",
+        "useWitnessAsRelation": true
+      },
+      "rule": "predicateWitness.text and qualificationWitness.text do not become relationPredicate.",
+      "sourceReference": "synthetic witness exclusion",
+      "title": "Witness text used as identity"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED",
+          "D3_MAP_SCOPE_AMBIGUOUS"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "COURSE_MISMATCH",
+          "CONFLICTING_SUBJECT_PATHS"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": null,
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": true,
+        "quotientEmitted": false,
+        "reasons": [
+          null,
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V26",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-X",
+            "carriers": [
+              {
+                "bindingSubject": "ENFP",
+                "memberId": "M1",
+                "typeSubjectContextSubject": "ENTP"
+              }
+            ],
+            "courseId": "COURSE-A",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "semanticCourseId": "COURSE-B"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "Course mismatch and a subject-path conflict both apply. No winner is selected. No quotient is emitted.",
+      "sourceReference": "synthetic simultaneous defects",
+      "title": "Two simultaneous mapping defects"
+    },
+    {
+      "caseNumber": null,
+      "expected": {
+        "applicableFailureCodes": [
+          "D3_SCOPE_MISSING"
+        ],
+        "cCardinality": null,
+        "conditions": [
+          "UNAUTHORIZED_COURSE"
+        ],
+        "coordinates": [],
+        "d3coordCount": 0,
+        "denominator": null,
+        "failureCode": "D3_SCOPE_MISSING",
+        "groupIdentityCount": 0,
+        "numerator": null,
+        "outcome": "SCORING_FAILURE",
+        "precedenceUnsettled": false,
+        "quotientEmitted": false,
+        "reasons": [
+          null
+        ],
+        "score": null,
+        "unitKeys": []
+      },
+      "extension": true,
+      "id": "V27",
+      "input": {
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "benchmarkIdentity": "BENCH-SYN",
+        "contributions": [
+          {
+            "acceptedAnchor": true,
+            "anchorId": "ANCH-Z",
+            "carriers": [
+              {
+                "bindingSubject": "SUBJ-1",
+                "memberId": "M1",
+                "typeSubjectContextSubject": "SUBJ-1"
+              }
+            ],
+            "courseId": "COURSE-Z",
+            "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+            "semanticCourseId": "COURSE-Z"
+          }
+        ],
+        "countingContextId": "CTX-SYN-1"
+      },
+      "rule": "A course outside the item authorization fails with the inherited D3_SCOPE_MISSING code.",
+      "sourceReference": "synthetic unauthorized course",
+      "title": "Unauthorized course"
+    }
+  ]
+}

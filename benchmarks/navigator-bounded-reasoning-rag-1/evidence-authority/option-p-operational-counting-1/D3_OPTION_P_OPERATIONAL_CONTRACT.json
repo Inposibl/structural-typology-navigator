@@ -1,0 +1,388 @@
+{
+  "schemaVersion": "nbrr1-d3-option-p-operational-addendum/1",
+  "kind": "D3_OPERATIONAL_COUNTING_ADDENDUM",
+  "act": "NBRR1.D3-OPERATIONAL-COUNTING-CONTRACT-1.OPTION-P-ADDENDUM-1",
+  "status": "CANDIDATE_PENDING_INDEPENDENT_IV",
+  "author": "GROK 4.7",
+  "date": "2026-10-08",
+  "ownerAccepted": false,
+  "independentlyVerified": false,
+  "executionAuthorized": false,
+  "scorerImplemented": false,
+  "implementationAuthorized": false,
+  "testBaseAuthorized": false,
+  "full123Authorized": false,
+  "authoritativeNow": false,
+  "controllingDecision": {
+    "act": "NBRR1.D3-OPERATIONAL-COUNTING-CONTRACT-1.UNIT-KEY-DECISION-1",
+    "decisionId": "OD-1",
+    "choice": "OPTION_P",
+    "ownerAccepted": true,
+    "meaning": "One countable D3 unit is one independently material proposition contribution within its accepted semantic scope."
+  },
+  "authorityStatus": {
+    "addendum": "CANDIDATE_PENDING_INDEPENDENT_IV",
+    "od1OptionP": "OWNER_ACCEPTED",
+    "semanticMap": "OWNER_ACCEPTED_BY_LATER_EXPLICIT_ACT_FILE_FLAG_REMAINS_FALSE",
+    "declarativeCountingRule": "OWNER_ACCEPTED",
+    "v2v3ContributionVector": "NOT_ACCEPTED",
+    "schemaNbrr1D3CountingContract3": "NOT_PROMOTED"
+  },
+  "acceptedAuthority": {
+    "repository": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1",
+    "branch": "integration/academy-main-reconciliation-1",
+    "head": "ed8d82ec69f1ca87b391b35e80d443f8d1a7da36",
+    "remote": "https://github.com/Inposibl/structural-typology-navigator.git",
+    "authorityDirectory": "benchmarks/navigator-bounded-reasoning-rag-1/evidence-authority/d3-residual-class-closure-1/",
+    "semanticMapSha256": "5094a769e3f27c98dc1ae89b14bd253f01f95b64f715d9aa9c51e103f436c5d7",
+    "declarativeCountingContractSha256": "0b29ab6ce3ef45d4fad5736035566e8574c3cc769e8fb55aa8bf19a7af967fe4",
+    "packageIdentitySha256": "82c5b4af1bf08ac4abf5219041fd9752b9a1066db7062465891acedb0fbeed4a",
+    "iv1ReportSha256": "f94f0e38d26c86afc579437b6b12ce2459fc2d310023e1dab8467455e921d88f",
+    "iv1Verdict": "PASS",
+    "iv1Findings": {
+      "blocking": 0,
+      "major": 0,
+      "minor": 3
+    },
+    "benchmarkIdentitySha256": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+    "universeSha256": "0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e",
+    "universeIdentityCount": 1999,
+    "groupCount": 47,
+    "groupIdListSha256": "1ea63abf4bb4fa2a53ba8bfe985582595c966fa4542dd4c4c34f855dd47a4cea",
+    "guardCount": 519,
+    "guardIdListSha256": "fd201cb129fa1a59c0c83a0d3825aa5b5dcd4ce1cbaade5c880e4897fb5e1abe",
+    "unitWeight": 1,
+    "groupsWithScopeId": 9,
+    "groupsWithoutScopeId": 38,
+    "quantificationFieldOnAcceptedGroups": 0
+  },
+  "precedence": [
+    "Owner-accepted semantic and procedure decisions, including the 47 groups, 519 guards, and the occurrence procedure.",
+    "Owner-accepted OD-1 Option P.",
+    "Accepted declarative counting authority: C, R, cardinality quotient, unit weight 1, empty-denominator null, and fail-closed applicability.",
+    "This operational addendum after a separate independent IV and a later Owner acceptance. Until then it is candidate provenance.",
+    "Historical candidate files are provenance only. Their stale admission flags do not override a later explicit Owner acceptance."
+  ],
+  "historicalProvenance": {
+    "decision.json": {
+      "sha256": "66e3743b61c2b3d348194e815f2d409809d22ab6d9bb91b93268203ab632dc00",
+      "obsoleteStatement": "D3MapComplete false and D3_SEMANTIC_MAP_INCOMPLETE belong to the earlier resume act."
+    },
+    "scoring-contract.json": {
+      "sha256": "0d9eb96a3e32666d2ed8de5c9dc62d30b5e8897ebd8ea30db22648402be37456",
+      "obsoleteStatement": "The blocker saying the complete map was not authored is stale. Nine dimensions and nine gates remain in force."
+    },
+    "test-base-contract.json": {
+      "sha256": "9d4728173789ef60a1f34011c2ffb3d9d5134f030b456770dfe968e185562a45",
+      "obsoleteStatement": "d3.acceptedMapIdentity null and BLOCKED_D3_RESIDUAL_SEMANTIC_APPLICABILITY do not override the later map acceptance. TEST_BASE remains unauthorized for independent reasons."
+    },
+    "package-identity.json": {
+      "sha256": "82c5b4af1bf08ac4abf5219041fd9752b9a1066db7062465891acedb0fbeed4a",
+      "obsoleteStatement": "kind AUTHOR_CANDIDATE_PACKAGE_IDENTITY_NOT_ACCEPTANCE and ownerAccepted false are frozen file flags. They are not rewritten. They do not cancel a later explicit Owner acceptance of the map, the declarative rule, or OD-1 Option P."
+    }
+  },
+  "unitModel": {
+    "countableUnit": "One independently material proposition contribution inside one accepted course and semantic scope.",
+    "passageRole": "A passage is a carrier. It is not a unit key.",
+    "occurrenceRole": "A used occurrence is provenance for a proposition. Repeated occurrences of the same proposition add no unit.",
+    "sourceSpanRole": "A technical source span suppresses a second unit for the same proposition coordinate. It does not merge two accepted distinct proposition coordinates that cite the same bytes.",
+    "multiplePropositionsInOnePassage": "Each accepted distinct proposition on that passage is a separate key.",
+    "samePropositionManyPassages": "One key within one counting context, one course, and one accepted scope.",
+    "crossCourse": "Different course scopes are different keys. This addendum does not score the separate CROSS_COURSE_LEAKAGE gate.",
+    "unclosedPassages": "The 1964 unclosed full-passage states receive no singleton key and no new equivalence group.",
+    "missingCoordinate": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED before a number."
+  },
+  "unitKey": {
+    "algorithm": "SHA-256 of canonical JSON.",
+    "canonicalJson": {
+      "encoding": "UTF-8",
+      "objectKeys": "lexicographically sorted",
+      "separators": [
+        "comma",
+        "colon"
+      ],
+      "unicode": "literal, not ASCII-escaped",
+      "trailingNewline": false,
+      "qualifications": "If the accepted value is a string, one-element array containing that exact string. If it is an array of strings, sort it lexicographically. Do not split a string on commas. If the accepted record has no qualification field, JSON null."
+    },
+    "schema": "nbrr1-d3-option-p-unit/1",
+    "payloadFields": [
+      "benchmarkIdentity",
+      "countingContextId",
+      "courseId",
+      "identityKind",
+      "polarity",
+      "propositionIdentity",
+      "qualifications",
+      "quantification",
+      "relationPredicate",
+      "schema",
+      "scopeId",
+      "subject"
+    ],
+    "excludedFromKey": [
+      "passage identity",
+      "memberId",
+      "passage SHA-256",
+      "UTF-8 offsets",
+      "sourceSpanId",
+      "occurrence count",
+      "citation count",
+      "required-proposition text",
+      "gold text",
+      "contribution vector",
+      "lexical similarity score"
+    ],
+    "identityKindValues": [
+      "EQUIVALENCE_GROUP",
+      "ACCEPTED_DISTINCT_COORDINATE"
+    ],
+    "quantificationWhenUnstated": "NOT_STATED_ON_ACCEPTED_RECORD",
+    "weight": 1
+  },
+  "coordinateResolution": {
+    "order": [
+      "Reject the item before resolution when any whole-item failure in failClosed applies.",
+      "If the used span is an accepted nonmaterial span, emit no coordinate.",
+      "If the used span is bound to exactly one of the 47 accepted equivalence groups and the binding does not contradict that group's published course, subject, relation, polarity, or qualifications, identityKind is EQUIVALENCE_GROUP and propositionIdentity is that groupId.",
+      "If the used span is bound to exactly one published single-subject distinct coordinate on an accepted anchor, and that anchor has no group for this coordinate, identityKind is ACCEPTED_DISTINCT_COORDINATE.",
+      "Otherwise fail D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED."
+    ],
+    "equivalenceGroup": {
+      "propositionIdentity": "The accepted groupId exactly.",
+      "courseId": "countingScope.courseId",
+      "scopeId": "scopeId when the group record has one, otherwise JSON null. Thirty-eight accepted groups have no scopeId. The groupId remains the proposition identity.",
+      "subject": "countingScope.materialSubject when present, otherwise JSON null",
+      "relationPredicate": "countingScope.relationPredicate when present, otherwise JSON null",
+      "polarity": "countingScope.polarity when present, otherwise JSON null",
+      "quantification": "countingScope.quantification when a future accepted record contains that field. No current accepted group contains it. The key uses NOT_STATED_ON_ACCEPTED_RECORD. A binding that asserts a different quantification fails closed.",
+      "qualifications": "Normalize countingScope.qualifications. Nine groups do not have the field; the key uses JSON null."
+    },
+    "acceptedDistinctCoordinate": {
+      "propositionIdentity": "D3COORD- concatenated with the SHA-256 of the canonical coordinate payload.",
+      "coordinateSchema": "nbrr1-d3-accepted-distinct-coordinate/1",
+      "coordinatePayloadFields": [
+        "anchorId",
+        "coordinateKind",
+        "courseId",
+        "polarity",
+        "qualifications",
+        "quantification",
+        "relationPredicate",
+        "schema",
+        "subject"
+      ],
+      "coordinateKindValues": [
+        "QUALIFICATION",
+        "LOCAL_SUBJECT",
+        "TYPE_SUBJECT",
+        "OTHER_PUBLISHED_DISTINCT"
+      ],
+      "prohibitedCoordinateInputs": [
+        "memberId",
+        "passage SHA-256",
+        "UTF-8 offsets",
+        "a new groupId",
+        "a multi-subject list collapsed into one subject"
+      ],
+      "missingDiscriminator": "If the published binding has no single subject and no qualification discriminator, fail closed. Do not substitute the passage id.",
+      "multiSubjectAnchor": "An anchor whose published materialSubject is a list is not one coordinate. Each published single-subject binding is its own coordinate. Collapsing that list is D3_ACCEPTED_AUTHORITY_CONFLICT with reason SUBJECT_LIST_COLLAPSED."
+    },
+    "comparisonCells": "Accepted comparison cells already have groupIds. Use the equivalence-group path. Merging cells is D3_COMPARISON_SCOPE_COLLAPSE.",
+    "newGroupCreation": "D3_ACCEPTED_AUTHORITY_CONFLICT with reason UNACCEPTED_GROUP_CREATION.",
+    "passageSingleton": "D3_ACCEPTED_AUTHORITY_CONFLICT with reason PASSAGE_SINGLETON_FALLBACK.",
+    "vectorKey": "D3_ACCEPTED_AUTHORITY_CONFLICT with reason VECTOR_KEY_FALLBACK."
+  },
+  "accounting": {
+    "C": "The set of unique unit keys for material proposition contributions actually cited or used on this item after coordinate resolution and source-span suppression.",
+    "R": "The subset of C whose proposition coordinates the restricted binding marks as satisfying the frozen required-proposition predicate.",
+    "formula": "|R| / |C|",
+    "representation": "Unreduced numerator/denominator. Do not replace the counts with a rounded decimal.",
+    "emptyC": {
+      "outcome": "NOT_APPLICABLE",
+      "diagnostic": "EMPTY_DENOMINATOR",
+      "numerator": 0,
+      "denominator": 0,
+      "score": null,
+      "notAFailure": true,
+      "notAPerfectScore": true,
+      "distinction": "A cited carrier with unresolved applicability is a scoring failure, not empty C. Empty C means no material contribution remains after accepted nonmaterial spans are excluded and no failure fired."
+    },
+    "wholeItem": "Any scoring or admission failure suppresses the quotient for the whole item. A successfully bound proposition is not returned beside an unbound one.",
+    "counts": {
+      "passageCount": "Distinct cited passage symbols or member ids.",
+      "citedOccurrenceCount": "Cited occurrence records before proposition collapse, including accepted nonmaterial spans.",
+      "excludedNonmaterialOccurrenceCount": "Accepted nonmaterial occurrences that contribute no key.",
+      "materialOccurrenceCount": "Material occurrences before proposition collapse.",
+      "distinctPropositionCount": "Unique proposition identities. On a scored item this equals unitKeyCount.",
+      "unitKeyCount": "|C|",
+      "relevantUnitKeyCount": "|R|"
+    },
+    "countsNeedNotBeEqual": true,
+    "prohibitedReductions": [
+      "sum of per-proposition ratios",
+      "average of per-proposition scores",
+      "repeated-evidence bonus",
+      "fractional or weighted units",
+      "cross-item union of keys",
+      "a new aggregate score",
+      "replacement of the nine dimensions or nine gates"
+    ]
+  },
+  "failClosed": {
+    "preservedGuardCount": 519,
+    "preservedGuardIdListSha256": "fd201cb129fa1a59c0c83a0d3825aa5b5dcd4ce1cbaade5c880e4897fb5e1abe",
+    "guardsModified": false,
+    "newCodesDoNotAlterGuards": true,
+    "newOperationalCodes": {
+      "D3_R_NOT_SUBSET_OF_C": {
+        "stage": "SCORING_FAILURE",
+        "when": "Any element of R is not an element of C, or an asserted relevant proposition identity was not admitted to C."
+      },
+      "D3_FOREIGN_EVIDENCE_IDENTITY": {
+        "stage": "SCORING_FAILURE",
+        "when": "A cited passage identity is not one of the 1999 universe member ids."
+      },
+      "D3_ATOMIC_RATIO_AGGREGATION": {
+        "stage": "SCORING_FAILURE",
+        "when": "Per-scope or per-proposition ratios are summed, averaged, or otherwise written into the D3 quotient."
+      }
+    },
+    "existingOutcomes": {
+      "D3_ACCEPTED_AUTHORITY_CONFLICT": "SCORING_FAILURE",
+      "D3_COMPARISON_SCOPE_COLLAPSE": "SCORING_FAILURE_BEFORE_NUMBER",
+      "D3_CONTEXT_PARTITION_MISSING": "SCORING_FAILURE",
+      "D3_CONTRIBUTION_UNRESOLVED": "SCORING_FAILURE",
+      "D3_DIGEST_DRIFT": "ADMISSION_FAILURE",
+      "D3_EXCLUDED_PAIR_APPLICABILITY_UNRESOLVED": "SCORING_FAILURE",
+      "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED": "SCORING_FAILURE_BEFORE_NUMBER",
+      "D3_MAP_SCOPE_AMBIGUOUS": "SCORING_FAILURE",
+      "D3_NICKNAME_INDEPENDENT_CREDIT": "SCORING_FAILURE_BEFORE_NUMBER",
+      "D3_NONMATERIAL_INDEPENDENT_CREDIT": "SCORING_FAILURE_BEFORE_NUMBER",
+      "D3_QUALIFICATION_SCOPE_COLLAPSE": "SCORING_FAILURE_BEFORE_NUMBER",
+      "D3_REPEATED_ATOMIC_INDEPENDENT_CREDIT": "SCORING_FAILURE_BEFORE_NUMBER",
+      "D3_ROLE_FORBIDDEN": "DENY_BEFORE_LOOKUP",
+      "D3_SCOPE_MISSING": "SCORING_FAILURE",
+      "D3_SOURCE_SPAN_INDEPENDENCE_UNRESOLVED": "SCORING_FAILURE",
+      "D3_SOURCE_TYPE_LABEL_CONFLICT": "SCORING_FAILURE_BEFORE_NUMBER",
+      "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED": "SCORING_FAILURE_BEFORE_NUMBER",
+      "D3_USED_SPAN_BINDING_MISSING": "SCORING_FAILURE",
+      "D3_WHOLE_PASSAGE_EQUIVALENCE_INFERRED": "SCORING_FAILURE_BEFORE_NUMBER"
+    },
+    "digestDriftClassification": "This addendum classifies D3_DIGEST_DRIFT as an admission failure. The frozen counting contract records the same code as SCORING_FAILURE. Both classifications forbid a number. The frozen file is not amended. The code is unchanged.",
+    "reasonCodesUnderAuthorityConflict": [
+      "UNACCEPTED_GROUP_CREATION",
+      "PASSAGE_SINGLETON_FALLBACK",
+      "VECTOR_KEY_FALLBACK",
+      "SUBJECT_LIST_COLLAPSED",
+      "NON_UNIT_WEIGHT"
+    ],
+    "distinctions": {
+      "emptyC": "NOT_APPLICABLE, score null, numerator 0, denominator 0",
+      "unknownMaterialProposition": "SCORING_FAILURE D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+      "missingUsedSpan": "SCORING_FAILURE D3_USED_SPAN_BINDING_MISSING",
+      "missingPrivilegedApplicability": "SCORING_FAILURE D3_CONTEXT_PARTITION_MISSING",
+      "sourceLabelConflict": "SCORING_FAILURE D3_SOURCE_TYPE_LABEL_CONFLICT",
+      "contradictoryOrNondeterministicPartition": "SCORING_FAILURE D3_MAP_SCOPE_AMBIGUOUS",
+      "digestDrift": "ADMISSION_FAILURE D3_DIGEST_DRIFT",
+      "unacceptedSemanticGroupCreation": "SCORING_FAILURE D3_ACCEPTED_AUTHORITY_CONFLICT reason UNACCEPTED_GROUP_CREATION"
+    },
+    "forbiddenFallbacks": [
+      "whole-passage key",
+      "v2 or v3 contribution-vector key",
+      "singleton key for one of the 1964 unclosed passage states",
+      "lexical-similarity merge",
+      "technical-adjacency merge of distinct propositions",
+      "partial quotient when another cited contribution failed"
+    ]
+  },
+  "privilegedBinding": {
+    "schema": "d3-option-p-privileged-applicability/1",
+    "bindingCreatedHere": false,
+    "populated": false,
+    "publicAuthority": [
+      "frozen benchmark digest",
+      "1999-member universe digest",
+      "47 group records and their groupId list digest",
+      "519 guard records and their guardId list digest",
+      "accepted anchor coordinates",
+      "accepted source-span overlap identities",
+      "declarative counting contract digest",
+      "this addendum digest after IV and Owner acceptance"
+    ],
+    "restrictedInput": {
+      "opaqueItemId": "Opaque item token. Not question text.",
+      "benchmarkIdentity": "Exact frozen benchmark digest.",
+      "authorizedCourseIds": "Courses this item may cite.",
+      "requiredPropositionPointers": "Opaque pointers. The text stays in the restricted gold store.",
+      "countingContextId": "One context per item. It enters the unit key and blocks cross-item union.",
+      "citedMemberIds": "Exact universe member ids actually cited or used.",
+      "usedSpans": "For each material contribution: memberId, startUtf8, endUtf8, and sourceSpanId when an accepted overlap applies.",
+      "acceptedCoordinateBinding": "Each material span bound to one existing groupId or one published distinct coordinate. No new group.",
+      "outsideUsedMaterial": "Every additional used proposition explicitly bound or the item fails.",
+      "relevanceByPropositionIdentity": "Boolean membership of each admitted proposition in R.",
+      "partitionDigest": "Digest of the canonical admitted coordinate set and its occurrence provenance.",
+      "authorityDigests": "Map, contract, universe, benchmark, guard list, group list, IV1, Owner receipt, and accepted addendum."
+    },
+    "readersDeniedGold": [
+      "D3 author",
+      "contract author",
+      "scorer implementation author",
+      "runner implementation author"
+    ],
+    "publicOutput": [
+      "outcome",
+      "numerator",
+      "denominator",
+      "score or null",
+      "failure code when present",
+      "authority digests"
+    ],
+    "restrictedTrace": [
+      "unitKey",
+      "identityKind",
+      "propositionIdentity",
+      "courseId",
+      "scopeId",
+      "subject",
+      "relationPredicate",
+      "polarity",
+      "quantification",
+      "qualifications",
+      "weight",
+      "opaqueItemId",
+      "countingContextId",
+      "opaque required-proposition pointer",
+      "relevance boolean",
+      "occurrences with memberId, passage SHA-256, UTF-8 bounds, sourceSpanId, occurrence SHA-256",
+      "guard families consulted",
+      "authority digests"
+    ]
+  },
+  "dimensionsAndGates": {
+    "dimensionCount": 9,
+    "gateCount": 9,
+    "unchanged": true,
+    "noAggregateScore": true,
+    "noWeights": true,
+    "noCrossDimensionCompensation": true,
+    "d4RemainsSeparate": true,
+    "noCrossItemLeakage": true
+  },
+  "blockingMethodologicalAmbiguities": [],
+  "determinedCorollaries": [
+    "Source-span suppression applies inside one proposition coordinate. Two accepted distinct coordinates may cite one passage.",
+    "A missing quantification field stays NOT_STATED_ON_ACCEPTED_RECORD and does not merge different groupIds.",
+    "A distinct proposition without a group uses D3COORD over published anchor fields. It does not create a public group and does not use memberId.",
+    "D3_DIGEST_DRIFT is an admission failure in this addendum. The frozen effect string remains historical provenance. Neither path emits a number."
+  ],
+  "abstractVectors": "D3_OPTION_P_ABSTRACT_TEST_VECTORS.json",
+  "preservation": {
+    "semanticMapRewritten": false,
+    "countingContractRewritten": false,
+    "groupsRewritten": false,
+    "guardsRewritten": false,
+    "benchmarkRewritten": false,
+    "repositoryMutatedByThisAct": false
+  }
+}

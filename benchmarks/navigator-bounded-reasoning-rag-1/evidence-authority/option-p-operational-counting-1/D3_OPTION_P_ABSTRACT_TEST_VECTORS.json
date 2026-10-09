@@ -1,0 +1,1986 @@
+{
+  "schemaVersion": "nbrr1-d3-option-p-abstract-vectors/1",
+  "act": "NBRR1.D3-OPERATIONAL-COUNTING-CONTRACT-1.OPTION-P-ADDENDUM-1",
+  "status": "CANDIDATE_PENDING_INDEPENDENT_IV",
+  "symbols": "Synthetic proposition, course, passage, and span symbols. No protected question, gold, or corpus sentence.",
+  "unitSchema": "nbrr1-d3-option-p-unit/1",
+  "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+  "vectorCount": 20,
+  "blockingAmbiguities": [],
+  "vectors": [
+    {
+      "id": "V01",
+      "title": "One passage, one relevant proposition",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "NO_WHOLE_PASSAGE_INFERENCE",
+        "REPEATED_ATOMIC_PROPOSITION_ONCE"
+      ],
+      "rationale": "One accepted proposition on one carrier is one unit in C and in R. The passage is a carrier, not the key.",
+      "authority": "OD-1 Option P; declarative formula |unitKeys(R)|/|unitKeys(C)|; unit weight 1.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "1/1",
+        "numerator": 1,
+        "denominator": 1,
+        "CKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "RKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "counts": {
+          "passageCount": 1,
+          "citedOccurrenceCount": 1,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 1,
+          "distinctPropositionCount": 1,
+          "unitKeyCount": 1,
+          "relevantUnitKeyCount": 1
+        },
+        "relevantGuards": [
+          "NO_WHOLE_PASSAGE_INFERENCE",
+          "REPEATED_ATOMIC_PROPOSITION_ONCE"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V02",
+      "title": "One passage, two relevant propositions",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P1",
+            "relationPredicate": "REL-P1",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P1"
+            ],
+            "scopeId": "SCOPE-P1",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P2",
+            "subject": "SUBJECT-P2",
+            "relationPredicate": "REL-P2",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P2"
+            ],
+            "scopeId": "SCOPE-P2",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 20,
+              "endUtf8": 40,
+              "sourceSpanId": "SPAN-P2"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1",
+          "REQ-GROUP-P2"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true,
+          "GROUP-P2": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "NO_WHOLE_PASSAGE_INFERENCE"
+      ],
+      "rationale": "Two accepted propositions in one passage are two keys. A single passage key is whole-passage equivalence and is refused.",
+      "authority": "OD-1 Option P; guard family NO_WHOLE_PASSAGE_INFERENCE.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "2/2",
+        "numerator": 2,
+        "denominator": 2,
+        "CKeys": [
+          "74ca4c41f599cbdf497e40fd395277c490ba8ca9177ca88f3ea3c2e01a4bc5d3",
+          "e76041cdd9f8d2808e6b42e7427b4755b3cd691472ed1020f61c5018ad8d47ec"
+        ],
+        "RKeys": [
+          "74ca4c41f599cbdf497e40fd395277c490ba8ca9177ca88f3ea3c2e01a4bc5d3",
+          "e76041cdd9f8d2808e6b42e7427b4755b3cd691472ed1020f61c5018ad8d47ec"
+        ],
+        "counts": {
+          "passageCount": 1,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 2,
+          "distinctPropositionCount": 2,
+          "unitKeyCount": 2,
+          "relevantUnitKeyCount": 2
+        },
+        "relevantGuards": [
+          "NO_WHOLE_PASSAGE_INFERENCE"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V03",
+      "title": "Two passages repeating one proposition",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1-A"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M2",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 5,
+              "endUtf8": 25,
+              "sourceSpanId": "SPAN-P1-B"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "REPEATED_ATOMIC_PROPOSITION_ONCE"
+      ],
+      "rationale": "The same accepted proposition in one course and scope has one key. A second passage does not add a unit.",
+      "authority": "OD-1 Option P; guard family REPEATED_ATOMIC_PROPOSITION_ONCE.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "1/1",
+        "numerator": 1,
+        "denominator": 1,
+        "CKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "RKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "counts": {
+          "passageCount": 2,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 2,
+          "distinctPropositionCount": 1,
+          "unitKeyCount": 1,
+          "relevantUnitKeyCount": 1
+        },
+        "relevantGuards": [
+          "REPEATED_ATOMIC_PROPOSITION_ONCE"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V04",
+      "title": "Two passages sharing one proposition with distinct additional propositions",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P1",
+            "relationPredicate": "REL-P1",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P1"
+            ],
+            "scopeId": "SCOPE-P1",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1-A"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P2",
+            "subject": "SUBJECT-P2",
+            "relationPredicate": "REL-P2",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P2"
+            ],
+            "scopeId": "SCOPE-P2",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 30,
+              "endUtf8": 50,
+              "sourceSpanId": "SPAN-P2"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M2",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P1",
+            "relationPredicate": "REL-P1",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P1"
+            ],
+            "scopeId": "SCOPE-P1",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1-B"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M2",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P3",
+            "subject": "SUBJECT-P3",
+            "relationPredicate": "REL-P3",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P3"
+            ],
+            "scopeId": "SCOPE-P3",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 30,
+              "endUtf8": 55,
+              "sourceSpanId": "SPAN-P3"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1",
+          "REQ-GROUP-P2",
+          "REQ-GROUP-P3"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true,
+          "GROUP-P2": true,
+          "GROUP-P3": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "REPEATED_ATOMIC_PROPOSITION_ONCE",
+        "NO_WHOLE_PASSAGE_INFERENCE"
+      ],
+      "rationale": "The shared proposition collapses to one key. Each additional accepted proposition remains. Four occurrences yield three keys.",
+      "authority": "OD-1 Option P; declarative outside-material preservation; REPEATED_ATOMIC_PROPOSITION_ONCE.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "3/3",
+        "numerator": 3,
+        "denominator": 3,
+        "CKeys": [
+          "1f3887771433a2cdc2b44cdaffba89c3069a9de1cc82357f93e2674b9ffb1a7b",
+          "74ca4c41f599cbdf497e40fd395277c490ba8ca9177ca88f3ea3c2e01a4bc5d3",
+          "e76041cdd9f8d2808e6b42e7427b4755b3cd691472ed1020f61c5018ad8d47ec"
+        ],
+        "RKeys": [
+          "1f3887771433a2cdc2b44cdaffba89c3069a9de1cc82357f93e2674b9ffb1a7b",
+          "74ca4c41f599cbdf497e40fd395277c490ba8ca9177ca88f3ea3c2e01a4bc5d3",
+          "e76041cdd9f8d2808e6b42e7427b4755b3cd691472ed1020f61c5018ad8d47ec"
+        ],
+        "counts": {
+          "passageCount": 2,
+          "citedOccurrenceCount": 4,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 4,
+          "distinctPropositionCount": 3,
+          "unitKeyCount": 3,
+          "relevantUnitKeyCount": 3
+        },
+        "relevantGuards": [
+          "REPEATED_ATOMIC_PROPOSITION_ONCE",
+          "NO_WHOLE_PASSAGE_INFERENCE"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V05",
+      "title": "Two technically overlapping chunks supporting one proposition",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-OVERLAP"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M2",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 80,
+              "endUtf8": 120,
+              "sourceSpanId": "SPAN-OVERLAP"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "ADJACENT_SOURCE_SPAN_ONCE",
+        "REPEATED_ATOMIC_PROPOSITION_ONCE"
+      ],
+      "rationale": "The same proposition coordinate, including one shared technical span, is one key. The span is provenance and is not a second unit.",
+      "authority": "Accepted occurrence procedure; guard family ADJACENT_SOURCE_SPAN_ONCE.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "1/1",
+        "numerator": 1,
+        "denominator": 1,
+        "CKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "RKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "counts": {
+          "passageCount": 2,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 2,
+          "distinctPropositionCount": 1,
+          "unitKeyCount": 1,
+          "relevantUnitKeyCount": 1
+        },
+        "relevantGuards": [
+          "ADJACENT_SOURCE_SPAN_ONCE",
+          "REPEATED_ATOMIC_PROPOSITION_ONCE"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V06",
+      "title": "One passage containing relevant and irrelevant material propositions",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P1",
+            "relationPredicate": "REL-P1",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P1"
+            ],
+            "scopeId": "SCOPE-P1",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P2",
+            "subject": "SUBJECT-P2",
+            "relationPredicate": "REL-P2",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P2"
+            ],
+            "scopeId": "SCOPE-P2",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 40,
+              "endUtf8": 70,
+              "sourceSpanId": "SPAN-P2"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1",
+          "REQ-GROUP-P2"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true,
+          "GROUP-P2": false
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "NO_WHOLE_PASSAGE_INFERENCE",
+        "USED_MATERIAL_BINDING_REQUIRED"
+      ],
+      "rationale": "Both propositions are accepted and used, so both are in C. Only the proposition marked relevant by the restricted binding is in R. The score is 1/2.",
+      "authority": "Declarative input sets C and R; OD-1 Option P. An unresolved irrelevant span would fail closed instead of entering C.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "1/2",
+        "numerator": 1,
+        "denominator": 2,
+        "CKeys": [
+          "74ca4c41f599cbdf497e40fd395277c490ba8ca9177ca88f3ea3c2e01a4bc5d3",
+          "e76041cdd9f8d2808e6b42e7427b4755b3cd691472ed1020f61c5018ad8d47ec"
+        ],
+        "RKeys": [
+          "74ca4c41f599cbdf497e40fd395277c490ba8ca9177ca88f3ea3c2e01a4bc5d3"
+        ],
+        "counts": {
+          "passageCount": 1,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 2,
+          "distinctPropositionCount": 2,
+          "unitKeyCount": 2,
+          "relevantUnitKeyCount": 1
+        },
+        "relevantGuards": [
+          "NO_WHOLE_PASSAGE_INFERENCE",
+          "USED_MATERIAL_BINDING_REQUIRED"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V07",
+      "title": "Structural header plus substantive material",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "NONMATERIAL_SPAN",
+            "propositionIdentity": null,
+            "subject": null,
+            "relationPredicate": null,
+            "polarity": null,
+            "quantification": null,
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": null,
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 8,
+              "sourceSpanId": "SPAN-HEADER"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 8,
+              "endUtf8": 40,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "NONMATERIAL_SPAN_NO_CREDIT"
+      ],
+      "rationale": "The accepted nonmaterial header contributes no key. The substantive accepted proposition contributes one key.",
+      "authority": "Guard family NONMATERIAL_SPAN_NO_CREDIT. Crediting the header would be D3_NONMATERIAL_INDEPENDENT_CREDIT.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "1/1",
+        "numerator": 1,
+        "denominator": 1,
+        "CKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "RKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "counts": {
+          "passageCount": 1,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 1,
+          "materialOccurrenceCount": 1,
+          "distinctPropositionCount": 1,
+          "unitKeyCount": 1,
+          "relevantUnitKeyCount": 1
+        },
+        "relevantGuards": [
+          "NONMATERIAL_SPAN_NO_CREDIT"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V08",
+      "title": "ENFP/ENTP conflicting source attribution",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-CONFLICT-SPAN",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-CONFLICT"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": true,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-CONFLICT-SPAN"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-CONFLICT-SPAN": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "SOURCE_TYPE_LABEL_CONFLICT"
+      ],
+      "rationale": "Type-specific use or cross-type corroboration of a span under the accepted source-label conflict fails before a number. No type is repaired and no key is emitted.",
+      "authority": "Guard family SOURCE_TYPE_LABEL_CONFLICT. The symbols stand for that accepted conflict. No source sentence is reproduced.",
+      "expected": {
+        "outcome": "SCORING_FAILURE",
+        "failureCode": "D3_SOURCE_TYPE_LABEL_CONFLICT",
+        "failureReason": "TYPE_SPECIFIC_OR_CROSS_TYPE_USE_OF_CONFLICT_SPAN",
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": null,
+        "denominator": null,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": null,
+        "relevantGuards": [
+          "SOURCE_TYPE_LABEL_CONFLICT"
+        ]
+      }
+    },
+    {
+      "id": "V09",
+      "title": "Missing exact used-span binding",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": false,
+              "startUtf8": null,
+              "endUtf8": null,
+              "sourceSpanId": null
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "USED_MATERIAL_BINDING_REQUIRED"
+      ],
+      "rationale": "A material contribution without an exact used UTF-8 interval fails before a number.",
+      "authority": "Declarative failure D3_USED_SPAN_BINDING_MISSING; guard family USED_MATERIAL_BINDING_REQUIRED.",
+      "expected": {
+        "outcome": "SCORING_FAILURE",
+        "failureCode": "D3_USED_SPAN_BINDING_MISSING",
+        "failureReason": "MISSING_EXACT_USED_UTF8_SPAN",
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": null,
+        "denominator": null,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": null,
+        "relevantGuards": [
+          "USED_MATERIAL_BINDING_REQUIRED"
+        ]
+      }
+    },
+    {
+      "id": "V10",
+      "title": "Different qualified propositions sharing one carrier passage",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "COORD-QUAL-1",
+            "subject": "SUBJECT-Q1",
+            "relationPredicate": "REL-SHARED",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-1"
+            ],
+            "scopeId": "SCOPE-QUAL-1",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-Q1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "ACCEPTED_DISTINCT_COORDINATE",
+            "propositionIdentity": "COORD-QUAL-2",
+            "subject": "SUBJECT-Q2",
+            "relationPredicate": "REL-SHARED",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-2"
+            ],
+            "scopeId": "SCOPE-QUAL-2",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 40,
+              "endUtf8": 80,
+              "sourceSpanId": "SPAN-Q2"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-COORD-QUAL-1",
+          "REQ-COORD-QUAL-2"
+        ],
+        "relevanceByPropositionIdentity": {
+          "COORD-QUAL-1": true,
+          "COORD-QUAL-2": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "QUALIFICATION_SCOPE_REQUIRED"
+      ],
+      "rationale": "Two published qualification coordinates on one carrier are two keys. The shared relation does not merge them.",
+      "authority": "Guard family QUALIFICATION_SCOPE_REQUIRED; OD-1 Option P. Merging them would be D3_QUALIFICATION_SCOPE_COLLAPSE.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "2/2",
+        "numerator": 2,
+        "denominator": 2,
+        "CKeys": [
+          "4e73afc97a2959d26a60c5e57423d3d2efc786bbcd83a5f0d8b944f2a2a7a112",
+          "94ab8550d2525d72652cb8586b2af321a1aaebdf00a6243a83913c5ed3a1d08f"
+        ],
+        "RKeys": [
+          "4e73afc97a2959d26a60c5e57423d3d2efc786bbcd83a5f0d8b944f2a2a7a112",
+          "94ab8550d2525d72652cb8586b2af321a1aaebdf00a6243a83913c5ed3a1d08f"
+        ],
+        "counts": {
+          "passageCount": 1,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 2,
+          "distinctPropositionCount": 2,
+          "unitKeyCount": 2,
+          "relevantUnitKeyCount": 2
+        },
+        "relevantGuards": [
+          "QUALIFICATION_SCOPE_REQUIRED"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V11",
+      "title": "Same proposition repeated across two different courses",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1-COURSE-A",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-A",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-A"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M2",
+            "universeMember": true,
+            "courseId": "COURSE-B",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1-COURSE-B",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-B",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-B"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A",
+          "COURSE-B"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1-COURSE-A",
+          "REQ-GROUP-P1-COURSE-B"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1-COURSE-A": true,
+          "GROUP-P1-COURSE-B": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "NO_WHOLE_PASSAGE_INFERENCE"
+      ],
+      "rationale": "The shared semantic label is not part of the key. Different accepted course scopes produce two keys. This placeholder authorizes both courses so the D3 question is isolated from the separate cross-course leakage gate.",
+      "authority": "Declarative rule: no cross-course collapse. Gate CROSS_COURSE_LEAKAGE remains a separate non-compensatory gate and is not scored here.",
+      "notes": "A real item whose binding authorizes only one course fails the other course with D3_SCOPE_MISSING before a merged key can be emitted.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "2/2",
+        "numerator": 2,
+        "denominator": 2,
+        "CKeys": [
+          "292eb5a04bc4e054d2f39f7dd3e107c52e0a9b5aed7e3a355b4085b09165ec2d",
+          "86a7a688853bfaf4de220be5e2af487fa7854ce5da1410496458b2fd61dd1fea"
+        ],
+        "RKeys": [
+          "292eb5a04bc4e054d2f39f7dd3e107c52e0a9b5aed7e3a355b4085b09165ec2d",
+          "86a7a688853bfaf4de220be5e2af487fa7854ce5da1410496458b2fd61dd1fea"
+        ],
+        "counts": {
+          "passageCount": 2,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 2,
+          "distinctPropositionCount": 2,
+          "unitKeyCount": 2,
+          "relevantUnitKeyCount": 2
+        },
+        "relevantGuards": [
+          "NO_WHOLE_PASSAGE_INFERENCE"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V12",
+      "title": "Missing accepted equivalence authority",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "UNRESOLVED",
+            "propositionIdentity": null,
+            "subject": null,
+            "relationPredicate": null,
+            "polarity": null,
+            "quantification": null,
+            "qualifications": null,
+            "scopeId": null,
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-U1"
+            },
+            "acceptedAuthority": false,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M2",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "UNRESOLVED",
+            "propositionIdentity": null,
+            "subject": null,
+            "relationPredicate": null,
+            "polarity": null,
+            "quantification": null,
+            "qualifications": null,
+            "scopeId": null,
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-U2"
+            },
+            "acceptedAuthority": false,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [],
+        "relevanceByPropositionIdentity": {},
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "USED_MATERIAL_BINDING_REQUIRED"
+      ],
+      "rationale": "Lexical similarity and technical adjacency do not create a group. The unclosed carriers do not become singletons. The item fails before a number.",
+      "authority": "Accepted completion rule: unclosed full-passage states are not singletons. Guard family USED_MATERIAL_BINDING_REQUIRED. OD-1 Option P.",
+      "notes": "A shared label SAME-WORDS is intentionally absent from the key payload.",
+      "expected": {
+        "outcome": "SCORING_FAILURE",
+        "failureCode": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+        "failureReason": "NO_ACCEPTED_PROPOSITION_COORDINATE",
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": null,
+        "denominator": null,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": null,
+        "relevantGuards": [
+          "USED_MATERIAL_BINDING_REQUIRED"
+        ]
+      }
+    },
+    {
+      "id": "V13",
+      "title": "Empty C",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": []
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [],
+        "relevanceByPropositionIdentity": {},
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [],
+      "rationale": "No cited material contribution. The accepted empty-denominator diagnostic has numerator 0, denominator 0, and score null. This is not a perfect score and not a scoring failure.",
+      "authority": "Declarative counting-contract empty handling.",
+      "expected": {
+        "outcome": "NOT_APPLICABLE",
+        "diagnostic": "EMPTY_DENOMINATOR",
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": 0,
+        "denominator": 0,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": {
+          "passageCount": 0,
+          "citedOccurrenceCount": 0,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 0,
+          "distinctPropositionCount": 0,
+          "unitKeyCount": 0,
+          "relevantUnitKeyCount": 0
+        },
+        "relevantGuards": [],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V14",
+      "title": "R not a subset of C",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [],
+      "rationale": "C contains only GROUP-P1. The asserted relevant set also contains GROUP-NOT-IN-C. Division is refused.",
+      "authority": "Declarative rule that R is a subset of C. Operational code D3_R_NOT_SUBSET_OF_C. The 519 guards are unchanged.",
+      "assertedRelevantPropositionIdentities": [
+        "GROUP-P1",
+        "GROUP-NOT-IN-C"
+      ],
+      "expected": {
+        "outcome": "SCORING_FAILURE",
+        "failureCode": "D3_R_NOT_SUBSET_OF_C",
+        "failureReason": "ASSERTED_R_NOT_SUBSET_OF_C",
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": null,
+        "denominator": null,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": null,
+        "relevantGuards": []
+      }
+    },
+    {
+      "id": "V15",
+      "title": "Foreign passage identity",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "PASSAGE-FOREIGN",
+            "universeMember": false,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [],
+      "rationale": "A cited identity outside the frozen 1999-member universe fails before a key is emitted.",
+      "authority": "Eligible-universe rule. Operational code D3_FOREIGN_EVIDENCE_IDENTITY. The 519 guards are unchanged.",
+      "expected": {
+        "outcome": "SCORING_FAILURE",
+        "failureCode": "D3_FOREIGN_EVIDENCE_IDENTITY",
+        "failureReason": "MEMBER_OUTSIDE_FROZEN_UNIVERSE",
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": null,
+        "denominator": null,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": null,
+        "relevantGuards": []
+      }
+    },
+    {
+      "id": "V16",
+      "title": "Attempt to sum atomic-scope ratios",
+      "operation": "SUM_ATOMIC_RATIOS",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P2",
+            "subject": "SUBJECT-P2",
+            "relationPredicate": "REL-P2",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P2"
+            ],
+            "scopeId": "SCOPE-P2",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 20,
+              "endUtf8": 40,
+              "sourceSpanId": "SPAN-P2"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1",
+          "REQ-GROUP-P2"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true,
+          "GROUP-P2": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [],
+      "rationale": "The operation asks to sum per-proposition ratios into D3. The item fails even though the underlying proposition keys would otherwise be countable. No quotient is emitted.",
+      "authority": "Declarative prohibition on summing or averaging atomic-scope scores. Operational code D3_ATOMIC_RATIO_AGGREGATION. The 519 guards are unchanged.",
+      "notes": "Illustrative suppressed ratios would have been 1/1 and 1/1. They are not D3.",
+      "expected": {
+        "outcome": "SCORING_FAILURE",
+        "failureCode": "D3_ATOMIC_RATIO_AGGREGATION",
+        "failureReason": "ATOMIC_SCOPE_RATIOS_SUMMED_OR_AVERAGED",
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": null,
+        "denominator": null,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": null,
+        "relevantGuards": []
+      }
+    },
+    {
+      "id": "V17",
+      "title": "Repeated citation of the same passage and material span",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "REPEATED_ATOMIC_PROPOSITION_ONCE",
+        "ADJACENT_SOURCE_SPAN_ONCE"
+      ],
+      "rationale": "Two citations of the same passage, proposition, and span are two occurrences and one key. There is no repeated-evidence bonus.",
+      "authority": "OD-1 Option P; unit weight 1; REPEATED_ATOMIC_PROPOSITION_ONCE.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "1/1",
+        "numerator": 1,
+        "denominator": 1,
+        "CKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "RKeys": [
+          "f9fa370c3d55034d0c836ad1a29828303710037320ec43f9b85a0da55e3d90ba"
+        ],
+        "counts": {
+          "passageCount": 1,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 2,
+          "distinctPropositionCount": 1,
+          "unitKeyCount": 1,
+          "relevantUnitKeyCount": 1
+        },
+        "relevantGuards": [
+          "REPEATED_ATOMIC_PROPOSITION_ONCE",
+          "ADJACENT_SOURCE_SPAN_ONCE"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V18",
+      "title": "Different propositions sharing one exact source passage",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P1",
+            "relationPredicate": "REL-P1",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P1"
+            ],
+            "scopeId": "SCOPE-P1",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P4",
+            "subject": "SUBJECT-P4",
+            "relationPredicate": "REL-P4",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P4"
+            ],
+            "scopeId": "SCOPE-P4",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 60,
+              "endUtf8": 90,
+              "sourceSpanId": "SPAN-P4"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1",
+          "REQ-GROUP-P4"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true,
+          "GROUP-P4": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "NO_WHOLE_PASSAGE_INFERENCE"
+      ],
+      "rationale": "One exact carrier passage does not collapse distinct accepted propositions and is not itself a key.",
+      "authority": "OD-1 Option P; guard family NO_WHOLE_PASSAGE_INFERENCE.",
+      "expected": {
+        "outcome": "SCORED",
+        "diagnostic": null,
+        "failureCode": null,
+        "failureReason": null,
+        "quotientEmitted": true,
+        "score": "2/2",
+        "numerator": 2,
+        "denominator": 2,
+        "CKeys": [
+          "5678b470ad367ae29193fb56a5b7059022156e078277dcb7d0a07a0e208bbaeb",
+          "74ca4c41f599cbdf497e40fd395277c490ba8ca9177ca88f3ea3c2e01a4bc5d3"
+        ],
+        "RKeys": [
+          "5678b470ad367ae29193fb56a5b7059022156e078277dcb7d0a07a0e208bbaeb",
+          "74ca4c41f599cbdf497e40fd395277c490ba8ca9177ca88f3ea3c2e01a4bc5d3"
+        ],
+        "counts": {
+          "passageCount": 1,
+          "citedOccurrenceCount": 2,
+          "excludedNonmaterialOccurrenceCount": 0,
+          "materialOccurrenceCount": 2,
+          "distinctPropositionCount": 2,
+          "unitKeyCount": 2,
+          "relevantUnitKeyCount": 2
+        },
+        "relevantGuards": [
+          "NO_WHOLE_PASSAGE_INFERENCE"
+        ],
+        "unitWeight": 1
+      }
+    },
+    {
+      "id": "V19",
+      "title": "Missing privileged required-proposition binding",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P",
+            "relationPredicate": "REL-P",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-ACCEPTED"
+            ],
+            "scopeId": "SCOPE-P",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": false,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "USED_MATERIAL_BINDING_REQUIRED"
+      ],
+      "rationale": "Without the restricted required-proposition binding, R cannot be chosen. The item fails. All cited material is not assumed relevant, and none of it is assumed irrelevant.",
+      "authority": "Applicability interface; existing failure D3_CONTEXT_PARTITION_MISSING.",
+      "expected": {
+        "outcome": "SCORING_FAILURE",
+        "failureCode": "D3_CONTEXT_PARTITION_MISSING",
+        "failureReason": "PRIVILEGED_REQUIRED_PROPOSITION_BINDING_MISSING",
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": null,
+        "denominator": null,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": null,
+        "relevantGuards": [
+          "USED_MATERIAL_BINDING_REQUIRED"
+        ]
+      }
+    },
+    {
+      "id": "V20",
+      "title": "Multiple material propositions with only partial used-span attribution",
+      "operation": "COUNT",
+      "publicInputs": {
+        "citedContributions": [
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P1",
+            "subject": "SUBJECT-P1",
+            "relationPredicate": "REL-P1",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P1"
+            ],
+            "scopeId": "SCOPE-P1",
+            "usedSpan": {
+              "bound": true,
+              "startUtf8": 0,
+              "endUtf8": 20,
+              "sourceSpanId": "SPAN-P1"
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          },
+          {
+            "passageSymbol": "M1",
+            "universeMember": true,
+            "courseId": "COURSE-A",
+            "identityKind": "EQUIVALENCE_GROUP",
+            "propositionIdentity": "GROUP-P2",
+            "subject": "SUBJECT-P2",
+            "relationPredicate": "REL-P2",
+            "polarity": "AFFIRMATIVE",
+            "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+            "qualifications": [
+              "QUAL-P2"
+            ],
+            "scopeId": "SCOPE-P2",
+            "usedSpan": {
+              "bound": false,
+              "startUtf8": null,
+              "endUtf8": null,
+              "sourceSpanId": null
+            },
+            "acceptedAuthority": true,
+            "sourceLabelConflict": false,
+            "creditAsUnit": false,
+            "quantificationConflict": false
+          }
+        ]
+      },
+      "restricted": {
+        "classification": "RESTRICTED_PLACEHOLDER",
+        "opaqueItemId": "ITEM-OPAQUE-1",
+        "countingContextId": "CTX-ITEM-1",
+        "benchmarkIdentity": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+        "bindingPresent": true,
+        "authorizedCourseIds": [
+          "COURSE-A"
+        ],
+        "requiredPropositionPointers": [
+          "REQ-GROUP-P1",
+          "REQ-GROUP-P2"
+        ],
+        "relevanceByPropositionIdentity": {
+          "GROUP-P1": true,
+          "GROUP-P2": true
+        },
+        "goldText": null,
+        "requiredPropositionText": null
+      },
+      "relevantGuards": [
+        "USED_MATERIAL_BINDING_REQUIRED"
+      ],
+      "rationale": "One of two material propositions has no exact used span. The item fails. The bound proposition is not returned as a partial quotient.",
+      "authority": "D3_USED_SPAN_BINDING_MISSING; guard family USED_MATERIAL_BINDING_REQUIRED; whole-item fail closed.",
+      "expected": {
+        "outcome": "SCORING_FAILURE",
+        "failureCode": "D3_USED_SPAN_BINDING_MISSING",
+        "failureReason": "MISSING_EXACT_USED_UTF8_SPAN",
+        "quotientEmitted": false,
+        "score": null,
+        "numerator": null,
+        "denominator": null,
+        "CKeys": [],
+        "RKeys": [],
+        "counts": null,
+        "relevantGuards": [
+          "USED_MATERIAL_BINDING_REQUIRED"
+        ]
+      }
+    }
+  ]
+}

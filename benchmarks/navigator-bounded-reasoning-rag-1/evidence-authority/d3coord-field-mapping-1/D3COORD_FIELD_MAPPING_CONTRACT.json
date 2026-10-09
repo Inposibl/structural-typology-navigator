@@ -1,0 +1,351 @@
+{
+  "act": "NBRR1.D3-OPTION-P-D3COORD-FIELD-MAPPING-1.CONTRACT-1",
+  "author": "Grok 4.7",
+  "authoritativeNow": false,
+  "authority": {
+    "anchorAdjudicationsSha256": "f28fc94c7d3edc3d06991503a9fc709daf057181c497b562a94d6c4e96886c4b",
+    "benchmarkSha256": "5549d7f60e982697bc0bc1f3c9b410615905430138461ae543471745e96fa1f3",
+    "branch": "integration/academy-main-reconciliation-1",
+    "declarativeCountingContractSha256": "0b29ab6ce3ef45d4fad5736035566e8574c3cc769e8fb55aa8bf19a7af967fe4",
+    "groupCount": 47,
+    "groupIdListSha256": "1ea63abf4bb4fa2a53ba8bfe985582595c966fa4542dd4c4c34f855dd47a4cea",
+    "groupIdListSource": "d3-semantic-equivalence-map.candidate.json groups[].groupId in published order, newline-joined, no trailing newline",
+    "guardCount": 519,
+    "guardIdListSha256": "fd201cb129fa1a59c0c83a0d3825aa5b5dcd4ce1cbaade5c880e4897fb5e1abe",
+    "guardIdListSource": "d3-counting-contract.json residualClassAdmission.guardIds in published order, newline-joined, no trailing newline",
+    "head": "ed8d82ec69f1ca87b391b35e80d443f8d1a7da36",
+    "newSemanticGuardIds": 0,
+    "optionPAddendumSha256": "90fc2a19c6504208f543838783819f2a00e30296220bde8b5d6c3eccaf6d44b6",
+    "optionPContractSha256": "4feb1fdf2a8a3b58c1aa0b0ac748c9b98d3361cfb4e5adc91d2f69a1e69c1eea",
+    "optionPVectorsSha256": "56e28e8f80572c5ee4fdc92f87c30c1b96d966f4877e73a7090c269a9d7d19eb",
+    "remote": "https://github.com/Inposibl/structural-typology-navigator.git",
+    "repository": "/Users/entp_psyche/Desktop/InvestProjects2026/structural-typology-navigator-main-reconciliation-1",
+    "semanticMapSha256": "5094a769e3f27c98dc1ae89b14bd253f01f95b64f715d9aa9c51e103f436c5d7",
+    "universeSha256": "0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e"
+  },
+  "canonicalization": {
+    "coordinateIdentity": "D3COORD- plus the SHA-256 of the coordinate payload. anchorId and courseId are inside that payload.",
+    "coordinateSchema": "nbrr1-d3-accepted-distinct-coordinate/1",
+    "encoding": "UTF-8",
+    "excludedFromCoordinate": [
+      "memberId",
+      "passage id",
+      "passage SHA-256",
+      "UTF-8 offsets",
+      "sourceSpanId",
+      "occurrence count",
+      "gold text",
+      "required-proposition text",
+      "witness text",
+      "contribution vector"
+    ],
+    "null": "JSON null when an accepted field is absent. The key is present.",
+    "objectKeys": "lexicographically sorted",
+    "qualifications": "A string becomes a one-element array. An array of strings is sorted. A string is not split. An absent field is null.",
+    "quantificationWhenAbsent": "NOT_STATED_ON_ACCEPTED_RECORD",
+    "separators": [
+      "comma",
+      "colon"
+    ],
+    "subjectArray": "Never hashed as one subject and never collapsed into one string.",
+    "trailingNewline": false,
+    "unicode": "literal",
+    "unitIdentity": "SHA-256 of the unit payload. benchmarkIdentity and countingContextId are inside that payload.",
+    "unitSchema": "nbrr1-d3-option-p-unit/1"
+  },
+  "catalogue68": {
+    "anchorId": "D3ANCH-d7ed0d4b1eccf9d9b911e73cbc5373747973e76d4998ebaf91676ac95478775e",
+    "bindingSubject": "ENFP",
+    "catalogue": 68,
+    "failureCode": "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED",
+    "otherCarrierAlreadyBoundTo": "ENTP",
+    "partialQuotient": false,
+    "typeSubjectContextSubject": "ENTP"
+  },
+  "controllingPreflight": {
+    "act": "NBRR1.D3-OPTION-P-D3COORD-FIELD-MAPPING-1.PREFLIGHT-1",
+    "reverifiedByThisAct": true,
+    "verdict": "READY_FOR_FIELD_MAPPING_CONTRACT_AUTHORING"
+  },
+  "date": "2026-10-08",
+  "documentRelation": {
+    "eitherFileMaySilentlyOverrideTheOther": false,
+    "markdownAndJsonRenderedFromOneRuleTable": true,
+    "mismatchIsAnIvDefect": true
+  },
+  "excludedSources": [
+    "normalizedSentence",
+    "localSubjectBindings[].basis",
+    "headingWitness.text",
+    "completionWitness.text",
+    "occurrence text",
+    "predicateWitness.text",
+    "qualificationWitness.text",
+    "countingScope.semanticTarget",
+    "countingScope.scopeRestriction",
+    "countingScope.corpusTargetId",
+    "sourceLabelConflict.disputedSubjects",
+    "atomicCells[].subject",
+    "memberId",
+    "passage SHA-256",
+    "UTF-8 offsets"
+  ],
+  "failures": {
+    "codes": {
+      "CONFLICTING_SUBJECT_PATHS": "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED",
+      "COURSE_MISMATCH": "D3_MAP_SCOPE_AMBIGUOUS",
+      "EMPTY_C": "NOT_APPLICABLE EMPTY_DENOMINATOR, numerator 0, denominator 0, score null",
+      "ENFP_ENTP_ATTRIBUTION_CONFLICT": "D3_SOURCE_TYPE_LABEL_CONFLICT",
+      "GROUP_AND_COORDINATE_DOUBLE_COUNT": {
+        "code": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "reason": null
+      },
+      "MISSING_DISCRIMINATOR": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+      "MISSING_LOCAL_SUBJECT": "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED",
+      "MULTI_TOKEN_HEADING_PROSE": "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED",
+      "NONMATERIAL_INDEPENDENT_CREDIT": "D3_NONMATERIAL_INDEPENDENT_CREDIT",
+      "NON_UNIT_WEIGHT": {
+        "code": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "reason": "NON_UNIT_WEIGHT"
+      },
+      "PASSAGE_SINGLETON": {
+        "code": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "reason": "PASSAGE_SINGLETON_FALLBACK"
+      },
+      "QUALIFICATION_COLLAPSE": "D3_QUALIFICATION_SCOPE_COLLAPSE",
+      "QUANTIFICATION_CONFLICT": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+      "SUBJECT_INVENTORY_DISCREPANCY": "D3_MAP_SCOPE_AMBIGUOUS",
+      "SUBJECT_LIST_COLLAPSE": {
+        "code": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "reason": "SUBJECT_LIST_COLLAPSED"
+      },
+      "TYPE_INFERENCE_APPLIED": {
+        "code": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "reason": null
+      },
+      "UNAUTHORIZED_COURSE": "D3_SCOPE_MISSING",
+      "UNKNOWN_ANCHOR": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+      "UNKNOWN_DECISION": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+      "UNKNOWN_GROUP": "D3_USED_MATERIAL_APPLICABILITY_UNRESOLVED",
+      "VECTOR_KEY": {
+        "code": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "reason": "VECTOR_KEY_FALLBACK"
+      },
+      "WITNESS_TEXT_USED_AS_IDENTITY": {
+        "code": "D3_ACCEPTED_AUTHORITY_CONFLICT",
+        "reason": null
+      }
+    },
+    "conditionsAreNotGuardIds": true,
+    "digestDrift": "Option P calls D3_DIGEST_DRIFT an admission failure. The frozen counting contract still says SCORING_FAILURE. Neither emits a number. This candidate does not amend that file.",
+    "inheritedFromOptionPWithoutResequencing": [
+      "D3_USED_SPAN_BINDING_MISSING",
+      "D3_CONTEXT_PARTITION_MISSING",
+      "D3_DIGEST_DRIFT",
+      "D3_R_NOT_SUBSET_OF_C",
+      "D3_FOREIGN_EVIDENCE_IDENTITY",
+      "D3_ATOMIC_RATIO_AGGREGATION"
+    ],
+    "simultaneousCodes": {
+      "demonstration": "V26",
+      "rule": "One applicable code is emitted. Two or more applicable codes suppress the quotient and leave emittedFailureCode null. This candidate does not invent an order.",
+      "settled": false
+    },
+    "wholeItem": "Any applicable failure code suppresses every key. No partial C and no numeric quotient."
+  },
+  "fieldMappings": {
+    "groupPath": {
+      "additionalD3Coord": false,
+      "atomicCellSubject": "atomicCells[].subject is not a coordinate source.",
+      "courseId": "groups[].countingScope.courseId",
+      "polarity": "groups[].countingScope.polarity when the key is present, otherwise null",
+      "propositionIdentity": "groups[].groupId",
+      "qualifications": "groups[].countingScope.qualifications normalized by the Option P rule, otherwise null",
+      "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+      "relationPredicate": "groups[].countingScope.relationPredicate when the key is present, otherwise null",
+      "scopeId": "groups[].scopeId when the key is present, otherwise null",
+      "subject": "groups[].countingScope.materialSubject when the key is present, otherwise null",
+      "when": "decision is EQUIVALENT_SCOPED or ATOMIC_COMPARISON_DECOMPOSITION, or the contribution is already bound to an accepted groupId."
+    },
+    "localSubjectScopedDistinct": {
+      "anchorId": "anchorId",
+      "conflict": "Both subjects present and unequal: D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED for the whole item.",
+      "contextCheck": "carriers[].typeSubjectContext.subject when the object exists",
+      "coordinateKind": "LOCAL_SUBJECT",
+      "courseId": "courseId",
+      "multiToken": "Whitespace in the binding subject: D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED. The clause is not hashed.",
+      "nullContext": "A null typeSubjectContext still allows one single-token binding subject.",
+      "polarity": null,
+      "qualifications": null,
+      "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+      "relationPredicate": null,
+      "scopeId": null,
+      "singleToken": "A non-empty string with no whitespace. UNKNOWN is such a token and is not rewritten.",
+      "subject": "localSubjectBindings[].subject joined to carriers[] by memberId"
+    },
+    "qualificationScopedDistinct": {
+      "anchorId": "anchorId",
+      "coordinateKind": "QUALIFICATION",
+      "courseId": "courseId",
+      "excluded": [
+        "predicateWitness.text",
+        "qualificationWitness.text"
+      ],
+      "polarity": null,
+      "qualifications": [
+        "qualifiedPropositions[].qualification"
+      ],
+      "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+      "relationPredicate": null,
+      "scopeId": null,
+      "subject": "qualifiedPropositions[].subject",
+      "typeInferencePermitted": "A prohibition. It is not a payload field. UNKNOWN is not replaced."
+    },
+    "subjectScopedDistinct": {
+      "anchorId": "anchorId",
+      "coordinateKind": "TYPE_SUBJECT",
+      "courseId": "courseId",
+      "crossCheck": "the set of carriers[].typeSubjectContext.subject",
+      "discrepancy": "A missing carrier subject, or unequal sets, fails the whole item with D3_MAP_SCOPE_AMBIGUOUS. Neither source is preferred.",
+      "polarity": "semanticAnalysis.polarity copied exactly",
+      "qualifications": "semanticAnalysis.qualifications as a one-element array",
+      "quantification": "NOT_STATED_ON_ACCEPTED_RECORD",
+      "relationPredicate": "semanticAnalysis.relationPredicate copied exactly",
+      "repeatedToken": "One coordinate per distinct token on that anchor.",
+      "scopeId": null,
+      "subject": "each distinct string in semanticAnalysis.materialSubject"
+    }
+  },
+  "implementationAuthorized": false,
+  "independentlyVerified": false,
+  "kind": "D3COORD_FIELD_MAPPING_CONTRACT",
+  "maslowCatalogue25": {
+    "anchorId": "D3ANCH-5df251cda236184cb35bd620964710d885ba64a27109b2862b456a1edc3e223f",
+    "catalogue": 25,
+    "failureCode": "D3_LOCAL_SUBJECT_APPLICABILITY_UNRESOLVED",
+    "partialQuotient": false,
+    "proseHashed": false,
+    "reasonShape": "localSubjectBindings[].subject is a multi-token heading clause and typeSubjectContext is null"
+  },
+  "ownerAccepted": false,
+  "precedence": [
+    "Owner-accepted D3 semantic and procedure authority, including the 47 groups and the 519 guards.",
+    "Owner-accepted OD-1 Option P.",
+    "Owner-accepted Option P operational addendum and operational contract. Frozen candidate-status labels in those files do not cancel the later explicit acceptance.",
+    "This field-mapping contract only after its own independent IV and a later Owner acceptance.",
+    "Historical candidate files are provenance only."
+  ],
+  "preservation": {
+    "anchorsRewritten": false,
+    "groupsRewritten": false,
+    "guardsRewritten": false,
+    "optionPRewritten": false,
+    "repositoryMutated": false,
+    "scorerImplemented": false
+  },
+  "schemaVersion": "nbrr1-d3coord-field-mapping-contract/1",
+  "scorerImplemented": false,
+  "status": "CANDIDATE_PENDING_INDEPENDENT_IV",
+  "verifiedInventory": {
+    "anchorCount": 85,
+    "categories": [
+      {
+        "coordinateKind": null,
+        "decision": "EQUIVALENT_SCOPED",
+        "disposition": "ACCEPTED_GROUP_IDENTITY",
+        "emitsD3Coord": false,
+        "observedCount": 32,
+        "rule": "Use the one published groupId. Do not emit a D3COORD."
+      },
+      {
+        "coordinateKind": null,
+        "decision": "ATOMIC_COMPARISON_DECOMPOSITION",
+        "disposition": "ACCEPTED_GROUP_IDENTITY",
+        "emitsD3Coord": false,
+        "observedCount": 3,
+        "rule": "Use the two published groupIds on atomicCells[].groupId. Cell subject text does not create a coordinate."
+      },
+      {
+        "coordinateKind": "TYPE_SUBJECT",
+        "decision": "SUBJECT_SCOPED_DISTINCT",
+        "disposition": "PUBLISHED_DISTINCT_COORDINATE",
+        "emitsD3Coord": true,
+        "observedCount": 20,
+        "rule": "One coordinate per distinct element of semanticAnalysis.materialSubject after the carrier cross-check."
+      },
+      {
+        "coordinateKind": "LOCAL_SUBJECT",
+        "decision": "LOCAL_SUBJECT_SCOPED_DISTINCT",
+        "disposition": "PUBLISHED_DISTINCT_COORDINATE",
+        "emitsD3Coord": true,
+        "observedCount": 8,
+        "rule": "One coordinate per distinct single-token localSubjectBindings[].subject. Conflicts and multi-token clauses fail the item."
+      },
+      {
+        "coordinateKind": "QUALIFICATION",
+        "decision": "QUALIFICATION_SCOPED_DISTINCT",
+        "disposition": "PUBLISHED_DISTINCT_COORDINATE",
+        "emitsD3Coord": true,
+        "observedCount": 1,
+        "rule": "One coordinate per qualifiedPropositions element. Catalogue 47 publishes two."
+      },
+      {
+        "coordinateKind": null,
+        "decision": "NONMATERIAL_EDITORIAL",
+        "disposition": "NONMATERIAL_EXCLUSION",
+        "emitsD3Coord": false,
+        "observedCount": 6,
+        "rule": "Emit no coordinate. Independent credit is D3_NONMATERIAL_INDEPENDENT_CREDIT."
+      },
+      {
+        "coordinateKind": null,
+        "decision": "NONMATERIAL_LABEL_STRIP",
+        "disposition": "NONMATERIAL_EXCLUSION",
+        "emitsD3Coord": false,
+        "observedCount": 5,
+        "rule": "Emit no coordinate. Independent credit is D3_NONMATERIAL_INDEPENDENT_CREDIT."
+      },
+      {
+        "coordinateKind": null,
+        "decision": "NONMATERIAL_TABLE_HEADER",
+        "disposition": "NONMATERIAL_EXCLUSION",
+        "emitsD3Coord": false,
+        "observedCount": 2,
+        "rule": "Emit no coordinate. Independent credit is D3_NONMATERIAL_INDEPENDENT_CREDIT."
+      },
+      {
+        "coordinateKind": null,
+        "decision": "BIBLIOGRAPHIC_TITLE_ONLY",
+        "disposition": "NONMATERIAL_EXCLUSION",
+        "emitsD3Coord": false,
+        "observedCount": 3,
+        "rule": "Emit no coordinate. Independent credit is D3_NONMATERIAL_INDEPENDENT_CREDIT."
+      },
+      {
+        "coordinateKind": null,
+        "decision": "SOURCE_LABEL_CONFLICT",
+        "disposition": "FAIL_CLOSED_SOURCE_CONFLICT",
+        "emitsD3Coord": false,
+        "observedCount": 5,
+        "rule": "Fail D3_SOURCE_TYPE_LABEL_CONFLICT. Do not build a coordinate from disputedSubjects."
+      }
+    ],
+    "decisionCategoryCount": 10,
+    "frozenObservations": {
+      "catalogue68AnchorId": "D3ANCH-d7ed0d4b1eccf9d9b911e73cbc5373747973e76d4998ebaf91676ac95478775e",
+      "catalogue68Conflict": [
+        "ENFP",
+        "ENTP"
+      ],
+      "groupsWithScopeId": 9,
+      "groupsWithoutScopeId": 38,
+      "maslowAnchorId": "D3ANCH-5df251cda236184cb35bd620964710d885ba64a27109b2862b456a1edc3e223f",
+      "maslowCatalogue": 25,
+      "maslowConsumable": false,
+      "quantificationFieldsOnGroups": 0,
+      "subjectScopedPolarity": "AS_STATED_WITH_TYPE_CONTEXT",
+      "subjectScopedSetDisagreements": 0,
+      "unitWeight": 1
+    }
+  }
+}
