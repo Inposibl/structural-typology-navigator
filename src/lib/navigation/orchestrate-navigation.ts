@@ -50,6 +50,10 @@ import {
   composePaymentUnavailableAnswer,
   composeStableNoMatchAnswer,
   composeTechnicalErrorAnswer,
+  composeContentReferenceClarification,
+  composeFollowUpReferenceClarification,
+  composeReferenceClarificationExhausted,
+  isCourseReferenceClarificationText,
   type CourseFollowUpOutcome,
   type ComposeCourseFollowUpOptions,
 } from "./conversation-response.ts";
@@ -85,6 +89,7 @@ import {
   isRecoverableConversationActFailure,
   isRecoverableEvidenceSelectionFailure,
   type NavigatorAnswerOrigin,
+  type NavigatorCourseReferenceStrategy,
   type NavigatorGroundingDetails,
   type NavigatorTurnDetails,
   withNavigatorStage,
@@ -588,6 +593,56 @@ function validatedComparisonCandidates(
   return sameSet ? comparison.courseIds : null;
 }
 
+/**
+ * NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 bounded exit: the same
+ * course-reference clarification is given at most this many times in a row.
+ */
+export const MAX_CONSECUTIVE_COURSE_REFERENCE_CLARIFICATIONS = 2;
+
+/**
+ * Number of immediately preceding (user, clarification) exchanges. Derived from
+ * the relayed history, so the count is stateless and never touches the A14
+ * clarification record or the P03 payment budget; a client that drops or edits
+ * its history can only reset its own counter.
+ */
+function trailingCourseReferenceClarifications(
+  messages: readonly ConversationMessage[],
+): number {
+  let count = 0;
+  for (let k = messages.length - 2; k >= 1; k -= 2) {
+    const assistant = messages[k];
+    const user = messages[k - 1];
+    if (assistant.role !== "assistant" || user.role !== "user") break;
+    if (!isCourseReferenceClarificationText(assistant.content)) break;
+    count += 1;
+  }
+  return count;
+}
+
+function selectCourseReferenceUncertaintyAnswer(
+  messages: readonly ConversationMessage[],
+  proposedState: "COURSE_FOLLOW_UP" | "COURSE_CONTENT",
+  profile: ConversationProfile | undefined,
+): { message: string; strategy: NavigatorCourseReferenceStrategy } {
+  if (
+    trailingCourseReferenceClarifications(messages) >=
+    MAX_CONSECUTIVE_COURSE_REFERENCE_CLARIFICATIONS
+  ) {
+    return {
+      message: composeReferenceClarificationExhausted(),
+      strategy: "EXHAUSTED",
+    };
+  }
+
+  return {
+    message:
+      proposedState === "COURSE_FOLLOW_UP"
+        ? composeFollowUpReferenceClarification(profile)
+        : composeContentReferenceClarification(profile),
+    strategy: "CLARIFY",
+  };
+}
+
 type OrchestrationStateContext = OrchestrateNavigatorOptions["conversationState"];
 
 /**
@@ -669,11 +724,28 @@ export async function orchestrateNavigatorResponse(
     );
   }
 
-  const conversationAct = await classifyActOrDegrade(
+  const classifiedAct = await classifyActOrDegrade(
     messages,
     classifyAct,
     options,
   );
+
+  // NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 (P7-A) — every pre-RAG policy
+  // (payment, factual, contact, scope, meta) sees exactly the act the
+  // pre-correction validator would have produced for this request and state:
+  // the original COURSE_CONTENT for a content conflict, ROUTER_DEGRADED for a
+  // follow-up without literal authority. Commercial and contact outcomes are
+  // therefore unchanged, including an explicit payment that wins before the
+  // uncertainty lane; only the lane that would have retrieved (CONTENT) or
+  // degraded (FOLLOW_UP) is replaced.
+  const unresolvedAct =
+    classifiedAct.state === "COURSE_REFERENCE_UNRESOLVED" ? classifiedAct : null;
+  const conversationAct: ConversationActDecision =
+    unresolvedAct === null
+      ? classifiedAct
+      : unresolvedAct.proposed.state === "COURSE_CONTENT"
+        ? unresolvedAct.proposed
+        : { state: "ROUTER_DEGRADED" };
 
   // P03 — the stored comparison candidates and the liveness of the structured
   // payment clarification they back. Continuation is possible only when the
@@ -934,6 +1006,37 @@ export async function orchestrateNavigatorResponse(
       conversationAct,
       "META",
     );
+  }
+
+  // NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 — the controlled course-reference
+  // uncertainty lane: deterministic and non-technical, binds no course, runs no
+  // retrieval, resolution, selection or composition, and carries no
+  // transactional authority. It invalidates a stored MATCHED selection (P4-B)
+  // and changes strategy after two consecutive identical clarifications.
+  if (unresolvedAct !== null) {
+    const answer = selectCourseReferenceUncertaintyAnswer(
+      messages,
+      unresolvedAct.proposed.state,
+      options.profile,
+    );
+    const result = emptyResult(
+      answer.message,
+      unresolvedAct,
+      "DETERMINISTIC_CONTROL",
+      null,
+      { courseBinding: { kind: "INVALIDATE_SELECTION" } },
+    );
+    return {
+      ...result,
+      observability: {
+        ...(result.observability as NavigatorTurnDetails),
+        courseReferenceUncertainty: {
+          reason: unresolvedAct.reason,
+          strategy: answer.strategy,
+          proposedAct: unresolvedAct.proposed.state,
+        },
+      },
+    };
   }
 
   // EXPERIMENT-1.ROUTER-ACCESS-1 — the fail-closed lane. The provider's act

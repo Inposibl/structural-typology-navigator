@@ -10,6 +10,11 @@ import {
 } from "../academy/course-reference.ts";
 import { getCourseIdentityScope } from "../academy/course-identity-scope.ts";
 import {
+  contentGate,
+  followUpWithoutLiteral,
+  type UnresolvedReason,
+} from "./course-reference-evidence.ts";
+import {
   callDeepSeekJson,
   type DeepSeekClientOptions,
 } from "./deepseek-client.ts";
@@ -67,7 +72,30 @@ export type ConversationActDecision =
    * can never select it, because validation rejects the state outright. It
    * carries no course, no evidence and no RAG authority.
    */
-  | { state: "ROUTER_DEGRADED" };
+  | { state: "ROUTER_DEGRADED" }
+  /**
+   * NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 — server-derived controlled
+   * uncertainty. Returned (never thrown) by the validator when a well-formed
+   * COURSE_FOLLOW_UP has no literal authority but refers to a course, or when a
+   * well-formed COURSE_CONTENT conflicts with the course references of its own
+   * question region. Model-unselectable: validation rejects this state as input.
+   * `proposed` is exactly the decision the pre-correction validator would have
+   * produced (CONTENT) or rejected (FOLLOW_UP), so the orchestrator can keep
+   * every commercial/contact precedence identical. It binds no course.
+   */
+  | {
+      state: "COURSE_REFERENCE_UNRESOLVED";
+      proposed:
+        | { state: "COURSE_FOLLOW_UP"; courseId: string; evidenceRequested: boolean }
+        | {
+            state: "COURSE_CONTENT";
+            courseId: string;
+            evidenceRequested: boolean;
+            contentIntentEvidence: string;
+          };
+      reason: UnresolvedReason;
+      referencedCourseIds: string[];
+    };
 
 export class ConversationActDecisionValidationError extends Error {
   readonly code = "INVALID_CONVERSATION_ACT_DECISION";
@@ -341,6 +369,22 @@ export function validateConversationActDecision(
     }
 
     if (!courseWasActuallyInConversation(value.courseId, messages)) {
+      // P1-0 — the literal authority above is unchanged; nothing below accepts.
+      // A course reference without literal authority becomes the controlled
+      // uncertainty; everything else keeps the unchanged rejection.
+      const gate = followUpWithoutLiteral(messages, value.courseId);
+      if (gate.kind === "UNRESOLVED") {
+        return {
+          state: "COURSE_REFERENCE_UNRESOLVED",
+          proposed: {
+            state: "COURSE_FOLLOW_UP",
+            courseId: value.courseId,
+            evidenceRequested: value.evidenceRequested,
+          },
+          reason: gate.reason,
+          referencedCourseIds: gate.referencedCourseIds,
+        };
+      }
       throw new ConversationActDecisionValidationError(
         "COURSE_FOLLOW_UP cannot bind to a course that is absent from the conversation.",
       );
@@ -406,6 +450,24 @@ export function validateConversationActDecision(
       throw new ConversationActDecisionValidationError(
         "COURSE_CONTENT.contentIntentEvidence must be a bounded verbatim fragment of the latest user message.",
       );
+    }
+
+    // CORR5 — question-anchored course-reference consistency. Runs after every
+    // unchanged check above (schema, F-1, routability, boolean, verbatim) and
+    // can only turn their acceptance into the controlled uncertainty.
+    const gate = contentGate(messages, value.courseId, value.contentIntentEvidence);
+    if (gate.kind === "UNRESOLVED") {
+      return {
+        state: "COURSE_REFERENCE_UNRESOLVED",
+        proposed: {
+          state: "COURSE_CONTENT",
+          courseId: value.courseId,
+          evidenceRequested: value.evidenceRequested,
+          contentIntentEvidence: value.contentIntentEvidence,
+        },
+        reason: gate.reason,
+        referencedCourseIds: gate.referencedCourseIds,
+      };
     }
 
     return {

@@ -4,12 +4,17 @@ import test from "node:test";
 import {
   CLARIFICATION_BUDGET,
   ConversationStateValidationError,
+  applyOrchestratedTurn,
   applySessionFreshness,
   createInitialConversationState,
   normalizeConversationStatePayload,
   toSessionTimestamp,
+  withClarification,
+  withCourseBinding,
+  withCourseReferents,
   SESSION_CONTEXT_TTL_MS,
 } from "../../src/lib/navigation/conversation-state.ts";
+import { paymentMultipleIssueKey } from "../../src/lib/academy/payment-policy.ts";
 
 const T0 = Date.parse("2026-09-19T12:00:00.000Z");
 
@@ -245,4 +250,69 @@ test("A28: a stale candidate is metadata, never an active binding", () => {
   );
   assert.equal(roundTripped.courseMatch, "UNKNOWN");
   assert.equal(roundTripped.selectedCourseId, null);
+});
+
+/* ---------------------------------------------------------------------------
+ * NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 P4-B — INVALIDATE_SELECTION.
+ * ------------------------------------------------------------------------ */
+
+const UNCERTAINTY_OUTCOME = {
+  act: "NAVIGATE",
+  flowId: "COURSE_SELECTION",
+  message: "Не могу надёжно определить, что речь идёт о курсе Академии.",
+  decision: { kind: "INVALIDATE_SELECTION" },
+  clarification: { status: "NOT_APPLICABLE", issueKey: null, attempts: 0, question: null },
+  catalogAuthorityVersion: null,
+  transactionalAuthorityVersion: null,
+  pendingConfirmation: null,
+} as const;
+
+test("P4-B: an uncertainty turn invalidates a stored MATCHED selection and lastAssistant reflects it", () => {
+  const matched = withCourseBinding(createInitialConversationState(T0), "MATCHED", "levels-of-consciousness");
+  const next = applyOrchestratedTurn(matched, UNCERTAINTY_OUTCOME, T0 + 1_000);
+
+  assert.equal(next.courseMatch, "UNKNOWN");
+  assert.equal(next.selectedCourseId, null);
+  assert.equal(next.lastAssistant?.act, "NAVIGATE");
+  assert.equal(next.lastAssistant?.courseId, null);
+  assert.equal(next.activeFlow?.id, "COURSE_SELECTION");
+  // The result is a valid canonical wire state.
+  assert.deepEqual(normalizeConversationStatePayload(JSON.parse(JSON.stringify(next)), T0 + 1_000), next);
+});
+
+test("P4-B: P03 candidates, the payment clarification record and other bindings are preserved", () => {
+  const issueKey = paymentMultipleIssueKey(["levels-of-consciousness", "maslow"]);
+  let ambiguous = withCourseBinding(createInitialConversationState(T0), "AMBIGUOUS", null);
+  ambiguous = withCourseReferents(ambiguous, ["levels-of-consciousness", "maslow"]);
+  ambiguous = withClarification(ambiguous, { issueKey, attempts: 2, strategyKey: "ask-more-2" });
+  const next = applyOrchestratedTurn(ambiguous, UNCERTAINTY_OUTCOME, T0 + 1_000);
+
+  assert.equal(next.courseMatch, "AMBIGUOUS");
+  assert.deepEqual(next.courseReferents, ["levels-of-consciousness", "maslow"]);
+  assert.deepEqual(next.clarification, { issueKey, attempts: 2, strategyKey: "ask-more-2" });
+  assert.deepEqual(normalizeConversationStatePayload(JSON.parse(JSON.stringify(next)), T0 + 1_000), next);
+
+  const noMatch = withCourseBinding(createInitialConversationState(T0), "NO_CURRENT_COURSE_MATCH", null);
+  assert.equal(applyOrchestratedTurn(noMatch, UNCERTAINTY_OUTCOME, T0 + 1_000).courseMatch, "NO_CURRENT_COURSE_MATCH");
+
+  const unknown = createInitialConversationState(T0);
+  const after = applyOrchestratedTurn(unknown, UNCERTAINTY_OUTCOME, T0 + 1_000);
+  assert.equal(after.courseMatch, "UNKNOWN");
+  assert.equal(after.selectedCourseId, null);
+});
+
+test("P4-B: invalidation does not reset an open clarification record (unlike a resolved decision)", () => {
+  const record = { issueKey: "ask-more:maslow+normative-situation", attempts: 1, strategyKey: "ask-more-1" };
+  const matched = withClarification(
+    withCourseBinding(createInitialConversationState(T0), "MATCHED", "maslow"),
+    record,
+  );
+  assert.deepEqual(applyOrchestratedTurn(matched, UNCERTAINTY_OUTCOME, T0 + 1_000).clarification, record);
+  // Control: an ordinary resolved decision still resets it.
+  const resolved = applyOrchestratedTurn(
+    matched,
+    { ...UNCERTAINTY_OUTCOME, decision: { kind: "NO_MATCH" } },
+    T0 + 1_000,
+  );
+  assert.equal(resolved.clarification, null);
 });

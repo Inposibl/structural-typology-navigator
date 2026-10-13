@@ -295,6 +295,11 @@ function orchestrationAct(
   switch (result.conversationAct.state) {
     case "NAVIGATE":
       return { act: "NAVIGATE", flowId: "COURSE_SELECTION" };
+    // NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 — the course-reference
+    // uncertainty lane asks for a catalog course identity, so it continues
+    // course selection; it is neither out of scope nor a course follow-up.
+    case "COURSE_REFERENCE_UNRESOLVED":
+      return { act: "NAVIGATE", flowId: "COURSE_SELECTION" };
     case "COURSE_FOLLOW_UP":
       return { act: "COURSE_FOLLOW_UP", flowId: "COURSE_FOLLOW_UP" };
     // EXPERIMENT-1.ROUTER-ACCESS-1: an evidential turn about a course's

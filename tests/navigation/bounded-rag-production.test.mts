@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  MAX_CONSECUTIVE_COURSE_REFERENCE_CLARIFICATIONS,
   orchestrateNavigatorResponse,
 } from "../../src/lib/navigation/orchestrate-navigation.ts";
 import {
@@ -18,17 +19,23 @@ import {
   selectCourseEvidence,
 } from "../../src/lib/knowledge/retrieval/evidence-selector.ts";
 import {
+  composeContentReferenceClarification,
   composeCourseFollowUpAnswer,
+  composeFollowUpReferenceClarification,
+  composeReferenceClarificationExhausted,
 } from "../../src/lib/navigation/conversation-response.ts";
 import {
   createNavigatorGroundingLog,
+  createNavigatorTurnLog,
   NAVIGATOR_GROUNDING_STAGES,
   type NavigatorGroundingDetails,
+  type NavigatorTurnDetails,
 } from "../../src/lib/navigation/navigator-observability.ts";
 import { FollowUpGroundingAuditError } from "../../src/lib/navigation/follow-up-grounding.ts";
-import { getAcademyCourse } from "../../src/lib/academy/course-catalog.ts";
+import { ACADEMY_COURSES, getAcademyCourse } from "../../src/lib/academy/course-catalog.ts";
+import { resolveCourseReferences } from "../../src/lib/academy/course-reference.ts";
 import type { ResolvedCourseEvidence } from "../../src/lib/knowledge/retrieval/authority-resolver.ts";
-import type { ConversationMessage } from "../../src/lib/chat-contract.ts";
+import type { ConversationMessage, ConversationProfile } from "../../src/lib/chat-contract.ts";
 
 /* ---------------------------------------------------------------------------
  * NAVIGATOR-BOUNDED-REASONING-RAG-1.PRODUCTION-IMPLEMENTATION-1
@@ -1236,4 +1243,290 @@ test("G31: PDS performs zero retrieval, authority or selector operations on the 
   assert.equal(resolveCalls, 0);
   assert.equal(selectorCalls, 0);
   assert.equal(result.observability?.courseId, null);
+});
+
+/* =========================================================================
+ * NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 — controlled course-reference
+ * uncertainty (COURSE_REFERENCE_UNRESOLVED) in the orchestrator.
+ * ====================================================================== */
+
+type LaneCounters = {
+  retrieve: number;
+  resolve: number;
+  select: number;
+  compose: number;
+  composeFollowUp: number;
+  route: number;
+};
+
+async function orchestrateWith(
+  messages: ConversationMessage[],
+  decision: Record<string, unknown>,
+  extra: {
+    conversationState?: Record<string, unknown>;
+    profile?: ConversationProfile;
+    requestId?: string;
+    evidence?: () => ResolvedCourseEvidence[];
+  } = {},
+) {
+  const counters: LaneCounters = { retrieve: 0, resolve: 0, select: 0, compose: 0, composeFollowUp: 0, route: 0 };
+  const retrieved: string[] = [];
+  const result = await orchestrateNavigatorResponse(messages, {
+    requestId: extra.requestId,
+    profile: extra.profile,
+    conversationState: extra.conversationState as never,
+    dependencies: {
+      classifyAct: (history) =>
+        routeConversationAct(history, { callJson: async () => structuredClone(decision) }),
+      retrieve: async (courseId) => {
+        counters.retrieve += 1;
+        retrieved.push(courseId);
+        return { hasActiveSources: true, bindings: [], matches: [] };
+      },
+      resolve: () => {
+        counters.resolve += 1;
+        return extra.evidence?.() ?? [];
+      },
+      selectEvidence: async (_need, evidence) => {
+        counters.select += 1;
+        return { status: "SUPPORTED", evidence: [{ chunkId: evidence[0]?.chunkId ?? 0, quote: SUPPORTED_QUOTE }] };
+      },
+      route: async () => {
+        counters.route += 1;
+        return { state: "NO_CURRENT_COURSE_MATCH", rationale: "STUB" } as never;
+      },
+      compose: async () => {
+        counters.compose += 1;
+        return "STUB COMPOSE";
+      },
+      composeFollowUp: async (_messages, _act, options) => {
+        counters.composeFollowUp += 1;
+        options.onOutcome?.({ answerOrigin: "RAG_EVIDENCE", fallback: "NONE" });
+        return "STUB FOLLOW-UP";
+      },
+    },
+  });
+  return { result, counters, retrieved };
+}
+
+const ZERO_COUNTERS: LaneCounters = { retrieve: 0, resolve: 0, select: 0, compose: 0, composeFollowUp: 0, route: 0 };
+const VY_FOLLOW_UP_CLARIFICATION = composeFollowUpReferenceClarification(undefined);
+const VY_CONTENT_CLARIFICATION = composeContentReferenceClarification(undefined);
+
+function assertInertUncertaintyLane(
+  outcome: Awaited<ReturnType<typeof orchestrateWith>>,
+  message: string,
+): void {
+  const { result, counters } = outcome;
+  assert.equal(result.conversationAct.state, "COURSE_REFERENCE_UNRESOLVED");
+  assert.deepEqual(counters, ZERO_COUNTERS);
+  assert.equal(result.message, message);
+  assert.equal(result.contactCard, null);
+  assert.equal(result.decision, null);
+  assert.equal(result.courseEvidenceCount, 0);
+  assert.equal(result.evidenceSelectionStatus, "NOT_RUN");
+  assert.equal(result.observability?.ragInvoked, false);
+  assert.equal(result.observability?.courseId, null);
+  assert.equal(result.observability?.answerOrigin, "DETERMINISTIC_CONTROL");
+  assert.equal(result.observability?.conversationAct, "COURSE_REFERENCE_UNRESOLVED");
+  assert.deepEqual(result.clarification, { status: "NOT_APPLICABLE", issueKey: null, attempts: 0, question: null });
+  assert.equal(result.stateEffects.transactionalAuthorityVersion, null);
+  assert.equal(result.stateEffects.catalogAuthorityVersion, null);
+  assert.equal(result.stateEffects.pendingConfirmation, null);
+  assert.deepEqual(result.stateEffects.courseBinding, { kind: "INVALIDATE_SELECTION" });
+}
+
+test("U1: an unresolved COURSE_CONTENT takes the inert lane — zero retrieval, authority, selection and composition", async () => {
+  const text = "Что на курсе алхимии говорят о нормативной ситуации";
+  const outcome = await orchestrateWith([{ role: "user", content: text }], {
+    state: "COURSE_CONTENT",
+    courseId: "normative-situation",
+    evidenceRequested: false,
+    contentIntentEvidence: text,
+  });
+  assertInertUncertaintyLane(outcome, VY_CONTENT_CLARIFICATION);
+  assert.deepEqual(outcome.result.observability?.courseReferenceUncertainty, {
+    reason: "CONTENT_UNRESOLVED_REFERENCE_IN_QUESTION",
+    strategy: "CLARIFY",
+    proposedAct: "COURSE_CONTENT",
+  });
+});
+
+test("U2: a non-literal COURSE_FOLLOW_UP becomes the follow-up clarification instead of a technical error", async () => {
+  const outcome = await orchestrateWith(
+    [{ role: "user", content: "Прохожу курс про Маслоу на Coursera. Что там разбирается?" }],
+    { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
+  );
+  assertInertUncertaintyLane(outcome, VY_FOLLOW_UP_CLARIFICATION);
+  assert.doesNotMatch(outcome.result.message, /технический сбой|техническая проблема/u);
+  assert.equal(outcome.result.observability?.courseReferenceUncertainty?.reason, "FOLLOW_UP_REFERENCE_NOT_ESTABLISHED");
+
+  const ty = await orchestrateWith(
+    [{ role: "user", content: "Прохожу курс про Маслоу на Coursera. Что там разбирается?" }],
+    { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
+    { profile: { displayName: null, addressMode: "TY", nameDeclined: false, pendingUserRequest: null } },
+  );
+  assert.equal(ty.result.message, composeFollowUpReferenceClarification({ displayName: null, addressMode: "TY", nameDeclined: false, pendingUserRequest: null }));
+});
+
+test("U3: clarification wording names no catalog title, URL or alias and is not technical", () => {
+  const texts = [
+    VY_FOLLOW_UP_CLARIFICATION,
+    VY_CONTENT_CLARIFICATION,
+    composeFollowUpReferenceClarification({ displayName: null, addressMode: "TY", nameDeclined: false, pendingUserRequest: null }),
+    composeContentReferenceClarification({ displayName: null, addressMode: "TY", nameDeclined: false, pendingUserRequest: null }),
+    composeReferenceClarificationExhausted(),
+  ];
+  for (const text of texts) {
+    assert.equal(resolveCourseReferences(text).kind, "ZERO", text);
+    for (const course of ACADEMY_COURSES) {
+      assert.ok(!text.includes(course.title), text);
+      assert.ok(course.url === null || !text.includes(course.url), text);
+    }
+    assert.doesNotMatch(text, /технический|ошибк|не существует/u);
+  }
+  assert.equal(new Set(texts).size, texts.length);
+});
+
+test("U4: the A2-5 cases keep their safety consequences under the approved CORR5 reason", async () => {
+  for (const courseId of ["normative-situation", "maslow"]) {
+    const outcome = await orchestrateWith(
+      [{ role: "user", content: "What do they teach in the alchemy course" }],
+      {
+        state: "COURSE_CONTENT",
+        courseId,
+        evidenceRequested: false,
+        contentIntentEvidence: "What do they teach in the alchemy course",
+      },
+      { conversationState: { courseMatch: "MATCHED", selectedCourseId: "levels-of-consciousness" } },
+    );
+    assertInertUncertaintyLane(outcome, VY_CONTENT_CLARIFICATION);
+    assert.equal(outcome.result.observability?.courseReferenceUncertainty?.reason, "CONTENT_UNRESOLVED_REFERENCE_IN_QUESTION");
+  }
+});
+
+test("U5: bounded exit — after two consecutive identical clarifications the third turn is the exhausted exit", async () => {
+  const question = "Прохожу курс про Маслоу на Coursera. Что там разбирается?";
+  const decision = { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false };
+  const history: ConversationMessage[] = [];
+  const strategies: string[] = [];
+  for (let turn = 0; turn < 5; turn += 1) {
+    history.push({ role: "user", content: question });
+    const { result } = await orchestrateWith([...history], decision);
+    strategies.push(result.observability?.courseReferenceUncertainty?.strategy ?? "?");
+    history.push({ role: "assistant", content: result.message });
+  }
+  assert.deepEqual(strategies, ["CLARIFY", "CLARIFY", "EXHAUSTED", "CLARIFY", "CLARIFY"]);
+  assert.equal(history[5]?.content, composeReferenceClarificationExhausted());
+  assert.equal(MAX_CONSECUTIVE_COURSE_REFERENCE_CLARIFICATIONS, 2);
+
+  // Recovery: an independent question is answered normally after clarifications.
+  const recovered = await orchestrateWith(
+    [...history.slice(0, 4), { role: "user", content: "Что такое архетип Тени?" }],
+    { state: "COURSE_CONTENT", courseId: "structural-typology", evidenceRequested: false, contentIntentEvidence: "Что такое архетип Тени?" },
+  );
+  assert.equal(recovered.result.conversationAct.state, "COURSE_CONTENT");
+  assert.deepEqual(recovered.retrieved, ["structural-typology"]);
+});
+
+test("U6 (P7-A): an explicit payment in the same turn keeps its production precedence over the uncertainty lane", async () => {
+  const outcome = await orchestrateWith(
+    [{ role: "user", content: "Хочу оплатить курс Маслоу" }],
+    {
+      state: "COURSE_CONTENT",
+      courseId: "normative-situation",
+      evidenceRequested: false,
+      contentIntentEvidence: "Хочу оплатить курс Маслоу",
+    },
+  );
+  // The validator alone would be unresolved (C3) …
+  assert.equal(
+    validateConversationActDecision(
+      { state: "COURSE_CONTENT", courseId: "normative-situation", evidenceRequested: false, contentIntentEvidence: "Хочу оплатить курс Маслоу" },
+      [{ role: "user", content: "Хочу оплатить курс Маслоу" }],
+    ).state,
+    "COURSE_REFERENCE_UNRESOLVED",
+  );
+  // … but the explicit (K1) payment decides the turn exactly as before.
+  assert.equal(outcome.result.observability?.answerOrigin, "PAYMENT_POLICY");
+  assert.equal(outcome.result.conversationAct.state, "COURSE_CONTENT");
+  assert.match(outcome.result.message, /start=maslow/u);
+  assert.equal(outcome.counters.retrieve, 0);
+});
+
+test("U7 (P7-A): contact precedence is unchanged in an unresolved content turn", async () => {
+  const text = "Как связаться с менеджером по поводу курса алхимии?";
+  const outcome = await orchestrateWith([{ role: "user", content: text }], {
+    state: "COURSE_CONTENT",
+    courseId: "maslow",
+    evidenceRequested: false,
+    contentIntentEvidence: text,
+  });
+  assert.notEqual(outcome.result.conversationAct.state, "COURSE_REFERENCE_UNRESOLVED");
+  assert.equal(outcome.result.observability?.answerOrigin, "CONTACT_POLICY");
+  assert.equal(outcome.counters.retrieve, 0);
+});
+
+test("U8: an accepted independent question keeps RAG isolation — cross-course evidence takes the factual ceiling", async () => {
+  const text = "Прохожу курс английского. Что такое архетип Тени?";
+  const outcome = await orchestrateWith(
+    [{ role: "user", content: text }],
+    { state: "COURSE_CONTENT", courseId: "structural-typology", evidenceRequested: false, contentIntentEvidence: "Что такое архетип Тени?" },
+    { evidence: () => maslowEvidence() },
+  );
+  assert.equal(outcome.result.conversationAct.state, "COURSE_CONTENT");
+  assert.deepEqual(outcome.retrieved, ["structural-typology"]);
+  assert.equal(outcome.result.observability?.answerOrigin, "FACTUAL_CEILING");
+  assert.equal(outcome.counters.composeFollowUp, 0);
+});
+
+test("U9: the uncertainty turn log is typed, whitelisted and serialized only on that act", async () => {
+  const lines: string[] = [];
+  const info = console.info;
+  console.info = (line: string) => lines.push(line);
+  try {
+    await orchestrateWith(
+      [{ role: "user", content: "Прохожу курс алхимии. Что там разбирают?" }],
+      { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
+      { requestId: "req-1" },
+    );
+  } finally {
+    console.info = info;
+  }
+  assert.ok(lines.every((line) => !line.includes("алхимии")));
+
+  const base: NavigatorTurnDetails = {
+    lane: "ORCHESTRATION",
+    conversationAct: "COURSE_REFERENCE_UNRESOLVED",
+    decision: null,
+    courseId: null,
+    ragInvoked: false,
+    authorityResolved: false,
+    activeBindingCount: 0,
+    bindingSourceSlugs: [],
+    retrievedMatchCount: 0,
+    resolvedEvidenceCount: 0,
+    selectedEvidence: [],
+    evidenceSelectionStatus: "NOT_RUN",
+    answerOrigin: "DETERMINISTIC_CONTROL",
+    fallback: "NONE",
+    crossCourseLeakageDetected: false,
+    courseReferenceUncertainty: { reason: "CONTENT_BACK_REFERENCE_UNRESOLVED", strategy: "EXHAUSTED", proposedAct: "COURSE_CONTENT" },
+  };
+  assert.deepEqual(createNavigatorTurnLog("r", base).courseReferenceUncertainty, {
+    reason: "CONTENT_BACK_REFERENCE_UNRESOLVED",
+    strategy: "EXHAUSTED",
+    proposedAct: "COURSE_CONTENT",
+  });
+  const forged = createNavigatorTurnLog("r", {
+    ...base,
+    courseReferenceUncertainty: { reason: "Прохожу курс алхимии" as never, strategy: "x" as never, proposedAct: "y" as never },
+  });
+  assert.deepEqual(forged.courseReferenceUncertainty, { reason: "UNKNOWN", strategy: "CLARIFY", proposedAct: "COURSE_CONTENT" });
+  // Any other act never carries the field, even if a caller passes one.
+  const other = createNavigatorTurnLog("r", { ...base, conversationAct: "COURSE_CONTENT" });
+  assert.ok(!("courseReferenceUncertainty" in other));
+  const plain = { ...base };
+  delete plain.courseReferenceUncertainty;
+  assert.ok(!("courseReferenceUncertainty" in createNavigatorTurnLog("r", plain)));
 });

@@ -1713,6 +1713,13 @@ export type OrchestratedDecision =
   | { kind: "NONE" }
   | { kind: "MATCHED"; courseId: string }
   | { kind: "NO_MATCH" }
+  /**
+   * NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 P4-B — a controlled course-reference
+   * uncertainty invalidates a stored commercial selection (MATCHED → UNKNOWN)
+   * without touching the clarification record, the P03 candidate set or any
+   * other state. Produced only by the orchestrator's uncertainty lane.
+   */
+  | { kind: "INVALIDATE_SELECTION" }
   | {
       kind: "AMBIGUOUS";
       /**
@@ -1817,6 +1824,14 @@ export function applyOrchestratedTurn(
         next = withCourseReferents(next, outcome.decision.courseIds);
       }
       break;
+    case "INVALIDATE_SELECTION":
+      // Only a MATCHED selection is invalidated. A non-empty candidate set is
+      // valid only under AMBIGUOUS with no selection, so it is never present
+      // here and P03 referents are preserved untouched.
+      if (next.courseMatch === "MATCHED") {
+        next = withCourseBinding(next, "UNKNOWN", null);
+      }
+      break;
     default:
       break;
   }
@@ -1833,7 +1848,11 @@ export function applyOrchestratedTurn(
       attempts: CLARIFICATION_BUDGET,
       strategyKey: null,
     });
-  } else if (outcome.decision.kind !== "NONE") {
+  } else if (
+    outcome.decision.kind !== "NONE" &&
+    // P4-B: an uncertainty turn resolves no issue, so it keeps the record.
+    outcome.decision.kind !== "INVALIDATE_SELECTION"
+  ) {
     // The unresolved issue no longer blocks routing, so its counter resets.
     next = withClarification(next, null);
   }

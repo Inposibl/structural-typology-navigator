@@ -37,6 +37,7 @@ import {
 } from "./follow-up-grounding.ts";
 import type { NavigatorGroundingDetails } from "./navigator-observability.ts";
 import {
+  ACADEMY_CONTACT_POLICY,
   composeCourseFactualCeilingAnswer,
   composeAcademyContactAnswer,
 } from "../academy/contact-policy.ts";
@@ -593,6 +594,63 @@ export function composePaymentCourseIdentityRequiredAnswer(
     "Перед оплатой нужно заново определить курс. Назови, пожалуйста, точное название курса — до этого платёжную ссылку не дам.",
     "Перед оплатой нужно заново определить курс. Назовите, пожалуйста, точное название курса — до этого платёжную ссылку не дам.",
   );
+}
+
+/* ---------------------------------------------------------------------------
+ * NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 — controlled course-reference
+ * uncertainty (COURSE_REFERENCE_UNRESOLVED). Wording is the CORR4-approved text.
+ *   - no catalog title, no course URL and no catalog alias, so the Navigator's
+ *     own uncertainty text can never mint literal course authority;
+ *   - no technical-failure wording and no "course does not exist" claim;
+ *   - the exhausted variant offers three exits and asks nothing.
+ * ------------------------------------------------------------------------ */
+
+export function composeFollowUpReferenceClarification(
+  profile?: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "Не могу надёжно определить, что речь идёт о курсе Академии. Если ты спрашиваешь о курсе Академии — назови его так, как он указан в каталоге (можно скопировать название со страницы курса). Если вопрос по теме, а не о конкретном курсе, — задай его отдельным вопросом, и я отвечу по материалам Академии.",
+    "Не могу надёжно определить, что речь идёт о курсе Академии. Если вы спрашиваете о курсе Академии — назовите его так, как он указан в каталоге (можно скопировать название со страницы курса). Если вопрос по теме, а не о конкретном курсе, — задайте его отдельным вопросом, и я отвечу по материалам Академии.",
+  );
+}
+
+export function composeContentReferenceClarification(
+  profile?: PackageAProfile,
+): string {
+  return modePick(
+    profile,
+    "В вопросе есть ссылка на курс или программу, которую я не могу надёжно сопоставить с курсами Академии. Я отвечаю только по материалам Академии: если тебя интересует тема — задай вопрос о ней отдельно, без ссылки на другой курс; если речь о курсе Академии — назови его так, как он указан в каталоге.",
+    "В вопросе есть ссылка на курс или программу, которую я не могу надёжно сопоставить с курсами Академии. Я отвечаю только по материалам Академии: если вас интересует тема — задайте вопрос о ней отдельно, без ссылки на другой курс; если речь о курсе Академии — назовите его так, как он указан в каталоге.",
+  );
+}
+
+export function composeReferenceClarificationExhausted(): string {
+  return `Похоже, мне не удаётся определить, о каком курсе идёт речь, поэтому не буду повторять тот же вопрос. Можно попросить список курсов Академии («Какие курсы есть в Академии?»), задать вопрос по теме без упоминания курса или написать в чат Академии в Telegram: ${ACADEMY_CONTACT_POLICY.fastTelegramUrl} (${ACADEMY_CONTACT_POLICY.fastTelegramHandle}).`;
+}
+
+const COURSE_REFERENCE_CLARIFICATION_TEXTS: ReadonlySet<string> = new Set(
+  (["TY", "VY"] as const).flatMap((addressMode) => {
+    const profile: ConversationProfile = {
+      displayName: null,
+      addressMode,
+      nameDeclined: false,
+      pendingUserRequest: null,
+    };
+    return [
+      composeFollowUpReferenceClarification(profile),
+      composeContentReferenceClarification(profile),
+    ];
+  }),
+);
+
+/**
+ * True for an assistant text that is one of the course-reference
+ * clarifications (not the exhausted variant). The bounded exit counts these
+ * in the relayed history.
+ */
+export function isCourseReferenceClarificationText(content: string): boolean {
+  return COURSE_REFERENCE_CLARIFICATION_TEXTS.has(content);
 }
 
 export function composePaymentUnavailableAnswer(courseTitle: string): string {

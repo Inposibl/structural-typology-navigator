@@ -64,6 +64,35 @@ export type NavigatorTurnFallback =
   /** EXPERIMENT-1.ROUTER-ACCESS-1 — the act router's validation failure lane. */
   | "ROUTER_VALIDATION_DEGRADED";
 
+/**
+ * NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 — the closed reason codes of the
+ * controlled course-reference uncertainty, mirrored for logging only (the
+ * validator's own list lives in course-reference-evidence.ts; a test keeps the
+ * two identical). Any other value is serialized as UNKNOWN, never verbatim.
+ */
+export const NAVIGATOR_COURSE_REFERENCE_REASONS = [
+  "FOLLOW_UP_REFERENCE_NOT_ESTABLISHED",
+  "FOLLOW_UP_UNRESOLVED_COURSE_REFERENCE",
+  "CONTENT_UNRESOLVED_REFERENCE_IN_QUESTION",
+  "CONTENT_OUTSIDE_QUESTION_REFERENCES",
+  "CONTENT_ANAPHORIC_REFERENCE_UNRESOLVED",
+  "CONTENT_OUTSIDE_QUESTION_SUBJECTS",
+  "CONTENT_BACK_REFERENCE_UNRESOLVED",
+] as const;
+
+export type NavigatorCourseReferenceReason =
+  (typeof NAVIGATOR_COURSE_REFERENCE_REASONS)[number];
+
+/** Which deterministic answer the uncertainty lane gave: a clarification or the bounded exit. */
+export type NavigatorCourseReferenceStrategy = "CLARIFY" | "EXHAUSTED";
+
+export type NavigatorCourseReferenceUncertaintyLog = {
+  reason: NavigatorCourseReferenceReason | "UNKNOWN";
+  strategy: NavigatorCourseReferenceStrategy;
+  /** The act the model proposed; the uncertainty bound none of it. */
+  proposedAct: "COURSE_FOLLOW_UP" | "COURSE_CONTENT";
+};
+
 export type NavigatorSelectedEvidenceLog = {
   chunkId: number;
   sourceSlug: string;
@@ -80,6 +109,7 @@ export type NavigatorTurnDetails = {
     | "OUT_OF_SCOPE"
     | "FACTUAL"
     | "ROUTER_DEGRADED"
+    | "COURSE_REFERENCE_UNRESOLVED"
     | null;
   decision: "RECOMMEND_COURSE" | "ASK_MORE" | "NO_CURRENT_COURSE_MATCH" | null;
   courseId: string | null;
@@ -94,6 +124,8 @@ export type NavigatorTurnDetails = {
   answerOrigin: NavigatorAnswerOrigin;
   fallback: NavigatorTurnFallback;
   crossCourseLeakageDetected: boolean;
+  /** Present only on a COURSE_REFERENCE_UNRESOLVED turn. */
+  courseReferenceUncertainty?: NavigatorCourseReferenceUncertaintyLog;
 };
 
 export type NavigatorTurnLog = NavigatorTurnDetails & {
@@ -135,6 +167,26 @@ export function createNavigatorTurnLog(
     answerOrigin: details.answerOrigin,
     fallback: details.fallback,
     crossCourseLeakageDetected: false,
+    ...(details.conversationAct === "COURSE_REFERENCE_UNRESOLVED" &&
+    details.courseReferenceUncertainty !== undefined
+      ? {
+          courseReferenceUncertainty: {
+            reason: NAVIGATOR_COURSE_REFERENCE_REASONS.includes(
+              details.courseReferenceUncertainty.reason as NavigatorCourseReferenceReason,
+            )
+              ? details.courseReferenceUncertainty.reason
+              : "UNKNOWN",
+            strategy:
+              details.courseReferenceUncertainty.strategy === "EXHAUSTED"
+                ? "EXHAUSTED"
+                : "CLARIFY",
+            proposedAct:
+              details.courseReferenceUncertainty.proposedAct === "COURSE_FOLLOW_UP"
+                ? "COURSE_FOLLOW_UP"
+                : "COURSE_CONTENT",
+          },
+        }
+      : {}),
   };
 }
 
