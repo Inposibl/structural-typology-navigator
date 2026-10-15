@@ -28,6 +28,7 @@ import type { NavigationDecision } from "./navigation-decision.ts";
 import type { RetrieveCourseKnowledgeOptions } from "../knowledge/retrieval/retrieve-course-knowledge.ts";
 import {
   routeConversationAct,
+  ConversationActDecisionValidationError,
   type ConversationActDecision,
   type RouteConversationActOptions,
 } from "./conversation-act-router.ts";
@@ -95,6 +96,28 @@ import {
   withNavigatorStage,
 } from "./navigator-observability.ts";
 import { formulateFollowUpContentQuery } from "./follow-up-query.ts";
+import {
+  attemptIntentPlanRecovery,
+  createIntentPlanRecoveryLog,
+  isF1CourseContentRejection,
+  type PlanExtractionDependency,
+  type SegmentDispatchResult,
+  type IntentPlanRecoveryOutcome,
+} from "./intent-plan-recovery.ts";
+import {
+  accountTaskOutcomes,
+  createTaskCoverageLog,
+  assembleTaskResponse,
+  outcomeForTask,
+  type TaskOutcome,
+  type TaskCoverageRecord,
+  type ResponsePiece,
+  type SharedResponseBlock,
+} from "./response-coverage.ts";
+import {
+  undispatchedLineText,
+  type RecoverySegment,
+} from "./task-plan.ts";
 
 export type NavigatorOrchestrationResult = {
   message: string;
@@ -107,6 +130,9 @@ export type NavigatorOrchestrationResult = {
   observability?: NavigatorTurnDetails;
   clarification: OrchestrationClarificationOutcome;
   stateEffects: OrchestrationStateEffects;
+  /** Internal recovery evidence; the API response schema is unchanged. */
+  taskCoverage?: TaskCoverageRecord;
+  taskResponseBlocks?: SharedResponseBlock[];
 };
 
 export type OrchestrationStateEffects = {
@@ -184,6 +210,12 @@ export type OrchestrationDependencies = {
   selectEvidence?: SelectEvidenceDependency;
   compose?: ComposeDependency;
   composeFollowUp?: ComposeFollowUpDependency;
+  /**
+   * NAVIGATOR-INTENT-RECOVERY-ARM-B.IMPLEMENTATION-1 — the single F-1-gated
+   * task-plan extraction request. Defaults to the frozen ARM-B prompt through
+   * the unchanged DeepSeek client; tests inject canned plans.
+   */
+  extractPlan?: PlanExtractionDependency;
 };
 
 export type OrchestrateNavigatorOptions = {
@@ -282,22 +314,69 @@ async function selectEvidenceOrDegrade(
  * no retrieval. Only the validator-rejection class degrades; every transport,
  * timeout and provider failure still reaches the technical-error lane.
  */
+/**
+ * Invocation-local recovery controller. The attempted flag bounds extraction;
+ * completedResult hands the existing result back without re-execution. Nested
+ * segment dispatch passes null and cannot recover again.
+ */
+type PlanRecoveryContext = {
+  attempted: boolean;
+  completedResult: NavigatorOrchestrationResult | null;
+  coverage: TaskCoverageRecord | null;
+};
+
 async function classifyActOrDegrade(
   messages: readonly ConversationMessage[],
   classifyAct: ConversationActDependency,
   options: OrchestrateNavigatorOptions,
+  recovery: PlanRecoveryContext | null,
 ): Promise<ConversationActDecision> {
+  // The typed rejection must be captured locally before the stage wrapper
+  // folds it into a NavigatorStageError: recovery eligibility requires the
+  // genuine exported validation-error class and the precise F-1 failure.
+  let rawRejection: ConversationActDecisionValidationError | null = null;
   try {
-    return await withNavigatorStage("ACT_ROUTER", () =>
-      classifyAct(messages, {
-        env: options.env,
-        fetch: options.fetch,
-        signal: options.signal,
-      }),
-    );
+    return await withNavigatorStage("ACT_ROUTER", async () => {
+      try {
+        return await classifyAct(messages, {
+          env: options.env,
+          fetch: options.fetch,
+          signal: options.signal,
+        });
+      } catch (error) {
+        if (error instanceof ConversationActDecisionValidationError) {
+          rawRejection = error;
+        }
+        throw error;
+      }
+    });
   } catch (error) {
     if (!isRecoverableConversationActFailure(error)) {
       throw error;
+    }
+
+    // NAVIGATOR-INTENT-RECOVERY-ARM-B.IMPLEMENTATION-1 — B-on-failure. The
+    // accepted classifier stays the normal path; exactly once per execution,
+    // and only for the genuine F-1 COURSE_CONTENT-precondition rejection, one
+    // structured task-plan extraction may repair the turn. Every other
+    // validation rejection, every extraction failure and every rejected or
+    // unsafe plan retains the unchanged fail-closed behavior below.
+    if (
+      recovery !== null &&
+      !recovery.attempted &&
+      rawRejection !== null &&
+      isF1CourseContentRejection(rawRejection) &&
+      options.signal?.aborted !== true
+    ) {
+      recovery.attempted = true;
+      const recovered = await attemptPlanRecoveryOrUndefined(
+        messages,
+        options,
+        recovery,
+      );
+      if (recovered !== null) {
+        return recovered;
+      }
     }
 
     if (options.requestId) {
@@ -681,9 +760,28 @@ function deterministicContactAnswer(
   return answer.contactCard === null ? null : answer;
 }
 
+/**
+ * Run the existing turn with one local recovery controller. Accepted-plan
+ * outcomes are attached internally and logged without changing the API schema.
+ */
 export async function orchestrateNavigatorResponse(
   messages: readonly ConversationMessage[],
   options: OrchestrateNavigatorOptions = {},
+): Promise<NavigatorOrchestrationResult> {
+  const recovery: PlanRecoveryContext = { attempted: false, completedResult: null, coverage: null };
+  const result = await orchestrateNavigatorTurn(messages, options, recovery);
+  if (recovery.coverage !== null) {
+    if (options.requestId) console.info(JSON.stringify(createTaskCoverageLog(options.requestId, recovery.coverage)));
+    return { ...result, taskCoverage: recovery.coverage };
+  }
+  return result;
+}
+
+async function orchestrateNavigatorTurn(
+  messages: readonly ConversationMessage[],
+  options: OrchestrateNavigatorOptions,
+  recovery: PlanRecoveryContext | null,
+  paymentMessages: readonly ConversationMessage[] = messages,
 ): Promise<NavigatorOrchestrationResult> {
   const classifyAct =
     options.dependencies?.classifyAct ?? routeConversationAct;
@@ -728,7 +826,11 @@ export async function orchestrateNavigatorResponse(
     messages,
     classifyAct,
     options,
+    recovery,
   );
+  if (recovery?.completedResult !== null && recovery?.completedResult !== undefined) {
+    return recovery.completedResult;
+  }
 
   // NAVIGATOR-ACT-ROUTER-ALIAS-CORRECTION-1 (P7-A) — every pre-RAG policy
   // (payment, factual, contact, scope, meta) sees exactly the act the
@@ -787,7 +889,7 @@ export async function orchestrateNavigatorResponse(
   // effective request exactly as every other lane does. Duplicated or
   // multi-line text is consequently never collapsed or qualified here.
   const paymentDecision = resolveEnrollmentPaymentDecision(
-    query,
+    lastUserMessage(paymentMessages),
     conversationAct,
     {
       selectedCourseId: storedState?.selectedCourseId ?? null,
@@ -800,11 +902,15 @@ export async function orchestrateNavigatorResponse(
     },
   );
 
+  // NAVIGATOR-COURSE-IDENTITY-COMPARISON-CORR-1 — the latest effective user
+  // message lets the factual composer prove a same-course equivalence operand
+  // by operand; it adds no binding, retrieval or commercial effect.
   const factualMessage = conversationAct.state === "FACTUAL"
     ? composeFactualAnswer(
         conversationAct.intents,
         options.conversationState?.selectedCourseId ?? null,
         options.profile,
+        query,
       )
     : null;
   const factualUsesTransactionalAuthority =
@@ -1544,4 +1650,219 @@ async function composeClarificationTurn(
       pendingConfirmation: null,
     },
   };
+}
+
+/** Runs one plan and integrates already completed results; no primary re-execution. */
+async function attemptPlanRecoveryOrUndefined(
+  messages: readonly ConversationMessage[],
+  options: OrchestrateNavigatorOptions,
+  recovery: PlanRecoveryContext,
+): Promise<ConversationActDecision | null> {
+  const requestId = options.requestId ?? "";
+  const outcome = await attemptIntentPlanRecovery<NavigatorOrchestrationResult>({
+    messages,
+    extractionOptions: { env: options.env, fetch: options.fetch, signal: options.signal },
+    extraction: options.dependencies?.extractPlan,
+    preflight: (segments, tasks) => {
+      if (tasks.length === 1) return null;
+      for (const segment of segments) {
+        if (segment.kind !== "ACT") continue;
+        const payment = recoveryPaymentDecision(messages, segment.act, options);
+        if (payment.kind !== "NONE") return payment.kind;
+      }
+      return null;
+    },
+    dispatchSegment: (segment, index) => dispatchRecoverySegment(
+      segment, messages, options, requestId, index,
+    ),
+  });
+  if (options.requestId) {
+    console.info(JSON.stringify(createIntentPlanRecoveryLog(requestId, {
+      disposition: outcome.disposition,
+      reasonCode: "reasonCode" in outcome ? outcome.reasonCode : null,
+      problems: outcome.disposition === "PLAN_REJECTED" ? outcome.problems : undefined,
+      activeTaskCount: "activeTasks" in outcome ? outcome.activeTasks.length : null,
+      segments: "segments" in outcome ? outcome.segments : undefined,
+      extractionCalls: true,
+    })));
+  }
+  if (outcome.disposition === "EXTRACTION_FAILED" || outcome.disposition === "PLAN_REJECTED") return null;
+  if (!("dispatchResults" in outcome)) {
+    recovery.coverage = accountTaskOutcomes(outcome.activeTasks, outcome.activeTasks.map((task, index) =>
+      outcomeForTask({ task, taskIndex: index, selectedCourseId: options.conversationState?.selectedCourseId ?? null, limitationReason: "WHOLE_TURN_REFUSED" }),
+    ));
+    return null;
+  }
+  const completed = finalizeRecoveredPlan(outcome, options);
+  recovery.completedResult = completed;
+  recovery.coverage = completed.taskCoverage ?? null;
+  return completed.conversationAct;
+}
+
+/** Same original effective query and structured payment context as the main lane. */
+function recoveryPaymentDecision(
+  messages: readonly ConversationMessage[],
+  act: ConversationActDecision,
+  options: OrchestrateNavigatorOptions,
+): ReturnType<typeof resolveEnrollmentPaymentDecision> {
+  const state = options.conversationState;
+  const referents = state?.courseReferents ?? [];
+  const issue = options.clarification?.priorIssueKey ?? null;
+  const live = state?.lastAssistant?.act === "CLARIFICATION" && issue !== null &&
+    state?.clarification?.issueKey === issue && issue === paymentMultipleIssueKey(referents) &&
+    state?.courseMatch === "AMBIGUOUS" && (state?.selectedCourseId ?? null) === null &&
+    state?.staleReference == null && referents.length > 0;
+  return resolveEnrollmentPaymentDecision(lastUserMessage(messages), act, {
+    selectedCourseId: state?.selectedCourseId ?? null,
+    courseMatch: state?.courseMatch ?? "UNKNOWN",
+    staleCourseReference: state?.staleReference != null,
+    courseReferents: referents,
+    pendingPaymentClarification: live,
+  });
+}
+
+/** Content uses its own task span; payment always uses the original request. */
+async function dispatchRecoverySegment(
+  segment: Extract<RecoverySegment, { kind: "ACT" }>,
+  messages: readonly ConversationMessage[],
+  options: OrchestrateNavigatorOptions,
+  requestId: string,
+  segmentIndex: number,
+): Promise<SegmentDispatchResult<NavigatorOrchestrationResult>> {
+  const scoped = segment.evidenceSpan !== null &&
+    (segment.act.state === "COURSE_FOLLOW_UP" || segment.act.state === "COURSE_CONTENT" || segment.act.state === "FACTUAL");
+  const segmentMessages = scoped
+    ? [...messages.slice(0, -1), { role: "user" as const, content: segment.evidenceSpan! }]
+    : messages;
+  const result = await orchestrateNavigatorTurn(segmentMessages, {
+    ...options,
+    requestId: requestId.length > 0 ? `${requestId}:PLANREC:${segmentIndex + 1}` : undefined,
+    dependencies: {
+      ...(options.dependencies ?? {}),
+      classifyAct: async () => structuredClone(segment.act),
+      // Only a single PAYMENT/RECOMMEND plan can map NAVIGATE.
+      ...(segment.act.state === "NAVIGATE" ? {} : {
+        route: async () => { throw new Error("Recovery content dispatch must not re-route."); },
+      }),
+      extractPlan: undefined,
+    },
+  }, null, messages);
+  return {
+    bindingKind: recoveryBindingKind(result),
+    pendingConfirmation: result.stateEffects.pendingConfirmation != null,
+    answerOrigin: result.observability?.answerOrigin ?? null,
+    message: result.message,
+    value: result,
+  };
+}
+
+function recoveryBindingKind(result: NavigatorOrchestrationResult): SegmentDispatchResult["bindingKind"] {
+  const explicit = result.stateEffects.courseBinding;
+  if (explicit !== undefined) {
+    return explicit.kind === "MATCHED" || explicit.kind === "NO_MATCH" || explicit.kind === "AMBIGUOUS"
+      ? explicit.kind : "NONE";
+  }
+  const decision = result.decision;
+  if (decision === null) return "NONE";
+  if (decision.state === "RECOMMEND_COURSE") return "MATCHED";
+  if (decision.state === "NO_CURRENT_COURSE_MATCH") return "NO_MATCH";
+  if (decision.state === "ASK_MORE" && decision.candidateCourseIds.length > 1) return "AMBIGUOUS";
+  return "NONE";
+}
+
+function recoveryLimitationText(
+  segment: RecoverySegment,
+  options: OrchestrateNavigatorOptions,
+): string {
+  const evidence = segment.evidenceSpan ?? "";
+  if (options.profile?.addressMode !== "TY") {
+    return segment.kind === "LINE" ? segment.text : undispatchedLineText(evidence);
+  }
+  if (segment.kind === "LINE" && segment.lineKind === "PAYMENT") {
+    return "Об оплате и записи: в этом ответе я не даю платёжных ссылок и не оформляю оплату. Если хочешь оплатить курс, напиши об этом отдельным сообщением с названием курса.";
+  }
+  if (segment.kind === "LINE" && segment.lineKind === "RECOMMEND") {
+    return "Подходит ли тебе курс, лучше решить отдельно: опиши, пожалуйста, твою задачу, и я помогу с выбором.";
+  }
+  return `Часть твоего сообщения («${evidence}») я в этом ответе не разобрал — задай её, пожалуйста, отдельным сообщением.`;
+}
+
+type CompletedPlanRecovery = Extract<
+  IntentPlanRecoveryOutcome<NavigatorOrchestrationResult>,
+  { disposition: "RECOVERED_SINGLE_ACT" | "RECOVERED_COMPOSED" }
+>;
+
+function finalizeRecoveredPlan(
+  execution: CompletedPlanRecovery,
+  options: OrchestrateNavigatorOptions,
+): NavigatorOrchestrationResult {
+  const primary = execution.primarySegmentIndex === null ? null
+    : execution.dispatchResults[execution.primarySegmentIndex];
+  const owner = execution.commitPrimary ? primary?.value ?? null : null;
+  const neutral = emptyResult(
+    composeTechnicalErrorAnswer(options.profile, true),
+    { state: "ROUTER_DEGRADED" }, "DETERMINISTIC_CONTROL",
+  );
+  // A failed primary never promotes a secondary's binding/decision/provenance.
+  const base = owner ?? {
+    ...neutral, decision: null, clarification: NOT_APPLICABLE_CLARIFICATION,
+    stateEffects: { catalogAuthorityVersion: null, transactionalAuthorityVersion: null, pendingConfirmation: null },
+  };
+  const outcomes: TaskOutcome[] = [];
+  const pieces: ResponsePiece[] = [];
+  for (const [index, segment] of execution.segments.entries()) {
+    const result = execution.dispatchResults[index];
+    const origin = result?.answerOrigin ?? "DETERMINISTIC_CONTROL";
+    const taskOutcomes = segment.taskIndices.map((taskIndex) => {
+      const task = execution.activeTasks[taskIndex];
+      const limitationReason = segment.kind === "LINE"
+        ? segment.lineKind === "PAYMENT" ? "PAYMENT_TASK_NOT_DISPATCHED_IN_COMPOSITION" as const
+          : segment.lineKind === "RECOMMEND" ? "SELECTION_TASK_NOT_DISPATCHED_IN_COMPOSITION" as const
+            : segment.validatorRejection !== null ? "VALIDATOR_DEMOTED" as const : "EVIDENCE_OR_COURSE_UNDISPATCHED" as const
+        : result === null ? "SEGMENT_DISPATCH_FAILED" as const : undefined;
+      return outcomeForTask({
+        task, taskIndex, selectedCourseId: options.conversationState?.selectedCourseId ?? null,
+        limitationReason,
+        observation: segment.kind === "ACT" && result !== null ? {
+          answerOrigin: origin,
+          decisionState: result.value.decision?.state ?? null,
+          evidenceChunkIds: result.value.observability?.selectedEvidence.map((evidence) => evidence.chunkId) ?? [],
+        } : undefined,
+      });
+    });
+    outcomes.push(...taskOutcomes);
+    const metadata = segment.kind === "ACT" && segment.act.state === "FACTUAL"
+      ? segment.act.intents.find((intent) => intent.kind === "CURRENT_METADATA") : undefined;
+    if (metadata?.kind === "CURRENT_METADATA" && segment.taskIndices.length > 1 &&
+        result !== null && origin === "COMMERCIAL_AUTHORITY") {
+      // One executed handler; field-specific rendering links each fact to its task.
+      for (const taskOutcome of taskOutcomes) {
+        const task = execution.activeTasks[taskOutcome.taskIndex];
+        const text = composeFactualAnswer([{ ...metadata, fields: [task.type as typeof metadata.fields[number]] }],
+          options.conversationState?.selectedCourseId ?? null, options.profile, task.evidence);
+        pieces.push({
+          taskIndices: [taskOutcome.taskIndex], courseIds: taskOutcome.courseIds ?? [],
+          comparison: false, answerOrigin: origin, outcomeKinds: [taskOutcome.outcome],
+          text: text.split("\n").join("\n\n"),
+        });
+      }
+      continue;
+    }
+    pieces.push({
+      taskIndices: segment.taskIndices,
+      courseIds: [...new Set(taskOutcomes.flatMap((outcome) => outcome.courseIds ?? []))],
+      comparison: segment.kind === "ACT" && segment.act.state === "FACTUAL" &&
+        segment.act.intents.some((intent) => intent.kind === "COURSE_COMPARISON"),
+      answerOrigin: segment.kind === "LINE" || result === null ? "LIMITATION" : origin,
+      outcomeKinds: taskOutcomes.map((outcome) => outcome.outcome),
+      text: segment.kind === "ACT" && result !== null ? result.message! : recoveryLimitationText(segment, options),
+    });
+  }
+  const coverage = accountTaskOutcomes(execution.activeTasks, outcomes);
+  const assembled = assembleTaskResponse(pieces);
+  const displayedTasks = new Set(assembled.blocks.flatMap((block) => block.taskIndices));
+  if (displayedTasks.size !== execution.activeTasks.length) {
+    throw new Error("A recovered task has an outcome but no displayed answer or limitation.");
+  }
+  return { ...base, message: assembled.message, taskCoverage: coverage, taskResponseBlocks: assembled.blocks };
 }

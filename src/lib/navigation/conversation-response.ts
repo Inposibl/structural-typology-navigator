@@ -9,6 +9,7 @@ import {
   type AcademyCourse,
 } from "../academy/course-catalog.ts";
 import { getPublicCourseOutcomes } from "../academy/public-course-outcomes.ts";
+import { resolveCourseReferences } from "../academy/course-reference.ts";
 import {
   getAuthoritativeCoursePrice,
 } from "../academy/commercial-authority.ts";
@@ -775,11 +776,140 @@ function courseComparisonBlock(course: AcademyCourse): string {
   ].join("\n");
 }
 
+/* ---------------------------------------------------------------------------
+ * NAVIGATOR-COURSE-IDENTITY-COMPARISON-CORR-1 — same-course equivalence.
+ *
+ * A validated COURSE_COMPARISON may carry one known course plus the unknown
+ * flag when the user in fact named that one course twice. The identity is
+ * confirmed only when the latest effective user message is exactly the bounded
+ * construction «<A> и <B> — это же одно и то же» (em dash or ASCII hyphen) and
+ * EACH operand is proved, on its own, to be a complete name of the proposed
+ * course: its exact catalog title, or a governed alias span with no residue.
+ * Whole-message resolver output is supporting evidence only, never the proof,
+ * so a known name beside a foreign program, or inside a longer foreign title,
+ * keeps the unknown-name answer. No binding, retrieval or commercial effect.
+ * ------------------------------------------------------------------------ */
+
+const SAME_COURSE_EQUIVALENCE =
+  /^\s*(\S.*?)\s+[—-]\s+это\s+же\s+одно\s+и\s+то\s+же\s*$/iu;
+
+const EQUIVALENCE_OPERAND_WORD = /^[а-яёa-z]+$/iu;
+
+/** Longest inflectional ending accepted after a governed alias stem. */
+const MAX_ALIAS_ENDING_LETTERS = 3;
+
+export type CourseOperandAuthority = "CATALOG_TITLE" | "GOVERNED_ALIAS_SPAN";
+
+export type SameCourseEquivalence = {
+  courseId: string;
+  operands: readonly [
+    { text: string; authority: CourseOperandAuthority },
+    { text: string; authority: CourseOperandAuthority },
+  ];
+};
+
+function namesCourse(text: string, courseId: string): boolean {
+  return resolveCourseReferences(text).courseIds.some((id) => id === courseId);
+}
+
+/**
+ * The complete operand is a name of the course: either exactly its catalog
+ * title, or letters-only words that the governed resolver maps to this one
+ * course with nothing left over — every word is required for the match, no
+ * word carries a glued foreign prefix, and only a short ending follows the
+ * matched stem. Anything else is not proved.
+ */
+export function proveCourseOperandIdentity(
+  operand: string,
+  course: AcademyCourse,
+): CourseOperandAuthority | null {
+  const normalized = operand.trim().replace(/\s+/gu, " ");
+  if (normalized.length === 0) return null;
+  if (normalized.toLowerCase() === course.title.toLowerCase()) {
+    return "CATALOG_TITLE";
+  }
+
+  const words = normalized.split(" ");
+  if (!words.every((word) => EQUIVALENCE_OPERAND_WORD.test(word))) return null;
+  const resolution = resolveCourseReferences(normalized);
+  if (resolution.kind !== "ONE" || resolution.courseIds[0] !== course.id) {
+    return null;
+  }
+
+  const withWord = (index: number, replacement: string): string =>
+    words
+      .map((word, at) => (at === index ? replacement : word))
+      .filter((word) => word.length > 0)
+      .join(" ");
+
+  for (const [index, word] of words.entries()) {
+    if (namesCourse(withWord(index, ""), course.id)) return null;
+    if (namesCourse(withWord(index, word.slice(1)), course.id)) return null;
+    let stem = word.length;
+    while (stem > 1 && namesCourse(withWord(index, word.slice(0, stem - 1)), course.id)) {
+      stem -= 1;
+    }
+    if (word.length - stem > MAX_ALIAS_ENDING_LETTERS) return null;
+  }
+  return "GOVERNED_ALIAS_SPAN";
+}
+
+export function proveSameCourseEquivalence(
+  intent: Extract<FactualIntent, { kind: "COURSE_COMPARISON" }>,
+  latestUserMessage: string,
+): SameCourseEquivalence | null {
+  if (!intent.hasUnknownCourse || intent.courseIds.length !== 1) return null;
+  const course = getAcademyCourse(intent.courseIds[0]);
+  if (course === null) return null;
+
+  const construction = SAME_COURSE_EQUIVALENCE.exec(latestUserMessage);
+  if (construction === null) return null;
+  const words = construction[1].split(/\s+/u);
+  const conjunctions = words.flatMap((word, index) =>
+    word.toLowerCase() === "и" ? [index] : [],
+  );
+  if (conjunctions.length !== 1) return null;
+  const at = conjunctions[0];
+  const first = words.slice(0, at).join(" ");
+  const second = words.slice(at + 1).join(" ");
+
+  const firstAuthority = proveCourseOperandIdentity(first, course);
+  const secondAuthority = proveCourseOperandIdentity(second, course);
+  if (firstAuthority === null || secondAuthority === null) return null;
+
+  const whole = resolveCourseReferences(latestUserMessage);
+  if (whole.kind !== "ONE" || whole.courseIds[0] !== course.id) return null;
+
+  return {
+    courseId: course.id,
+    operands: [
+      { text: first, authority: firstAuthority },
+      { text: second, authority: secondAuthority },
+    ],
+  };
+}
+
+function composeSameCourseIdentityAnswer(
+  equivalence: SameCourseEquivalence,
+): string {
+  const course = getAcademyCourse(equivalence.courseId) as AcademyCourse;
+  const [first, second] = equivalence.operands;
+  return `Да, «${first.text}» и «${second.text}» обозначают один и тот же курс Академии: «${course.title}».`;
+}
+
 export function composeCourseComparisonAnswer(
   intent: Extract<FactualIntent, { kind: "COURSE_COMPARISON" }>,
   profile?: PackageAProfile,
+  latestUserMessage?: string,
 ): string {
   if (intent.hasUnknownCourse || intent.courseIds.length !== 2) {
+    const equivalence =
+      latestUserMessage === undefined
+        ? null
+        : proveSameCourseEquivalence(intent, latestUserMessage);
+    if (equivalence !== null) {
+      return composeSameCourseIdentityAnswer(equivalence);
+    }
     return modePick(
       profile,
       "Не могу выполнить сравнение: один из названных курсов не найден в текущем каталоге Академии. Уточни точное название.",
@@ -804,6 +934,7 @@ export function composeFactualAnswer(
   intents: readonly FactualIntent[],
   selectedCourseId: string | null,
   profile?: PackageAProfile,
+  latestUserMessage?: string,
 ): string {
   return intents.map((intent) => {
     switch (intent.kind) {
@@ -816,7 +947,7 @@ export function composeFactualAnswer(
       case "CURRENT_METADATA":
         return composeCurrentMetadataAnswer(intent, selectedCourseId, profile);
       case "COURSE_COMPARISON":
-        return composeCourseComparisonAnswer(intent, profile);
+        return composeCourseComparisonAnswer(intent, profile, latestUserMessage);
     }
   }).join("\n\n");
 }

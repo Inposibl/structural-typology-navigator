@@ -31,6 +31,7 @@ import type {
 } from "../../src/lib/chat-contract.ts";
 import { orchestrateNavigatorResponse } from "../../src/lib/navigation/orchestrate-navigation.ts";
 import { routeConversationAct } from "../../src/lib/navigation/conversation-act-router.ts";
+import { routeEducationalNavigation } from "../../src/lib/navigation/router.ts";
 import {
   composeContentReferenceClarification,
   composeFollowUpReferenceClarification,
@@ -204,6 +205,8 @@ test("A04: a control act never reaches the routed path", async () => {
 
 type Msg = { role: "user" | "assistant"; content: string };
 type DecideFn = (effectiveLatest: string) => Record<string, unknown>;
+/** Provider JSON for the selection router; the real router validator still runs on it. */
+type RouteFn = (messages: readonly Msg[]) => Record<string, unknown>;
 type TurnOut = {
   status: number;
   message: string;
@@ -216,6 +219,10 @@ type TurnOut = {
   retrieved: string[];
   classifierCalls: number;
   paymentCourse: string | null;
+  paymentBot: boolean;
+  pendingQuestion: string | null;
+  routerCalls: number;
+  routerPrompts: string[];
   handoff: string | null;
   uncertainty: boolean;
   keys: string[];
@@ -258,7 +265,7 @@ function wireState(build: (state: ConversationState) => ConversationState): unkn
 }
 
 async function runSequence(
-  turns: Array<{ user: string; decide: DecideFn }>,
+  turns: Array<{ user: string; decide: DecideFn; route?: RouteFn }>,
   options: { initial?: unknown; prior?: Msg[] } = {},
 ): Promise<TurnOut[]> {
   let history: Msg[] = [...(options.prior ?? [])];
@@ -268,6 +275,8 @@ async function runSequence(
     history = [...history, { role: "user", content: turn.user }];
     const retrieved: string[] = [];
     let classifierCalls = 0;
+    let routerCalls = 0;
+    const routerPrompts: string[] = [];
     const orchestrate: typeof orchestrateNavigatorResponse = (messages, orchestrationOptions) =>
       orchestrateNavigatorResponse(messages, {
         ...orchestrationOptions,
@@ -283,7 +292,18 @@ async function runSequence(
             return { hasActiveSources: true, bindings: [], matches: [] };
           },
           resolve: () => [],
-          route: async () => ({ state: "NO_CURRENT_COURSE_MATCH", rationale: "STUB" }) as never,
+          route: async (routeMessages, routeOptions) => {
+            routerCalls += 1;
+            const decideRoute = turn.route;
+            if (!decideRoute) return { state: "NO_CURRENT_COURSE_MATCH", rationale: "STUB" } as never;
+            return routeEducationalNavigation(routeMessages, {
+              ...routeOptions,
+              callJson: async (requestMessages) => {
+                routerPrompts.push(requestMessages[0]?.content ?? "");
+                return decideRoute(routeMessages as Msg[]);
+              },
+            });
+          },
           compose: async () => "STUB COMPOSE",
           composeFollowUp: async (_messages, _act, composeOptions) => {
             composeOptions.onOutcome?.({ answerOrigin: "RAG_EVIDENCE", fallback: "NONE" });
@@ -327,6 +347,10 @@ async function runSequence(
       retrieved,
       classifierCalls,
       paymentCourse: pay?.[1] ?? null,
+      paymentBot: message.includes("AST_payment_course_bot"),
+      pendingQuestion: cs?.activeFlow?.pendingQuestion ?? null,
+      routerCalls,
+      routerPrompts,
       handoff: cs?.handoff?.status ?? null,
       uncertainty: UNCERTAINTY_TEXTS.has(message),
       keys: Object.keys(json).sort(),
@@ -489,4 +513,243 @@ test("S15: after an uncertainty turn a price question no longer prices the stale
     { initial: selectedLoc() },
   );
   assert.ok(!price.message.includes(titleOf("levels-of-consciousness")));
+});
+
+/* ---------------------------------------------------------------------------
+ * NAVIGATOR-PRODUCTION-SMOKE-1.C1C2-IMPLEMENTATION-1 — stubbed full sequences.
+ *
+ * Provider JSON is injected per turn for the act classifier and, where the
+ * turn reaches it, for the selection router; the real validators, kernel,
+ * reducer, payment policy and API mapping run unchanged. These are L0 locks of
+ * the deterministic mechanics for FIXED proposals, never a provider-accuracy
+ * claim.
+ * ------------------------------------------------------------------------ */
+
+const SMOKE_SETUP: Msg[] = [
+  { role: "user", content: "Меня зовут Тест. На «вы»." },
+  { role: "assistant", content: "Спасибо, Тест. Буду обращаться на «вы». Расскажите, с чем хотите разобраться — я помогу сориентироваться в курсах и материалах Академии." },
+];
+const T04_Q = "Что даёт курс по структурной типологии личности для работы с типологией Майерс-Бриггс?";
+const T09_Q = "Что на курсе Маслоу говорят о нормативной ситуации";
+const MASLOW_PICK = "Хочу пройти курс Маслоу.";
+const SECOND_COURSE = "А ещё я рассматриваю курс «Нормативная ситуация».";
+const TASK_QUESTION =
+  "Расскажите, пожалуйста, какую задачу вы хотите решить с помощью обучения: что именно важно понять или изменить в работе с людьми?";
+const C2_CLAUSE = "ДВА КУРСА КАК ТЕКУЩИЕ АЛЬТЕРНАТИВЫ";
+
+function lastUserIndexWith(messages: readonly Msg[], quote: string): number {
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index].role === "user" && messages[index].content.includes(quote)) return index;
+  }
+  throw new Error(`quote not found in user messages: ${quote}`);
+}
+const RECOMMEND = (courseId: string, quote: string): RouteFn => (messages) => ({
+  state: "RECOMMEND_COURSE",
+  primaryCourseId: courseId,
+  secondaryCourseIds: [],
+  learningNeed: "Учебная задача пользователя.",
+  evidence: [{ messageIndex: lastUserIndexWith(messages, quote), quote }],
+  confidence: "sufficient",
+});
+const ASK_PAIR: RouteFn = () => ({
+  state: "ASK_MORE",
+  candidateCourseIds: ["maslow", "normative-situation"],
+  questions: [TASK_QUESTION],
+  rationale: "Пользователь рассматривает два курса; ответ о задаче решает выбор.",
+});
+const PICK_MASLOW = { user: MASLOW_PICK, decide: NAV, route: RECOMMEND("maslow", "Хочу пройти курс Маслоу") };
+const CONSIDER_SECOND = { user: SECOND_COURSE, decide: NAV, route: ASK_PAIR };
+
+test("C1 T04/T09: the exact smoke histories answer CONTENT for the explicitly requested course only, with no selection or payment", async () => {
+  for (const [question, courseId] of [[T04_Q, "structural-typology"], [T09_Q, "maslow"]] as const) {
+    const [turn] = await runSequence([{ user: question, decide: CT(courseId) }], { prior: SMOKE_SETUP });
+    assert.equal(turn.status, 200, question);
+    assert.deepEqual(turn.retrieved, [courseId], question);
+    assert.equal(turn.routerCalls, 0, question);
+    assert.equal(turn.uncertainty, false, question);
+    assert.notEqual(turn.act, "TECHNICAL_ERROR", question);
+    assert.equal(turn.selected, null, question);
+    assert.equal(turn.paymentBot, false, question);
+  }
+  // HI (B2): a proposal of the topic course is the controlled clarification with zero retrieval.
+  const [topic] = await runSequence([{ user: T09_Q, decide: CT("normative-situation") }], { prior: SMOKE_SETUP });
+  assert.ok(topic.uncertainty);
+  assert.deepEqual(topic.retrieved, []);
+  assert.equal(topic.paymentBot, false);
+});
+
+test("C1 negatives: C11 antecedent, selection and price turns never retrieve another course", async () => {
+  // B1 — C11: a container reference over a resolved earlier course stays unresolved.
+  const [c11] = await runSequence(
+    [{ user: "Что там говорят о Маслоу", decide: CT("maslow") }],
+    { prior: [{ role: "user", content: "Прохожу курс уровней сознания" }, { role: "assistant", content: "Понятно." }] },
+  );
+  assert.ok(c11.uncertainty);
+  assert.deepEqual(c11.retrieved, []);
+  // B10 — a short-name selection statement stays NAVIGATE → MATCHED, no CONTENT retrieval.
+  const [pick] = await runSequence([PICK_MASLOW], { prior: SMOKE_SETUP });
+  assert.equal(pick.selected, "maslow");
+  assert.equal(pick.courseMatch, "MATCHED");
+  assert.deepEqual(pick.retrieved, ["maslow"]);
+  assert.equal(pick.routerCalls, 1);
+  // B11 — a short-name price question is FACTUAL: no retrieval, no router.
+  const [price] = await runSequence(
+    [{
+      user: "Сколько стоит курс Маслоу?",
+      decide: () => ({
+        state: "FACTUAL",
+        intents: [{ kind: "CURRENT_METADATA", courseIds: ["maslow"], fields: ["PRICE"], scope: "REFERENCED" }],
+      }),
+    }],
+    { prior: SMOKE_SETUP },
+  );
+  assert.deepEqual(price.retrieved, []);
+  assert.equal(price.routerCalls, 0);
+  assert.equal(price.selected, null);
+});
+
+test("C1 literal history (F-1/P8-A unchanged): CONTENT stays unavailable; the clarification lane is non-technical and the inherited degrade lane never retrieves or pays", async () => {
+  const literalHistories: Array<[string, Msg[], string, string]> = [
+    ["B4 user literal title", [{ role: "user", content: titleOf("levels-of-consciousness") }, { role: "assistant", content: "Понятно." }], "Что на курсе Маслоу говорят о мотивации?", "maslow"],
+    ["B6 user literal URL", [{ role: "user", content: "https://structural-typology.academy/courses/maslow" }, { role: "assistant", content: "Понятно." }], T04_Q, "structural-typology"],
+    ["B7 unroutable title", [{ role: "user", content: titleOf("professional-development-stages") }, { role: "assistant", content: "Понятно." }], T04_Q, "structural-typology"],
+  ];
+  for (const [label, prior, question, courseId] of literalHistories) {
+    // The FOLLOW_UP alternative for a short-named course is the controlled clarification.
+    const [followUp] = await runSequence([{ user: question, decide: FU(courseId) }], { prior });
+    assert.ok(followUp.uncertainty, label);
+    assert.notEqual(followUp.act, "TECHNICAL_ERROR", label);
+    assert.deepEqual(followUp.retrieved, [], label);
+    // A forbidden CONTENT proposal is still rejected by the unchanged F-1 guard: the
+    // pre-existing degrade lane binds nothing, retrieves nothing and pays nothing.
+    const [content] = await runSequence([{ user: question, decide: CT(courseId) }], { prior });
+    assert.deepEqual(content.retrieved, [], label);
+    assert.equal(content.selected, null, label);
+    assert.equal(content.paymentBot, false, label);
+  }
+  // P1-0 unchanged: the course whose own literal URL is present keeps literal FOLLOW_UP authority.
+  const [literal] = await runSequence([{ user: "Что на этом курсе говорят о мотивации?", decide: FU("maslow") }], {
+    prior: literalHistories[1][1],
+  });
+  assert.equal(literal.uncertainty, false);
+  assert.deepEqual(literal.retrieved, ["maslow"]);
+});
+
+test("C2 T10: a second considered course yields the task clarification — AMBIGUOUS/null, both candidates, no referents, no retrieval", async () => {
+  const [first, second] = await runSequence([PICK_MASLOW, CONSIDER_SECOND]);
+  assert.equal(first.selected, "maslow");
+  assert.equal(first.courseMatch, "MATCHED");
+
+  assert.equal(second.status, 200);
+  assert.equal(second.routerCalls, 1);
+  assert.ok(second.routerPrompts[0]?.includes(C2_CLAUSE));
+  assert.equal(second.selected, null);
+  assert.equal(second.courseMatch, "AMBIGUOUS");
+  assert.deepEqual(second.clarification, {
+    issueKey: "ask-more:maslow+normative-situation",
+    attempts: 1,
+    strategyKey: "ask-more-1",
+  });
+  assert.deepEqual(second.referents, []);
+  assert.equal(second.pendingQuestion, TASK_QUESTION);
+  assert.deepEqual(second.retrieved, []);
+  assert.equal(second.paymentBot, false);
+});
+
+test("C2 payment after a second-course reference: no course-specific link for the previously selected course", async () => {
+  for (const payTurn of [
+    { user: "Как оплатить?", decide: NAV },
+    { user: "Хочу оплатить этот курс.", decide: NAV },
+    { user: "Сколько стоит оплата?", decide: PRICE },
+  ]) {
+    const [, , pay] = await runSequence([PICK_MASLOW, CONSIDER_SECOND, payTurn]);
+    assert.equal(pay.paymentCourse, null, payTurn.user);
+    assert.equal(pay.routerCalls, 0, payTurn.user);
+    assert.equal(pay.selected, null, payTurn.user);
+  }
+  const [, , generic] = await runSequence([PICK_MASLOW, CONSIDER_SECOND, { user: "Как оплатить?", decide: NAV }]);
+  assert.equal(generic.message, composePaymentAmbiguityAnswer(VY_PROFILE));
+});
+
+test("C2 distinctions: historical mention and confirmation keep the selection; explicit replacement rebinds; none asks", async () => {
+  for (const [label, text, quote] of [
+    ["historical", "Раньше я уже прошёл курс «Нормативная ситуация».", "Хочу пройти курс Маслоу"],
+    ["confirmation", "Да, курс Маслоу мне подходит.", "курс Маслоу мне подходит"],
+  ] as const) {
+    const [, turn] = await runSequence([PICK_MASLOW, { user: text, decide: NAV, route: RECOMMEND("maslow", quote) }]);
+    assert.equal(turn.selected, "maslow", label);
+    assert.equal(turn.courseMatch, "MATCHED", label);
+    assert.equal(turn.clarification, null, label);
+    assert.equal(turn.pendingQuestion, null, label);
+  }
+
+  const [, replaced, pay] = await runSequence([
+    PICK_MASLOW,
+    {
+      user: "Нет, передумал: лучше курс «Нормативная ситуация».",
+      decide: NAV,
+      route: RECOMMEND("normative-situation", "лучше курс «Нормативная ситуация»"),
+    },
+    { user: "Хочу оплатить этот курс.", decide: NAV },
+  ]);
+  assert.equal(replaced.selected, "normative-situation");
+  assert.equal(replaced.courseMatch, "MATCHED");
+  assert.equal(replaced.clarification, null);
+  assert.equal(pay.paymentCourse, "normative_situation");
+});
+
+test("C2 resolution: a deciding task answer recommends one course, and the next content turn does not restart selection", async () => {
+  const [, , resolved, content, pay] = await runSequence([
+    PICK_MASLOW,
+    CONSIDER_SECOND,
+    {
+      user: "Мне важнее разобраться, почему в команде не работают правила.",
+      decide: NAV,
+      route: RECOMMEND("normative-situation", "почему в команде не работают правила"),
+    },
+    { user: "А что именно разбирают на этом курсе?", decide: FU("normative-situation") },
+    { user: "Хочу оплатить этот курс.", decide: NAV },
+  ]);
+  assert.equal(resolved.routerCalls, 1);
+  assert.equal(resolved.selected, "normative-situation");
+  assert.equal(resolved.courseMatch, "MATCHED");
+  assert.equal(resolved.clarification, null);
+
+  assert.equal(content.routerCalls, 0);
+  assert.deepEqual(content.retrieved, ["normative-situation"]);
+  assert.equal(content.selected, "normative-situation");
+  assert.equal(content.clarification, null);
+  assert.equal(content.uncertainty, false);
+
+  assert.equal(pay.paymentCourse, "normative_situation");
+});
+
+test("payment K1/K2/K3 for fixed act/state inputs and foreign-platform payment are unchanged by C1/C2", async () => {
+  // K1 — explicit course in the payment request; general bot without a course.
+  const [k1] = await runSequence([{ user: "Хочу оплатить курс Маслоу", decide: NAV }]);
+  assert.equal(k1.paymentCourse, "maslow");
+  const [general] = await runSequence([{ user: "Как записаться?", decide: NAV }]);
+  assert.equal(general.paymentCourse, null);
+  // K2 — stored MATCHED selection.
+  const [k2] = await runSequence([{ user: "Хочу оплатить", decide: NAV }], {
+    initial: wireState((s) => withCourseBinding(s, "MATCHED", "maslow")),
+  });
+  assert.equal(k2.paymentCourse, "maslow");
+  // K3 — literal FOLLOW_UP after a recommendation.
+  const [k3] = await runSequence([{ user: "Хочу на этот курс.", decide: FU("maslow") }], {
+    prior: [{ role: "assistant", content: `Рекомендую «${titleOf("maslow")}».` }],
+  });
+  assert.equal(k3.paymentCourse, "maslow");
+  // E6 — a different explicit course over a stored selection is a confirmation, never a link.
+  const [change] = await runSequence([{ user: `Хочу оплатить курс «${titleOf("normative-situation")}»`, decide: NAV }], {
+    initial: wireState((s) => withCourseBinding(s, "MATCHED", "maslow")),
+  });
+  assert.equal(change.paymentCourse, null);
+  // Foreign platform: no course-specific payment authority under any act or context.
+  for (const initial of [undefined, wireState((s) => withCourseBinding(s, "MATCHED", "maslow"))]) {
+    for (const decide of [NAV, OOS, CT("maslow")]) {
+      const [foreign] = await runSequence([{ user: "Как оплатить курс Маслоу на Coursera?", decide }], { initial });
+      assert.equal(foreign.paymentCourse, null);
+    }
+  }
 });

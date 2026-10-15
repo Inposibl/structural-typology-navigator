@@ -683,7 +683,7 @@ test("unresolved historical course references constrain dependent questions only
   );
 });
 
-test("router prompt and catalog payload are byte-identical to the pre-correction baseline", async () => {
+test("router prompt digest is the D-1 re-baseline and the catalog payload is byte-identical to the pre-correction baseline", async () => {
   let captured: readonly { role: string; content: string }[] = [];
   await routeConversationAct([user("Что такое архетип Тени?")], {
     callJson: async (requestMessages) => {
@@ -692,7 +692,127 @@ test("router prompt and catalog payload are byte-identical to the pre-correction
     },
   });
   const digest = (text: string) => createHash("sha256").update(text).digest("hex");
-  // Recorded from HEAD 12384565 (pre-correction) with the same input.
-  assert.equal(digest(captured[0]?.content ?? ""), "a1fbf1a77b2debe9fc8ea846ab0ff05272042348ea220c7844aa321ee089fbdc");
+  // System prompt: Owner D-1 re-baseline (NAVIGATOR-PRODUCTION-SMOKE-1.C1C2-IMPLEMENTATION-1),
+  // literal digest of the C1-corrected prompt. Historical pre-C1 value, recorded from
+  // HEAD 12384565 and still pinned at 9b486ff5:
+  // a1fbf1a77b2debe9fc8ea846ab0ff05272042348ea220c7844aa321ee089fbdc.
+  assert.equal(digest(captured[0]?.content ?? ""), "26593e3b3f3220f0771b00e5b1fd6666b2a30a74cb3d26824dd1aae2280b838a");
+  // User payload: unchanged since HEAD 12384565 with the same input.
   assert.equal(digest(captured[1]?.content ?? ""), "50046da18c07a53b719a17770dd37e949168419194a21316487f1879c79e4310");
+});
+
+/* ---------------------------------------------------------------------------
+ * NAVIGATOR-PRODUCTION-SMOKE-1.C1C2-IMPLEMENTATION-1 — C1 classifier alignment.
+ *
+ * The prompt now states the validator's own F-1/P8-A literal-presence semantics
+ * and the CORR4/CORR5 container rule. The validator is unchanged and remains
+ * the final authority; the locks below pin its outcomes for the smoke inputs.
+ * ------------------------------------------------------------------------ */
+
+const SMOKE_SETUP: ConversationMessage[] = [
+  user("Меня зовут Тест. На «вы»."),
+  assistant("Спасибо, Тест. Буду обращаться на «вы». Расскажите, с чем хотите разобраться — я помогу сориентироваться в курсах и материалах Академии."),
+];
+const T04_Q = "Что даёт курс по структурной типологии личности для работы с типологией Майерс-Бриггс?";
+const T09_Q = "Что на курсе Маслоу говорят о нормативной ситуации";
+
+async function capturedSystemPrompt(): Promise<string> {
+  let captured: readonly { role: string; content: string }[] = [];
+  await routeConversationAct([user("Что такое архетип Тени?")], {
+    callJson: async (requestMessages) => {
+      captured = requestMessages;
+      return { state: "META" };
+    },
+  });
+  return captured[0]?.content ?? "";
+}
+
+test("C1 prompt: the CONTENT/FOLLOW_UP contradiction is removed and the literal boundary matches F-1/P8-A", async () => {
+  const prompt = await capturedSystemPrompt();
+  // The contradictory pre-C1 sentences are gone.
+  assert.ok(!prompt.includes("Решающее условие: НИ ОДИН курс каталога не назван в разговоре."));
+  assert.ok(!prompt.includes("Если курс уже назван в разговоре — это COURSE_FOLLOW_UP, а не COURSE_CONTENT."));
+  assert.ok(!prompt.includes("курс Академии уже реально упоминался в разговоре"));
+  // Literal presence: whole title or exact page URL, case-sensitive substring, any role, whole catalog.
+  for (const clause of [
+    "курс catalog назван в разговоре ТОЧНО, только если его title целиком или точный адрес его страницы https://structural-typology.academy/courses/<id курса> встречается посимвольно, с учётом регистра, хотя бы в одной реплике разговора — пользователя или Навигатора",
+    "проверяются все курсы catalog, включая курсы со status \"LISTED_UNROUTABLE\"",
+    "короткое название, сокращение, пересказ, неполное название или название в другом регистре точным названием НЕ являются",
+    "Если точное название или адрес страницы любого курса catalog уже есть в разговоре, COURSE_CONTENT не используй.",
+  ]) {
+    assert.ok(prompt.includes(clause), clause);
+  }
+  // FOLLOW_UP needs the proposed course's own literal; short names do not grant it.
+  assert.ok(prompt.includes("courseId должен указывать только на ROUTABLE курс, чьё точное название или адрес страницы есть в разговоре."));
+  assert.ok(prompt.includes("сами по себе НЕ дают основания для COURSE_FOLLOW_UP"));
+  // Short-name substantive questions are CONTENT; the container course is the one explicitly requested.
+  assert.ok(prompt.includes("это COURSE_CONTENT, а не COURSE_FOLLOW_UP и не NAVIGATE"));
+  assert.ok(prompt.includes(`Пример: «${T04_Q}» — COURSE_CONTENT, courseId structural-typology.`));
+  assert.ok(prompt.includes(`Пример: «${T09_Q}» — COURSE_CONTENT, courseId maslow, а не normative-situation.`));
+  assert.ok(prompt.includes("Отсылки «там», «в нём», «на этом курсе» сами по себе не являются явным указанием курса."));
+  // Retained boundaries: selection/consideration → NAVIGATE, price → FACTUAL, unknown/foreign → not CONTENT.
+  assert.ok(prompt.includes("сообщает, какой курс Академии хочет пройти или рассматривает как вариант"));
+  assert.ok(prompt.includes("(в том числе названный коротко: «Хочу пройти курс Маслоу») — это NAVIGATE;"));
+  assert.ok(prompt.includes("это FACTUAL (в том числе «Сколько стоит курс Маслоу?»)"));
+  assert.ok(prompt.includes("курса или программы, которых нет в catalog, и курсов сторонних платформ и школ — не подменяй их похожим курсом catalog (см. OUT_OF_SCOPE)"));
+  assert.ok(prompt.includes("любые сторонние курсы, внешнее обучение и посторонние покупки — это OUT_OF_SCOPE"));
+  assert.ok(prompt.includes("Если вопрос относится к курсу со status \"LISTED_UNROUTABLE\", верни не COURSE_CONTENT, а NAVIGATE."));
+  // The six states and the JSON templates are unchanged.
+  assert.ok(prompt.includes("РАЗРЕШЕНЫ РОВНО ШЕСТЬ state:"));
+  assert.ok(prompt.includes('{"state":"COURSE_CONTENT","courseId":"course-id","evidenceRequested":false,"contentIntentEvidence":"точная цитата из последней реплики"}'));
+});
+
+test("C1 T04/T09 (A1/A2): the exact smoke histories accept CONTENT for the requested container course only", async () => {
+  for (const [question, courseId] of [[T04_Q, "structural-typology"], [T09_Q, "maslow"]] as const) {
+    const messages = [...SMOKE_SETUP, user(question)];
+    const decision = await routeConversationAct(messages, { callJson: async () => content(courseId, question) });
+    assert.deepEqual(decision, content(courseId, question), question);
+    // P1-0: the short name grants no literal FOLLOW_UP authority.
+    const followUpValue = validated(followUp(courseId), messages);
+    assert.equal(followUpValue.state, "COURSE_REFERENCE_UNRESOLVED", question);
+    assert.ok(!("courseId" in followUpValue), question);
+  }
+  // HI (B2): the topic course is never a valid container for T09.
+  assert.deepEqual(validated(content("normative-situation", T09_Q), [...SMOKE_SETUP, user(T09_Q)]), {
+    state: "COURSE_REFERENCE_UNRESOLVED",
+    proposed: content("normative-situation", T09_Q),
+    reason: "CONTENT_OUTSIDE_QUESTION_REFERENCES",
+    referencedCourseIds: ["maslow"],
+  });
+});
+
+test("C1 A3–A5: other short-name container questions bind their own course; the reversed topic never binds", () => {
+  const rows = [
+    ["Чему учит курс Маслоу про мотивацию?", "maslow", "ACCEPT:COURSE_CONTENT"],
+    ["Что на курсе по уровням сознания говорят о стрессе?", "levels-of-consciousness", "ACCEPT:COURSE_CONTENT"],
+    ["Что на курсе по нормативной ситуации говорят о Маслоу?", "normative-situation", "ACCEPT:COURSE_CONTENT"],
+    ["Что на курсе по нормативной ситуации говорят о Маслоу?", "maslow", "UNRESOLVED:CONTENT_OUTSIDE_QUESTION_REFERENCES"],
+  ] as const;
+  for (const [question, courseId, expected] of rows) {
+    assert.equal(validatorTag(content(courseId, question), [...SMOKE_SETUP, user(question)]), expected, `${question} / ${courseId}`);
+  }
+});
+
+test("C1 negative preservation: F-1 literal history (any role, URL, unroutable), case-sensitivity, C11, selection, price and unknown programs", () => {
+  const F1 = "REJECT:COURSE_CONTENT cannot be used once a catalog course is prese";
+  const T10_ASSISTANT = `В текущем каталоге Академии ей соответствует курс «${getAcademyCourse("maslow")?.title}» — https://structural-typology.academy/courses/maslow.`;
+  // B4–B7: any literal title/URL anywhere keeps COURSE_CONTENT unavailable.
+  assert.equal(validatorTag(content("maslow", "Что на курсе Маслоу говорят о мотивации?"), [user("Иерархия уровней сознания"), assistant("Понятно."), user("Что на курсе Маслоу говорят о мотивации?")]), F1);
+  assert.equal(validatorTag(content("normative-situation", "А что на курсе по нормативной ситуации говорят о правилах?"), [user("Хочу пройти курс Маслоу."), assistant(T10_ASSISTANT), user("А что на курсе по нормативной ситуации говорят о правилах?")]), F1);
+  assert.equal(validatorTag(content("structural-typology", T04_Q), [user("https://structural-typology.academy/courses/maslow"), assistant("Понятно."), user(T04_Q)]), F1);
+  assert.equal(validatorTag(content("structural-typology", T04_Q), [user("Стадии профессионального развития взрослого человека"), assistant("Понятно."), user(T04_Q)]), F1);
+  // B8: the latest literal container keeps literal FOLLOW_UP authority.
+  assert.equal(validatorTag(followUp("normative-situation"), [user("Хочу пройти курс Маслоу."), assistant(T10_ASSISTANT), user("А что на курсе «Нормативная ситуация» говорят о правилах?")]), "ACCEPT:COURSE_FOLLOW_UP");
+  // B9: exact case-sensitive substring semantics (not semantic / origin matching).
+  const lower = "А что на курсе «нормативная ситуация» говорят о правилах?";
+  assert.equal(validatorTag(followUp("normative-situation"), [...SMOKE_SETUP, user(lower)]), "UNRESOLVED:FOLLOW_UP_REFERENCE_NOT_ESTABLISHED");
+  assert.equal(validatorTag(content("normative-situation", lower), [...SMOKE_SETUP, user(lower)]), "ACCEPT:COURSE_CONTENT");
+  assert.equal(validatorTag(followUp("normative-situation"), [...SMOKE_SETUP, user("А что на курсе \"Нормативная ситуация\" говорят о правилах?")]), "ACCEPT:COURSE_FOLLOW_UP");
+  // B1 / C11: an unresolved container antecedent never yields CONTENT.
+  assert.equal(validatorTag(content("maslow", "Что там говорят о Маслоу"), [user("Прохожу курс уровней сознания"), assistant("Понятно."), user("Что там говорят о Маслоу")]), "UNRESOLVED:CONTENT_BACK_REFERENCE_UNRESOLVED");
+  // B10/B11: selection and price keep their own acts.
+  assert.equal(validatorTag({ state: "NAVIGATE", newTaskEvidence: "Хочу пройти курс Маслоу" }, [...SMOKE_SETUP, user("Хочу пройти курс Маслоу.")]), "ACCEPT:NAVIGATE");
+  assert.equal(validatorTag({ state: "FACTUAL", intents: [{ kind: "CURRENT_METADATA", courseIds: ["maslow"], fields: ["PRICE"], scope: "REFERENCED" }] }, [...SMOKE_SETUP, user("Сколько стоит курс Маслоу?")]), "ACCEPT:FACTUAL");
+  // C1 (T07): an unknown program never binds an Academy course.
+  assert.equal(validatorTag(content("normative-situation", "Расскажите про программу алхимии."), [...SMOKE_SETUP, user("Расскажите про программу алхимии.")]), "UNRESOLVED:CONTENT_UNRESOLVED_REFERENCE_IN_QUESTION");
 });
