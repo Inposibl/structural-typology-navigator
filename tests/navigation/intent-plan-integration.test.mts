@@ -544,7 +544,12 @@ type TurnBody = {
   conversationState?: Record<string, unknown>;
   contactCard?: unknown;
   resetConversation?: boolean;
-  error?: { code?: string; message?: string; conversationState?: Record<string, unknown> };
+  error?: {
+    code?: string;
+    message?: string;
+    retryable?: boolean;
+    conversationState?: Record<string, unknown>;
+  };
 };
 
 type TurnState = {
@@ -714,6 +719,26 @@ async function runTurn(input: {
 function stateOf(result: TurnResult): TurnState {
   assert.ok(result.state);
   return result.state;
+}
+
+/** An unrecovered retry prompt is a technical failure, not a completed turn. */
+function assertUnrecoveredTechnicalRetry(result: TurnResult): void {
+  assert.equal(result.http, 503);
+  assert.equal(result.body.error?.code, "NAVIGATOR_TECHNICAL_ERROR");
+  assert.match(result.message ?? "", /технический сбой/u);
+  const state = stateOf(result);
+  assert.equal(state.lastAssistant?.act, "NAVIGATE");
+  assert.equal(
+    (state.execution as { lastCompletedRequestId?: string } | undefined)
+      ?.lastCompletedRequestId,
+    "smoke1-T10-1",
+  );
+  assert.notEqual(state.lastTechnicalError, null);
+  assert.equal(
+    (state.qualitySignals as Array<{ signalType?: string }> | undefined)?.at(-1)
+      ?.signalType,
+    "MATERIAL_FAILURE",
+  );
 }
 
 function maskVolatile(state: Record<string, unknown>): Record<string, unknown> {
@@ -1041,6 +1066,7 @@ test("a composition whose primary act would activate payment refuses and fails c
       ...DEV_S01.conversationState,
       courseMatch: "MATCHED",
       selectedCourseId: "play-and-creativity",
+      deferredRequest: "Когда начинается набор на курс Маслоу?",
     },
   };
   const recovered = await runTurn({
@@ -1076,13 +1102,27 @@ test("a composition whose primary act would activate payment refuses and fails c
     },
   });
 
-  assert.equal(recovered.http, 200);
-  assert.equal(stateOf(recovered).lastAssistant?.act, "TECHNICAL_ERROR");
+  assert.equal(recovered.http, 503);
+  assert.equal(recovered.body.error?.retryable, true);
+  assert.equal(recovered.body.error?.code, "NAVIGATOR_TECHNICAL_ERROR");
   assert.equal(recovered.message!.includes("t.me/AST_payment_course_bot"), false);
-  // The veto prevented the payment confirmation from entering the state, and
-  // the legitimate stored selection is preserved by the fail-closed lane.
+  // The veto is a retryable technical failure. It must not complete the
+  // request, consume the queued remainder, or replace the stored selection.
+  assert.equal(stateOf(recovered).lastAssistant?.act, "NAVIGATE");
   assert.equal(stateOf(recovered).pendingConfirmation, null);
   assert.equal(stateOf(recovered).selectedCourseId, "play-and-creativity");
+  assert.equal(stateOf(recovered).deferredRequest, "Когда начинается набор на курс Маслоу?");
+  assert.equal(
+    (stateOf(recovered).execution as { lastCompletedRequestId?: string } | undefined)
+      ?.lastCompletedRequestId,
+    "smoke1-T10-1",
+  );
+  assert.notEqual(stateOf(recovered).lastTechnicalError, null);
+  assert.equal(
+    (stateOf(recovered).qualitySignals as Array<{ signalType?: string }> | undefined)?.at(-1)
+      ?.signalType,
+    "MATERIAL_FAILURE",
+  );
   const veto = recoveryEvents(recovered).find((event) => event.event === "NAVIGATOR_INTENT_PLAN_RECOVERY");
   assert.ok(veto);
   assert.equal(veto.disposition, "PAYMENT_COMPOSITION_VETO");
@@ -1094,8 +1134,7 @@ test("an invalid extraction plan fails closed on the existing technical lane", a
     raw: RETAINED_F1_RAW.S01,
     plan: { tasks: [] },
   });
-  assert.equal(recovered.http, 200);
-  assert.equal(stateOf(recovered).lastAssistant?.act, "TECHNICAL_ERROR");
+  assertUnrecoveredTechnicalRetry(recovered);
   assert.equal(recovered.counters.extractionCalls, 1);
   const event = recoveryEvents(recovered).find((event) => event.event === "NAVIGATOR_INTENT_PLAN_RECOVERY");
   assert.ok(event);
@@ -1105,15 +1144,31 @@ test("an invalid extraction plan fails closed on the existing technical lane", a
   assert.equal(stateOf(recovered).selectedCourseId, "maslow");
 });
 
-test("a non-F-1 validation rejection (malformed output) never triggers extraction", async () => {
+test("a recoverable non-F-1 validation rejection uses one task-plan extraction", async () => {
   const recovered = await runTurn({
     body: DEV_S01,
     raw: "not a decision at all",
     plan: RETAINED_PLANS.S01,
   });
   assert.equal(recovered.http, 200);
-  assert.equal(stateOf(recovered).lastAssistant?.act, "TECHNICAL_ERROR");
-  assert.equal(recovered.counters.extractionCalls, 0);
+  assert.equal(recovered.counters.extractionCalls, 1);
+  assert.equal(recovered.counters.classifyCalls, 1);
+  assert.equal(stateOf(recovered).lastAssistant?.act, "COURSE_FOLLOW_UP");
+  assert.equal(stateOf(recovered).selectedCourseId, "maslow");
+  assert.doesNotMatch(recovered.message ?? "", /окно набора/u);
+  assert.equal(recovered.message!.includes("t.me/AST_payment_course_bot"), false);
+  const event = recoveryEvents(recovered).find((entry) => entry.event === "NAVIGATOR_INTENT_PLAN_RECOVERY");
+  assert.ok(event);
+  assert.equal(event.disposition, "RECOVERED_SINGLE_ACT");
+  assert.equal(event.extractionCalls, 1);
+
+  const rejected = await runTurn({
+    body: DEV_S01,
+    raw: "not a decision at all",
+    plan: { tasks: [] },
+  });
+  assertUnrecoveredTechnicalRetry(rejected);
+  assert.equal(rejected.counters.extractionCalls, 1);
 });
 
 test("a classifier transport failure keeps the technical-error response (no recovery)", async () => {
@@ -1178,8 +1233,7 @@ test("an extraction transport error fails closed on the technical turn", async (
     plan: RETAINED_PLANS.S01,
     extractionError: () => new DeepSeekClientError("UPSTREAM_ERROR", "rejected", 503),
   });
-  assert.equal(recovered.http, 200);
-  assert.equal(stateOf(recovered).lastAssistant?.act, "TECHNICAL_ERROR");
+  assertUnrecoveredTechnicalRetry(recovered);
   const event = recoveryEvents(recovered).find((event) => event.event === "NAVIGATOR_INTENT_PLAN_RECOVERY");
   assert.ok(event);
   assert.equal(event.disposition, "EXTRACTION_FAILED");
@@ -1199,8 +1253,7 @@ test("an extraction abort fails closed; the bounded timeout and the request sign
       return Object.assign(new Error("aborted"), { name: "AbortError" });
     },
   });
-  assert.equal(recovered.http, 200);
-  assert.equal(stateOf(recovered).lastAssistant?.act, "TECHNICAL_ERROR");
+  assertUnrecoveredTechnicalRetry(recovered);
   assert.ok(seen.options);
   assert.equal(seen.options.timeoutMs, 30_000);
   assert.ok(seen.options.signal);
@@ -1478,7 +1531,7 @@ async function finalTurn(
   tasks: TaskPlanTask[],
   options: Partial<Parameters<typeof runTurn>[0]> = {},
   state: Record<string, unknown> = {},
-  mentions: { courseId: string | null; surface: string; role: "ACTIVE" | "BACKGROUND" | "REPORTED" | "RETRACTED" }[] = [],
+  mentions: { courseId: string | null; surface: string; role: "ACTIVE" | "BACKGROUND" | "REPORTED" | "RETRACTED" | "REJECTED" }[] = [],
 ) {
   return runTurn({
     body: finalBody(text, state),
@@ -1763,4 +1816,176 @@ test("LISTED_UNROUTABLE tasks remain explicit limitations without retrieval", as
   assert.equal(finalCoverage(result).outcomes[0].outcome, "NOT_SAFELY_EXECUTABLE");
   assert.deepEqual(result.counters.retrieval, []);
   assert.match(result.message!, /не разобрал/);
+});
+
+test("F-1 recovery does not apply the non-F-1 metadata provenance gate", async () => {
+  const text = "Курс Маслоу исключаю; сколько стоит курс для меня";
+  const mentions = [
+    { courseId: "maslow" as const, surface: "Ма", role: "REJECTED" as const },
+    { courseId: "maslow" as const, surface: "Курс Маслоу", role: "ACTIVE" as const },
+  ];
+  const plan = {
+    tasks: [{ type: "PRICE", courseIds: ["maslow"], role: "ACTIVE", evidence: text }],
+    mentions,
+  };
+  const nonF1 = await runTurn({
+    body: {
+      messages: [{ role: "user", content: text }],
+      profile: DEV_S13.profile,
+      conversationState: structuredClone(DEV_S13.conversationState),
+    },
+    raw: { state: "UNRECOGNIZED" },
+    plan,
+    requestId: "m03-non-f1-isolation",
+  });
+  assert.equal(nonF1.http, 200, JSON.stringify(nonF1.body));
+  assert.equal(nonF1.counters.extractionCalls, 1);
+  assert.equal(nonF1.counters.classifyCalls, 1);
+  assert.match(nonF1.message ?? "", /не разобрал/u);
+  assert.doesNotMatch(nonF1.message ?? "", /60[\s\u00a0]?000/u);
+  assert.equal(nonF1.body.contactCard ?? null, null);
+
+  const f1 = await finalTurn(
+    text,
+    [finalTask("PRICE", ["maslow"], text)],
+    { requestId: "m03-f1-isolation" },
+    {},
+    mentions,
+  );
+  assert.equal(f1.http, 200, JSON.stringify(f1.body));
+  assert.equal(f1.counters.extractionCalls, 1);
+  assert.match(f1.message ?? "", /60[\s\u00a0]?000/u);
+  assert.match(f1.message ?? "", /Иерархия потребностей А\. Маслоу: новая парадигма/u);
+});
+
+test("CORR1 exact F-1 validator prices merged selected courses and similar rejections do not", async () => {
+  const text = "Сколько стоит этот курс; цена обучения интересует сейчас";
+  const tasks = [
+    finalTask("PRICE", [], "Сколько стоит этот курс"),
+    finalTask("PRICE", [], "цена обучения интересует сейчас"),
+  ];
+  const courses = [
+    {
+      id: "maslow",
+      title: /Иерархия потребностей А\. Маслоу: новая парадигма/u,
+      amount: /60[\s\u00a0]?000/u,
+      absent: /Игра и творчество в жизни взрослых людей|Нормативная ситуация/u,
+    },
+    {
+      id: "normative-situation",
+      title: /«Нормативная ситуация»/u,
+      amount: /45[\s\u00a0]?000/u,
+      absent: /Иерархия потребностей А\. Маслоу|Игра и творчество|Иерархия уровней сознания/u,
+    },
+    {
+      id: "play-and-creativity",
+      title: /Игра и творчество в жизни взрослых людей/u,
+      amount: /60[\s\u00a0]?000/u,
+      absent: /Иерархия потребностей А\. Маслоу|Нормативная ситуация/u,
+    },
+  ] as const;
+  for (const course of courses) {
+    for (const order of [tasks, [...tasks].reverse()] as const) {
+      const requestId = `corr1-real-${course.id}-${order[0].evidence.startsWith("Сколько") ? "forward" : "reverse"}`;
+      const result = await finalTurn(
+        text,
+        [...order],
+        { requestId },
+        {
+          courseMatch: "MATCHED",
+          selectedCourseId: course.id,
+          deferredRequest: "Вернитесь к этому вопросу позже",
+        },
+      );
+      assert.equal(result.http, 200, JSON.stringify(result.body));
+      assert.equal(result.counters.classifyCalls, 1);
+      assert.equal(result.counters.extractionCalls, 1);
+      assert.equal(result.counters.routeCalls, 0);
+      assert.match(result.message ?? "", course.title);
+      assert.match(result.message ?? "", course.amount);
+      assert.match(result.message ?? "", /19 сентября 2026 года/u);
+      assert.doesNotMatch(result.message ?? "", course.absent);
+      assert.doesNotMatch(result.message ?? "", /Уточните, пожалуйста, название курса/u);
+      assert.doesNotMatch(result.message ?? "", /t\.me\/|@AST_payment/u);
+      assert.equal(result.orchestration?.completion, "ANSWERED");
+      assert.equal(result.body.contactCard ?? null, null);
+      const coverage = finalCoverage(result);
+      assert.equal(coverage.limitationCount, 0);
+      assert.equal(coverage.activeTaskCount, 2);
+      for (const outcome of coverage.outcomes) {
+        assert.equal(outcome.outcome, "ANSWERED_FROM_AUTHORITY");
+        assert.deepEqual(outcome.courseIds, [course.id]);
+        assert.equal(outcome.facts?.[0]?.courseId, course.id);
+        assert.equal(outcome.facts?.[0]?.status, "SUPPORTED");
+        assert.equal(outcome.facts?.[0]?.field, "PRICE");
+      }
+      const state = stateOf(result);
+      assert.equal(state.selectedCourseId, course.id);
+      assert.equal(state.courseMatch, "MATCHED");
+      assert.equal(state.deferredRequest, null);
+      assert.equal(
+        (state.execution as { lastCompletedRequestId?: string }).lastCompletedRequestId,
+        requestId,
+      );
+      if (course.id === "maslow" && order[0].evidence.startsWith("Сколько")) {
+        const replay = await runTurn({
+          body: {
+            messages: [{ role: "user", content: text }],
+            profile: DEV_S13.profile,
+            conversationState: state,
+          },
+          raw: {
+            state: "COURSE_CONTENT",
+            courseId: "maslow",
+            evidenceRequested: false,
+            contentIntentEvidence: text,
+          },
+          plan: { tasks: order, mentions: [] },
+          requestId,
+        });
+        assert.equal(replay.http, 200);
+        assert.equal(replay.message, result.message);
+        assert.equal(replay.counters.extractionCalls, 0);
+        assert.equal(replay.counters.classifyCalls, 0);
+        assert.equal(replay.counters.routeCalls, 0);
+      }
+    }
+  }
+
+  const stored = {
+    courseMatch: "MATCHED",
+    selectedCourseId: "maslow",
+    deferredRequest: "Вернитесь к этому вопросу позже",
+  };
+  const unrecognized = await runTurn({
+    body: finalBody(text, stored),
+    raw: { state: "UNRECOGNIZED" },
+    plan: { tasks, mentions: [] },
+    requestId: "corr1-real-unrecognized",
+  });
+  assert.equal(unrecognized.http, 200, JSON.stringify(unrecognized.body));
+  assert.equal(unrecognized.counters.extractionCalls, 1);
+  assert.match(unrecognized.message ?? "", /не разобрал/u);
+  assert.doesNotMatch(unrecognized.message ?? "", /60[\s\u00a0]?000/u);
+  assert.doesNotMatch(unrecognized.message ?? "", /Иерархия потребностей А\. Маслоу/u);
+  assert.equal(stateOf(unrecognized).selectedCourseId, "maslow");
+
+  const similar = await runTurn({
+    body: finalBody(text, stored),
+    raw: {
+      state: "COURSE_CONTENT",
+      courseId: "maslow",
+      evidenceRequested: false,
+      contentIntentEvidence: text,
+      extra: true,
+    },
+    plan: { tasks, mentions: [] },
+    requestId: "corr1-real-similar",
+  });
+  assert.equal(similar.http, 200, JSON.stringify(similar.body));
+  assert.equal(similar.counters.extractionCalls, 1);
+  assert.match(similar.message ?? "", /не разобрал/u);
+  assert.doesNotMatch(similar.message ?? "", /60[\s\u00a0]?000/u);
+  assert.doesNotMatch(similar.message ?? "", /Иерархия потребностей А\. Маслоу/u);
+  assert.equal(stateOf(similar).selectedCourseId, "maslow");
 });

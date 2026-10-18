@@ -37,9 +37,12 @@ import {
   getAcademyCourse,
 } from "../academy/course-catalog.ts";
 import {
+  ACADEMY_COMMERCIAL_AUTHORITY,
   ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
+  type AuthorityAvailability,
 } from "../academy/commercial-authority.ts";
 import {
+  composeCatalogListAnswer,
   composeCourseFollowUpAnswer,
   composeClarificationExhaustionAnswer,
   composeNavigatorMetaAnswer,
@@ -84,6 +87,7 @@ import type {
   PendingConfirmation,
 } from "./conversation-state.ts";
 import {
+  NavigatorStageError,
   createNavigatorDegradationLog,
   createNavigatorGroundingLog,
   createNavigatorRouterDegradationLog,
@@ -96,6 +100,11 @@ import {
   withNavigatorStage,
 } from "./navigator-observability.ts";
 import { formulateFollowUpContentQuery } from "./follow-up-query.ts";
+import {
+  callDeepSeekJson,
+  type DeepSeekClientOptions,
+  type DeepSeekMessage,
+} from "./deepseek-client.ts";
 import {
   attemptIntentPlanRecovery,
   createIntentPlanRecoveryLog,
@@ -115,9 +124,27 @@ import {
   type SharedResponseBlock,
 } from "./response-coverage.ts";
 import {
+  TASK_PLAN_ROLES,
   undispatchedLineText,
   type RecoverySegment,
+  type TaskPlanMention,
+  type TaskPlanTask,
+  type TaskPlanType,
 } from "./task-plan.ts";
+
+/**
+ * Internal completion disposition. The API boundary consumes this value.
+ * Task coverage, a public sentence, and the technical-error act label do not
+ * grant completion on their own.
+ */
+export const TURN_COMPLETIONS = [
+  "ANSWERED",
+  "PARTIAL_WITH_EXPLICIT_LIMITATIONS",
+  "USER_ACTION_REQUIRED",
+  "RETRYABLE_TECHNICAL_FAILURE",
+  "TERMINAL_TECHNICAL_FAILURE",
+] as const;
+export type TurnCompletion = (typeof TURN_COMPLETIONS)[number];
 
 export type NavigatorOrchestrationResult = {
   message: string;
@@ -133,6 +160,11 @@ export type NavigatorOrchestrationResult = {
   /** Internal recovery evidence; the API response schema is unchanged. */
   taskCoverage?: TaskCoverageRecord;
   taskResponseBlocks?: SharedResponseBlock[];
+  /**
+   * Producer disposition. Optional only so pre-existing test doubles keep
+   * compiling; every result this module builds sets it.
+   */
+  completion?: TurnCompletion;
 };
 
 export type OrchestrationStateEffects = {
@@ -303,6 +335,471 @@ async function selectEvidenceOrDegrade(
   }
 }
 
+const METADATA_TASK_TYPES = new Set<TaskPlanType>([
+  "PRICE",
+  "SCHEDULE",
+  "COHORT",
+  "ENROLLMENT_WINDOW",
+]);
+
+const GUARDED_METADATA_FIELDS = ["SCHEDULE", "COHORT", "ENROLLMENT_WINDOW"] as const;
+type GuardedMetadataField = (typeof GUARDED_METADATA_FIELDS)[number];
+
+/**
+ * The current metadata composer always narrates schedule, cohort and
+ * enrollment window as unavailable. A future supported snapshot must not be
+ * described by that unchanged text. Price reads its own authority value and
+ * is not guarded here.
+ */
+export function currentMetadataComposerAdmitsField(
+  field: GuardedMetadataField,
+  availability: AuthorityAvailability,
+): boolean {
+  if (!GUARDED_METADATA_FIELDS.includes(field)) return false;
+  return (
+    availability.status === "UNAVAILABLE" &&
+    availability.reason === "NO_AUTHORITATIVE_VALUE"
+  );
+}
+
+function liveGuardedMetadataAvailability(
+  field: GuardedMetadataField,
+): AuthorityAvailability {
+  const metadata = ACADEMY_COMMERCIAL_AUTHORITY.transactionalMetadata;
+  if (field === "SCHEDULE") return metadata.schedule;
+  if (field === "COHORT") return metadata.cohort;
+  return metadata.enrollmentWindow;
+}
+
+function isMetadataTaskType(type: TaskPlanType): boolean {
+  return METADATA_TASK_TYPES.has(type);
+}
+
+function readValidatedPlanSnapshot(
+  plan: unknown,
+): { tasks: TaskPlanTask[]; mentions: TaskPlanMention[] } | null {
+  if (typeof plan !== "object" || plan === null) return null;
+  const record = plan as { tasks?: unknown; mentions?: unknown };
+  if (!Array.isArray(record.tasks)) return null;
+  if (record.mentions !== undefined && !Array.isArray(record.mentions)) return null;
+  const tasks: TaskPlanTask[] = [];
+  for (const value of record.tasks) {
+    if (typeof value !== "object" || value === null) return null;
+    const task = value as TaskPlanTask;
+    if (
+      typeof task.type !== "string" ||
+      typeof task.role !== "string" ||
+      !TASK_PLAN_ROLES.includes(task.role) ||
+      typeof task.evidence !== "string" ||
+      !Array.isArray(task.courseIds) ||
+      task.courseIds.some((id) => typeof id !== "string")
+    ) {
+      return null;
+    }
+    tasks.push(task);
+  }
+  const mentions: TaskPlanMention[] = [];
+  for (const value of record.mentions ?? []) {
+    if (typeof value !== "object" || value === null) return null;
+    const mention = value as TaskPlanMention;
+    if (
+      (mention.courseId !== null && typeof mention.courseId !== "string") ||
+      typeof mention.surface !== "string" ||
+      typeof mention.role !== "string" ||
+      !TASK_PLAN_ROLES.includes(mention.role)
+    ) {
+      return null;
+    }
+    mentions.push(mention);
+  }
+  return { tasks, mentions };
+}
+
+type SourceInterval = { readonly start: number; readonly end: number };
+
+type MentionLedgerClass =
+  | "CORROBORATED_LOCAL_ACTIVE"
+  | "EVALUATED_CONSTRAINT"
+  | "PROVEN_SEPARATED"
+  | "UNRESOLVED_OR_CONFLICT";
+
+type MentionLedgerEntry = {
+  readonly courseId: string | null;
+  readonly surface: string;
+  readonly role: string;
+  readonly intervals: readonly SourceInterval[];
+  readonly locallyApplicable: boolean;
+};
+
+/**
+ * Every exact UTF-16 occurrence, including repeats and self-overlaps.
+ * An empty surface has no occurrence identity. No length cutoff, trim,
+ * case fold, quote strip or normalization is applied.
+ */
+function sourceIntervals(source: string, surface: string): SourceInterval[] {
+  const found: SourceInterval[] = [];
+  if (surface.length === 0) return found;
+  let from = 0;
+  while (from <= source.length) {
+    const start = source.indexOf(surface, from);
+    if (start < 0) break;
+    found.push({ start, end: start + surface.length });
+    from = start + 1;
+  }
+  return found;
+}
+
+function intervalsOverlap(left: SourceInterval, right: SourceInterval): boolean {
+  return left.start < right.end && right.start < left.end;
+}
+
+function anyIntervalsOverlap(
+  left: readonly SourceInterval[],
+  right: readonly SourceInterval[],
+): boolean {
+  for (const first of left) {
+    for (const second of right) {
+      if (intervalsOverlap(first, second)) return true;
+    }
+  }
+  return false;
+}
+
+function referencedCourseIds(text: string): ReadonlySet<string> {
+  const resolved = resolveCourseReferences(text);
+  return new Set(resolved.kind === "ZERO" ? [] : resolved.courseIds);
+}
+
+function corroboratesOnly(surface: string, courseId: string): boolean {
+  const resolved = resolveCourseReferences(surface);
+  return resolved.kind === "ONE" && resolved.courseIds[0] === courseId;
+}
+
+function sameCourseSet(left: readonly string[], right: readonly string[]): boolean {
+  if (left.length !== right.length) return false;
+  const seen = new Set(left);
+  if (seen.size !== left.length) return false;
+  return right.every((id) => seen.has(id));
+}
+
+function markConflict(classes: MentionLedgerClass[], index: number): void {
+  classes[index] = "UNRESOLVED_OR_CONFLICT";
+}
+
+/**
+ * Option C non-F-1 authorization for one ACTIVE metadata task.
+ * Every admitted mention receives one ledger class. A missing witness,
+ * unresolved source claim, or any possible conflicting pairing refuses
+ * the task. No public response field is added.
+ */
+function metadataTaskCourseIdsAreGrounded(
+  task: TaskPlanTask,
+  mentions: readonly TaskPlanMention[],
+  allTasks: readonly TaskPlanTask[],
+  latest: string,
+): boolean {
+  if (!isMetadataTaskType(task.type) || task.role !== "ACTIVE") return false;
+  const evidence = task.evidence;
+  const evidenceIntervals = sourceIntervals(latest, evidence);
+  const proposed = [...task.courseIds];
+  const evidenceCourses = referencedCourseIds(evidence);
+  const entries: MentionLedgerEntry[] = [];
+  const classes: MentionLedgerClass[] = [];
+  let refused =
+    evidenceIntervals.length === 0 ||
+    proposed.length === 0 ||
+    new Set(proposed).size !== proposed.length;
+
+  for (const courseId of proposed) {
+    if (getAcademyCourse(courseId) === null || !evidenceCourses.has(courseId)) {
+      refused = true;
+    }
+  }
+
+  for (const mention of mentions) {
+    const intervals = sourceIntervals(latest, mention.surface);
+    const unlocated = mention.surface.length === 0 || intervals.length === 0;
+    const locallyApplicable =
+      !unlocated && anyIntervalsOverlap(intervals, evidenceIntervals);
+    entries.push({
+      courseId: mention.courseId,
+      surface: mention.surface,
+      role: mention.role,
+      intervals,
+      locallyApplicable,
+    });
+    if (unlocated || evidenceIntervals.length === 0) {
+      classes.push("UNRESOLVED_OR_CONFLICT");
+      refused = true;
+      continue;
+    }
+    if (!locallyApplicable) {
+      classes.push("PROVEN_SEPARATED");
+      continue;
+    }
+    classes.push(
+      mention.role === "ACTIVE" ? "UNRESOLVED_OR_CONFLICT" : "EVALUATED_CONSTRAINT",
+    );
+  }
+
+  const corroborated = new Set<number>();
+  for (const [index, entry] of entries.entries()) {
+    if (!entry.locallyApplicable || entry.role !== "ACTIVE") continue;
+    const courseId = entry.courseId;
+    const supported =
+      typeof courseId === "string" &&
+      proposed.includes(courseId) &&
+      sourceIntervals(evidence, entry.surface).length > 0 &&
+      corroboratesOnly(entry.surface, courseId);
+    if (!supported) {
+      markConflict(classes, index);
+      refused = true;
+      continue;
+    }
+    corroborated.add(index);
+    classes[index] = "CORROBORATED_LOCAL_ACTIVE";
+  }
+
+  let fallbackCourseId: string | null = null;
+  const support = new Map<string, readonly SourceInterval[]>();
+  if (proposed.length === 1 && evidenceIntervals.length > 0) {
+    const courseId = proposed[0];
+    const localClaims = entries.some(
+      (entry) => entry.courseId === courseId && entry.locallyApplicable,
+    );
+    if (!localClaims) {
+      const onlyThisCourse =
+        evidenceCourses.size === 1 && evidenceCourses.has(courseId);
+      const extraLocalActive = entries.some(
+        (entry) =>
+          entry.locallyApplicable &&
+          entry.role === "ACTIVE" &&
+          entry.courseId !== courseId,
+      );
+      if (onlyThisCourse && !extraLocalActive && getAcademyCourse(courseId) !== null) {
+        fallbackCourseId = courseId;
+        support.set(courseId, evidenceIntervals);
+      }
+    }
+  }
+
+  for (const courseId of proposed) {
+    if (fallbackCourseId === courseId) continue;
+    const witnessIntervals: SourceInterval[] = [];
+    let witnessed = false;
+    for (const [index, entry] of entries.entries()) {
+      if (
+        entry.courseId !== courseId ||
+        !entry.locallyApplicable ||
+        entry.role !== "ACTIVE" ||
+        !corroborated.has(index)
+      ) {
+        continue;
+      }
+      witnessed = true;
+      witnessIntervals.push(...entry.intervals);
+    }
+    if (!witnessed) {
+      refused = true;
+      continue;
+    }
+    support.set(courseId, witnessIntervals);
+  }
+
+  for (const courseId of proposed) {
+    const activeIntervals: SourceInterval[] = [];
+    if (fallbackCourseId === courseId) activeIntervals.push(...evidenceIntervals);
+    for (const entry of entries) {
+      if (entry.courseId === courseId && entry.role === "ACTIVE") {
+        activeIntervals.push(...entry.intervals);
+      }
+    }
+    for (const [index, entry] of entries.entries()) {
+      if (entry.courseId !== courseId || entry.role === "ACTIVE") continue;
+      if (!anyIntervalsOverlap(entry.intervals, activeIntervals)) continue;
+      markConflict(classes, index);
+      refused = true;
+      for (const [activeIndex, active] of entries.entries()) {
+        if (
+          active.courseId === courseId &&
+          active.role === "ACTIVE" &&
+          anyIntervalsOverlap(active.intervals, entry.intervals)
+        ) {
+          markConflict(classes, activeIndex);
+        }
+      }
+    }
+  }
+
+  for (const courseId of proposed) {
+    const bound = support.get(courseId) ?? [];
+    for (const [index, entry] of entries.entries()) {
+      if (entry.courseId === courseId) continue;
+      const collides = anyIntervalsOverlap(entry.intervals, bound);
+      const exposesDifferentIdentity =
+        entry.locallyApplicable && referencedCourseIds(entry.surface).has(courseId);
+      if (!collides && !exposesDifferentIdentity) continue;
+      markConflict(classes, index);
+      refused = true;
+    }
+  }
+
+  for (const extra of evidenceCourses) {
+    if (proposed.includes(extra)) continue;
+    const bound = proposed.flatMap((courseId) => [...(support.get(courseId) ?? [])]);
+    let explained = false;
+    for (const [index, entry] of entries.entries()) {
+      if (entry.courseId === extra && entry.role === "ACTIVE" && entry.locallyApplicable) {
+        markConflict(classes, index);
+        refused = true;
+      }
+      if (
+        entry.courseId === extra &&
+        entry.role !== "ACTIVE" &&
+        sourceIntervals(evidence, entry.surface).length > 0 &&
+        corroboratesOnly(entry.surface, extra) &&
+        !anyIntervalsOverlap(entry.intervals, bound)
+      ) {
+        explained = true;
+      }
+    }
+    if (!explained) refused = true;
+  }
+
+  for (const other of allTasks) {
+    if (other.role === "ACTIVE") continue;
+    const named = proposed.filter((courseId) => other.courseIds.includes(courseId));
+    if (named.length === 0) continue;
+    const embeddings = sourceIntervals(latest, other.evidence);
+    // A task that names a proposed course but cannot be located has no
+    // separation proof. Unrelated non-ACTIVE tasks stay unexecuted.
+    if (embeddings.length === 0) {
+      refused = true;
+      continue;
+    }
+    for (const courseId of named) {
+      if (anyIntervalsOverlap(embeddings, support.get(courseId) ?? [])) {
+        refused = true;
+      }
+    }
+  }
+
+  return (
+    classes.length === mentions.length &&
+    classes.every((item) => item !== "UNRESOLVED_OR_CONFLICT") &&
+    !refused
+  );
+}
+
+function nonF1MetadataSegmentIsGrounded(
+  segment: Extract<RecoverySegment, { kind: "ACT" }>,
+  plan: unknown,
+  latest: string,
+): boolean {
+  if (segment.act.state !== "FACTUAL") return true;
+  const metadata = segment.act.intents.find((intent) => intent.kind === "CURRENT_METADATA");
+  if (metadata === undefined || metadata.kind !== "CURRENT_METADATA") return true;
+
+  let fieldsAdmitted = true;
+  for (const field of metadata.fields) {
+    if (field === "PRICE") continue;
+    if (
+      !GUARDED_METADATA_FIELDS.includes(field as GuardedMetadataField) ||
+      !currentMetadataComposerAdmitsField(
+        field as GuardedMetadataField,
+        liveGuardedMetadataAvailability(field as GuardedMetadataField),
+      )
+    ) {
+      fieldsAdmitted = false;
+    }
+  }
+  if (metadata.scope !== "REFERENCED") return false;
+
+  const snapshot = readValidatedPlanSnapshot(plan);
+  if (snapshot === null) return false;
+  const active = snapshot.tasks.filter((task) => task.role === "ACTIVE");
+  let tasksAuthorized = true;
+  for (const taskIndex of segment.taskIndices) {
+    const task = active[taskIndex];
+    if (task === undefined || !isMetadataTaskType(task.type)) {
+      tasksAuthorized = false;
+      continue;
+    }
+    if (!sameCourseSet(task.courseIds, metadata.courseIds)) {
+      tasksAuthorized = false;
+      continue;
+    }
+    if (
+      !metadataTaskCourseIdsAreGrounded(
+        task,
+        snapshot.mentions,
+        snapshot.tasks,
+        latest,
+      )
+    ) {
+      tasksAuthorized = false;
+    }
+  }
+  return fieldsAdmitted && tasksAuthorized;
+}
+
+function hasSubstantiveRemainder(value: string): boolean {
+  for (const character of value) {
+    if (/[\p{L}\p{N}]/u.test(character)) return true;
+  }
+  return false;
+}
+
+/**
+ * Latest-user text outside accepted task evidence. A mention surface may
+ * inform course role checks, but it has no disclosure authority. Substring
+ * removal of accepted evidence does not invent a second task.
+ */
+function uncoveredLatestRemainder(
+  latest: string,
+  spans: readonly string[],
+): string | null {
+  const unique = [...new Set(spans.filter((span) => span.length >= 3))].sort(
+    (left, right) => right.length - left.length,
+  );
+  let cursor = latest;
+  for (const span of unique) cursor = cursor.split(span).join(" ");
+  const compact = cursor.replace(/\s+/gu, " ").trim();
+  if (!hasSubstantiveRemainder(compact) || compact.length < 3) return null;
+  return compact.length > 240 ? compact.slice(0, 240) : compact;
+}
+
+/**
+ * Educational-router validation rejection. The invalid decision is discarded
+ * entirely: no course id, quote or schema field from it is read. Transport,
+ * authentication and every other exception stay on the technical-error lane.
+ */
+function isRecoverableEducationalRouterFailure(
+  error: unknown,
+): error is NavigatorStageError {
+  return (
+    error instanceof NavigatorStageError &&
+    error.stage === "ROUTER" &&
+    error.errorName === "NavigationDecisionValidationError" &&
+    error.errorCode === "INVALID_NAVIGATION_DECISION" &&
+    error.status === null
+  );
+}
+
+function composeEducationalRouterContinuation(
+  profile: ConversationProfile | undefined,
+): string {
+  const lead =
+    profile?.addressMode === "TY"
+      ? "Чтобы сориентироваться в курсах Академии, ниже текущий каталог. Подбор конкретного курса я продолжу, когда ты уточнишь задачу."
+      : "Чтобы сориентироваться в курсах Академии, ниже текущий каталог. Подбор конкретного курса я продолжу, когда вы уточните задачу.";
+  const follow =
+    profile?.addressMode === "TY"
+      ? "Напиши, пожалуйста, с чем хочешь разобраться."
+      : "Напишите, пожалуйста, с чем хотите разобраться.";
+  return `${lead}\n\n${composeCatalogListAnswer()}\n\n${follow}`;
+}
+
 /**
  * EXPERIMENT-1.ROUTER-ACCESS-1 — the act router's degrade lane.
  *
@@ -313,6 +810,12 @@ async function selectEvidenceOrDegrade(
  * trust, so ROUTER_DEGRADED binds no course, resolves no evidence and invokes
  * no retrieval. Only the validator-rejection class degrades; every transport,
  * timeout and provider failure still reaches the technical-error lane.
+ *
+ * A recoverable validation rejection may spend one existing task-plan
+ * extraction. The F-1 rejection keeps its accepted path. Every other
+ * recoverable rejection uses that same extraction once, then the non-F-1
+ * course gates. There is no lexical enrollment classifier and no second
+ * repair call.
  */
 /**
  * Invocation-local recovery controller. The attempted flag bounds extraction;
@@ -355,17 +858,13 @@ async function classifyActOrDegrade(
       throw error;
     }
 
-    // NAVIGATOR-INTENT-RECOVERY-ARM-B.IMPLEMENTATION-1 — B-on-failure. The
-    // accepted classifier stays the normal path; exactly once per execution,
-    // and only for the genuine F-1 COURSE_CONTENT-precondition rejection, one
-    // structured task-plan extraction may repair the turn. Every other
-    // validation rejection, every extraction failure and every rejected or
-    // unsafe plan retains the unchanged fail-closed behavior below.
+    // One task-plan extraction for a recoverable act rejection. Successful
+    // classifications never reach this catch. Nested segment dispatch passes
+    // a null recovery controller and cannot extract again.
     if (
       recovery !== null &&
       !recovery.attempted &&
       rawRejection !== null &&
-      isF1CourseContentRejection(rawRejection) &&
       options.signal?.aborted !== true
     ) {
       recovery.attempted = true;
@@ -373,6 +872,7 @@ async function classifyActOrDegrade(
         messages,
         options,
         recovery,
+        isF1CourseContentRejection(rawRejection) ? "F1" : "NON_F1",
       );
       if (recovered !== null) {
         return recovered;
@@ -409,6 +909,25 @@ function groundingEventSink(
   };
 }
 
+function deriveTurnCompletion(input: {
+  conversationAct: ConversationActDecision;
+  clarification: OrchestrationClarificationOutcome;
+  pendingConfirmation: PendingConfirmation | null;
+}): TurnCompletion {
+  if (input.conversationAct.state === "ROUTER_DEGRADED") {
+    return "RETRYABLE_TECHNICAL_FAILURE";
+  }
+  if (
+    input.clarification.status === "ASKED" ||
+    input.clarification.status === "EXHAUSTED" ||
+    input.pendingConfirmation !== null ||
+    input.conversationAct.state === "COURSE_REFERENCE_UNRESOLVED"
+  ) {
+    return "USER_ACTION_REQUIRED";
+  }
+  return "ANSWERED";
+}
+
 function emptyResult(
   message: string,
   conversationAct: ConversationActDecision,
@@ -417,6 +936,7 @@ function emptyResult(
   stateEffects: Partial<OrchestrationStateEffects> = {},
   clarification: OrchestrationClarificationOutcome = NOT_APPLICABLE_CLARIFICATION,
 ): NavigatorOrchestrationResult {
+  const pendingConfirmation = stateEffects.pendingConfirmation ?? null;
   return {
     message,
     contactCard,
@@ -447,9 +967,14 @@ function emptyResult(
       catalogAuthorityVersion: stateEffects.catalogAuthorityVersion ?? null,
       transactionalAuthorityVersion:
         stateEffects.transactionalAuthorityVersion ?? null,
-      pendingConfirmation: stateEffects.pendingConfirmation ?? null,
+      pendingConfirmation,
       courseBinding: stateEffects.courseBinding,
     },
+    completion: deriveTurnCompletion({
+      conversationAct,
+      clarification,
+      pendingConfirmation,
+    }),
   };
 }
 
@@ -574,6 +1099,7 @@ function structuralCeilingResult(
       transactionalAuthorityVersion: null,
       pendingConfirmation: null,
     },
+    completion: "ANSWERED",
   };
 }
 
@@ -1146,10 +1672,10 @@ async function orchestrateNavigatorTurn(
   }
 
   // EXPERIMENT-1.ROUTER-ACCESS-1 — the fail-closed lane. The provider's act
-  // decision was rejected, so nothing about it is trusted: no course is bound,
-  // no retrieval runs, no evidence is resolved. The user gets the project's
-  // existing technical-failure wording as an ordinary turn rather than a 503,
-  // and the turn is recorded as degraded so the rate stays measurable.
+  // decision was rejected and no accepted recovery produced a user-facing
+  // disposition. Nothing about the rejected decision is trusted. The result
+  // is a retryable technical failure even when internal task accounting is
+  // attached; coverage does not complete the request.
   if (conversationAct.state === "ROUTER_DEGRADED") {
     return emptyResult(
       composeTechnicalErrorAnswer(options.profile, true),
@@ -1279,6 +1805,7 @@ async function orchestrateNavigatorTurn(
         transactionalAuthorityVersion: null,
         pendingConfirmation: null,
       },
+      completion: "ANSWERED",
     };
   }
 
@@ -1387,6 +1914,7 @@ async function orchestrateNavigatorTurn(
         transactionalAuthorityVersion: null,
         pendingConfirmation: null,
       },
+      completion: "ANSWERED",
     };
   }
 
@@ -1411,14 +1939,47 @@ async function orchestrateNavigatorTurn(
     );
   }
 
-  const decision = await withNavigatorStage("ROUTER", () =>
-    route(messages, {
-      env: options.env,
-      fetch: options.fetch,
-      signal: options.signal,
-      profile: options.profile,
-    }),
-  );
+  let decision: NavigationDecision;
+  try {
+    decision = await withNavigatorStage("ROUTER", () =>
+      route(messages, {
+        env: options.env,
+        fetch: options.fetch,
+        signal: options.signal,
+        profile: options.profile,
+      }),
+    );
+  } catch (error) {
+    if (!isRecoverableEducationalRouterFailure(error)) {
+      throw error;
+    }
+
+    // The rejected decision is not inspected. The continuation is the current
+    // catalogue plus a request to name the task; it selects no course and
+    // makes no second provider call.
+    if (options.requestId) {
+      console.warn(
+        JSON.stringify({
+          event: "NAVIGATOR_DEGRADATION",
+          requestId: options.requestId,
+          stage: "ROUTER",
+          provider: "DEEPSEEK",
+          fallback: "CATALOG_CONTINUATION",
+          errorName: error.errorName,
+          errorCode: error.errorCode,
+          status: error.status,
+        }),
+      );
+    }
+
+    return emptyResult(
+      composeEducationalRouterContinuation(options.profile),
+      conversationAct,
+      "CATALOG_AUTHORITY",
+      null,
+      { catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE },
+    );
+  }
 
   let courseKnowledge: RetrieveCourseKnowledgeResult | null = null;
   let resolvedEvidence: ResolvedCourseEvidence[] = [];
@@ -1532,6 +2093,7 @@ async function orchestrateNavigatorTurn(
       transactionalAuthorityVersion: null,
       pendingConfirmation: null,
     },
+    completion: "ANSWERED",
   };
 }
 
@@ -1598,6 +2160,7 @@ async function composeClarificationTurn(
         transactionalAuthorityVersion: null,
         pendingConfirmation: null,
       },
+      completion: "USER_ACTION_REQUIRED",
     };
   }
 
@@ -1649,7 +2212,19 @@ async function composeClarificationTurn(
       transactionalAuthorityVersion: null,
       pendingConfirmation: null,
     },
+    completion: "USER_ACTION_REQUIRED",
   };
+}
+
+type PlanRecoveryMode = "F1" | "NON_F1";
+
+async function extractRecoveryPlan(
+  messages: readonly DeepSeekMessage[],
+  extractionOptions: DeepSeekClientOptions,
+  dependency: PlanExtractionDependency | undefined,
+): Promise<unknown> {
+  if (dependency !== undefined) return dependency(messages, extractionOptions);
+  return callDeepSeekJson(messages, extractionOptions);
 }
 
 /** Runs one plan and integrates already completed results; no primary re-execution. */
@@ -1657,12 +2232,23 @@ async function attemptPlanRecoveryOrUndefined(
   messages: readonly ConversationMessage[],
   options: OrchestrateNavigatorOptions,
   recovery: PlanRecoveryContext,
+  mode: PlanRecoveryMode,
 ): Promise<ConversationActDecision | null> {
   const requestId = options.requestId ?? "";
+  const latestEffectiveText = messages.at(-1)?.content ?? "";
+  let capturedPlan: unknown = null;
   const outcome = await attemptIntentPlanRecovery<NavigatorOrchestrationResult>({
     messages,
     extractionOptions: { env: options.env, fetch: options.fetch, signal: options.signal },
-    extraction: options.dependencies?.extractPlan,
+    extraction: async (extractionMessages, extractionOptions) => {
+      const plan = await extractRecoveryPlan(
+        extractionMessages,
+        extractionOptions,
+        options.dependencies?.extractPlan,
+      );
+      capturedPlan = plan;
+      return plan;
+    },
     preflight: (segments, tasks) => {
       if (tasks.length === 1) return null;
       for (const segment of segments) {
@@ -1672,9 +2258,27 @@ async function attemptPlanRecoveryOrUndefined(
       }
       return null;
     },
-    dispatchSegment: (segment, index) => dispatchRecoverySegment(
-      segment, messages, options, requestId, index,
-    ),
+    dispatchSegment: (segment, index) => {
+      if (
+        mode === "NON_F1" &&
+        !nonF1MetadataSegmentIsGrounded(segment, capturedPlan, latestEffectiveText)
+      ) {
+        return Promise.resolve({
+          bindingKind: "NONE" as const,
+          pendingConfirmation: false,
+          answerOrigin: null,
+          message: "",
+          value: emptyResult(
+            "",
+            { state: "ROUTER_DEGRADED" },
+            "DETERMINISTIC_CONTROL",
+          ),
+        });
+      }
+      return dispatchRecoverySegment(
+        segment, messages, options, requestId, index,
+      );
+    },
   });
   if (options.requestId) {
     console.info(JSON.stringify(createIntentPlanRecoveryLog(requestId, {
@@ -1688,12 +2292,20 @@ async function attemptPlanRecoveryOrUndefined(
   }
   if (outcome.disposition === "EXTRACTION_FAILED" || outcome.disposition === "PLAN_REJECTED") return null;
   if (!("dispatchResults" in outcome)) {
+    // Internal refusal accounting is not a displayed answer and must not
+    // complete the request. The caller keeps the retryable degraded result.
     recovery.coverage = accountTaskOutcomes(outcome.activeTasks, outcome.activeTasks.map((task, index) =>
       outcomeForTask({ task, taskIndex: index, selectedCourseId: options.conversationState?.selectedCourseId ?? null, limitationReason: "WHOLE_TURN_REFUSED" }),
     ));
     return null;
   }
-  const completed = finalizeRecoveredPlan(outcome, options);
+  const completed = finalizeRecoveredPlan(
+    outcome,
+    options,
+    mode,
+    latestEffectiveText,
+    capturedPlan,
+  );
   recovery.completedResult = completed;
   recovery.coverage = completed.taskCoverage ?? null;
   return completed.conversationAct;
@@ -1770,6 +2382,16 @@ function recoveryBindingKind(result: NavigatorOrchestrationResult): SegmentDispa
   return "NONE";
 }
 
+function taskEvidenceLimitation(
+  evidence: string,
+  options: OrchestrateNavigatorOptions,
+): string {
+  if (options.profile?.addressMode === "TY") {
+    return `Часть твоего сообщения («${evidence}») я в этом ответе не разобрал — задай её, пожалуйста, отдельным сообщением.`;
+  }
+  return undispatchedLineText(evidence);
+}
+
 function recoveryLimitationText(
   segment: RecoverySegment,
   options: OrchestrateNavigatorOptions,
@@ -1784,7 +2406,7 @@ function recoveryLimitationText(
   if (segment.kind === "LINE" && segment.lineKind === "RECOMMEND") {
     return "Подходит ли тебе курс, лучше решить отдельно: опиши, пожалуйста, твою задачу, и я помогу с выбором.";
   }
-  return `Часть твоего сообщения («${evidence}») я в этом ответе не разобрал — задай её, пожалуйста, отдельным сообщением.`;
+  return taskEvidenceLimitation(evidence, options);
 }
 
 type CompletedPlanRecovery = Extract<
@@ -1795,6 +2417,9 @@ type CompletedPlanRecovery = Extract<
 function finalizeRecoveredPlan(
   execution: CompletedPlanRecovery,
   options: OrchestrateNavigatorOptions,
+  mode: PlanRecoveryMode,
+  latestUserText: string,
+  planSnapshot: unknown,
 ): NavigatorOrchestrationResult {
   const primary = execution.primarySegmentIndex === null ? null
     : execution.dispatchResults[execution.primarySegmentIndex];
@@ -1812,34 +2437,72 @@ function finalizeRecoveredPlan(
   const pieces: ResponsePiece[] = [];
   for (const [index, segment] of execution.segments.entries()) {
     const result = execution.dispatchResults[index];
-    const origin = result?.answerOrigin ?? "DETERMINISTIC_CONTROL";
+    const metadataIntent = segment.kind === "ACT" && segment.act.state === "FACTUAL"
+      ? segment.act.intents.find((intent) => intent.kind === "CURRENT_METADATA")
+      : undefined;
+    const blockUnauthorizedMetadata =
+      mode === "NON_F1" &&
+      segment.kind === "ACT" &&
+      metadataIntent?.kind === "CURRENT_METADATA" &&
+      !nonF1MetadataSegmentIsGrounded(segment, planSnapshot, latestUserText);
+    const effectiveResult = blockUnauthorizedMetadata ? null : result;
+    const origin = effectiveResult?.answerOrigin ?? "DETERMINISTIC_CONTROL";
     const taskOutcomes = segment.taskIndices.map((taskIndex) => {
       const task = execution.activeTasks[taskIndex];
       const limitationReason = segment.kind === "LINE"
         ? segment.lineKind === "PAYMENT" ? "PAYMENT_TASK_NOT_DISPATCHED_IN_COMPOSITION" as const
           : segment.lineKind === "RECOMMEND" ? "SELECTION_TASK_NOT_DISPATCHED_IN_COMPOSITION" as const
             : segment.validatorRejection !== null ? "VALIDATOR_DEMOTED" as const : "EVIDENCE_OR_COURSE_UNDISPATCHED" as const
-        : result === null ? "SEGMENT_DISPATCH_FAILED" as const : undefined;
+        : effectiveResult === null ? "SEGMENT_DISPATCH_FAILED" as const : undefined;
       return outcomeForTask({
-        task, taskIndex, selectedCourseId: options.conversationState?.selectedCourseId ?? null,
+        task,
+        taskIndex,
+        selectedCourseId:
+          mode === "NON_F1" && isMetadataTaskType(task.type)
+            ? null
+            : options.conversationState?.selectedCourseId ?? null,
         limitationReason,
-        observation: segment.kind === "ACT" && result !== null ? {
+        observation: segment.kind === "ACT" && effectiveResult !== null ? {
           answerOrigin: origin,
-          decisionState: result.value.decision?.state ?? null,
-          evidenceChunkIds: result.value.observability?.selectedEvidence.map((evidence) => evidence.chunkId) ?? [],
+          decisionState: effectiveResult.value.decision?.state ?? null,
+          evidenceChunkIds: effectiveResult.value.observability?.selectedEvidence.map((evidence) => evidence.chunkId) ?? [],
         } : undefined,
       });
     });
     outcomes.push(...taskOutcomes);
+    // A merged segment keeps only the first task's evidence span. On the
+    // non-F-1 path a refused segment must still show every accepted task.
+    if (
+      mode === "NON_F1" &&
+      segment.kind === "ACT" &&
+      effectiveResult === null &&
+      segment.taskIndices.length > 1
+    ) {
+      for (const taskOutcome of taskOutcomes) {
+        const task = execution.activeTasks[taskOutcome.taskIndex];
+        pieces.push({
+          taskIndices: [taskOutcome.taskIndex],
+          courseIds: taskOutcome.courseIds ?? [],
+          comparison: false,
+          answerOrigin: "LIMITATION",
+          outcomeKinds: [taskOutcome.outcome],
+          text: taskEvidenceLimitation(task.evidence, options),
+        });
+      }
+      continue;
+    }
     const metadata = segment.kind === "ACT" && segment.act.state === "FACTUAL"
       ? segment.act.intents.find((intent) => intent.kind === "CURRENT_METADATA") : undefined;
     if (metadata?.kind === "CURRENT_METADATA" && segment.taskIndices.length > 1 &&
-        result !== null && origin === "COMMERCIAL_AUTHORITY") {
-      // One executed handler; field-specific rendering links each fact to its task.
+        effectiveResult !== null && origin === "COMMERCIAL_AUTHORITY") {
+      // F-1 SELECTED recovery may render the stored course. NON_F1 must not inherit it.
+      const renderedCourseId = mode === "F1"
+        ? options.conversationState?.selectedCourseId ?? null
+        : null;
       for (const taskOutcome of taskOutcomes) {
         const task = execution.activeTasks[taskOutcome.taskIndex];
         const text = composeFactualAnswer([{ ...metadata, fields: [task.type as typeof metadata.fields[number]] }],
-          options.conversationState?.selectedCourseId ?? null, options.profile, task.evidence);
+          renderedCourseId, options.profile, task.evidence);
         pieces.push({
           taskIndices: [taskOutcome.taskIndex], courseIds: taskOutcome.courseIds ?? [],
           comparison: false, answerOrigin: origin, outcomeKinds: [taskOutcome.outcome],
@@ -1853,9 +2516,9 @@ function finalizeRecoveredPlan(
       courseIds: [...new Set(taskOutcomes.flatMap((outcome) => outcome.courseIds ?? []))],
       comparison: segment.kind === "ACT" && segment.act.state === "FACTUAL" &&
         segment.act.intents.some((intent) => intent.kind === "COURSE_COMPARISON"),
-      answerOrigin: segment.kind === "LINE" || result === null ? "LIMITATION" : origin,
+      answerOrigin: segment.kind === "LINE" || effectiveResult === null ? "LIMITATION" : origin,
       outcomeKinds: taskOutcomes.map((outcome) => outcome.outcome),
-      text: segment.kind === "ACT" && result !== null ? result.message! : recoveryLimitationText(segment, options),
+      text: segment.kind === "ACT" && effectiveResult !== null ? effectiveResult.message! : recoveryLimitationText(segment, options),
     });
   }
   const coverage = accountTaskOutcomes(execution.activeTasks, outcomes);
@@ -1864,5 +2527,25 @@ function finalizeRecoveredPlan(
   if (displayedTasks.size !== execution.activeTasks.length) {
     throw new Error("A recovered task has an outcome but no displayed answer or limitation.");
   }
-  return { ...base, message: assembled.message, taskCoverage: coverage, taskResponseBlocks: assembled.blocks };
+  const remainder = mode === "NON_F1"
+    ? uncoveredLatestRemainder(
+        latestUserText,
+        execution.activeTasks.map((task) => task.evidence),
+      )
+    : null;
+  const message = remainder === null
+    ? assembled.message
+    : `${assembled.message}\n\n${undispatchedLineText(remainder)}`;
+  const completion: TurnCompletion = coverage.limitationCount > 0
+    ? "PARTIAL_WITH_EXPLICIT_LIMITATIONS"
+    : base.completion === "USER_ACTION_REQUIRED"
+      ? "USER_ACTION_REQUIRED"
+      : "ANSWERED";
+  return {
+    ...base,
+    message,
+    taskCoverage: coverage,
+    taskResponseBlocks: assembled.blocks,
+    completion,
+  };
 }

@@ -274,8 +274,9 @@ function stubResult(overrides: {
 // ---------------------------------------------------------------------------
 
 test("T01: A-0005 second turn gains the payment act and general official bot while the seed state stays unresolved", async () => {
-  // Frozen first turn: the router degradation leaves UNKNOWN/null state.
-  const first = await succeed(
+  // The unrecovered router degradation is a technical failure: it must not
+  // complete the request, and it still leaves the course UNKNOWN/null.
+  const firstResponse = await chatRequest(
     {
       messages: [{ role: "user", content: "Расскажи про курс Маслоу." }],
       profile: PROFILE,
@@ -283,18 +284,38 @@ test("T01: A-0005 second turn gains the payment act and general official bot whi
     },
     { orchestrate: scriptedOrchestration([{ state: "ROUTER_DEGRADED" }]) },
   );
-  assert.equal(first.conversationState.courseMatch, "UNKNOWN");
-  assert.equal(first.conversationState.selectedCourseId, null);
+  assert.equal(firstResponse.status, 503);
+  const firstBody = (await firstResponse.json()) as {
+    error: {
+      code: string;
+      message: string;
+      retryable: boolean;
+      conversationState: ConversationState;
+    };
+  };
+  assert.equal(firstBody.error.code, "NAVIGATOR_TECHNICAL_ERROR");
+  assert.equal(firstBody.error.retryable, true);
+  assert.equal(firstBody.error.conversationState.courseMatch, "UNKNOWN");
+  assert.equal(firstBody.error.conversationState.selectedCourseId, null);
+  assert.equal(
+    firstBody.error.conversationState.execution.lastCompletedRequestId,
+    null,
+  );
+  assert.notEqual(firstBody.error.conversationState.lastTechnicalError, null);
+  assert.equal(
+    firstBody.error.conversationState.qualitySignals.at(-1)?.signalType,
+    "MATERIAL_FAILURE",
+  );
 
   // Frozen second turn: act OUT_OF_SCOPE over "Хочу оплатить его."
   const second = await succeed(
     {
       messages: [
-        { role: "assistant", content: first.message },
+        { role: "assistant", content: firstBody.error.message },
         { role: "user", content: "Хочу оплатить его." },
       ],
       profile: PROFILE,
-      conversationState: first.conversationState,
+      conversationState: firstBody.error.conversationState,
     },
     { orchestrate: scriptedOrchestration([{ state: "OUT_OF_SCOPE" }]) },
   );

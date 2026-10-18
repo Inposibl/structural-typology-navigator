@@ -37,10 +37,12 @@ import {
   type NavigatorOrchestrationResult,
 } from "@/lib/navigation/orchestrate-navigation";
 import {
+  NavigatorStageError,
   createNavigatorFailureLog,
   createNavigatorTurnLog,
   type NavigatorTurnDetails,
 } from "@/lib/navigation/navigator-observability";
+import { ConversationActDecisionValidationError } from "@/lib/navigation/conversation-act-router";
 import { buildTechnicalErrorState } from "@/lib/navigation/technical-error";
 import { buildMaterialFailureSignal } from "@/lib/navigation/failure-capture";
 import { composeTechnicalErrorAnswer } from "@/lib/navigation/conversation-response";
@@ -441,6 +443,36 @@ export async function handleChatRequest(
       conversationState: prepared.conversationState,
     });
 
+    // Completion comes from the orchestration disposition. Internal task
+    // coverage, the technical-error act label, and the public retry sentence
+    // do not grant a successful request. A retryable or terminal failure
+    // keeps the prior completed id, deferred work and course selection.
+    const technicalDisposition = technicalFailureDisposition(
+      result,
+      prepared.profile,
+    );
+    if (technicalDisposition !== null) {
+      return technicalErrorResponse({
+        error:
+          technicalDisposition === "TERMINAL"
+            ? Object.assign(new Error("Terminal technical failure"), {
+                code: "CONFIGURATION_ERROR",
+                stage: "ORCHESTRATION",
+              })
+            : new NavigatorStageError(
+                "ACT_ROUTER",
+                new ConversationActDecisionValidationError(
+                  "Invalid conversation act decision was not deterministically recovered.",
+                ),
+              ),
+        profile: prepared.profile,
+        conversationState: prepared.conversationState,
+        requestId: validation.requestId,
+        logRequestId,
+        nowMs,
+      });
+    }
+
     const { act, flowId } = orchestrationAct(result);
 
     const responseBody: ChatSuccessResponse = {
@@ -491,6 +523,27 @@ export async function handleChatRequest(
       nowMs,
     });
   }
+}
+
+/**
+ * Retryable and terminal dispositions are failures. When an older producer
+ * omits the disposition, an unrecovered degraded retry is still a failure.
+ * Presence of task coverage is not a completion grant.
+ */
+function technicalFailureDisposition(
+  result: NavigatorOrchestrationResult,
+  profile: ConversationProfile,
+): "RETRYABLE" | "TERMINAL" | null {
+  if (result.completion === "RETRYABLE_TECHNICAL_FAILURE") return "RETRYABLE";
+  if (result.completion === "TERMINAL_TECHNICAL_FAILURE") return "TERMINAL";
+  if (result.completion !== undefined) return null;
+  if (
+    result.conversationAct.state === "ROUTER_DEGRADED" &&
+    result.message === composeTechnicalErrorAnswer(profile, true)
+  ) {
+    return "RETRYABLE";
+  }
+  return null;
 }
 
 type TechnicalErrorResponseInput = {
