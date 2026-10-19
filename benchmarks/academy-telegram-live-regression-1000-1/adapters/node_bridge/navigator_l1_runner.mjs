@@ -10,7 +10,6 @@ const out = { act: "L1_EXECUTED", origin: "NAVIGATOR_L1", state: {}, link: null,
 
 function containedImport(rootReal, rel) {
   const candidate = `${rootReal}/${rel}`;
-  // eslint-disable-next-line no-undef
   const real = realpathSync(candidate);
   if (!real.startsWith(rootReal)) {
     throw new Error(`module path escapes TEST_BASE root: ${rel}`);

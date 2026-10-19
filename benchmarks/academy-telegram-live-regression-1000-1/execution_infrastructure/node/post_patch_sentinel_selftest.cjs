@@ -1,8 +1,8 @@
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const dns = require("dns");
+const fs = module.require("fs");
+const path = module.require("path");
+const dns = module.require("dns");
 
 const ledgerPath = process.argv[2];
 const resultsPath = process.argv[3];
@@ -44,7 +44,7 @@ async function check(name, fn) {
 async function main() {
   const fetchCalls = [];
   const nativeFetch = globalThis.fetch;
-  globalThis.fetch = async (input, init) => {
+  globalThis.fetch = async (input) => {
     fetchCalls.push(String(input && input.url ? input.url : input));
     return new Response("stub", { status: 200 });
   };
@@ -57,7 +57,7 @@ async function main() {
 
   const preloadPath = path.join(__dirname, "academy-execution-preload.cjs");
   const source = fs.readFileSync(preloadPath, "utf8");
-  const preload = require(preloadPath);
+  const preload = module.require(preloadPath);
 
   await check("retired_identity_check_absent", async () => {
     if (source.includes("globalThis.fetch === interposer") || source.includes("globalThis.fetch === harness")) {
@@ -127,7 +127,7 @@ async function main() {
   });
 
   await check("post_next_patch_sentinel_success", async () => {
-    const { patchFetch } = require(path.join(
+    const { patchFetch } = module.require(path.join(
       process.env.NAVIGATOR_ROOT,
       "node_modules/next/dist/server/lib/patch-fetch.js",
     ));
@@ -184,7 +184,7 @@ async function main() {
       },
     );
     await new Promise((resolve, reject) => {
-      const socket = new (require("net").Socket)();
+      const socket = new (module.require("net").Socket)();
       socket.once("error", (error) => {
         if (error.code !== "COHERE_REAL_SOCKET_DENY") reject(error);
         else resolve();

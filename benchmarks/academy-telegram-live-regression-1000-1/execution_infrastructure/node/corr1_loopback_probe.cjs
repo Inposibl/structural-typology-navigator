@@ -1,10 +1,10 @@
 "use strict";
 
-const http = require("http");
-const net = require("net");
-const dns = require("dns");
-const fs = require("fs");
-const path = require("path");
+const http = module.require("http");
+const net = module.require("net");
+const dns = module.require("dns");
+const fs = module.require("fs");
+const path = module.require("path");
 
 const resultsPath = process.argv[2];
 if (!resultsPath) {
@@ -42,7 +42,7 @@ async function check(name, fn) {
 }
 
 async function main() {
-  const preload = require(path.join(__dirname, "academy-execution-preload.cjs"));
+  const preload = module.require(path.join(__dirname, "academy-execution-preload.cjs"));
   const fixtures = JSON.parse(fs.readFileSync(
     path.join(__dirname, "..", "contracts", "frozen_retrieval_fixtures.json"),
     "utf8",

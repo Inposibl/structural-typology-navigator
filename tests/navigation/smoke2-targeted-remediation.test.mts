@@ -8,12 +8,9 @@
  */
 
 import assert from "node:assert/strict";
-import test from "node:test";
+import test, { after, mock } from "node:test";
 
-import type {
-  ConversationMessage,
-  ConversationProfile,
-} from "../../src/lib/chat-contract.ts";
+import type { ConversationProfile } from "../../src/lib/chat-contract.ts";
 import {
   ACADEMY_COMMERCIAL_AUTHORITY,
   ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
@@ -21,7 +18,11 @@ import {
 import { currentMetadataComposerAdmitsField } from "../../src/lib/navigation/orchestrate-navigation.ts";
 import { ConversationActDecisionValidationError } from "../../src/lib/navigation/conversation-act-router.ts";
 import {
+  applySessionFreshness,
   createInitialConversationState,
+  SESSION_CONTEXT_TTL_MS,
+  systemSessionClock,
+  toSessionTimestamp,
   type ConversationState,
 } from "../../src/lib/navigation/conversation-state.ts";
 import { NavigationDecisionValidationError } from "../../src/lib/navigation/navigation-decision.ts";
@@ -36,6 +37,15 @@ import {
 } from "../../src/app/api/chat/route.ts";
 
 const T0 = Date.parse("2026-10-17T12:00:00.000Z");
+// The production route reads systemSessionClock. The fixture stamps session
+// activity at T0, so the suite clock stays at T0. Production TTL is unchanged.
+// Each test file runs in its own process; after() restores the method even
+// when a test fails. The mock is a constant, so concurrent tests in this
+// file cannot observe a different clock.
+mock.method(systemSessionClock, "now", () => T0);
+after(() => {
+  mock.restoreAll();
+});
 
 const T02_TASK = "Здравствуйте! Помогите, пожалуйста, разобраться в курсах Академии.";
 const T02_NAME = "Меня зовут Тест. На «вы».";
@@ -3080,3 +3090,64 @@ for (const mode of ["NON_F1", "SIMILAR"] as const) {
     });
   }
 }
+
+test("the injected session clock keeps T0 fresh and the production TTL still expires at the boundary", async () => {
+  assert.equal(systemSessionClock.now(), T0);
+
+  const active = initialState({
+    courseMatch: "MATCHED",
+    selectedCourseId: "maslow",
+    activeFlow: { id: "COURSE_SELECTION", pendingQuestion: "team-or-self" },
+  });
+
+  const justInside = applySessionFreshness(
+    {
+      ...active,
+      lastActivityAt: toSessionTimestamp(T0 - SESSION_CONTEXT_TTL_MS + 1),
+    },
+    systemSessionClock.now(),
+  );
+  assert.equal(justInside.expired, false);
+  assert.equal(justInside.state.selectedCourseId, "maslow");
+  assert.equal(justInside.state.courseMatch, "MATCHED");
+  assert.equal(justInside.state.activeFlow?.id, "COURSE_SELECTION");
+  assert.equal(justInside.state.staleReference, null);
+
+  const atBoundary = applySessionFreshness(
+    {
+      ...active,
+      lastActivityAt: toSessionTimestamp(T0 - SESSION_CONTEXT_TTL_MS),
+    },
+    systemSessionClock.now(),
+  );
+  assert.equal(atBoundary.expired, true);
+  assert.equal(atBoundary.state.selectedCourseId, null);
+  assert.equal(atBoundary.state.courseMatch, "UNKNOWN");
+  assert.equal(atBoundary.state.activeFlow, null);
+  assert.equal(atBoundary.state.lastAssistant, null);
+  assert.deepEqual(atBoundary.state.staleReference, {
+    previousCourseId: "maslow",
+    previousFlowId: "COURSE_SELECTION",
+  });
+
+  const expired = await readSuccess(
+    await chat({
+      messages: [{ role: "user", content: "этот курс мне подойдёт?" }],
+      profile: VY_PROFILE,
+      conversationState: {
+        ...initialState({
+          courseMatch: "MATCHED",
+          selectedCourseId: "maslow",
+        }),
+        lastActivityAt: toSessionTimestamp(T0 - SESSION_CONTEXT_TTL_MS),
+      },
+    }),
+  );
+  assert.equal(expired.conversationState.selectedCourseId, null);
+  assert.equal(expired.conversationState.courseMatch, "UNKNOWN");
+  assert.equal(expired.conversationState.staleReference?.previousCourseId, "maslow");
+  assert.equal(expired.conversationState.pendingConfirmation?.candidateCourseId, "maslow");
+  assert.match(expired.message, /Ранее мы обсуждали/u);
+  assert.doesNotMatch(expired.message, PAYMENT_MARKERS);
+  assert.equal(systemSessionClock.now(), T0);
+});

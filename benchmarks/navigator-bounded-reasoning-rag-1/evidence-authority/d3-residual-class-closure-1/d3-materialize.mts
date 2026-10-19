@@ -8,13 +8,13 @@ const universeBytes = fs.readFileSync(new URL('authorized-evidence-universe.json
 if (hash(universeBytes) !== '0715ed576d0b4d514437138b190f54a4aaec5f58f6b70969cc7a88efd80f719e') throw Error('UNIVERSE_DRIFT');
 const rows = universeBytes.toString('utf8').trimEnd().split('\n').map(JSON.parse);
 const pinned = JSON.parse(fs.readFileSync(new URL('source-verification.json', base), 'utf8'));
-for (const m of pinned.members.filter((m: any) => m.path.startsWith('src/lib/ingestion/'))) {
+for (const m of pinned.members.filter((m: { path: string }) => m.path.startsWith('src/lib/ingestion/'))) {
   if (hash(fs.readFileSync(repo + '/' + m.path)) !== m.sha256) throw Error('MODULE_DRIFT ' + m.path);
 }
 globalThis.fetch = async () => { throw Error('D3_NETWORK_FORBIDDEN'); };
 const {adaptMarkdownDocument} = await import(repo + '/src/lib/ingestion/adapters.ts');
 const {buildIngestionPlan} = await import(repo + '/src/lib/ingestion/build-ingestion-plan.ts');
-const documents = new Map<string, any>();
+const documents = new Map<string, { chunks: Array<{ content: string }> }>();
 const result = [];
 for (const row of rows) {
   let content: string;
@@ -24,7 +24,7 @@ for (const row of rows) {
     const f = row.physicalLocator.canonicalPath;
     if (!documents.has(f)) {
       const receipts = JSON.parse(fs.readFileSync(row.physicalLocator.receiptPath, 'utf8')).receipts;
-      const r = receipts.find((r: any) => r.canonicalFileSha256 === row.documentIdentity && r.sourceSlug === row.sourceSlug && r.courseId === row.courseId);
+      const r = receipts.find((r: { canonicalFileSha256: string; sourceSlug: string; courseId: string; sourceTitle: string; sourceKind: string; language: string; normalizedContentSha256: string; chunkCount: number; chunking: unknown }) => r.canonicalFileSha256 === row.documentIdentity && r.sourceSlug === row.sourceSlug && r.courseId === row.courseId);
       if (!r) throw Error('RECEIPT_MISSING');
       const b = fs.readFileSync(f);
       if (hash(b) !== row.documentIdentity) throw Error('DOCUMENT_DRIFT');

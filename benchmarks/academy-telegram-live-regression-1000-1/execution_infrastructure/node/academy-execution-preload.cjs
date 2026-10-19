@@ -10,13 +10,13 @@
  * interposer is not a success condition.
  */
 
-const http = require("http");
-const dns = require("dns");
-const net = require("net");
-const tls = require("tls");
-const fs = require("fs");
-const path = require("path");
-const crypto = require("crypto");
+const http = module.require("http");
+const dns = module.require("dns");
+const net = module.require("net");
+const tls = module.require("tls");
+const fs = module.require("fs");
+const path = module.require("path");
+const crypto = module.require("crypto");
 
 const MARK = Symbol.for("academy.execution.preload.installed");
 if (globalThis[MARK]) {
@@ -126,10 +126,6 @@ if (globalThis[MARK]) {
     return hasStart && hasNext;
   }
 
-  function currentFetchIs(candidate) {
-    return globalThis.fetch === candidate;
-  }
-
   function classifyProvider(fields) {
     const timeout = Boolean(fields.timeout);
     const http = fields.http_status == null || Number.isNaN(Number(fields.http_status))
@@ -156,7 +152,7 @@ if (globalThis[MARK]) {
       const parsed = new URL(raw);
       if (!isStrictLoopback(normalizeHost(parsed.hostname))) return null;
       return parsed.origin;
-    } catch (_err) {
+    } catch {
       return null;
     }
   }
@@ -165,7 +161,7 @@ if (globalThis[MARK]) {
   try {
     const parsedFixtures = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
     frozenFixtures = parsedFixtures.fixtures || {};
-  } catch (_err) {
+  } catch {
     frozenFixtures = {};
   }
 
@@ -543,7 +539,7 @@ if (globalThis[MARK]) {
       const found = headers.get(name);
       if (found) return found;
       if (input && typeof input.headers?.get === "function") return input.headers.get(name);
-    } catch (_err) {
+    } catch {
       return null;
     }
     return null;
@@ -668,7 +664,7 @@ if (globalThis[MARK]) {
       const rawBody = init && init.body != null ? String(init.body) : "";
       bodySha = crypto.createHash("sha256").update(rawBody).digest("hex");
       model = JSON.parse(rawBody).model || null;
-    } catch (_err) {
+    } catch {
       model = null;
     }
     const localInit = Object.assign({}, init || {});
@@ -724,7 +720,7 @@ if (globalThis[MARK]) {
     let parsed;
     try {
       parsed = new URL(url);
-    } catch (_err) {
+    } catch {
       parsed = null;
     }
     const exact = parsed ? `${parsed.origin}${parsed.pathname}` : "";
@@ -754,7 +750,7 @@ if (globalThis[MARK]) {
         const rawBody = init && init.body != null ? String(init.body) : "";
         bodySha = crypto.createHash("sha256").update(rawBody).digest("hex");
         model = JSON.parse(rawBody).model || null;
-      } catch (_err) {
+      } catch {
         model = null;
       }
       const identity = captureRequestIdentity();
@@ -892,7 +888,7 @@ if (globalThis[MARK]) {
     let payload = null;
     try {
       payload = await response.json();
-    } catch (_err) {
+    } catch {
       payload = null;
     }
     const vector = payload && payload.embeddings && payload.embeddings.float
@@ -1059,7 +1055,7 @@ if (globalThis[MARK]) {
         try {
           const parsed = JSON.parse(raw.toString("utf8") || "{}");
           requestNonce = parsed.request_nonce == null ? null : parsed.request_nonce;
-        } catch (_err) {
+        } catch {
           requestNonce = null;
         }
         return runSentinelProof(requestNonce);

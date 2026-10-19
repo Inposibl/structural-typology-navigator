@@ -23,10 +23,31 @@ export function deriveSubjectKey(secret: string, userId: number | string): strin
  * 3. computed_hash = HMAC_SHA256(secret_key, data_check_string).hex()
  * 4. timingSafeEqual(computed_hash, hash)
  */
+type TelegramInitUser = {
+  id: number;
+  username?: string;
+  first_name?: string;
+  last_name?: string;
+};
+
+type TelegramInitResult =
+  | {
+      valid: true;
+      userId: number;
+      user: TelegramInitUser;
+      error?: undefined;
+    }
+  | {
+      valid: false;
+      error: string;
+      userId?: undefined;
+      user?: undefined;
+    };
+
 export function validateTelegramInitData(
   initDataStr: string,
   botToken: string
-): { valid: boolean; error?: string; userId?: number; user?: any } {
+): TelegramInitResult {
   if (!initDataStr || typeof initDataStr !== "string") {
     return { valid: false, error: "MISSING_INIT_DATA" };
   }
@@ -91,10 +112,15 @@ export function validateTelegramInitData(
   }
 
   try {
-    const user = JSON.parse(userStr);
-    if (!user || typeof user.id !== "number") {
+    const parsed: unknown = JSON.parse(userStr);
+    if (
+      typeof parsed !== "object" ||
+      parsed === null ||
+      typeof (parsed as { id?: unknown }).id !== "number"
+    ) {
       return { valid: false, error: "INVALID_USER_ID" };
     }
+    const user = parsed as TelegramInitUser;
     return { valid: true, userId: user.id, user };
   } catch {
     return { valid: false, error: "MALFORMED_USER_JSON" };
@@ -226,12 +252,19 @@ export async function GET(request: NextRequest) {
         },
       }
     );
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message =
+      typeof err === "object" &&
+      err !== null &&
+      "message" in err &&
+      err.message
+        ? err.message
+        : String(err);
     return NextResponse.json(
       {
         is_authenticated: true,
         error: "INTERNAL_ERROR",
-        message: err?.message || String(err),
+        message,
       },
       { status: 500 }
     );

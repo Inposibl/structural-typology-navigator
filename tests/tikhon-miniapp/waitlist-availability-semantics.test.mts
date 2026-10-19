@@ -80,9 +80,6 @@ const pilotDir = path.resolve(process.cwd(), "src/app/tikhon-miniapp-pilot");
 const pageSource = fs.readFileSync(path.join(pilotDir, "page.tsx"), "utf-8");
 const helpersSource = fs.readFileSync(path.join(pilotDir, "helpers.ts"), "utf-8");
 const waitlistClientSource = fs.readFileSync(path.join(pilotDir, "waitlist.ts"), "utf-8");
-const routePath = path.resolve(process.cwd(), "src/app/api/tikhon/waitlist/route.ts");
-const getRouteSource = () => fs.readFileSync(routePath, "utf-8");
-
 const EXACT_SUCCESS_COPY =
   "Заявка в лист ожидания принята.\n\n" +
   "Как только откроется набор на следующий поток,\n" +
@@ -356,7 +353,7 @@ describe("TIKHON-MINIAPP: Enrollment Availability & Waitlist Semantics", () => {
     has_canonical_sessions: false,
     enrollment_status: "INACTIVE",
     is_enrollment_open: false,
-  } as any;
+  };
 
   test("CORR1-2: INACTIVE cohort is never labeled «Открыт набор» (behavioral helpers)", async () => {
     const h = await importHelpers();
@@ -381,15 +378,6 @@ describe("TIKHON-MINIAPP: Enrollment Availability & Waitlist Semantics", () => {
   });
 
   /* ---------------- CORR1.CORR1 ISSUE 1: WAITLIST FABRICATES NOTHING ---------------- */
-
-  const productionShapedWaitlist = {
-    id: "waiting_list",
-    title: "Лист ожидания",
-    is_active: true,
-    has_canonical_sessions: false,
-    enrollment_status: "WAITING_LIST",
-    is_enrollment_open: true,
-  } as any;
 
   test("C1x2-1: public contract legally omits waitlist date/schedule (interface)", () => {
     assert.ok(

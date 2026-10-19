@@ -32,6 +32,7 @@ import crypto from "crypto";
 import { register } from "node:module";
 import { pathToFileURL } from "node:url";
 import { NextRequest } from "next/server";
+import type { Cohort, Course } from "../../src/app/tikhon-miniapp-pilot/helpers.ts";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 
@@ -84,7 +85,6 @@ const pilotDir = path.resolve(process.cwd(), "src/app/tikhon-miniapp-pilot");
 const pageSource = fs.readFileSync(path.join(pilotDir, "page.tsx"), "utf-8");
 const hubSource = fs.readFileSync(path.join(pilotDir, "calendar-hub.tsx"), "utf-8");
 const calendarSource = fs.readFileSync(path.join(pilotDir, "calendar.ts"), "utf-8");
-const screenSource = fs.readFileSync(path.join(pilotDir, "submission-screen.tsx"), "utf-8");
 const helpersSource = fs.readFileSync(path.join(pilotDir, "helpers.ts"), "utf-8");
 const routePath = path.resolve(process.cwd(), "src/app/api/tikhon/send-schedule/route.ts");
 const getRouteSource = () => fs.readFileSync(routePath, "utf-8");
@@ -128,7 +128,7 @@ const courseFixture = {
   cohorts: [availableCohort, formingCohort],
 };
 
-function makeSuccessScreenProps(cohort: any, course: any) {
+function makeSuccessScreenProps(cohort: Cohort, course: Course) {
   return {
     submissionState: "success" as const,
     submissionError: null,
@@ -147,10 +147,6 @@ async function importScreen() {
 
 async function importCalendar() {
   return await import("../../src/app/tikhon-miniapp-pilot/calendar.ts");
-}
-
-async function importHub() {
-  return await import("../../src/app/tikhon-miniapp-pilot/calendar-hub.tsx");
 }
 
 describe("TIKHON-MINIAPP BATCH-6: Schedule Delivery & Calendar Hub", () => {

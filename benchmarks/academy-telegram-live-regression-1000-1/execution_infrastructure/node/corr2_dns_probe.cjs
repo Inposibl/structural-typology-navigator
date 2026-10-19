@@ -1,7 +1,7 @@
 "use strict";
 
-const dns = require("dns");
-const fs = require("fs");
+const dns = module.require("dns");
+const fs = module.require("fs");
 
 const resultsPath = process.argv[2];
 if (!resultsPath) {
@@ -10,7 +10,7 @@ if (!resultsPath) {
 }
 
 process.env.ACADEMY_EXECUTION_FORBID_LIVE_PROVIDERS = "1";
-require("./academy-execution-preload.cjs");
+module.require("./academy-execution-preload.cjs");
 
 const NAMES = [
   "resolveAny", "resolveTxt", "resolveMx", "resolveNs", "resolveCname",

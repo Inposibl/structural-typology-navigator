@@ -33,7 +33,15 @@ const INITIAL_MESSAGE: ChatMessageType = {
   content: INITIAL_ADDRESS_PROMPT,
 };
 
-export function ChatInterface() {
+export type ChatInterfaceVariant = "standalone" | "embedded";
+
+export type ChatInterfaceProps = {
+  variant?: ChatInterfaceVariant;
+};
+
+export function ChatInterface({
+  variant = "standalone",
+}: ChatInterfaceProps = {}) {
   const [messages, setMessages] = useState<ChatMessageType[]>([
     INITIAL_MESSAGE,
   ]);
@@ -137,10 +145,12 @@ export function ChatInterface() {
   }
 
   return (
-    <main className="chat-shell">
-      <header className="chat-header">
-        <h1>Навигатор</h1>
-      </header>
+    <main className="chat-shell" data-variant={variant}>
+      {variant !== "embedded" ? (
+        <header className="chat-header">
+          <h1>Навигатор</h1>
+        </header>
+      ) : null}
 
       <section className="conversation" aria-label="Диалог">
         <ol

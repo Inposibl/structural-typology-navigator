@@ -1,9 +1,9 @@
 "use strict";
 
 process.env.ACADEMY_EXECUTION_FORBID_LIVE_PROVIDERS = "1";
-require("./academy-execution-preload.cjs");
+module.require("./academy-execution-preload.cjs");
 
-const dns = require("dns");
+const dns = module.require("dns");
 const interposer = global.fetch;
 
 function nextPatchedFetch(input, init) {

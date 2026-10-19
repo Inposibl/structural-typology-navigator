@@ -10,11 +10,38 @@ let contacts=0;
 globalThis.fetch=async()=>{contacts++;throw Error('Authoring network denied');};
 const {adaptMarkdownDocument}=await import(repo+'/src/lib/ingestion/adapters.ts');
 const {buildIngestionPlan}=await import(repo+'/src/lib/ingestion/build-ingestion-plan.ts');
-const hash=(b:any)=>crypto.createHash('sha256').update(b).digest('hex');
+const hash=(b: Uint8Array)=>crypto.createHash('sha256').update(b).digest('hex');
 const corpus='/Users/entp_psyche/Desktop/Academy Texts Corpus';
 const receiptsPath=corpus+'/_RAG_INGESTION/ACADEMY_MULTI_COURSE_RAG_EXPANSION_1_INGESTION_1/SOURCE_DOCUMENT_RECEIPTS.json';
 const receipts=JSON.parse(fs.readFileSync(receiptsPath,'utf8')).receipts;
-const rows:any[]=[];const checks:any[]=[];
+type ResumeRow = {
+ memberId: string;
+ courseId: string;
+ sourceSlug: string;
+ documentIdentity: string;
+ historicalDocumentId?: string;
+ chunkIndex: number;
+ passageSha256: string;
+ passageUtf8Bytes: number;
+ physicalLocator: Record<string, string>;
+ locator: unknown;
+ headingPath: unknown;
+ content: string;
+ authorityFamily: string;
+ authorityRelation?: string;
+};
+type ResumeCheck = {
+ canonicalPath?: string;
+ canonicalSha256?: string;
+ documentId?: string;
+ chunks?: number;
+ allContentHashesMatch?: boolean;
+ inBoundUniverse?: boolean;
+ manifestPath?: string;
+ manifestSha256?: string;
+ passages?: number;
+};
+const rows: ResumeRow[]=[];const checks: ResumeCheck[]=[];
 for(const r of receipts){
  const f=path.join(corpus,r.canonicalFile);const bytes=fs.readFileSync(f);
  if(hash(bytes)!==r.canonicalFileSha256) throw Error('Canonical mismatch '+f);
@@ -41,7 +68,7 @@ for(const [family,name] of [['b1','forensic_manifest_554.jsonl'],['b2','forensic
 }
 rows.sort((a,b)=>a.memberId<b.memberId?-1:a.memberId>b.memberId?1:0);
 if(rows.length!==1999||new Set(rows.map(x=>x.memberId)).size!==1999)throw Error('Universe cardinality mismatch');
-fs.writeFileSync(out+'/authorized-evidence-universe.jsonl',rows.map(({content,...r})=>JSON.stringify(r)).join('\n')+'\n');
+fs.writeFileSync(out+'/authorized-evidence-universe.jsonl',rows.map((row)=>{const serialized={...row};delete serialized.content;return JSON.stringify(serialized);}).join('\n')+'\n');
 fs.writeFileSync('/private/tmp/nbrr1_resume_passages.json',JSON.stringify(rows));
 fs.writeFileSync(out+'/authority-static-validation.json',JSON.stringify({kind:'AUTHOR_STATIC_CHECK_NOT_INDEPENDENT_IV',benchmarkExecutions:0,providerCalls:0,productionContact:0,networkAttempts:contacts,universeCount:rows.length,nonMaslowCount:1408,maslowCount:591,excludedPDSCount:125,checks},null,2)+'\n');
 console.log(JSON.stringify({universeCount:rows.length,documentsChecked:24,nonMaslowChunkHashesVerified:1533,maslowPassagesVerified:591,networkAttempts:contacts,out}));

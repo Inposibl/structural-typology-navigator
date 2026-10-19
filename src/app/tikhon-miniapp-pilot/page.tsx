@@ -221,7 +221,13 @@ export default function TikhonMiniAppPilotPage() {
   }, []);
 
   useEffect(() => {
-    fetchCourses();
+    let active = true;
+    queueMicrotask(() => {
+      if (active) fetchCourses();
+    });
+    return () => {
+      active = false;
+    };
   }, [fetchCourses]);
 
   // Load student authenticated status via Telegram WebApp initData HMAC
@@ -267,23 +273,36 @@ export default function TikhonMiniAppPilotPage() {
   }, []);
 
   useEffect(() => {
-    loadStudentStatus();
+    let active = true;
+    queueMicrotask(() => {
+      if (active) loadStudentStatus();
+    });
+    return () => {
+      active = false;
+    };
   }, [loadStudentStatus]);
 
   // Deep linking resolution on initial mount and when courses arrive
   useEffect(() => {
-    if (typeof window === "undefined" || courses.length === 0) return;
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      if (typeof window === "undefined" || courses.length === 0) return;
 
-    const tgParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
-    const targetCourseId = resolveDeepLinkCourseId(window.location.search, tgParam);
+      const tgParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+      const targetCourseId = resolveDeepLinkCourseId(window.location.search, tgParam);
 
-    if (targetCourseId) {
-      const matched = courses.find((c) => c.id.toLowerCase() === targetCourseId);
-      if (matched) {
-        setSelectedCourseId(matched.id);
-        setScreen("detail");
+      if (targetCourseId) {
+        const matched = courses.find((c) => c.id.toLowerCase() === targetCourseId);
+        if (matched) {
+          setSelectedCourseId(matched.id);
+          setScreen("detail");
+        }
       }
-    }
+    });
+    return () => {
+      active = false;
+    };
   }, [courses]);
 
   // Telegram WebApp lifecycle & native BackButton management
@@ -355,51 +374,65 @@ export default function TikhonMiniAppPilotPage() {
 
   // Auto-select initial cohort when course changes or loads
   useEffect(() => {
-    if (!selectedCourse || !selectedCourse.cohorts || selectedCourse.cohorts.length === 0) {
-      setSelectedCohortId(null);
-      return;
-    }
-
-    const openAvailable = selectedCourse.cohorts.find(
-      (ch) => ch.is_enrollment_open && ch.enrollment_status === "AVAILABLE" && ch.id !== "waiting_list"
-    );
-    if (openAvailable) {
-      setSelectedCohortId(openAvailable.id);
-    } else {
-      // ENROLLMENT-AVAILABILITY-AND-WAITLIST-SEMANTICS-1 §5/§6: без записываемого
-      // потока выбираем лист ожидания, а не закрытый поток.
-      const waitlistCohort = selectedCourse.cohorts.find(
-        (ch) => ch.id === "waiting_list" || ch.enrollment_status === "WAITING_LIST"
-      );
-      if (waitlistCohort) {
-        setSelectedCohortId(waitlistCohort.id);
-      } else {
-        const firstActive = selectedCourse.cohorts.find((ch) => ch.is_active && ch.id !== "waiting_list");
-        setSelectedCohortId(firstActive ? firstActive.id : selectedCourse.cohorts[0].id);
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      if (!selectedCourse || !selectedCourse.cohorts || selectedCourse.cohorts.length === 0) {
+        setSelectedCohortId(null);
+        return;
       }
-    }
+
+      const openAvailable = selectedCourse.cohorts.find(
+        (ch) => ch.is_enrollment_open && ch.enrollment_status === "AVAILABLE" && ch.id !== "waiting_list"
+      );
+      if (openAvailable) {
+        setSelectedCohortId(openAvailable.id);
+      } else {
+        // ENROLLMENT-AVAILABILITY-AND-WAITLIST-SEMANTICS-1 §5/§6: без записываемого
+        // потока выбираем лист ожидания, а не закрытый поток.
+        const waitlistCohort = selectedCourse.cohorts.find(
+          (ch) => ch.id === "waiting_list" || ch.enrollment_status === "WAITING_LIST"
+        );
+        if (waitlistCohort) {
+          setSelectedCohortId(waitlistCohort.id);
+        } else {
+          const firstActive = selectedCourse.cohorts.find((ch) => ch.is_active && ch.id !== "waiting_list");
+          setSelectedCohortId(firstActive ? firstActive.id : selectedCourse.cohorts[0].id);
+        }
+      }
+    });
+    return () => {
+      active = false;
+    };
   }, [selectedCourse]);
 
   // Batch 2 §7/§8: single-option courses auto-select their only source-provided
   // pricing option; multi-option courses (Structural Typology) require an
   // explicit user choice and are never auto-selected
   useEffect(() => {
-    if (!selectedCourse?.pricing_options || selectedCourse.pricing_options.length === 0) {
-      setSelectedPricingOptionId(null);
-      return;
-    }
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      if (!selectedCourse?.pricing_options || selectedCourse.pricing_options.length === 0) {
+        setSelectedPricingOptionId(null);
+        return;
+      }
 
-    const singleAuto = getSingleAutoPricingOption(selectedCourse);
-    if (singleAuto) {
-      setSelectedPricingOptionId(singleAuto.id);
-      return;
-    }
+      const singleAuto = getSingleAutoPricingOption(selectedCourse);
+      if (singleAuto) {
+        setSelectedPricingOptionId(singleAuto.id);
+        return;
+      }
 
-    setSelectedPricingOptionId((prev) =>
-      prev && selectedCourse.pricing_options.some((opt) => opt.id === prev)
-        ? prev
-        : null
-    );
+      setSelectedPricingOptionId((prev) =>
+        prev && selectedCourse.pricing_options.some((opt) => opt.id === prev)
+          ? prev
+          : null
+      );
+    });
+    return () => {
+      active = false;
+    };
   }, [selectedCourse]);
 
   // Authenticated identity is strictly server-derived (Batch 2 §10)
@@ -408,21 +441,34 @@ export default function TikhonMiniAppPilotPage() {
   // Batch 2 §12: a selected pricing option that is not currently ELIGIBLE can
   // never be carried into payer selection (PAID / LOCKED / staged-disabled)
   useEffect(() => {
-    if (!selectedCourse || !selectedPricingOptionId) return;
-    const { state } = getPublicAwareOptionEligibility(
-      selectedCourse.id,
-      selectedPricingOptionId,
-      currentStudentCourseStatus,
-      isAuthenticated
-    );
-    if (state !== "ELIGIBLE") {
-      setSelectedPricingOptionId(null);
-    }
+    let active = true;
+    queueMicrotask(() => {
+      if (!active) return;
+      if (!selectedCourse || !selectedPricingOptionId) return;
+      const { state } = getPublicAwareOptionEligibility(
+        selectedCourse.id,
+        selectedPricingOptionId,
+        currentStudentCourseStatus,
+        isAuthenticated
+      );
+      if (state !== "ELIGIBLE") {
+        setSelectedPricingOptionId(null);
+      }
+    });
+    return () => {
+      active = false;
+    };
   }, [selectedCourse, selectedPricingOptionId, currentStudentCourseStatus, isAuthenticated]);
 
   // Payer choice belongs to a single course context
   useEffect(() => {
-    setSelectedPayerType(null);
+    let active = true;
+    queueMicrotask(() => {
+      if (active) setSelectedPayerType(null);
+    });
+    return () => {
+      active = false;
+    };
   }, [selectedCourseId]);
 
   const selectedCohort = useMemo(() => {
