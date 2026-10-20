@@ -8,7 +8,8 @@
  *   0. duplicate / replay protection for an already completed request (A22)
  *   1. restart / cancel / close / stale-reference
  *   2. restatement, repair, challenge and frustration signals (A05)
- *   3. ADDRESS_SETUP and the existing profile controls
+ *   3. the existing profile controls (voluntary: mandatory address setup is
+ *      superseded, so every turn is processed with a complete profile)
  *   4. direct human handoff and its acceptance (A23)
  *   5. clarification exhaustion changes strategy and offers human help (A23)
  *   6. pending-confirmation resolution
@@ -42,12 +43,8 @@ import {
   isConversationResetRequest,
 } from "./conversation-profile-control.ts";
 import {
-  advanceAddressModeDecline,
-  advanceConversationProfile,
-  detectAddressPreferenceDecline,
-  INITIAL_ADDRESS_PROMPT,
-  isConversationProfileComplete,
-  messageSelectsAddressMode,
+  resolveConversationEntryProfile,
+  type ConversationEntryProfile,
 } from "./conversation-profile.ts";
 import {
   detectStaleReferenceLanguage,
@@ -71,7 +68,6 @@ import {
   buildFeedbackSignal,
 } from "./failure-capture.ts";
 import {
-  CLARIFICATION_BUDGET,
   applySessionFreshness,
   appendQualitySignal,
   cancelCurrentFlow,
@@ -84,7 +80,6 @@ import {
   appendDeferredRequest,
   withActiveFlow,
   withActivity,
-  withClarification,
   withCompletedExecution,
   withCourseBinding,
   withHandoff,
@@ -117,7 +112,6 @@ import {
   composeStaleReferenceConfirmationAnswer,
   composeStaleReferenceConfirmedAnswer,
   composeStaleReferenceDeclinedAnswer,
-  composeUnsupportedAddressModeAnswer,
   restateAssistantContent,
   type DeferredCapacityNoticeScope,
   type RestatementKind,
@@ -422,9 +416,16 @@ function routeResult(
 
 function resolveConversationControl(
   input: ConversationKernelInput,
+  entry: ConversationEntryProfile,
 ): ConversationKernelResult {
   const nowMs = input.nowMs;
-  const profile = input.profile;
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — no mandatory setup: from
+  // the first message on, the turn is processed with a complete profile.
+  const profile = entry.profile;
+  // CORR1 (C-3) — a pending request an older client still holds for the
+  // superseded setup stays in that client-held profile until a routed turn
+  // carries it (see applyConversationControlKernel).
+  const legacyPendingRequest = entry.legacyPendingRequest;
   const requestId = input.requestId ?? null;
 
   // A28 — 24h inactivity boundary. Profile fields are not part of this state,
@@ -438,10 +439,8 @@ function resolveConversationControl(
   let state = withActivity(freshness.state, nowMs);
 
   const text = input.userText.trim();
-  const setupOpen = !isConversationProfileComplete(profile);
   const scan = scanControls(text, {
     confirmationPending: state.pendingConfirmation !== null,
-    addressSetupOpen: setupOpen,
   });
   const { controls, remainder } = scan;
 
@@ -477,17 +476,14 @@ function resolveConversationControl(
     // user's identity. The working conversation state is replaced by the
     // canonical restart-cleared state, while the pre-restart canonical
     // profile is preserved as-is — never reconstructed, never re-inferred.
-    // With an incomplete profile the address setup genuinely continues, so
-    // the initial prompt stays; a preserved complete profile must not be
-    // greeted as a first-time user.
+    // Address setup is superseded (NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1),
+    // so a restart is always acknowledged and never asks for a name or a mode.
     return {
       state: "RESPOND",
       act: "RESTART",
       profile,
       conversationState: createInitialConversationState(nowMs),
-      message: isConversationProfileComplete(profile)
-        ? RESTART_ACKNOWLEDGMENT
-        : INITIAL_ADDRESS_PROMPT,
+      message: RESTART_ACKNOWLEDGMENT,
       resetConversation: true,
     };
   }
@@ -573,7 +569,7 @@ function resolveConversationControl(
 
   const restatement = restatementKind(controls);
 
-  if (restatement !== null && (state.lastAssistant !== null || !setupOpen)) {
+  if (restatement !== null) {
     if (state.lastAssistant === null) {
       return respond(
         restatement,
@@ -715,34 +711,41 @@ function resolveConversationControl(
   }
 
   // ---------------------------------------------------------------------
-  // 3. ADDRESS_SETUP and the existing profile controls.
+  // 3. The existing profile controls. They are voluntary personalization:
+  // there is no address-setup lane (NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1).
   // ---------------------------------------------------------------------
-
-  if (setupOpen && scan.unsupportedAddressModeWord !== null) {
-    // The counter is scoped to the unsupported-mode issue, and the wording
-    // changes with it, so repeated invalid input never re-emits the same
-    // initial prompt indefinitely.
-    const issueKey = `address-mode:${scan.unsupportedAddressModeWord}`;
-    const priorAttempts =
-      state.clarification?.issueKey === issueKey
-        ? state.clarification.attempts
-        : 0;
-
-    return respond(
-      "UNSUPPORTED_ADDRESS_MODE",
-      profile,
-      withClarification(state, {
-        issueKey,
-        attempts: Math.min(priorAttempts + 1, CLARIFICATION_BUDGET),
-        strategyKey: `address-mode-${priorAttempts}`,
-      }),
-      composeUnsupportedAddressModeAnswer(priorAttempts, CLARIFICATION_BUDGET),
-    );
-  }
 
   const profileControl = applyConversationProfileControl(profile, text);
 
   if (profileControl.handled) {
+    // CORR1 (C-3) — the turn that changes the profile releases a legacy
+    // pending request, as the superseded setup completion released it. An open
+    // confirmation still outranks routing (CORR2-A): there the request is
+    // preserved instead, and if it does not fit beside the stored remainder
+    // the confirmation is restated and the client keeps holding it.
+    if (legacyPendingRequest !== null && !profileControl.resetConversation) {
+      if (state.pendingConfirmation === null) {
+        return routeResult(profileControl.profile, state, legacyPendingRequest);
+      }
+
+      if (appendDeferredRequest(state, legacyPendingRequest).status === "ACCEPTED") {
+        return respondPreservingRemainder(
+          confirmationControlAct(state),
+          profileControl.profile,
+          state,
+          state.pendingConfirmation.prompt,
+          legacyPendingRequest,
+        );
+      }
+
+      return respond(
+        confirmationControlAct(state),
+        profile,
+        state,
+        state.pendingConfirmation.prompt,
+      );
+    }
+
     return respond(
       "PROFILE_CONTROL",
       profileControl.profile,
@@ -751,74 +754,6 @@ function resolveConversationControl(
         : state,
       profileControl.message,
       { resetConversation: profileControl.resetConversation },
-    );
-  }
-
-  if (setupOpen) {
-    // CORR3.CONVERSATION-REPAIR-AND-FOLLOWUP-1 (D1) — an explicit decline to
-    // choose the address mode is resolved to the authorized neutral default (вы),
-    // never re-asks, and resumes any pending request. An explicit ты/вы in the
-    // same message always wins over a decline.
-    if (
-      profile.addressMode === null &&
-      messageSelectsAddressMode(text) === null &&
-      detectAddressPreferenceDecline(text)
-    ) {
-      const declined = advanceAddressModeDecline(profile);
-
-      if (state.pendingConfirmation !== null) {
-        return respondPreservingRemainder(
-          confirmationControlAct(state),
-          declined.profile,
-          state,
-          state.pendingConfirmation.prompt,
-          declined.effectiveUserRequest,
-        );
-      }
-
-      if (declined.effectiveUserRequest !== null) {
-        return routeResult(
-          declined.profile,
-          withClarification(state, null),
-          declined.effectiveUserRequest,
-        );
-      }
-
-      return respond(
-        "ADDRESS_SETUP",
-        declined.profile,
-        withClarification(state, null),
-        declined.response ?? INITIAL_ADDRESS_PROMPT,
-      );
-    }
-
-    const setup = advanceConversationProfile(profile, text);
-
-    if (!setup.complete || setup.effectiveUserRequest === null) {
-      return respond(
-        "ADDRESS_SETUP",
-        setup.profile,
-        state,
-        setup.response ?? "Скажите, пожалуйста, как к вам обращаться.",
-      );
-    }
-
-    // The setup lane completes, but an unresolved confirmation still outranks
-    // ordinary routing (CORR2-A): the request it produced is preserved instead.
-    if (state.pendingConfirmation !== null) {
-      return respondPreservingRemainder(
-        confirmationControlAct(state),
-        setup.profile,
-        state,
-        state.pendingConfirmation.prompt,
-        setup.effectiveUserRequest,
-      );
-    }
-
-    return routeResult(
-      setup.profile,
-      withClarification(state, null),
-      setup.effectiveUserRequest,
     );
   }
 
@@ -1046,7 +981,27 @@ function resolveConversationControl(
   // 6. Ordinary message continues to the existing conversation-act router.
   // ---------------------------------------------------------------------
 
-  return routeResult(profile, state, remainder ?? text);
+  const request = remainder ?? text;
+
+  if (legacyPendingRequest !== null) {
+    // CORR1 (C-3) — the legacy pending request routes ahead of this turn's
+    // request and after any stored remainder, as the superseded setup
+    // completion routed it. If all three would pass the effective-request
+    // bound, the turn routes without it and the client keeps holding it.
+    const withLegacy = composeEffectiveRouteRequest(legacyPendingRequest, request);
+
+    if (
+      withLegacy.status === "ACCEPTED" &&
+      composeEffectiveRouteRequest(state.deferredRequest, withLegacy.request)
+        .status === "ACCEPTED"
+    ) {
+      return routeResult(profile, state, withLegacy.request);
+    }
+
+    return routeResult(input.profile, state, request);
+  }
+
+  return routeResult(profile, state, request);
 }
 
 /**
@@ -1061,7 +1016,20 @@ function resolveConversationControl(
 export function applyConversationControlKernel(
   input: ConversationKernelInput,
 ): ConversationKernelResult {
-  const result = resolveConversationControl(input);
+  const entry = resolveConversationEntryProfile(input.profile);
+  const resolved = resolveConversationControl(input, entry);
+
+  // CORR1 (C-3) — a turn that neither routed a legacy pending request nor
+  // stored it elsewhere hands the client-held profile back unchanged, exactly
+  // as accepted HEAD did: a replayed duplicate (A22), a restart (T32: the
+  // whole pre-restart profile survives), close, cancel, repair and every
+  // other control turn. Only a routed turn or a profile change consumes it.
+  const result =
+    entry.legacyPendingRequest !== null &&
+    resolved.state === "RESPOND" &&
+    resolved.profile === entry.profile
+      ? { ...resolved, profile: input.profile }
+      : resolved;
 
   if (result.state !== "RESPOND") return result;
 

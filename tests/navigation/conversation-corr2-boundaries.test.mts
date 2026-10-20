@@ -293,7 +293,7 @@ test("P8: cancel outranks an open confirmation and clears it without routing", (
   assert.equal(result.conversationState.deferredRequest, null);
 });
 
-test("P9: an incomplete address setup cannot route past an open confirmation", () => {
+test("P9: a first message on a legacy partial profile cannot route past an open confirmation", () => {
   const partial: ConversationProfile = {
     displayName: null,
     addressMode: null,
@@ -301,8 +301,10 @@ test("P9: an incomplete address setup cannot route past an open confirmation", (
     pendingUserRequest: null,
   };
 
-  // The message completes the address setup and carries a substantive request,
-  // so the setup lane would otherwise hand that request straight to routing.
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — address setup is
+  // Owner-superseded, so no setup lane splits this message: the profile is
+  // completed on «вы», and the whole substantive text is preserved, because
+  // the open confirmation still outranks ordinary routing (CORR2-A).
   const result = turn(
     "Иван, на ты. Хочу разобраться с мотивацией команды",
     pendingState(),
@@ -314,8 +316,14 @@ test("P9: an incomplete address setup cannot route past an open confirmation", (
   assert.notEqual(result.conversationState.pendingConfirmation, null);
   assert.equal(
     result.conversationState.deferredRequest,
-    "Хочу разобраться с мотивацией команды",
+    "Иван, на ты. Хочу разобраться с мотивацией команды",
   );
+  assert.deepEqual(result.profile, {
+    displayName: null,
+    addressMode: "VY",
+    nameDeclined: true,
+    pendingUserRequest: null,
+  });
 });
 
 test("P10: a skip-shaped reply to an open confirmation is preserved, not decided", () => {
@@ -430,7 +438,7 @@ test("L4: an over-long message cannot inject a third piece past the bound", () =
   assert.ok(effective.startsWith(stored));
 });
 
-test("L4: a profile-completion request cannot add a third piece past the bound", () => {
+test("L4: a legacy pending request cannot add a third piece past the bound", () => {
   const stored = filler(MAX_CHAT_MESSAGE_LENGTH);
   const pendingRequest = filler(MAX_CHAT_MESSAGE_LENGTH);
   const partial: ConversationProfile = {
@@ -446,10 +454,16 @@ test("L4: a profile-completion request cannot add a third piece past the bound",
     partial,
   );
 
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1(.CORR1) — "Иван, на ты" no
+  // longer completes a setup that releases the pending text; it is ordinary
+  // text (OD-1=A). The stored remainder, the legacy pending request and this
+  // text together pass the bound, so the stored remainder routes with this
+  // turn's text and the client-held profile keeps the legacy request unchanged.
   assert.equal(result.state, "ROUTE");
   const effective = effectiveRequest(result) ?? "";
-  assert.equal(effective, `${stored}\n${pendingRequest}`);
-  assert.equal(effective.length, 2 * MAX_CHAT_MESSAGE_LENGTH + 1);
+  assert.equal(effective, `${stored}\nИван, на ты`);
+  assert.ok(effective.length <= 2 * MAX_CHAT_MESSAGE_LENGTH + 1);
+  assert.deepEqual(result.profile, partial);
 });
 
 test("L5: a short remainder and a short request are unchanged", () => {

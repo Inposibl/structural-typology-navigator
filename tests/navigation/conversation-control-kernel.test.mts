@@ -5,7 +5,6 @@ import {
   prepareConversationTurn,
 } from "../../src/lib/navigation/conversation-turn-control.ts";
 import {
-  CLARIFICATION_BUDGET,
   SESSION_CONTEXT_TTL_MS,
   createInitialConversationState,
   normalizeConversationStatePayload,
@@ -427,7 +426,11 @@ test("A19: substantive text after a control is preserved, not discarded", () => 
 // A02 — unsupported addressing variants
 // ---------------------------------------------------------------------------
 
-test("A02: unsupported addressing variants stay in ADDRESS_SETUP and do not loop", () => {
+test("A02: unsupported addressing variants open no address-mode clarification and do not loop", () => {
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — mandatory address setup is
+  // Owner-superseded, so no ты/вы question is outstanding for a variant to
+  // answer. A legacy partial profile is completed on «вы» and the text goes to
+  // ordinary routing; no clarification counter is opened, so nothing can loop.
   const partial: ConversationProfile = {
     displayName: "микадо",
     addressMode: null,
@@ -435,35 +438,17 @@ test("A02: unsupported addressing variants stay in ADDRESS_SETUP and do not loop
     pendingUserRequest: null,
   };
 
-  const seen: string[] = [];
   let state = createInitialConversationState(T0);
 
   for (const phrase of ["на они", "на они", "на они", "мы они"]) {
     const result = turn(phrase, state, partial);
 
-    assert.equal(result.state, "RESPOND", phrase);
-    assert.equal(result.profile.addressMode, null, phrase);
+    assert.equal(result.state, "ROUTE", phrase);
+    assert.deepEqual(result.profile, { ...partial, addressMode: "VY" }, phrase);
+    assert.equal(result.conversationState.clarification, null, phrase);
     assert.equal(result.conversationState.courseMatch, "UNKNOWN", phrase);
-
-    if (result.state !== "RESPOND") continue;
-    seen.push(result.message);
     state = result.conversationState;
   }
-
-  assert.match(seen[0]!, /только два варианта обращения/u);
-  assert.notEqual(seen[0], seen[1]);
-  assert.notEqual(seen[1], seen[2]);
-  assert.equal(seen[2], seen[3]);
-
-  // The initial prompt is never re-emitted by an invalid variant.
-  for (const message of seen) {
-    assert.doesNotMatch(message, /Прежде чем начнём/u);
-  }
-
-  assert.equal(
-    state.clarification?.attempts,
-    CLARIFICATION_BUDGET,
-  );
 });
 
 test("A02: unsupported identity language is not educational evidence", () => {
@@ -476,11 +461,11 @@ test("A02: unsupported identity language is not educational evidence", () => {
 
   const result = turn("мы они. мы небинарное животное", createInitialConversationState(T0), partial);
 
-  assert.equal(result.state, "RESPOND");
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — no setup lane answers it;
+  // it is ordinary text for routing and is never held as a pending request.
+  assert.equal(result.state, "ROUTE");
   assert.equal(result.profile.pendingUserRequest, null);
-
-  if (result.state !== "RESPOND") return;
-  assert.doesNotMatch(result.message, /курс/iu);
+  assert.equal(result.conversationState.deferredRequest, null);
 });
 
 // ---------------------------------------------------------------------------

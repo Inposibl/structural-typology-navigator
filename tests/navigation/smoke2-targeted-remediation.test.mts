@@ -250,6 +250,9 @@ function rejectNavigation(): never {
 }
 
 test("T02: an invalid educational decision continues the catalogue dialogue on вы", async () => {
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — the setup turn of the
+  // original Smoke-2 history is Owner-superseded: the opening task now routes
+  // on the first turn, on the default «вы» profile, with no name captured.
   const counters = zeroCounters();
   let routedQuery = "";
   const dependencies = orchestration({
@@ -261,39 +264,13 @@ test("T02: an invalid educational decision continues the catalogue dialogue on �
     },
   });
 
-  const first = await readSuccess(
-    await chat(
-      {
-        messages: [{ role: "user", content: T02_TASK }],
-        profile: OPEN_PROFILE,
-        conversationState: initialState(),
-        requestId: "smoke2-T02-1",
-      },
-      dependencies,
-    ),
-  );
-  assert.equal(first.conversationState.lastAssistant?.act, "ADDRESS_SETUP");
-  assert.equal(first.profile.displayName, null);
-  assert.equal(first.profile.addressMode, null);
-  assert.match(first.profile.pendingUserRequest ?? "", /курсах Академии/u);
-  assert.equal(
-    first.conversationState.execution.lastCompletedRequestId,
-    "smoke2-T02-1",
-  );
-  assert.equal(counters.classify, 0);
-  assert.equal(counters.route, 0);
-
   const warnings = await withCapturedWarnings(async () => {
     const second = await readSuccess(
       await chat(
         {
-          messages: [
-            { role: "user", content: T02_TASK },
-            { role: "assistant", content: first.message },
-            { role: "user", content: T02_NAME },
-          ],
-          profile: first.profile,
-          conversationState: first.conversationState,
+          messages: [{ role: "user", content: T02_TASK }],
+          profile: OPEN_PROFILE,
+          conversationState: initialState(),
           requestId: "smoke2-T02-2",
         },
         dependencies,
@@ -301,7 +278,7 @@ test("T02: an invalid educational decision continues the catalogue dialogue on �
     );
 
     assert.match(routedQuery, /курсах Академии/u);
-    assert.equal(second.profile.displayName, "Тест");
+    assert.equal(second.profile.displayName, null);
     assert.equal(second.profile.addressMode, "VY");
     assert.equal(second.profile.pendingUserRequest, null);
     assert.match(second.message, /Каталог Академии/u);
@@ -364,15 +341,26 @@ test("T02: ты address mode is preserved when the educational decision is inval
 });
 
 test("T02: a non-validation router failure stays a technical error and preserves the completed request", async () => {
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — the completed first turn
+  // is no longer an address-setup turn: it is the opening task, answered by
+  // the catalogue continuation, and the failing second turn is a new request.
   const counters = zeroCounters();
   const setup = await readSuccess(
-    await chat({
-      messages: [{ role: "user", content: T02_TASK }],
-      profile: OPEN_PROFILE,
-      conversationState: initialState(),
-      requestId: "smoke2-T02-1",
-    }),
+    await chat(
+      {
+        messages: [{ role: "user", content: T02_TASK }],
+        profile: OPEN_PROFILE,
+        conversationState: initialState(),
+        requestId: "smoke2-T02-1",
+      },
+      orchestration({
+        counters: zeroCounters(),
+        classify: async () => ({ state: "NAVIGATE" }),
+        route: async () => rejectNavigation(),
+      }),
+    ),
   );
+  assert.equal(setup.conversationState.lastAssistant?.act, "NAVIGATE");
 
   const failed = await readTechnical(
     await chat(

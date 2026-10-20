@@ -84,15 +84,17 @@ for (const phrase of [
   "да это не важно",
   "ну это мне всё равно",
 ]) {
-  test(`D1: "${phrase}" exits ADDRESS_SETUP on the authorized default (вы)`, () => {
+  test(`D1: "${phrase}" leaves the profile on the authorized default (вы) without re-asking`, () => {
     const result = turn(phrase, NAME_ONLY_PROFILE);
 
-    assert.equal(result.state, "RESPOND", phrase);
-    // Neutral authorized default applied; the address question is resolved.
+    // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — mandatory address setup
+    // is Owner-superseded: the D1 default is applied to every unfinished
+    // profile at entry, no address question is outstanding, and the phrase is
+    // ordinary text for routing.
+    assert.equal(result.state, "ROUTE", phrase);
     assert.equal(result.profile.addressMode, "VY", phrase);
-    if (result.state !== "RESPOND") return;
-    // No human-handoff / Telegram escape merely because the preference was declined.
-    assert.doesNotMatch(result.message, /живым человеком|t\.me\//u);
+    // No human-handoff escape merely because the preference was declined.
+    assert.equal(result.conversationState.handoff.status, "NONE", phrase);
   });
 }
 
@@ -106,10 +108,15 @@ test("D1: a pending substantive request resumes after the decline", () => {
 
   const result = turn("проигнорируй этот вопрос", pendingProfile);
 
+  // Entry simplification: the pending request is promoted ahead of this
+  // turn's text through the preserved-remainder store.
   assert.equal(result.state, "ROUTE");
   assert.equal(result.profile.addressMode, "VY");
   if (result.state !== "ROUTE") return;
-  assert.equal(result.messages.at(-1)?.content, "расскажи про курс Маслоу");
+  assert.equal(
+    result.messages.at(-1)?.content,
+    "расскажи про курс Маслоу\nпроигнорируй этот вопрос",
+  );
 });
 
 test("D1/CORR1: a pending request resumes under VY after 'это не важно'", () => {
@@ -125,7 +132,10 @@ test("D1/CORR1: a pending request resumes under VY after 'это не важно
   assert.equal(result.state, "ROUTE");
   assert.equal(result.profile.addressMode, "VY");
   if (result.state !== "ROUTE") return;
-  assert.equal(result.messages.at(-1)?.content, "расскажи про курс Маслоу");
+  assert.equal(
+    result.messages.at(-1)?.content,
+    "расскажи про курс Маслоу\nэто не важно",
+  );
 });
 
 test("D1/CORR1: a substantive sentence containing the phrase is NOT an address decline", () => {
@@ -136,17 +146,20 @@ test("D1/CORR1: a substantive sentence containing the phrase is NOT an address d
   ]) {
     assert.equal(detectAddressPreferenceDecline(phrase), false, phrase);
 
-    // Through the real kernel the governed default must NOT be applied: the
-    // address question is still outstanding.
+    // Entry simplification: no address question is outstanding, so the
+    // default «вы» is already applied and the sentence routes intact.
     const result = turn(phrase, NAME_ONLY_PROFILE);
-    assert.equal(result.profile.addressMode, null, phrase);
+    assert.equal(result.profile.addressMode, "VY", phrase);
+    assert.equal(result.state, "ROUTE", phrase);
+    if (result.state !== "ROUTE") continue;
+    assert.equal(result.messages.at(-1)?.content, phrase, phrase);
   }
 });
 
 test("D1: the next turn does not reopen the address question", () => {
   const first = turn("мне всё равно", NAME_ONLY_PROFILE);
-  assert.equal(first.state, "RESPOND");
-  if (first.state !== "RESPOND") return;
+  assert.equal(first.state, "ROUTE");
+  assert.equal(first.profile.addressMode, "VY");
 
   const next = turn("расскажи про курс про мотивацию", first.profile);
   // A complete profile routes normally instead of re-asking TY/VY.
@@ -154,20 +167,24 @@ test("D1: the next turn does not reopen the address question", () => {
 });
 
 test("D1: an explicit ты/вы still selects that mode", () => {
-  const ty = turn("ты", NAME_ONLY_PROFILE);
+  // Entry simplification: the accepted completed-profile command selects the
+  // mode. A bare "ты"/"вы" only answered the superseded setup question and is
+  // now ordinary text, so it leaves the default untouched.
+  const ty = turn("на ты", NAME_ONLY_PROFILE);
   assert.equal(ty.profile.addressMode, "TY");
 
-  const vy = turn("вы", NAME_ONLY_PROFILE);
+  const vy = turn("на вы", { ...NAME_ONLY_PROFILE, addressMode: "TY" });
   assert.equal(vy.profile.addressMode, "VY");
+
+  assert.equal(turn("ты", NAME_ONLY_PROFILE).profile.addressMode, "VY");
 });
 
-test("D1: genuinely ambiguous input still clarifies the address mode", () => {
+test("D1: genuinely ambiguous input is never answered with a ты/вы question", () => {
+  // Entry simplification: there is no address-mode question to clarify.
   const result = turn("хм даже пока не решил", NAME_ONLY_PROFILE);
 
-  assert.equal(result.state, "RESPOND");
-  assert.equal(result.profile.addressMode, null);
-  if (result.state !== "RESPOND") return;
-  assert.match(result.message, /на «ты» или на «вы»/u);
+  assert.equal(result.state, "ROUTE");
+  assert.equal(result.profile.addressMode, "VY");
 });
 
 test("D1: decline detection is whole-message, not embedded in a request", () => {

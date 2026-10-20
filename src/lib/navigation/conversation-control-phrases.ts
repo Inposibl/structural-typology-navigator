@@ -457,7 +457,18 @@ function scanClause(clause: string, options: ControlScanOptions): ClauseScan {
   const residue = rest.replace(TRIM_EDGES, "").replace(/\s+/gu, " ").trim();
   const resolved = resolveClause(controls, residue, sawBoundary);
 
-  if (!resolved.accepted) {
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1.CORR1 (C-1) — as documented
+  // on ControlScanOptions, an unsupported address-mode variant is a control
+  // only while address setup is open. Normal conversation has no setup, so a
+  // clause whose only control it is ("Мы новички.", "На работе.") stays the
+  // learner's own words. As a lead-in to a real control in the same clause
+  // ("На сегодня всё, пока") it keeps its accepted role.
+  const obsoleteVariantOnly =
+    options.addressSetupOpen !== true &&
+    controls.length > 0 &&
+    controls.every((token) => token === "UNSUPPORTED_ADDRESS_MODE");
+
+  if (!resolved.accepted || obsoleteVariantOnly) {
     // The clause merely contained control-looking words inside substantive
     // text; report it as ordinary text so it reaches normal routing.
     return {

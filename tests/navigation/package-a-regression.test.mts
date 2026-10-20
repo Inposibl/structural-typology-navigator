@@ -78,43 +78,49 @@ function conversation(
 // A01 — setup segmentation
 // ---------------------------------------------------------------------------
 
-test("R01: greeting + name + TY + Academy request in one message", () => {
+// NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — the Owner superseded the
+// mandatory setup turn and forbids passing the first question through a name
+// interpreter. A01 setup segmentation therefore no longer runs on a request
+// path: a compound first message is routed in full on the default «вы»
+// profile, and nothing in it is held or split off as a name.
+
+test("R01: greeting + name + TY + Academy request in one message routes in full", () => {
   const result = turn(
     "Привет, меня зовут Иван, давай на ты. Мне нужен курс про мотивацию команды.",
     createInitialConversationState(T0),
     createEmptyConversationProfile(),
   );
 
-  assert.equal(result.profile.displayName, "Иван");
-  assert.equal(result.profile.addressMode, "TY");
-  assert.equal(result.state, "ROUTE");
-
-  if (result.state !== "ROUTE") return;
-  assert.equal(
-    result.messages.at(-1)?.content,
-    "Мне нужен курс про мотивацию команды",
-  );
-});
-
-test("R02: greeting + name + VY + course question in one message", () => {
-  const result = turn(
-    "Здравствуйте, меня зовут Анна, давайте на вы. Какой курс поможет лучше понимать поведение команды?",
-    createInitialConversationState(T0),
-    createEmptyConversationProfile(),
-  );
-
-  assert.equal(result.profile.displayName, "Анна");
+  assert.equal(result.profile.displayName, null);
   assert.equal(result.profile.addressMode, "VY");
   assert.equal(result.state, "ROUTE");
 
   if (result.state !== "ROUTE") return;
   assert.equal(
     result.messages.at(-1)?.content,
-    "Какой курс поможет лучше понимать поведение команды",
+    "Привет, меня зовут Иван, давай на ты. Мне нужен курс про мотивацию команды",
   );
 });
 
-test("R03: an unsupported addressing phrase yields one bounded clarification", () => {
+test("R02: greeting + name + VY + course question in one message routes in full", () => {
+  const result = turn(
+    "Здравствуйте, меня зовут Анна, давайте на вы. Какой курс поможет лучше понимать поведение команды?",
+    createInitialConversationState(T0),
+    createEmptyConversationProfile(),
+  );
+
+  assert.equal(result.profile.displayName, null);
+  assert.equal(result.profile.addressMode, "VY");
+  assert.equal(result.state, "ROUTE");
+
+  if (result.state !== "ROUTE") return;
+  assert.equal(
+    result.messages.at(-1)?.content,
+    "Здравствуйте, меня зовут Анна, давайте на вы. Какой курс поможет лучше понимать поведение команды",
+  );
+});
+
+test("R03: an unsupported addressing phrase opens no address-mode clarification", () => {
   const partial: ConversationProfile = {
     displayName: "Иван",
     addressMode: null,
@@ -124,12 +130,10 @@ test("R03: an unsupported addressing phrase yields one bounded clarification", (
 
   const result = turn("на они", createInitialConversationState(T0), partial);
 
-  assert.equal(result.state, "RESPOND");
-  assert.equal(result.profile.addressMode, null);
+  assert.equal(result.state, "ROUTE");
+  assert.equal(result.profile.addressMode, "VY");
   assert.equal(result.conversationState.courseMatch, "UNKNOWN");
-
-  if (result.state !== "RESPOND") return;
-  assert.match(result.message, /на «ты» или на «вы»/u);
+  assert.equal(result.conversationState.clarification, null);
 });
 
 test("recovered dialogue 12: 'микадо. я оно' does not swallow 'я оно' into the name", () => {
@@ -144,7 +148,9 @@ test("recovered dialogue 12: 'микадо. я оно' does not swallow 'я он
   assert.equal(result.effectiveUserRequest, null);
 });
 
-test("recovered dialogue 12: repeated unsupported mode never repeats the initial prompt", () => {
+test("recovered dialogue 12: repeated unsupported mode never produces a setup prompt", () => {
+  // NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — no setup lane remains, so
+  // every turn routes on the completed «вы» profile and no prompt can repeat.
   const partial: ConversationProfile = {
     displayName: "микадо",
     addressMode: null,
@@ -152,7 +158,6 @@ test("recovered dialogue 12: repeated unsupported mode never repeats the initial
     pendingUserRequest: null,
   };
 
-  const prompts: string[] = [];
   let state = createInitialConversationState(T0);
 
   for (const content of [
@@ -162,21 +167,11 @@ test("recovered dialogue 12: repeated unsupported mode never repeats the initial
     "на они",
   ]) {
     const result = turn(content, state, partial);
-    assert.equal(result.state, "RESPOND", content);
-    assert.equal(result.profile.addressMode, null, content);
-
-    if (result.state === "RESPOND") {
-      prompts.push(result.message);
-      state = result.conversationState;
-    }
+    assert.equal(result.state, "ROUTE", content);
+    assert.equal(result.profile.addressMode, "VY", content);
+    assert.equal(result.conversationState.clarification, null, content);
+    state = result.conversationState;
   }
-
-  for (const prompt of prompts) {
-    assert.doesNotMatch(prompt, /Прежде чем начнём/u);
-  }
-
-  assert.notEqual(prompts[0], prompts[1]);
-  assert.notEqual(prompts[1], prompts[2]);
 });
 
 test("recovered dialogue 14: 'привет. Я Семен. Можно на ты.' stores only 'Семен'", () => {

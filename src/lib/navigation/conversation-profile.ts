@@ -14,6 +14,14 @@ import {
 export const INITIAL_ADDRESS_PROMPT =
   "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».";
 
+/**
+ * NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — Owner-approved welcome. The
+ * chat shows it as the initial assistant message of a new conversation; it is
+ * a client-side message only and is never sent back to the server as history.
+ */
+export const NAVIGATOR_WELCOME_MESSAGE =
+  "Здравствуйте! Я — Навигатор Академии структурной типологии.\nПомогу разобраться в образовательных программах, формате и условиях обучения, а также выбрать подходящий курс.\nС чего вы хотели бы начать?";
+
 export class ConversationProfileValidationError extends Error {
   readonly code = "INVALID_CONVERSATION_PROFILE";
 
@@ -68,6 +76,20 @@ export function createEmptyConversationProfile(): ConversationProfile {
     displayName: null,
     addressMode: null,
     nameDeclined: false,
+    pendingUserRequest: null,
+  };
+}
+
+/**
+ * NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — the profile a new
+ * conversation starts with: anonymous, on respectful «вы». It is complete, so
+ * no name or address-mode setup is required before the first question.
+ */
+export function createDefaultConversationProfile(): ConversationProfile {
+  return {
+    displayName: null,
+    addressMode: DEFAULT_ADDRESS_MODE,
+    nameDeclined: true,
     pendingUserRequest: null,
   };
 }
@@ -604,6 +626,36 @@ export function advanceAddressModeDecline(
     complete: true,
     effectiveUserRequest: null,
     response: completionMessage(completed),
+  };
+}
+
+export type ConversationEntryProfile = {
+  /** The complete profile the turn is processed with. */
+  profile: ConversationProfile;
+  /** Substantive text an older client was still holding for address setup. */
+  legacyPendingRequest: string | null;
+};
+
+/**
+ * NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — mandatory setup is
+ * superseded, so every turn is processed with a complete profile.
+ *
+ * A profile that an older client still holds in an unfinished setup is
+ * completed by the accepted decline-to-choose rule (D1, above): an unknown mode
+ * becomes the neutral default «вы», an unknown name becomes "no name", and
+ * anything the user already chose is kept. Its pending request is handed back
+ * to the caller, never discarded. A stored name is never re-read as a request.
+ */
+export function resolveConversationEntryProfile(
+  profile: ConversationProfile,
+): ConversationEntryProfile {
+  if (isConversationProfileComplete(profile)) {
+    return { profile, legacyPendingRequest: null };
+  }
+
+  return {
+    profile: advanceAddressModeDecline(profile).profile,
+    legacyPendingRequest: profile.pendingUserRequest,
   };
 }
 

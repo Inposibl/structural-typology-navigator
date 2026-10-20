@@ -16,8 +16,8 @@ import type {
   ConversationState,
 } from "@/lib/chat-contract";
 import {
-  createEmptyConversationProfile,
-  INITIAL_ADDRESS_PROMPT,
+  createDefaultConversationProfile,
+  NAVIGATOR_WELCOME_MESSAGE,
 } from "@/lib/navigation/conversation-profile";
 import {
   IDLE_EXECUTION,
@@ -27,10 +27,12 @@ import {
   type ClientExecutionState,
 } from "@/lib/navigation/execution-control";
 
+// The welcome is shown locally only: it is filtered out of the conversation
+// sent to the server, so it never becomes model history or a second request.
 const INITIAL_MESSAGE: ChatMessageType = {
   id: "assistant-initial",
   role: "assistant",
-  content: INITIAL_ADDRESS_PROMPT,
+  content: NAVIGATOR_WELCOME_MESSAGE,
 };
 
 export type ChatInterfaceVariant = "standalone" | "embedded";
@@ -46,7 +48,7 @@ export function ChatInterface({
     INITIAL_MESSAGE,
   ]);
   const [profile, setProfile] = useState<ConversationProfile>(
-    createEmptyConversationProfile(),
+    createDefaultConversationProfile(),
   );
   // Null until the server returns the canonical state for this session.
   const [conversationState, setConversationState] =

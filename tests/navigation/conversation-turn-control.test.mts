@@ -8,32 +8,37 @@ import {
   createEmptyConversationProfile,
 } from "../../src/lib/navigation/conversation-profile.ts";
 
-test("ADDRESS_SETUP consumes multi-word name + mode and does not call routing on that turn", () => {
+// NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1 — mandatory name and
+// address-mode setup is Owner-superseded: the first message is routed at once
+// and is never read by a name interpreter or held for profile slots.
+
+test("a first message is never consumed as a name + mode; it routes unchanged", () => {
   const result = prepareConversationTurn(
     [{ role: "user", content: "Хуй с горы на ты" }],
     createEmptyConversationProfile(),
   );
 
-  assert.equal(result.state, "RESPOND");
-  if (result.state !== "RESPOND") return;
+  assert.equal(result.state, "ROUTE");
+  if (result.state !== "ROUTE") return;
 
-  assert.equal(result.profile.displayName, "Хуй с горы");
-  assert.equal(result.profile.addressMode, "TY");
-  assert.equal(result.resetConversation, false);
+  assert.equal(result.profile.displayName, null);
+  assert.equal(result.profile.addressMode, "VY");
+  assert.equal(result.messages.at(-1)?.content, "Хуй с горы на ты");
 });
 
-test("clear educational task is held until required profile slots are complete", () => {
+test("clear educational task is routed at once, never held for profile slots", () => {
   const result = prepareConversationTurn(
     [{ role: "user", content: "я хочу учиться еба" }],
     createEmptyConversationProfile(),
   );
 
-  assert.equal(result.state, "RESPOND");
-  if (result.state !== "RESPOND") return;
+  assert.equal(result.state, "ROUTE");
+  if (result.state !== "ROUTE") return;
 
-  assert.equal(result.profile.pendingUserRequest, "я хочу учиться еба");
+  assert.equal(result.messages.at(-1)?.content, "я хочу учиться еба");
+  assert.equal(result.profile.pendingUserRequest, null);
   assert.equal(result.profile.displayName, null);
-  assert.equal(result.profile.addressMode, null);
+  assert.equal(result.profile.addressMode, "VY");
 });
 
 test("pending educational task is released only after final required slot is filled", () => {

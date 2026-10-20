@@ -1,0 +1,538 @@
+{
+  "provenance": {
+    "generator": "fixture-generation/generate-head-legacy.mts",
+    "headSha": "e7efcb404f281a343cf29591b24e0acb48d65e28",
+    "clockIso": "2026-10-20T12:00:00.000Z",
+    "networkCalls": 0
+  },
+  "fixtures": {
+    "setupPending": {
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Хочу разобраться в мотивации сотрудников."
+          }
+        ],
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": null
+        },
+        "conversationState": null,
+        "requestId": "head-legacy-setup-1"
+      },
+      "status": 200,
+      "orchestrated": 0,
+      "response": {
+        "message": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».",
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "OPEN",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": null,
+          "lastAssistant": {
+            "act": "ADDRESS_SETUP",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-setup-1"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "contactCard": null,
+        "resetConversation": false
+      }
+    },
+    "closedWithPending": {
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Хочу разобраться в мотивации сотрудников."
+          },
+          {
+            "role": "assistant",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы»."
+          },
+          {
+            "role": "user",
+            "content": "пока"
+          }
+        ],
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "OPEN",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": null,
+          "lastAssistant": {
+            "act": "ADDRESS_SETUP",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-setup-1"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "requestId": "head-legacy-close-1"
+      },
+      "status": 200,
+      "orchestrated": 0,
+      "response": {
+        "message": "Хорошо, до связи. Если понадобится — просто напишите.",
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "CLOSED",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": null,
+          "lastAssistant": {
+            "act": "CONVERSATION_CLOSE",
+            "content": "Хорошо, до связи. Если понадобится — просто напишите.",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-close-1"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "contactCard": null,
+        "resetConversation": false
+      }
+    },
+    "deferredWithPending": {
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Хочу разобраться в мотивации сотрудников."
+          },
+          {
+            "role": "assistant",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы»."
+          },
+          {
+            "role": "user",
+            "content": "повтори, а потом расскажи про мышление"
+          }
+        ],
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "OPEN",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": null,
+          "lastAssistant": {
+            "act": "ADDRESS_SETUP",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-setup-1"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "requestId": "head-legacy-repeat-1"
+      },
+      "status": 200,
+      "orchestrated": 0,
+      "response": {
+        "message": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».\n\nВаш запрос я сохранил: «расскажи про мышление».",
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "OPEN",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": "расскажи про мышление",
+          "lastAssistant": {
+            "act": "REPEAT",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».\n\nВаш запрос я сохранил: «расскажи про мышление».",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-repeat-1"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "contactCard": null,
+        "resetConversation": false
+      }
+    },
+    "closedAfterDeferred": {
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Хочу разобраться в мотивации сотрудников."
+          },
+          {
+            "role": "assistant",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы»."
+          },
+          {
+            "role": "user",
+            "content": "повтори, а потом расскажи про мышление"
+          },
+          {
+            "role": "assistant",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».\n\nВаш запрос я сохранил: «расскажи про мышление»."
+          },
+          {
+            "role": "user",
+            "content": "пока"
+          }
+        ],
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "OPEN",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": "расскажи про мышление",
+          "lastAssistant": {
+            "act": "REPEAT",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».\n\nВаш запрос я сохранил: «расскажи про мышление».",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-repeat-1"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "requestId": "head-legacy-close-2"
+      },
+      "status": 200,
+      "orchestrated": 0,
+      "response": {
+        "message": "Хорошо, до связи. Если понадобится — просто напишите.",
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "CLOSED",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": null,
+          "lastAssistant": {
+            "act": "CONVERSATION_CLOSE",
+            "content": "Хорошо, до связи. Если понадобится — просто напишите.",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-close-2"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "contactCard": null,
+        "resetConversation": false
+      }
+    },
+    "restartWithPending": {
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Хочу разобраться в мотивации сотрудников."
+          },
+          {
+            "role": "assistant",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы»."
+          },
+          {
+            "role": "user",
+            "content": "Давай сначала."
+          }
+        ],
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "OPEN",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": null,
+          "lastAssistant": {
+            "act": "ADDRESS_SETUP",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-setup-1"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "requestId": "head-legacy-restart-1"
+      },
+      "status": 200,
+      "orchestrated": 0,
+      "response": {
+        "message": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».",
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников"
+        },
+        "conversationState": {
+          "lifecycle": "OPEN",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": null,
+          "lastAssistant": null,
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-restart-1"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "contactCard": null,
+        "resetConversation": true
+      }
+    },
+    "setupPendingMax": {
+      "request": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотив"
+          }
+        ],
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": null
+        },
+        "conversationState": null,
+        "requestId": "head-legacy-setup-max"
+      },
+      "status": 200,
+      "orchestrated": 0,
+      "response": {
+        "message": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».",
+        "profile": {
+          "displayName": null,
+          "addressMode": null,
+          "nameDeclined": false,
+          "pendingUserRequest": "Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотивации сотрудников и в том, как работают команды Хочу разобраться в мотив"
+        },
+        "conversationState": {
+          "lifecycle": "OPEN",
+          "activeFlow": null,
+          "suspendedFlow": null,
+          "courseMatch": "UNKNOWN",
+          "selectedCourseId": null,
+          "clarification": null,
+          "pendingConfirmation": null,
+          "deferredRequest": null,
+          "lastAssistant": {
+            "act": "ADDRESS_SETUP",
+            "content": "Здравствуйте. Прежде чем начнём, скажите, пожалуйста, как к вам обращаться? Напишите имя и выберите: на «ты» или на «вы».",
+            "courseId": null
+          },
+          "lastActivityAt": "2026-10-20T12:00:00.000Z",
+          "staleReference": null,
+          "repair": null,
+          "execution": {
+            "phase": "IDLE",
+            "requestId": null,
+            "lastCompletedRequestId": "head-legacy-setup-max"
+          },
+          "lastTechnicalError": null,
+          "handoff": {
+            "status": "NONE",
+            "reason": null,
+            "context": null
+          },
+          "qualitySignals": [],
+          "courseReferents": []
+        },
+        "contactCard": null,
+        "resetConversation": false
+      }
+    }
+  }
+}

@@ -6,6 +6,7 @@ import {
   createEmptyConversationProfile,
   INITIAL_ADDRESS_PROMPT,
   isConversationProfileComplete,
+  messageSelectsAddressMode,
   normalizeDisplayNameCandidate,
 } from "./conversation-profile.ts";
 
@@ -29,6 +30,30 @@ const MODE_UPDATE_PATTERN =
 
 const NAME_UPDATE_PATTERN =
   /^(?:пожалуйста[,\s]+)?(?:меня\s+зовут|зови(?:те)?\s+меня|называй(?:те)?\s+меня|можешь\s+звать\s+меня|можете\s+звать\s+меня)\s+(.+?)[.!?]*$/iu;
+
+/**
+ * NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1.CORR1 (C-2) — a declared name
+ * is words only: letters, optionally joined inside a word by a hyphen or an
+ * apostrophe. A name of several words has each word capitalized, so an
+ * unpunctuated attached question ("Анна есть ли курсы онлайн") is not a name.
+ */
+const STANDALONE_NAME_PATTERN =
+  /^(?:\p{L}+(?:['’-]\p{L}+)*|\p{Lu}\p{L}*(?:['’-]\p{L}+)*(?:\s+\p{Lu}\p{L}*(?:['’-]\p{L}+)*)+)$/u;
+
+/**
+ * Every turn, the first one included, reaches the rename control, so only a
+ * simple, standalone declaration is a rename: no question mark anywhere, a
+ * name of words only, and no address-mode choice. A message with an attached
+ * question, a comma continuation, another sentence or another command is
+ * ordinary text for routing, as a whole; it is never split.
+ */
+function isStandaloneNameDeclaration(text: string, name: string): boolean {
+  return (
+    !text.includes("?") &&
+    STANDALONE_NAME_PATTERN.test(name.trim()) &&
+    messageSelectsAddressMode(name) === null
+  );
+}
 
 function modeText(mode: AddressMode): string {
   return mode === "TY" ? "на «ты»" : "на «вы»";
@@ -113,7 +138,7 @@ export function applyConversationProfileControl(
   }
 
   const nameMatch = text.match(NAME_UPDATE_PATTERN);
-  if (nameMatch?.[1]) {
+  if (nameMatch?.[1] && isStandaloneNameDeclaration(text, nameMatch[1])) {
     const displayName = normalizeDisplayNameCandidate(
       nameMatch[1],
     );
