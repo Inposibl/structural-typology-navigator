@@ -692,11 +692,18 @@ test("router prompt digest is the D-1 re-baseline and the catalog payload is byt
     },
   });
   const digest = (text: string) => createHash("sha256").update(text).digest("hex");
-  // System prompt: Owner D-1 re-baseline (NAVIGATOR-PRODUCTION-SMOKE-1.C1C2-IMPLEMENTATION-1),
-  // literal digest of the C1-corrected prompt. Historical pre-C1 value, recorded from
-  // HEAD 12384565 and still pinned at 9b486ff5:
+  // System prompt: Owner-authorized CORR1 re-baseline
+  // (NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1.CORR1.ROUTER-FAILURE-CORRECTION-1.CORR1),
+  // literal digest of the CORR1 prompt (IV1-01 short-name destination; still insert-only
+  // against f5aa968e). IV1-audited FIX-4 value
+  // (NAVIGATOR-CONVERSATION-ENTRY-SIMPLIFICATION-1.CORR1.ROUTER-FAILURE-CORRECTION-1):
+  // 0f776e6d8ce3e85c7442280bcfc61e8fb20d8d47de1cac3060ad75e5614ccb3f.
+  // Previous Owner D-1 re-baseline
+  // (NAVIGATOR-PRODUCTION-SMOKE-1.C1C2-IMPLEMENTATION-1), pinned at f5aa968e:
+  // 26593e3b3f3220f0771b00e5b1fd6666b2a30a74cb3d26824dd1aae2280b838a.
+  // Historical pre-C1 value, recorded from HEAD 12384565 and still pinned at 9b486ff5:
   // a1fbf1a77b2debe9fc8ea846ab0ff05272042348ea220c7844aa321ee089fbdc.
-  assert.equal(digest(captured[0]?.content ?? ""), "26593e3b3f3220f0771b00e5b1fd6666b2a30a74cb3d26824dd1aae2280b838a");
+  assert.equal(digest(captured[0]?.content ?? ""), "a5368d8d6a77603ea8a6f284a77fa1c5929c2a1a210fde609247b946b775897d");
   // User payload: unchanged since HEAD 12384565 with the same input.
   assert.equal(digest(captured[1]?.content ?? ""), "50046da18c07a53b719a17770dd37e949168419194a21316487f1879c79e4310");
 });

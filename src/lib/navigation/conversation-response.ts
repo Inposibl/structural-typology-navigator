@@ -31,6 +31,7 @@ import {
   auditCourseFollowUpAnswer,
   buildFollowUpAuthorityPayload,
   composeCatalogFollowUpAnswer,
+  formatMeetingCount,
   isCatalogAnswerableFollowUp,
   type FollowUpAuthorityPayload,
   type FollowUpEvidenceExcerpt,
@@ -699,7 +700,7 @@ export function composeCatalogListAnswer(): string {
         course.status === "ROUTABLE"
           ? "доступен для навигации"
           : `только указан в каталоге; ${LISTED_COURSE_LIMITATION}`;
-      return `• «${course.title}» — ${course.meetings} встреч; ${availability.replace(/[.!?]+$/u, "")}${course.url ? `; ${course.url}` : ""}.`;
+      return `• «${course.title}» — ${formatMeetingCount(course.meetings)}; ${availability.replace(/[.!?]+$/u, "")}${course.url ? `; ${course.url}` : ""}.`;
     }),
   ].join("\n");
 }
