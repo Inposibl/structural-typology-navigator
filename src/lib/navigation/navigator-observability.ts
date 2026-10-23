@@ -93,6 +93,71 @@ export type NavigatorCourseReferenceUncertaintyLog = {
   proposedAct: "COURSE_FOLLOW_UP" | "COURSE_CONTENT";
 };
 
+/**
+ * FIX-4b — the closed vocabulary of the metadata field consistency guard
+ * record. The record is present only on a turn where the guard intervened and
+ * carries no user text, answer text, course title or authority value.
+ */
+export const METADATA_SUBJECT_FAMILIES = ["PRICE", "DURATION", "TIMING"] as const;
+export type MetadataSubjectFamily = (typeof METADATA_SUBJECT_FAMILIES)[number];
+
+export const METADATA_GUARD_FIELDS = [
+  "PRICE",
+  "SCHEDULE",
+  "COHORT",
+  "ENROLLMENT_WINDOW",
+] as const;
+export type MetadataGuardField = (typeof METADATA_GUARD_FIELDS)[number];
+
+const METADATA_GUARD_TIMING_FIELDS = [
+  "SCHEDULE",
+  "COHORT",
+  "ENROLLMENT_WINDOW",
+] as const;
+
+export const METADATA_FIELD_GUARD_DISPOSITIONS = [
+  "CATALOG_DURATION",
+  "TIMING_NO_AUTHORITY",
+  "LIMITATION_DURATION",
+  "LIMITATION_PRICE",
+  "LIMITATION_TIMING",
+] as const;
+export type MetadataFieldGuardDisposition =
+  (typeof METADATA_FIELD_GUARD_DISPOSITIONS)[number];
+
+export type NavigatorMetadataFieldGuardLog = {
+  verdict: "PARTIAL" | "MISMATCH";
+  requested: MetadataSubjectFamily[];
+  vetoedFields: MetadataGuardField[];
+  addedFields: (typeof METADATA_GUARD_TIMING_FIELDS)[number][];
+  dispositions: MetadataFieldGuardDisposition[];
+  hook: "TURN" | "RECOVERY";
+};
+
+function closedGuardValues<T extends string>(
+  values: unknown,
+  allowed: readonly T[],
+): T[] {
+  if (!Array.isArray(values)) return [];
+  return values.filter((value): value is T => allowed.includes(value as T));
+}
+
+function sanitizeMetadataFieldGuardLog(
+  record: NavigatorMetadataFieldGuardLog,
+): NavigatorMetadataFieldGuardLog {
+  return {
+    verdict: record.verdict === "MISMATCH" ? "MISMATCH" : "PARTIAL",
+    requested: closedGuardValues(record.requested, METADATA_SUBJECT_FAMILIES),
+    vetoedFields: closedGuardValues(record.vetoedFields, METADATA_GUARD_FIELDS),
+    addedFields: closedGuardValues(record.addedFields, METADATA_GUARD_TIMING_FIELDS),
+    dispositions: closedGuardValues(
+      record.dispositions,
+      METADATA_FIELD_GUARD_DISPOSITIONS,
+    ),
+    hook: record.hook === "RECOVERY" ? "RECOVERY" : "TURN",
+  };
+}
+
 export type NavigatorSelectedEvidenceLog = {
   chunkId: number;
   sourceSlug: string;
@@ -126,6 +191,8 @@ export type NavigatorTurnDetails = {
   crossCourseLeakageDetected: boolean;
   /** Present only on a COURSE_REFERENCE_UNRESOLVED turn. */
   courseReferenceUncertainty?: NavigatorCourseReferenceUncertaintyLog;
+  /** FIX-4b — present only when the metadata field guard intervened. */
+  metadataFieldGuard?: NavigatorMetadataFieldGuardLog;
 };
 
 export type NavigatorTurnLog = NavigatorTurnDetails & {
@@ -186,6 +253,11 @@ export function createNavigatorTurnLog(
                 : "COURSE_CONTENT",
           },
         }
+      : {}),
+    ...(details.metadataFieldGuard !== undefined &&
+    (details.metadataFieldGuard.verdict === "PARTIAL" ||
+      details.metadataFieldGuard.verdict === "MISMATCH")
+      ? { metadataFieldGuard: sanitizeMetadataFieldGuardLog(details.metadataFieldGuard) }
       : {}),
   };
 }

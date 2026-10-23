@@ -101,6 +101,15 @@ import {
 } from "./navigator-observability.ts";
 import { formulateFollowUpContentQuery } from "./follow-up-query.ts";
 import {
+  assessMetadataFieldConsistency,
+  assessRecoveryMetadataTasks,
+  isMetadataFieldIntervention,
+  metadataFieldGuardRecord,
+  recoveryMetadataFieldGuardRecord,
+  type MetadataRecoveryTaskAssessment,
+  type TimingMetadataField,
+} from "./metadata-field-consistency.ts";
+import {
   callDeepSeekJson,
   type DeepSeekClientOptions,
   type DeepSeekMessage,
@@ -741,6 +750,72 @@ function nonF1MetadataSegmentIsGrounded(
     }
   }
   return fieldsAdmitted && tasksAuthorized;
+}
+
+/**
+ * FIX-4b — the timing fields the unchanged metadata composer may narrate as
+ * having no authoritative value. Passed to the pure guard as data, so the
+ * guard module never imports this one.
+ */
+function admittedTimingMetadataFields(): TimingMetadataField[] {
+  return GUARDED_METADATA_FIELDS.filter((field) =>
+    currentMetadataComposerAdmitsField(field, liveGuardedMetadataAvailability(field)),
+  );
+}
+
+function activePlanTasks(plan: unknown): TaskPlanTask[] | null {
+  const snapshot = readValidatedPlanSnapshot(plan);
+  return snapshot === null
+    ? null
+    : snapshot.tasks.filter((task) => task.role === "ACTIVE");
+}
+
+/**
+ * FIX-4b H2 (ID-1 = A) — a recovered FACTUAL metadata segment is blocked when
+ * any of its tasks is PARTIAL or MISMATCH against its own evidence (the
+ * whole-turn fallback applies only to a single-task plan). Unreadable task
+ * identity fails closed. Any other segment is never blocked here.
+ */
+function metadataGuardBlocksSegment(
+  segment: RecoverySegment,
+  activeTasks: readonly TaskPlanTask[] | null,
+  latest: string,
+): MetadataRecoveryTaskAssessment | null {
+  if (segment.kind !== "ACT" || segment.act.state !== "FACTUAL") return null;
+  if (!segment.act.intents.some((intent) => intent.kind === "CURRENT_METADATA")) return null;
+  const failClosed: MetadataRecoveryTaskAssessment = {
+    blocked: true,
+    verdict: null,
+    requested: [],
+    vetoedFields: [],
+  };
+  if (activeTasks === null) return failClosed;
+  const tasks = segment.taskIndices.map((taskIndex) => activeTasks[taskIndex]);
+  if (tasks.some((task) => task === undefined)) return failClosed;
+  return assessRecoveryMetadataTasks({
+    tasks,
+    latestText: latest,
+    activeTaskCount: activeTasks.length,
+  });
+}
+
+/**
+ * FIX-4b — a recovered turn's guard record describes H2 only. A TURN record
+ * inherited from a dispatched segment is dropped: that segment's own message
+ * is not what the recovered answer displays.
+ */
+function recoveryMetadataGuardObservability(
+  observability: NavigatorTurnDetails | undefined,
+  blocks: readonly MetadataRecoveryTaskAssessment[],
+): NavigatorTurnDetails | undefined {
+  const record = recoveryMetadataFieldGuardRecord(blocks);
+  if (observability === undefined) return observability;
+  if (record === null && observability.metadataFieldGuard === undefined) {
+    return observability;
+  }
+  const rebuilt: NavigatorTurnDetails = { ...observability };
+  delete rebuilt.metadataFieldGuard;
+  return record === null ? rebuilt : { ...rebuilt, metadataFieldGuard: record };
 }
 
 function hasSubstantiveRemainder(value: string): boolean {
@@ -1428,22 +1503,86 @@ async function orchestrateNavigatorTurn(
     },
   );
 
+  // FIX-4b H1 — the metadata field consistency guard compares the validated
+  // CURRENT_METADATA fields with the current effective request. Every field
+  // the request does not corroborate is removed before coverage is decided;
+  // the guard may add only an admitted no-authority timing field, the FIX-1
+  // catalogue duration text or a closed limitation, and never PRICE. The
+  // validated act stays the audit record; the payment decision above is
+  // unchanged.
+  const metadataGuardAssessment = conversationAct.state === "FACTUAL"
+    ? assessMetadataFieldConsistency({
+        intents: conversationAct.intents,
+        text: query,
+        messages,
+        selectedCourseId: options.conversationState?.selectedCourseId ?? null,
+        profile: options.profile,
+        admittedTimingFields: admittedTimingMetadataFields(),
+      })
+    : null;
+  const metadataGuard =
+    metadataGuardAssessment !== null && isMetadataFieldIntervention(metadataGuardAssessment)
+      ? metadataGuardAssessment
+      : null;
+  const metadataGuardLog = metadataGuard === null
+    ? null
+    : metadataFieldGuardRecord(metadataGuard, "TURN");
+  const factualIntents = conversationAct.state !== "FACTUAL"
+    ? []
+    : metadataGuard === null
+      ? conversationAct.intents
+      : metadataGuard.sanitizedIntents;
+
   // NAVIGATOR-COURSE-IDENTITY-COMPARISON-CORR-1 — the latest effective user
   // message lets the factual composer prove a same-course equivalence operand
   // by operand; it adds no binding, retrieval or commercial effect.
-  const factualMessage = conversationAct.state === "FACTUAL"
-    ? composeFactualAnswer(
-        conversationAct.intents,
-        options.conversationState?.selectedCourseId ?? null,
-        options.profile,
-        query,
-      )
-    : null;
+  const factualMessage = conversationAct.state !== "FACTUAL"
+    ? null
+    : metadataGuard === null
+      ? composeFactualAnswer(
+          conversationAct.intents,
+          options.conversationState?.selectedCourseId ?? null,
+          options.profile,
+          query,
+        )
+      : [
+          ...(factualIntents.length > 0
+            ? [
+                composeFactualAnswer(
+                  factualIntents,
+                  options.conversationState?.selectedCourseId ?? null,
+                  options.profile,
+                  query,
+                ),
+              ]
+            : []),
+          ...(metadataGuard.supplement !== null ? [metadataGuard.supplement] : []),
+          ...metadataGuard.limitations,
+        ].join("\n\n");
   const factualUsesTransactionalAuthority =
     conversationAct.state === "FACTUAL" &&
-    conversationAct.intents.some((intent) => intent.kind === "CURRENT_METADATA");
+    factualIntents.some((intent) => intent.kind === "CURRENT_METADATA");
   const combineFactual = (message: string): string =>
     factualMessage === null ? message : `${factualMessage}\n\n${message}`;
+  // FIX-4b — an intervened turn carries the closed guard record, and a turn
+  // whose requested subject is only explicitly limited is never a clean
+  // answer. A non-intervened turn returns the very same result object.
+  const guardLane = (
+    result: NavigatorOrchestrationResult,
+  ): NavigatorOrchestrationResult => {
+    if (metadataGuard === null || metadataGuardLog === null) return result;
+    return {
+      ...result,
+      observability: {
+        ...(result.observability as NavigatorTurnDetails),
+        metadataFieldGuard: metadataGuardLog,
+      },
+      completion:
+        metadataGuard.limitations.length > 0 && result.completion === "ANSWERED"
+          ? "PARTIAL_WITH_EXPLICIT_LIMITATIONS"
+          : result.completion,
+    };
+  };
 
   if (paymentDecision.kind === "ACTION") {
     // P03 — when the resolved payment consumes a stored candidate set, the
@@ -1453,7 +1592,7 @@ async function orchestrateNavigatorTurn(
       storedReferents.length > 0 && paymentDecision.action.courseId !== null
         ? { kind: "MATCHED", courseId: paymentDecision.action.courseId }
         : undefined;
-    return emptyResult(
+    return guardLane(emptyResult(
       combineFactual(
         composeEnrollmentPaymentAnswer(paymentDecision.action, options.profile),
       ),
@@ -1470,17 +1609,17 @@ async function orchestrateNavigatorTurn(
           ? { courseBinding: resolvedBinding }
           : {}),
       },
-    );
+    ));
   }
 
   if (paymentDecision.kind === "CLARIFY_MULTIPLE") {
     // Lexical multi-course requests keep the existing generic clarification.
     if (paymentDecision.fromStoredCandidates !== true) {
-      return emptyResult(
+      return guardLane(emptyResult(
         combineFactual(composePaymentAmbiguityAnswer(options.profile)),
         conversationAct,
         "PAYMENT_POLICY",
-      );
+      ));
     }
 
     // P03 structured payment clarification — deterministic one-question
@@ -1499,7 +1638,7 @@ async function orchestrateNavigatorTurn(
     };
 
     if (priorAttempts >= CLARIFICATION_BUDGET) {
-      return emptyResult(
+      return guardLane(emptyResult(
         combineFactual(composeClarificationExhaustionAnswer(options.profile)),
         conversationAct,
         "PAYMENT_POLICY",
@@ -1511,11 +1650,11 @@ async function orchestrateNavigatorTurn(
           attempts: CLARIFICATION_BUDGET,
           question: null,
         },
-      );
+      ));
     }
 
     const question = composePaymentAmbiguityAnswer(options.profile);
-    return emptyResult(
+    return guardLane(emptyResult(
       combineFactual(question),
       conversationAct,
       "PAYMENT_POLICY",
@@ -1527,7 +1666,7 @@ async function orchestrateNavigatorTurn(
         attempts: priorAttempts + 1,
         question,
       },
-    );
+    ));
   }
 
   if (paymentDecision.kind === "CONFIRM_COURSE_CHANGE") {
@@ -1541,36 +1680,36 @@ async function orchestrateNavigatorTurn(
       requestedCourse.title,
       options.profile,
     );
-    return emptyResult(combineFactual(prompt), conversationAct, "PAYMENT_POLICY", null, {
+    return guardLane(emptyResult(combineFactual(prompt), conversationAct, "PAYMENT_POLICY", null, {
       pendingConfirmation: {
         confirmationKey: `payment-course-change:${paymentDecision.currentCourseId}:${paymentDecision.requestedCourseId}`,
         kind: "PAYMENT_COURSE_CHANGE",
         prompt,
         candidateCourseId: paymentDecision.requestedCourseId,
       },
-    });
+    }));
   }
 
   if (
     paymentDecision.kind === "REESTABLISH_COURSE" ||
     paymentDecision.kind === "PRESERVE_NO_MATCH"
   ) {
-    return emptyResult(
+    return guardLane(emptyResult(
       combineFactual(composePaymentCourseIdentityRequiredAnswer(options.profile)),
       conversationAct,
       "PAYMENT_POLICY",
-    );
+    ));
   }
 
   if (paymentDecision.kind === "COURSE_NOT_PAYABLE") {
     const course = getAcademyCourse(paymentDecision.courseId);
-    return emptyResult(
+    return guardLane(emptyResult(
       combineFactual(
         composePaymentUnavailableAnswer(course?.title ?? paymentDecision.courseId),
       ),
       conversationAct,
       "PAYMENT_POLICY",
-    );
+    ));
   }
 
   if (conversationAct.state === "FACTUAL") {
@@ -1580,12 +1719,20 @@ async function orchestrateNavigatorTurn(
       conversationAct,
       query,
     );
-    return emptyResult(
+    // FIX-4b — the origin follows what is actually rendered: commercial
+    // authority only while a CURRENT_METADATA intent remains, deterministic
+    // control when only limitation lines remain.
+    const factualOrigin: NavigatorAnswerOrigin = factualUsesTransactionalAuthority
+      ? "COMMERCIAL_AUTHORITY"
+      : metadataGuard !== null &&
+          factualIntents.length === 0 &&
+          metadataGuard.supplement === null
+        ? "DETERMINISTIC_CONTROL"
+        : "CATALOG_AUTHORITY";
+    const factualResult = guardLane(emptyResult(
       factualMessage ?? "",
       conversationAct,
-      factualUsesTransactionalAuthority
-        ? "COMMERCIAL_AUTHORITY"
-        : "CATALOG_AUTHORITY",
+      factualOrigin,
       null,
       {
       catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
@@ -1601,7 +1748,22 @@ async function orchestrateNavigatorTurn(
           }
         : {}),
       },
-    );
+    ));
+    if (
+      metadataGuard === null ||
+      factualIntents.length > 0 ||
+      metadataGuard.dispositions.length !== 1 ||
+      metadataGuard.dispositions[0] !== "CATALOG_DURATION"
+    ) {
+      return factualResult;
+    }
+    return {
+      ...factualResult,
+      observability: {
+        ...(factualResult.observability as NavigatorTurnDetails),
+        fallback: "CATALOG_FOLLOW_UP",
+      },
+    };
   }
 
   const contactIntent = detectAcademyContactIntent(query, {
@@ -2259,9 +2421,17 @@ async function attemptPlanRecoveryOrUndefined(
       return null;
     },
     dispatchSegment: (segment, index) => {
+      // FIX-4b H2 — a guard-blocked metadata segment takes the same refusal
+      // stub as the NON_F1 grounding block: it is never dispatched, so it
+      // cannot render a field or commit its authority state.
       if (
-        mode === "NON_F1" &&
-        !nonF1MetadataSegmentIsGrounded(segment, capturedPlan, latestEffectiveText)
+        (mode === "NON_F1" &&
+          !nonF1MetadataSegmentIsGrounded(segment, capturedPlan, latestEffectiveText)) ||
+        metadataGuardBlocksSegment(
+          segment,
+          activePlanTasks(capturedPlan),
+          latestEffectiveText,
+        )?.blocked === true
       ) {
         return Promise.resolve({
           bindingKind: "NONE" as const,
@@ -2414,7 +2584,12 @@ type CompletedPlanRecovery = Extract<
   { disposition: "RECOVERED_SINGLE_ACT" | "RECOVERED_COMPOSED" }
 >;
 
-function finalizeRecoveredPlan(
+/**
+ * Exported only so the FIX-4b F02 regression can exercise the finalization
+ * boundary with a non-null dispatched result; the single production caller is
+ * attemptPlanRecoveryOrUndefined.
+ */
+export function finalizeRecoveredPlan(
   execution: CompletedPlanRecovery,
   options: OrchestrateNavigatorOptions,
   mode: PlanRecoveryMode,
@@ -2423,7 +2598,19 @@ function finalizeRecoveredPlan(
 ): NavigatorOrchestrationResult {
   const primary = execution.primarySegmentIndex === null ? null
     : execution.dispatchResults[execution.primarySegmentIndex];
-  const owner = execution.commitPrimary ? primary?.value ?? null : null;
+  // FIX-4b F02 — H2-b is decided once per segment, before the state owner is
+  // chosen. A primary that H2-b rejects owns no state: its authority version,
+  // binding, decision and answer origin are dropped with its text, and the
+  // existing neutral failed-primary base is used. No secondary is promoted.
+  const metadataGuardBySegment = execution.segments.map((segment) =>
+    metadataGuardBlocksSegment(segment, execution.activeTasks, latestUserText),
+  );
+  const primaryRejectedByMetadataGuard =
+    execution.primarySegmentIndex !== null &&
+    metadataGuardBySegment[execution.primarySegmentIndex]?.blocked === true;
+  const owner = execution.commitPrimary && !primaryRejectedByMetadataGuard
+    ? primary?.value ?? null
+    : null;
   const neutral = emptyResult(
     composeTechnicalErrorAnswer(options.profile, true),
     { state: "ROUTER_DEGRADED" }, "DETERMINISTIC_CONTROL",
@@ -2435,6 +2622,7 @@ function finalizeRecoveredPlan(
   };
   const outcomes: TaskOutcome[] = [];
   const pieces: ResponsePiece[] = [];
+  const metadataGuardBlocks: MetadataRecoveryTaskAssessment[] = [];
   for (const [index, segment] of execution.segments.entries()) {
     const result = execution.dispatchResults[index];
     const metadataIntent = segment.kind === "ACT" && segment.act.state === "FACTUAL"
@@ -2445,7 +2633,13 @@ function finalizeRecoveredPlan(
       segment.kind === "ACT" &&
       metadataIntent?.kind === "CURRENT_METADATA" &&
       !nonF1MetadataSegmentIsGrounded(segment, planSnapshot, latestUserText);
-    const effectiveResult = blockUnauthorizedMetadata ? null : result;
+    // FIX-4b H2 — the same task-level decision as at dispatch. A blocked
+    // segment takes the frozen SEGMENT_DISPATCH_FAILED limitation path and
+    // never reaches the per-task metadata re-render below.
+    const metadataGuardBlock = metadataGuardBySegment[index];
+    if (metadataGuardBlock?.blocked === true) metadataGuardBlocks.push(metadataGuardBlock);
+    const effectiveResult =
+      blockUnauthorizedMetadata || metadataGuardBlock?.blocked === true ? null : result;
     const origin = effectiveResult?.answerOrigin ?? "DETERMINISTIC_CONTROL";
     const taskOutcomes = segment.taskIndices.map((taskIndex) => {
       const task = execution.activeTasks[taskIndex];
@@ -2541,8 +2735,13 @@ function finalizeRecoveredPlan(
     : base.completion === "USER_ACTION_REQUIRED"
       ? "USER_ACTION_REQUIRED"
       : "ANSWERED";
+  const observability = recoveryMetadataGuardObservability(
+    base.observability,
+    metadataGuardBlocks,
+  );
   return {
     ...base,
+    ...(observability === base.observability ? {} : { observability }),
     message,
     taskCoverage: coverage,
     taskResponseBlocks: assembled.blocks,
