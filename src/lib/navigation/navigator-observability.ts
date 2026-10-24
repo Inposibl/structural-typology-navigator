@@ -51,6 +51,8 @@ export const NAVIGATOR_ANSWER_ORIGINS = [
   "FACTUAL_CEILING",
   "OUT_OF_SCOPE",
   "META",
+  /** OWNER-DEFECT-REMEDIATION-1 — the published Academy calendar read this turn. */
+  "CALENDAR_AUTHORITY",
 ] as const;
 
 export type NavigatorAnswerOrigin =
@@ -193,6 +195,21 @@ export type NavigatorTurnDetails = {
   courseReferenceUncertainty?: NavigatorCourseReferenceUncertaintyLog;
   /** FIX-4b — present only when the metadata field guard intervened. */
   metadataFieldGuard?: NavigatorMetadataFieldGuardLog;
+  /** OWNER-DEFECT-REMEDIATION-1 — present only on an Owner service-lane turn. */
+  ownerServiceLane?: NavigatorOwnerServiceLaneLog;
+};
+
+export const NAVIGATOR_OWNER_SERVICE_LANES = [
+  "PAYMENT_STATUS",
+  "ENROLLMENT_CAPABILITY",
+  "COMMERCIAL_CONDITIONS",
+  "SCHEDULE_ENROLLMENT",
+  "COURSE_OVERVIEW_WITH_PRICE",
+] as const;
+
+export type NavigatorOwnerServiceLaneLog = {
+  lane: (typeof NAVIGATOR_OWNER_SERVICE_LANES)[number];
+  calendar: "NOT_READ" | "AVAILABLE" | "UNAVAILABLE";
 };
 
 export type NavigatorTurnLog = NavigatorTurnDetails & {
@@ -258,6 +275,19 @@ export function createNavigatorTurnLog(
     (details.metadataFieldGuard.verdict === "PARTIAL" ||
       details.metadataFieldGuard.verdict === "MISMATCH")
       ? { metadataFieldGuard: sanitizeMetadataFieldGuardLog(details.metadataFieldGuard) }
+      : {}),
+    ...(details.ownerServiceLane !== undefined &&
+    NAVIGATOR_OWNER_SERVICE_LANES.includes(details.ownerServiceLane.lane)
+      ? {
+          ownerServiceLane: {
+            lane: details.ownerServiceLane.lane,
+            calendar:
+              details.ownerServiceLane.calendar === "AVAILABLE" ||
+              details.ownerServiceLane.calendar === "UNAVAILABLE"
+                ? details.ownerServiceLane.calendar
+                : "NOT_READ",
+          },
+        }
       : {}),
   };
 }

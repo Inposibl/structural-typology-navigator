@@ -68,6 +68,13 @@ export type PaymentResolutionContext = {
    * exact named-candidate answer may continue the already-qualified flow.
    */
   pendingPaymentClarification?: boolean;
+  /**
+   * OWNER-DEFECT-REMEDIATION-1 (E02/F05): the course the immediately
+   * preceding assistant turn recommended, as established by the caller from
+   * the recorded recommendation of the stored MATCHED selection; null when
+   * the previous turn was not exactly that recommendation.
+   */
+  recommendedCourseId?: string | null;
 };
 
 export type EnrollmentPaymentDecision =
@@ -102,6 +109,10 @@ const ENROLLMENT_INTENT_PATTERNS: readonly RegExp[] = [
   // RC-P02: the exact whole-message "где оплатить" form and nothing wider —
   // case, whitespace and terminal ?!. variation only; no stems, no prefixes.
   /^\s*где\s+оплатить\s*[?!.]*\s*$/iu,
+  // OWNER-DEFECT-REMEDIATION-1 (E02/F05): the first-person "how do I" form,
+  // with at most the anaphoric object between — "Как мне его оплатить?",
+  // "как мне записаться на этот курс?". No stems, no other insertions.
+  /как\s+(?:мне|нам)\s+(?:(?:его|её|ее|этот\s+курс)\s+)?(?:оплатить|записаться|купить|оформить)(?![а-яё])/iu,
 ];
 
 /**
@@ -588,7 +599,13 @@ export function resolveEnrollmentPaymentDecision(
   }
 
   if (selectedCourseId !== null) {
-    if (freshForm === null) return { kind: "NONE" };
+    // OWNER-DEFECT-REMEDIATION-1 (E02/F05): directly after the recommendation
+    // of exactly the selected course, a course-free enrollment request is the
+    // move from selection to enrollment for that course. Every other
+    // unqualified form keeps the NONE veto.
+    const followsRecommendation =
+      genericIntent && context.recommendedCourseId === selectedCourseId;
+    if (freshForm === null && !followsRecommendation) return { kind: "NONE" };
     return { kind: "ACTION", action: paymentActionForCourse(selectedCourseId) };
   }
 

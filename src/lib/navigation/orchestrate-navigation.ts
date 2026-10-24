@@ -18,6 +18,7 @@ import {
 } from "../knowledge/retrieval/evidence-selector.ts";
 import {
   composeNavigatorAnswer,
+  isSingleCourseRecommendation,
   type ComposeNavigatorAnswerOptions,
 } from "./answer-composer.ts";
 import {
@@ -74,11 +75,35 @@ import {
   detectDeterministicAcademyContactIntent,
 } from "../academy/contact-policy.ts";
 import {
+  ACADEMY_PAYMENT_POLICY,
   composeEnrollmentPaymentAnswer,
   hasEnrollmentPaymentIntent,
+  paymentActionForCourse,
   paymentMultipleIssueKey,
   resolveEnrollmentPaymentDecision,
+  resolveExplicitPaymentCourseId,
+  type EnrollmentPaymentAction,
+  type PaymentCourseId,
 } from "../academy/payment-policy.ts";
+import { ACADEMY_COMMERCIAL_POLICY_ADDENDUM_VERSION } from "../academy/commercial-policy-addendum.ts";
+import {
+  readAcademyCalendar,
+  type CalendarReadDependency,
+  type CalendarReadResult,
+} from "../academy/course-calendar.ts";
+import {
+  composeCommercialConditionsAnswer,
+  composeCourseOverviewWithPriceAnswer,
+  composeEnrollmentCapabilityAnswer,
+  composePaymentStatusAnswer,
+  composeScheduleEnrollmentAnswer,
+  asksExplicitPrice,
+  detectCourseOverviewWithPrice,
+  detectServiceRequest,
+  factualIntentsBesideServiceRequest,
+  type ServiceAnswer,
+  type ServiceRequestKind,
+} from "./owner-service-lanes.ts";
 import {
   resolveCourseReferences,
   type AcademyCourseId,
@@ -260,6 +285,12 @@ export type OrchestrationDependencies = {
    * the unchanged DeepSeek client; tests inject canned plans.
    */
   extractPlan?: PlanExtractionDependency;
+  /**
+   * OWNER-DEFECT-REMEDIATION-1 — the read-only published-calendar read and the
+   * clock it dates against. Default: one GET of the public calendar page.
+   */
+  readCalendar?: CalendarReadDependency;
+  now?: () => Date;
 };
 
 export type OrchestrateNavigatorOptions = {
@@ -1045,6 +1076,30 @@ function staleSelectionInvalidation(
  * establishes a course, a conceptual alias establishes none, and the stored
  * selection and FACTUAL retention are left unchanged.
  */
+/**
+ * OWNER-DEFECT-REMEDIATION-1 (E02/F05) — the stored MATCHED selection when the
+ * immediately preceding assistant turn was the recommendation of exactly that
+ * course (recorded act NAVIGATE, same course, the composer's single-course
+ * recommendation text); otherwise null.
+ */
+function recommendedSelectedCourseId(
+  state: OrchestrateNavigatorOptions["conversationState"],
+): string | null {
+  const selected = state?.selectedCourseId ?? null;
+  const last = state?.lastAssistant ?? null;
+  if (
+    selected === null ||
+    state?.courseMatch !== "MATCHED" ||
+    (state?.staleReference ?? null) !== null ||
+    last === null ||
+    last.act !== "NAVIGATE" ||
+    last.courseId !== selected
+  ) {
+    return null;
+  }
+  return isSingleCourseRecommendation(last.content, selected) ? selected : null;
+}
+
 function paymentReferentConflict(
   messages: readonly ConversationMessage[],
   courseId: string | null,
@@ -1060,6 +1115,60 @@ function paymentReferentConflict(
       course.id !== courseId &&
       establishedCourseReference(priorTurn, course.id) !== null,
   );
+}
+
+/**
+ * OWNER-DEFECT-REMEDIATION-1 (F01) — the destination for the enrollment
+ * capability answer: a course-specific link only when the user named exactly
+ * one payable course that no stored selection or candidate set contradicts,
+ * or when the immediately preceding turn recommended the stored selection and
+ * the user names no course and no conflicting referent; otherwise the general
+ * bot. Never a stored course the user did not establish.
+ */
+function capabilityPaymentAction(
+  query: string,
+  paymentMessages: readonly ConversationMessage[],
+  state: OrchestrateNavigatorOptions["conversationState"],
+  storedReferents: readonly AcademyCourseId[],
+): EnrollmentPaymentAction {
+  const general: EnrollmentPaymentAction = {
+    courseId: null,
+    paymentUrl: ACADEMY_PAYMENT_POLICY.generalUrl,
+  };
+  if (storedReferents.length > 0 || (state?.staleReference ?? null) !== null) return general;
+  const references = resolveCourseReferences(query);
+  const selected = state?.courseMatch === "MATCHED" ? (state?.selectedCourseId ?? null) : null;
+  if (references.kind === "ONE") {
+    const explicit = resolveExplicitPaymentCourseId(query);
+    return explicit !== null && (selected === null || selected === explicit)
+      ? paymentActionForCourse(explicit)
+      : general;
+  }
+  if (references.kind !== "ZERO") return general;
+  const recommended = recommendedSelectedCourseId(state);
+  if (
+    recommended === null ||
+    !Object.prototype.hasOwnProperty.call(ACADEMY_PAYMENT_POLICY.courses, recommended) ||
+    paymentReferentConflict(paymentMessages, recommended)
+  ) {
+    return general;
+  }
+  return paymentActionForCourse(recommended as PaymentCourseId);
+}
+
+/** OWNER-DEFECT-REMEDIATION-1 — the closed lane record on the turn log. */
+function withOwnerServiceLog(
+  result: NavigatorOrchestrationResult,
+  lane: ServiceRequestKind | "COURSE_OVERVIEW_WITH_PRICE",
+  calendar: CalendarReadResult["status"] | "NOT_READ",
+): NavigatorOrchestrationResult {
+  return {
+    ...result,
+    observability: {
+      ...(result.observability as NavigatorTurnDetails),
+      ownerServiceLane: { lane, calendar },
+    },
+  };
 }
 
 function emptyResult(
@@ -1559,6 +1668,7 @@ async function orchestrateNavigatorTurn(
         storedState?.staleReference !== undefined,
       courseReferents: storedReferents,
       pendingPaymentClarification: paymentClarificationLive,
+      recommendedCourseId: recommendedSelectedCourseId(storedState),
     },
   );
 
@@ -1829,6 +1939,149 @@ async function orchestrateNavigatorTurn(
             }
           : {}),
       },
+    );
+  }
+
+  // NAVIGATOR-LIVE-ACCEPTANCE-1.OWNER-DEFECT-REMEDIATION-1 — the Owner-defined
+  // answers. They run only after every payment lane above has declined, so
+  // payment safety, course-change confirmation and the referent guard keep
+  // their precedence. F03 replaces any classified lane except a degraded or
+  // reference-uncertain one; the service lanes replace only the acts that
+  // previously produced no answer to these questions (NAVIGATE clarification,
+  // OUT_OF_SCOPE, META), so every accepted FACTUAL/content contract stands.
+  const readCalendarForTurn = (): Promise<CalendarReadResult> =>
+    (options.dependencies?.readCalendar ?? readAcademyCalendar)({
+      fetch: options.fetch,
+      signal: options.signal,
+      now: options.dependencies?.now,
+    });
+  const overviewCourseId =
+    unresolvedAct === null && conversationAct.state !== "ROUTER_DEGRADED"
+      ? detectCourseOverviewWithPrice(query)
+      : null;
+  if (overviewCourseId !== null) {
+    const calendar = await readCalendarForTurn();
+    return withOwnerServiceLog(
+      emptyResult(
+        composeCourseOverviewWithPriceAnswer(overviewCourseId, calendar),
+        conversationAct,
+        "COMMERCIAL_AUTHORITY",
+        null,
+        {
+          catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
+          transactionalAuthorityVersion: ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
+        },
+      ),
+      "COURSE_OVERVIEW_WITH_PRICE",
+      calendar.status,
+    );
+  }
+  // OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-5) — a validated FACTUAL proposal of
+  // the same closed service questions takes the same lane. Only the closed
+  // recognizers decide, so every other FACTUAL question keeps its accepted
+  // path. The FACTUAL part that still answers the message (an explicitly asked
+  // price, the guard's catalogue duration text and closed limitations) leads
+  // the service answer; a timing limitation is superseded by the calendar
+  // lane's own wording, and a price limitation stands only beside a literal
+  // price question (the guard's PRICE family also counts the discount and
+  // installment stems the service lane answers). A nested ARM-B recovery
+  // segment (null recovery controller) keeps its accepted per-task FACTUAL
+  // contract: there the plan, not this lane, owns the mixed request.
+  const serviceRequest: ServiceRequestKind | null =
+    conversationAct.state === "NAVIGATE" ||
+    conversationAct.state === "OUT_OF_SCOPE" ||
+    conversationAct.state === "META" ||
+    (conversationAct.state === "FACTUAL" && recovery !== null)
+      ? detectServiceRequest(query)
+      : null;
+  if (serviceRequest !== null) {
+    const serviceAct: ConversationActDecision = { state: "NAVIGATE" };
+    const factualBeside = factualIntentsBesideServiceRequest(factualIntents, query);
+    const guardLimitationDispositions = (metadataGuard?.dispositions ?? []).filter(
+      (disposition) => disposition.startsWith("LIMITATION_"),
+    );
+    const factualLimitations = (metadataGuard?.limitations ?? []).filter(
+      (_, index) =>
+        guardLimitationDispositions[index] !== "LIMITATION_TIMING" &&
+        (guardLimitationDispositions[index] !== "LIMITATION_PRICE" || asksExplicitPrice(query)),
+    );
+    const factualLead: string[] = conversationAct.state !== "FACTUAL"
+      ? []
+      : [
+          ...(factualBeside.length > 0
+            ? [
+                composeFactualAnswer(
+                  factualBeside,
+                  options.conversationState?.selectedCourseId ?? null,
+                  options.profile,
+                  query,
+                ),
+              ]
+            : []),
+          ...(metadataGuard?.supplement != null ? [metadataGuard.supplement] : []),
+          ...factualLimitations,
+        ];
+    const serviceResult = (
+      answer: ServiceAnswer,
+      origin: NavigatorAnswerOrigin,
+      calendarStatus: CalendarReadResult["status"] | "NOT_READ",
+      stateEffects: Partial<OrchestrationStateEffects> = {},
+    ): NavigatorOrchestrationResult => {
+      const answered = withOwnerServiceLog(
+        emptyResult(
+          [...factualLead, answer.message].join("\n\n"),
+          serviceAct,
+          origin,
+          answer.contactCard,
+          {
+            ...(factualLead.length > 0
+              ? { catalogAuthorityVersion: ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE }
+              : {}),
+            ...(factualBeside.length > 0
+              ? { transactionalAuthorityVersion: ACADEMY_COMMERCIAL_AUTHORITY_VERSION }
+              : {}),
+            ...stateEffects,
+          },
+        ),
+        serviceRequest,
+        calendarStatus,
+      );
+      // The guard record is kept; only a limitation actually shown makes the
+      // turn partial.
+      const guarded = guardLane(answered);
+      return factualLimitations.length === 0
+        ? { ...guarded, completion: answered.completion }
+        : guarded;
+    };
+    if (serviceRequest === "PAYMENT_STATUS") {
+      return serviceResult(composePaymentStatusAnswer(), "PAYMENT_POLICY", "NOT_READ");
+    }
+    if (serviceRequest === "ENROLLMENT_CAPABILITY") {
+      return serviceResult(
+        composeEnrollmentCapabilityAnswer(
+          capabilityPaymentAction(query, paymentMessages, storedState, storedReferents),
+          options.profile,
+        ),
+        "PAYMENT_POLICY",
+        "NOT_READ",
+      );
+    }
+    if (serviceRequest === "COMMERCIAL_CONDITIONS") {
+      return serviceResult(composeCommercialConditionsAnswer(), "COMMERCIAL_AUTHORITY", "NOT_READ", {
+        transactionalAuthorityVersion: ACADEMY_COMMERCIAL_POLICY_ADDENDUM_VERSION,
+      });
+    }
+    const references = resolveCourseReferences(query);
+    const scheduleCourseId =
+      references.kind === "ONE" &&
+      getAcademyCourse(references.courseIds[0])?.status === "ROUTABLE"
+        ? references.courseIds[0]
+        : null;
+    const calendar = await readCalendarForTurn();
+    return serviceResult(
+      composeScheduleEnrollmentAnswer(calendar, scheduleCourseId),
+      "CALENDAR_AUTHORITY",
+      calendar.status,
     );
   }
 

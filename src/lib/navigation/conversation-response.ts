@@ -13,6 +13,7 @@ import { resolveCourseReferences } from "../academy/course-reference.ts";
 import {
   getAuthoritativeCoursePrice,
 } from "../academy/commercial-authority.ts";
+import { ACADEMY_COMMERCIAL_POLICY_ADDENDUM } from "../academy/commercial-policy-addendum.ts";
 import type { ResolvedCourseEvidence } from "../knowledge/retrieval/authority-resolver.ts";
 import type { CourseEvidenceSelection } from "../knowledge/retrieval/evidence-selector.ts";
 import {
@@ -672,9 +673,11 @@ function authorityDateRu(): string {
  * deterministic lead of an explicit enrollment/payment request that the payment
  * policy did not qualify for a payment link. It states the Navigator's
  * transactional limitation (nothing is enrolled, paid or booked), the dated
- * authoritative price of the uniquely identified course, and that no other
- * amount, discount, special rate or installment plan is confirmed. It never
- * names a payment destination; the caller appends the contact-policy handoff.
+ * authoritative price of the uniquely identified course, the Owner commercial
+ * addendum of 2026-10-24 as it applies to that course, and that no other
+ * amount, discount size, eligibility or special condition is confirmed. It
+ * never names a payment destination; the caller appends the contact-policy
+ * handoff.
  */
 export function composePaymentIntentBoundaryAnswer(
   courseId: string | null,
@@ -693,8 +696,22 @@ export function composePaymentIntentBoundaryAnswer(
       course.id as Parameters<typeof getAuthoritativeCoursePrice>[0],
     );
     if (price.status === "SUPPORTED") {
+      // OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-5 B) — the known addendum rules
+      // are stated as known; only the amounts, the user's eligibility and any
+      // other special condition remain unconfirmed.
+      const addendum = ACADEMY_COMMERCIAL_POLICY_ADDENDUM;
+      const prepaymentCourse = (
+        addendum.publicPrepaymentDiscount.courseIds as readonly string[]
+      ).includes(course.id);
       lines.push(
-        `Курс «${course.title}»: последняя подтверждённая цена по данным на ${authorityDateRu()} — ${formatRub(price.value)}. Другие суммы, скидки, специальные условия или рассрочка в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу.`,
+        [
+          `Курс «${course.title}»: последняя подтверждённая цена по данным на ${authorityDateRu()} — ${formatRub(price.value)}.`,
+          addendum.installments.offered ? "Рассрочка доступна." : "Рассрочки нет.",
+          prepaymentCourse
+            ? "На этот курс действует публичная скидка при полной предоплате; её размер в подтверждённых данных Академии не указан."
+            : "Индивидуальная скидка на этот курс может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных; решение принимает куратор Академии Алексей Лебедев, её размер в подтверждённых данных Академии не указан.",
+          "Другие суммы, право на скидку и иные специальные условия в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу.",
+        ].join(" "),
       );
     }
   }

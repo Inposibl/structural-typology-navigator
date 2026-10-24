@@ -3,6 +3,7 @@ import type {
   ConversationProfile,
 } from "../chat-contract.ts";
 import {
+  ACADEMY_COURSES,
   getAcademyCourse,
   type AcademyCourse,
 } from "../academy/course-catalog.ts";
@@ -34,6 +35,27 @@ function courseReference(course: AcademyCourse): string {
     throw new Error(`Routable course ${course.id} is missing a public URL.`);
   }
   return `«${course.title}» — ${course.url}`;
+}
+
+function primaryCourseSentence(course: AcademyCourse): string {
+  return `В текущем каталоге Академии ей соответствует курс ${courseReference(course)}.`;
+}
+
+/**
+ * OWNER-DEFECT-REMEDIATION-1 (E02/F05) — true only when `content` is this
+ * composer's recommendation of exactly `courseId`: it carries the primary-course
+ * sentence for that course and names no other catalog course page.
+ */
+export function isSingleCourseRecommendation(
+  content: string,
+  courseId: string,
+): boolean {
+  const course = getAcademyCourse(courseId);
+  if (!course || course.status !== "ROUTABLE" || !course.url) return false;
+  if (!content.includes(primaryCourseSentence(course))) return false;
+  return !ACADEMY_COURSES.some(
+    (other) => other.id !== course.id && other.url !== null && content.includes(other.url),
+  );
 }
 
 function outcomeSentence(course: AcademyCourse): string {
@@ -148,7 +170,7 @@ export async function composeNavigatorAnswer(
 
   const parts = [
     `${descriptionPrefix(options.profile)} ключевая учебная задача сейчас — ${decision.learningNeed}`,
-    `В текущем каталоге Академии ей соответствует курс ${courseReference(primary)}.`,
+    primaryCourseSentence(primary),
     options.showEvidence
       ? evidenceSentence(options.evidenceSelection, options.courseEvidence)
       : "",

@@ -64,6 +64,12 @@ import {
   type TimingMetadataField,
 } from "../../src/lib/navigation/metadata-field-consistency.ts";
 import { undispatchedLineText } from "../../src/lib/navigation/task-plan.ts";
+import type { CalendarReadResult } from "../../src/lib/academy/course-calendar.ts";
+import { ACADEMY_COMMERCIAL_POLICY_ADDENDUM_VERSION } from "../../src/lib/academy/commercial-policy-addendum.ts";
+import {
+  composeCommercialConditionsAnswer,
+  composeScheduleEnrollmentAnswer,
+} from "../../src/lib/navigation/owner-service-lanes.ts";
 import { createDefaultConversationProfile } from "../../src/lib/navigation/conversation-profile.ts";
 import type { ConversationState } from "../../src/lib/navigation/conversation-state.ts";
 import { handleChatRequest } from "../../src/app/api/chat/route.ts";
@@ -138,6 +144,24 @@ const ALL_TIMING: TimingMetadataField[] = ["SCHEDULE", "COHORT", "ENROLLMENT_WIN
 
 type Counters = { retrieve: number; route: number; extract: number };
 
+/**
+ * OWNER-DEFECT-REMEDIATION-1.CORR1 — deterministic calendar seam. Under OD-5 A
+ * a start-date / enrollment question proposed FACTUAL reads the published
+ * calendar like one proposed NAVIGATE; the network stays forbidden.
+ */
+const CALENDAR: CalendarReadResult = {
+  status: "AVAILABLE",
+  sourceUrl: "https://structural-typology.academy/calendar",
+  readDate: "2026-10-24",
+  pageLastModified: "2026-10-05",
+  sessions: [
+    { courseId: "maslow", cohortLabel: null, date: "2026-11-16" },
+    { courseId: "maslow", cohortLabel: null, date: "2026-11-26" },
+  ],
+  ignoredItemCount: 0,
+};
+const MASLOW_CALENDAR_ANSWER = composeScheduleEnrollmentAnswer(CALENDAR, "maslow").message;
+
 function dependencies(
   act: unknown,
   counters: Counters,
@@ -159,6 +183,8 @@ function dependencies(
       if (plan === undefined) throw new Error("plan extraction must not run");
       return structuredClone(plan);
     },
+    readCalendar: async () => CALENDAR,
+    now: () => new Date("2026-10-24T17:41:50Z"),
   };
 }
 
@@ -220,6 +246,48 @@ async function assertH1(
   } else {
     assert.deepEqual(guardOf(result), expected.guard, `${label}: guard record`);
   }
+  assertNoSideLanes(counters, label);
+  return result;
+}
+
+/**
+ * OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-5 A) — a validated FACTUAL proposal of
+ * an Owner-confirmed service question takes the service lane. The guard still
+ * runs first: its record is kept, PRICE is never added, and only a price the
+ * message asks literally leads the service answer.
+ */
+async function assertServiceLane(
+  label: string,
+  history: readonly ConversationMessage[],
+  question: string,
+  act: ReturnType<typeof factual>,
+  expected: {
+    message: string;
+    origin: NavigatorTurnDetails["answerOrigin"];
+    lane: "COMMERCIAL_CONDITIONS" | "SCHEDULE_ENROLLMENT";
+    transactional: string | null;
+    guard: NavigatorMetadataFieldGuardLog | null;
+    price: boolean;
+  },
+): Promise<NavigatorOrchestrationResult> {
+  const { result, counters } = await turn(history, question, act);
+  assert.equal(result.message, expected.message, `${label}: message`);
+  assert.equal(PRICE_TEXT.test(result.message), expected.price, `${label}: price text`);
+  assert.equal(result.observability?.answerOrigin, expected.origin, `${label}: origin`);
+  assert.deepEqual(
+    result.observability?.ownerServiceLane,
+    { lane: expected.lane, calendar: expected.lane === "SCHEDULE_ENROLLMENT" ? "AVAILABLE" : "NOT_READ" },
+    `${label}: service lane`,
+  );
+  assert.equal(result.completion, "ANSWERED", `${label}: completion`);
+  assert.equal(result.stateEffects.transactionalAuthorityVersion, expected.transactional, `${label}: transactional authority`);
+  assert.equal(result.conversationAct.state, "NAVIGATE", `${label}: service act`);
+  if (expected.guard === null) {
+    assert.ok(!("metadataFieldGuard" in (result.observability ?? {})), `${label}: no guard record`);
+  } else {
+    assert.deepEqual(guardOf(result), expected.guard, `${label}: guard record`);
+  }
+  assert.doesNotMatch(result.message, /авторитетного значения нет/u, `${label}: no superseded timing ceiling`);
   assertNoSideLanes(counters, label);
   return result;
 }
@@ -333,13 +401,13 @@ test("H1 CORR1 (mandated 2): duration only + PRICE + CATALOG_LIST → PRICE veto
   assert.equal(result.stateEffects.courseBinding, undefined);
 });
 
-test("H1 CORR1 (mandated 3): timing only + PRICE + SCHEDULE → PRICE vetoed, SCHEDULE kept, nothing else added", async () => {
+test("H1 CORR1 (mandated 3): timing only + PRICE + SCHEDULE → PRICE vetoed; the start question takes the calendar lane (ODR-1.CORR1 OD-5 A)", async () => {
   const q = "Когда начинается курс Маслоу?";
-  await assertH1("tim PRICE+SCHEDULE", [], q, factual(md(["PRICE", "SCHEDULE"], ["maslow"], "REFERENCED")), {
-    message: composeFactualAnswer([md(["SCHEDULE"], ["maslow"], "REFERENCED")], null, VY, q),
-    origin: "COMMERCIAL_AUTHORITY",
-    completion: "ANSWERED",
-    transactional: true,
+  await assertServiceLane("tim PRICE+SCHEDULE", [], q, factual(md(["PRICE", "SCHEDULE"], ["maslow"], "REFERENCED")), {
+    message: MASLOW_CALENDAR_ANSWER,
+    origin: "CALENDAR_AUTHORITY",
+    lane: "SCHEDULE_ENROLLMENT",
+    transactional: null,
     guard: record("PARTIAL", ["TIMING"], ["PRICE"]),
     price: false,
   });
@@ -405,14 +473,14 @@ test("H1 CORR1 (mandated 7): duration only + PRICE + SCHEDULE + CATALOG_LIST →
   assert.doesNotMatch(result.message, SCHEDULE_TEXT);
 });
 
-test("H1 (mandated 8): timing only + SCHEDULE → unchanged response and state", async () => {
+test("H1 (mandated 8): timing only + SCHEDULE → no guard intervention; the start question takes the calendar lane (ODR-1.CORR1 OD-5 A)", async () => {
   const q = "Когда начинается курс Маслоу?";
   const intents = [md(["SCHEDULE"], ["maslow"], "REFERENCED")];
-  await assertH1("timing SCHEDULE", [], q, factual(...intents), {
-    message: composeFactualAnswer(intents, null, VY, q),
-    origin: "COMMERCIAL_AUTHORITY",
-    completion: "ANSWERED",
-    transactional: true,
+  await assertServiceLane("timing SCHEDULE", [], q, factual(...intents), {
+    message: MASLOW_CALENDAR_ANSWER,
+    origin: "CALENDAR_AUTHORITY",
+    lane: "SCHEDULE_ENROLLMENT",
+    transactional: null,
     guard: null,
     price: false,
   });
@@ -568,17 +636,38 @@ test("H1 genuine price questions are never vetoed: R05, R11, X05, X11–X16, X20
     [[user("Сколько длится курс Маслоу?"), assistant("6 встреч")], "А сколько он стоит?", [md(["PRICE"])]],
     [S4, "Во сколько обойдётся этот курс?", [md(["PRICE"])]],
     [S4, "Почём курс?", [md(["PRICE"])]],
-    [S4, "Есть ли скидки или рассрочка?", [md(["PRICE"])]],
     [S4, "Сколько стоит одна встреча?", [md(["PRICE"])]],
     [S4, "Сколько стоит курс длительностью 6 встреч?", [md(["PRICE"])]],
     [S4, "Не подскажете, сколько стоит курс?", [md(["PRICE"])]],
-    [[], "Когда следующий поток и сколько стоит курс Маслоу?", [md(["PRICE", "COHORT"], ["maslow"], "REFERENCED")]],
     [[], "Сколько стоят все курсы?", [md(["PRICE"], [], "ALL")]],
     [[], "Сколько стоят курсы Маслоу и про нормативную ситуацию?", [md(["PRICE"], ["maslow", "normative-situation"], "REFERENCED")]],
   ];
   for (const [history, q, intents] of rows) {
     await assertH1(q, history, q, factual(...intents), unchangedPrice(intents, q));
   }
+  // OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-4/OD-5 A) — two former rows are
+  // Owner-confirmed service questions. The guard still never vetoes them (no
+  // guard record); the answer now comes from the 2026-10-24 addendum and the
+  // published calendar instead of the price snapshot alone.
+  const discountRow = "Есть ли скидки или рассрочка?";
+  await assertServiceLane(discountRow, S4, discountRow, factual(md(["PRICE"])), {
+    message: composeCommercialConditionsAnswer().message,
+    origin: "COMMERCIAL_AUTHORITY",
+    lane: "COMMERCIAL_CONDITIONS",
+    transactional: ACADEMY_COMMERCIAL_POLICY_ADDENDUM_VERSION,
+    guard: null,
+    price: false,
+  });
+  const cohortPriceRow = "Когда следующий поток и сколько стоит курс Маслоу?";
+  const cohortPriceRowPrice = [md(["PRICE"], ["maslow"], "REFERENCED")];
+  await assertServiceLane(cohortPriceRow, [], cohortPriceRow, factual(md(["PRICE", "COHORT"], ["maslow"], "REFERENCED")), {
+    message: `${composeFactualAnswer(cohortPriceRowPrice, null, VY, cohortPriceRow)}\n\n${MASLOW_CALENDAR_ANSWER}`,
+    origin: "CALENDAR_AUTHORITY",
+    lane: "SCHEDULE_ENROLLMENT",
+    transactional: ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
+    guard: null,
+    price: true,
+  });
 });
 
 test("H1 no recognizable cue: X24 and «Расскажите подробнее» stay UNCORROBORATED (declared L-1/L-3 residual)", async () => {
@@ -604,22 +693,22 @@ test("H1 X22: the guard never creates PRICE — a price question with a SCHEDULE
   assert.doesNotMatch(result.message, SCHEDULE_TEXT);
 });
 
-test("H1 R07/X39: timing via admitted no-authority fields only; price kept only when asked", async () => {
+test("H1 R07/X39: the guard's TIMING record is kept; the start question takes the calendar lane and price is kept only when asked (ODR-1.CORR1 OD-5 A)", async () => {
   const r07 = "Когда начинается курс Маслоу?";
-  await assertH1("R07", [], r07, factual(md(["PRICE"], ["maslow"], "REFERENCED")), {
-    message: composeFactualAnswer([md(ALL_TIMING, ["maslow"], "REFERENCED")], null, VY, r07),
-    origin: "COMMERCIAL_AUTHORITY",
-    completion: "ANSWERED",
-    transactional: true,
+  await assertServiceLane("R07", [], r07, factual(md(["PRICE"], ["maslow"], "REFERENCED")), {
+    message: MASLOW_CALENDAR_ANSWER,
+    origin: "CALENDAR_AUTHORITY",
+    lane: "SCHEDULE_ENROLLMENT",
+    transactional: null,
     guard: record("MISMATCH", ["TIMING"], ["PRICE"], ["TIMING_NO_AUTHORITY"], ALL_TIMING),
     price: false,
   });
   const x39 = "Цена курса Маслоу и дата старта?";
-  await assertH1("X39", [], x39, factual(md(["PRICE"], ["maslow"], "REFERENCED")), {
-    message: composeFactualAnswer([md(["PRICE", ...ALL_TIMING], ["maslow"], "REFERENCED")], null, VY, x39),
-    origin: "COMMERCIAL_AUTHORITY",
-    completion: "ANSWERED",
-    transactional: true,
+  await assertServiceLane("X39", [], x39, factual(md(["PRICE"], ["maslow"], "REFERENCED")), {
+    message: `${composeFactualAnswer([md(["PRICE"], ["maslow"], "REFERENCED")], null, VY, x39)}\n\n${MASLOW_CALENDAR_ANSWER}`,
+    origin: "CALENDAR_AUTHORITY",
+    lane: "SCHEDULE_ENROLLMENT",
+    transactional: ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
     guard: record("PARTIAL", ["PRICE", "TIMING"], [], ["TIMING_NO_AUTHORITY"], ALL_TIMING),
     price: true,
   });

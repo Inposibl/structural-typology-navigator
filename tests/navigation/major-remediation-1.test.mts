@@ -12,6 +12,8 @@ import {
   composeFollowUpReferenceClarification,
 } from "../../src/lib/navigation/conversation-response.ts";
 import { ACADEMY_COMMERCIAL_AUTHORITY_VERSION } from "../../src/lib/academy/commercial-authority.ts";
+import type { CalendarReadResult } from "../../src/lib/academy/course-calendar.ts";
+import { composeScheduleEnrollmentAnswer } from "../../src/lib/navigation/owner-service-lanes.ts";
 
 /**
  * NAVIGATOR-PREVIEW-LIVE-DEEPSEEK-VERIFICATION-1.MAJOR-REMEDIATION-1.CORR1 —
@@ -49,6 +51,24 @@ const followUp = (courseId: string) => ({ state: "COURSE_FOLLOW_UP", courseId, e
 const NAVIGATE = { state: "NAVIGATE" };
 
 const PAYMENT_LINK = /AST_payment_course_bot/u;
+
+/**
+ * OWNER-DEFECT-REMEDIATION-1.CORR1 — deterministic calendar seam: a schedule
+ * question now reads the published calendar (OD-1/OD-2/OD-5 A), and a test
+ * never reaches the network.
+ */
+const CALENDAR: CalendarReadResult = {
+  status: "AVAILABLE",
+  sourceUrl: "https://structural-typology.academy/calendar",
+  readDate: "2026-10-24",
+  pageLastModified: "2026-10-05",
+  sessions: [
+    { courseId: "maslow", cohortLabel: null, date: "2026-11-16" },
+    { courseId: "maslow", cohortLabel: null, date: "2026-11-26" },
+  ],
+  ignoredItemCount: 0,
+};
+
 const FABRICATED_TRANSACTION =
   /(?:вы|ты)\s+(?:успешно\s+)?(?:записан|зачислен)|оплата\s+(?:прошла|проведена|получена|подтверждена)|оплачено|чек|квитанци|номер\s+(?:заказа|брони)|бронь\s+подтвержден/iu;
 
@@ -80,6 +100,8 @@ async function turn(
         options.onOutcome?.({ answerOrigin: "FACTUAL_CEILING", fallback: "FACTUAL_CEILING" });
         return `STUB FOLLOW-UP ${act.courseId}`;
       },
+      readCalendar: async () => CALENDAR,
+      now: () => new Date("2026-10-24T17:41:50Z"),
     },
   });
   return { result, retrieved, followUpCourses, routeCalls };
@@ -99,19 +121,30 @@ test("V-MAJ-01 B01: the exact live message resolves Maslow through COURSE_CONTEN
   assert.equal(result.observability?.courseReferenceUncertainty, undefined);
 });
 
-test("V-MAJ-01 C05: the enrollment-window question reaches commercial authority and returns the dated factual ceiling", async () => {
+test("V-MAJ-01 C05: the enrollment-window question is validated FACTUAL and answered by the published calendar (OWNER-DEFECT-REMEDIATION-1.CORR1 OD-5 A)", async () => {
+  // The accepted V-MAJ-01 mechanics stay: the live follow-up proposal is
+  // validated to FACTUAL, nothing is retrieved and the router is not called.
+  const validated = await routeConversationAct([user(C05)], { callJson: async () => followUp("maslow") });
+  assert.equal(validated.state, "FACTUAL");
   const { result, retrieved, routeCalls } = await turn([user(C05)], followUp("maslow"));
-  assert.equal(result.conversationAct.state, "FACTUAL");
   assert.deepEqual(retrieved, []);
   assert.equal(routeCalls, 0);
-  assert.equal(result.observability?.answerOrigin, "COMMERCIAL_AUTHORITY");
-  assert.match(result.message, /по состоянию на 19 сентября 2026 года/u);
-  assert.match(result.message, /окно набора: авторитетного значения нет/u);
-  assert.match(result.message, /текущий поток: авторитетного значения нет/u);
-  // No invented date and no unrequested price.
+  // OD-5 A supersedes the dated «окно набора / текущий поток: авторитетного
+  // значения нет» ceiling: a start/enrollment question proposed FACTUAL takes
+  // the same calendar lane as one proposed NAVIGATE (OD-1 + OD-2 wording).
+  assert.equal(result.conversationAct.state, "NAVIGATE");
+  assert.equal(result.observability?.answerOrigin, "CALENDAR_AUTHORITY");
+  assert.deepEqual(result.observability?.ownerServiceLane, { lane: "SCHEDULE_ENROLLMENT", calendar: "AVAILABLE" });
+  assert.equal(result.message, composeScheduleEnrollmentAnswer(CALENDAR, "maslow").message);
+  assert.match(result.message, /страница обновлена 05\.10\.2026, данные получены 24\.10\.2026/u);
+  assert.match(result.message, /Открыта ли сейчас запись, в календаре не указано, поэтому подтвердить это я не могу\./u);
+  assert.match(result.message, /https:\/\/t\.me\/LebedevOo/u);
+  assert.doesNotMatch(result.message, /авторитетного значения нет/u);
+  // No invented date (only the calendar's literal dates) and no unrequested price.
   assert.doesNotMatch(result.message, /₽/u);
   assert.doesNotMatch(result.message, /\b\d{1,2}\s+(?:января|февраля|марта|апреля|мая|июня|июля|августа|октября|ноября|декабря)\b/u);
-  assert.equal(result.stateEffects.transactionalAuthorityVersion, ACADEMY_COMMERCIAL_AUTHORITY_VERSION);
+  assert.deepEqual(result.message.match(/\d{2}\.\d{2}\.\d{4}/gu), ["05.10.2026", "24.10.2026", "16.11.2026"]);
+  assert.equal(result.stateEffects.transactionalAuthorityVersion, null);
   assert.equal(result.observability?.metadataFieldGuard, undefined);
 });
 
@@ -276,7 +309,14 @@ function assertPaymentBoundary(
     new RegExp(`«${MASLOW_TITLE}»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 60 000 ₽\\.`, "u"),
     label,
   );
-  assert.match(result.message, /Другие суммы, скидки, специальные условия или рассрочка в подтверждённых данных Академии не указаны/u, label);
+  // OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-4/OD-5 B) — the 2026-10-24 Owner
+  // addendum supersedes «скидки … или рассрочка … не указаны»: the known rules
+  // are stated, only amounts, eligibility and other conditions stay unconfirmed.
+  assert.doesNotMatch(result.message, /Другие суммы, скидки, специальные условия или рассрочка в подтверждённых данных Академии не указаны/u, label);
+  assert.match(result.message, /Рассрочки нет\./u, label);
+  assert.match(result.message, /Индивидуальная скидка на этот курс может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных; решение принимает куратор Академии Алексей Лебедев, её размер в подтверждённых данных Академии не указан\./u, label);
+  assert.match(result.message, /Другие суммы, право на скидку и иные специальные условия в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу\./u, label);
+  assert.doesNotMatch(result.message, /\d+\s*%/u, label);
   assert.doesNotMatch(result.message, /30\s?000/u, label);
   assert.doesNotMatch(result.message, PAYMENT_LINK, label);
   assert.doesNotMatch(result.message, FABRICATED_TRANSACTION, label);

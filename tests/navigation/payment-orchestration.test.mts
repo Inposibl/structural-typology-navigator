@@ -76,7 +76,8 @@ test("unconsumed narrative payment framing follows deterministic local routing",
   // MAJOR-REMEDIATION-1.CORR1 (OD-2=A supersedes the recommendation-lane fallback):
   // explicit but unqualified payment intent gets the deterministic payment boundary —
   // no course recommendation, no payment link (closed grammar unchanged), the dated
-  // authoritative price, no confirmed discount, and the contact-policy handoff.
+  // authoritative price, the Owner addendum rules without any amount, and the
+  // contact-policy handoff.
   assert.equal(routeCalls, 0);
   assert.equal(result.decision, null);
   assert.doesNotMatch(result.message, /AST_payment_course_bot/u);
@@ -84,7 +85,14 @@ test("unconsumed narrative payment framing follows deterministic local routing",
   assert.match(result.message, /провести оплату сам я не могу/u);
   assert.match(result.message, /никакая запись или оплата сейчас не оформлена/u);
   assert.match(result.message, /«Иерархия уровней сознания»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 45\u00a0000 ₽\./u);
-  assert.match(result.message, /скидки, специальные условия или рассрочка в подтверждённых данных Академии не указаны/u);
+  // OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-4/OD-5 B) — the 2026-10-24 Owner
+  // addendum supersedes «скидки … или рассрочка … не указаны»: the known rules
+  // are stated, only amounts, eligibility and other conditions stay unconfirmed.
+  assert.doesNotMatch(result.message, /скидки, специальные условия или рассрочка в подтверждённых данных Академии не указаны/u);
+  assert.match(result.message, /Рассрочки нет\./u);
+  assert.match(result.message, /Индивидуальная скидка на этот курс может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных; решение принимает куратор Академии Алексей Лебедев, её размер в подтверждённых данных Академии не указан\./u);
+  assert.match(result.message, /Другие суммы, право на скидку и иные специальные условия в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу\./u);
+  assert.doesNotMatch(result.message, /\d+\s*%/u);
   assert.match(result.message, /https:\/\/t\.me\/AST_rulang/u);
   assert.equal(result.contactCard?.kind, "ACADEMY_MANAGER");
   assert.doesNotMatch(result.message, /Локальный ответ без оплаты/u);
