@@ -1485,11 +1485,27 @@ test("a genuine P4-B unresolved reference keeps the controlled uncertainty lane 
         role: "assistant",
         content: "Спасибо, Тест. Расскажите, с чем хотите разобраться.",
       },
-      { role: "user", content: "А что умеет курс Маслоу?" },
+      // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): «А что умеет курс Маслоу?» names one
+      // course and is now answered (asserted below); the genuinely unresolved
+      // reference is an unknown program beside the course.
+      { role: "user", content: "Прохожу курс алхимии и курс Маслоу. Что там разбирается?" },
     ],
     profile: DEV_S09.profile,
     conversationState: DEV_S09.conversationState,
   };
+  const resolvedBody = {
+    ...body,
+    messages: [...body.messages.slice(0, 2), { role: "user", content: "А что умеет курс Маслоу?" }],
+  };
+  const resolved = await runTurn({
+    body: resolvedBody,
+    classifyRaw: { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
+    plan: RETAINED_PLANS.S03,
+  });
+  assert.equal(resolved.http, 200);
+  assert.equal(resolved.counters.extractionCalls, 0);
+  assert.notEqual(stateOf(resolved).lastAssistant?.act, "TECHNICAL_ERROR");
+  assert.notEqual(stateOf(resolved).lastAssistant?.act, "NAVIGATE");
   const result = await runTurn({
     body,
     classifyRaw: {

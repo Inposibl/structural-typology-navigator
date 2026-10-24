@@ -9,11 +9,16 @@ import {
   type AcademyCourseId,
 } from "../academy/course-reference.ts";
 import { getCourseIdentityScope } from "../academy/course-identity-scope.ts";
+import { ACADEMY_COMMERCIAL_AUTHORITY } from "../academy/commercial-authority.ts";
+import { hasEnrollmentPaymentIntent } from "../academy/payment-policy.ts";
 import {
   contentGate,
+  establishedCourseReference,
+  establishingSentences,
   followUpWithoutLiteral,
   type UnresolvedReason,
 } from "./course-reference-evidence.ts";
+import { detectRequestedFamilies } from "./metadata-field-consistency.ts";
 import {
   callDeepSeekJson,
   type DeepSeekClientOptions,
@@ -164,6 +169,195 @@ const CURRENT_METADATA_FIELDS: readonly CurrentMetadataField[] = [
   "COHORT",
   "ENROLLMENT_WINDOW",
 ];
+
+/**
+ * MAJOR-REMEDIATION-1 (V-MAJ-01) — the timing fields the unchanged metadata
+ * composer may narrate: only those the commercial authority marks as having no
+ * authoritative value (the composer always states them as unavailable).
+ */
+function unavailableTimingFields(): CurrentMetadataField[] {
+  const metadata = ACADEMY_COMMERCIAL_AUTHORITY.transactionalMetadata;
+  const timing: ReadonlyArray<readonly [CurrentMetadataField, keyof typeof metadata]> = [
+    ["SCHEDULE", "schedule"],
+    ["COHORT", "cohort"],
+    ["ENROLLMENT_WINDOW", "enrollmentWindow"],
+  ];
+  return timing
+    .filter(([, key]) =>
+      metadata[key].status === "UNAVAILABLE" &&
+      metadata[key].reason === "NO_AUTHORITATIVE_VALUE"
+    )
+    .map(([field]) => field);
+}
+
+/**
+ * MAJOR-REMEDIATION-1.CORR2 — the commercial metadata fields a request asks
+ * for: PRICE, and only the timing fields above. One derivation shared by the
+ * A1 re-validation and the literal re-validation (F-03), so both paths can
+ * only ever produce the same closed field set.
+ */
+function commercialMetadataFields(text: string): CurrentMetadataField[] {
+  const families = detectRequestedFamilies(text);
+  return [
+    ...(families.includes("PRICE") ? (["PRICE"] as const) : []),
+    ...(families.includes("TIMING") ? unavailableTimingFields() : []),
+  ];
+}
+
+function currentMetadataDecision(
+  courseId: string,
+  fields: CurrentMetadataField[],
+): ConversationActDecision {
+  return {
+    state: "FACTUAL",
+    intents: [
+      {
+        kind: "CURRENT_METADATA",
+        courseIds: [courseId as AcademyCourseId],
+        fields,
+        scope: "REFERENCED",
+      },
+    ],
+  };
+}
+
+/**
+ * MAJOR-REMEDIATION-1.CORR2 (F-01) — the closed commercial request tests:
+ * `requestsCommercialMetadata` is a PRICE or TIMING metadata subject (the
+ * FIX-4b closed families); `carriesCommercialRequest` is that, or the payment
+ * policy's own enrollment/payment intent.
+ */
+function requestsCommercialMetadata(text: string): boolean {
+  const families = detectRequestedFamilies(text);
+  return families.includes("PRICE") || families.includes("TIMING");
+}
+
+function carriesCommercialRequest(text: string): boolean {
+  return requestsCommercialMetadata(text) || hasEnrollmentPaymentIntent(text);
+}
+
+/**
+ * MAJOR-REMEDIATION-1.CORR2 (F-01) — commercial applicability of a course
+ * reference that has no literal catalog title/URL in the conversation.
+ *
+ * A1 recognises the course for content; it does not by itself establish that
+ * the product the user refers to is offered by the Academy. Academy price,
+ * timing or payment authority is therefore granted to such a reference only
+ * when a user sentence that names the course is itself a request to the
+ * Navigator: a question, or the commercial request itself. A report about a
+ * course («Школа феникс запустила курс про Маслоу.») grounds content identity
+ * at most, never Academy commercial or payment authority; the request then
+ * keeps the unchanged uncertainty. No school, platform or provider lexicon is
+ * consulted: the witness is positive and structural.
+ */
+function commerciallyGrounded(
+  messages: readonly ConversationMessage[],
+  courseId: string,
+): boolean {
+  const sentences = establishingSentences(messages, courseId);
+  return (
+    sentences !== null &&
+    sentences.some(
+      (sentence) => sentence.question || carriesCommercialRequest(sentence.text),
+    )
+  );
+}
+
+/**
+ * PREVIEW-LIVE-DEEPSEEK-VERIFICATION-1.MAJOR-REMEDIATION-1 (V-MAJ-01) —
+ * reference precedence for a COURSE_FOLLOW_UP that failed the literal predicate.
+ *
+ * Live, a fresh question naming one catalog course by a short or partial title
+ * («курса „Иерархия потребностей А. Маслоу“», «курсе „Игра и творчество“») was
+ * proposed as COURSE_FOLLOW_UP and then refused as an unestablished follow-up.
+ * That request is the prompt's own «КОРОТКОЕ НАЗВАНИЕ ОДНОГО КУРСА» case. Only
+ * when no catalog course is literally present (the unchanged COURSE_CONTENT F-1
+ * precondition) and the user's own words establish exactly the proposed course
+ * is the request re-validated as the act its subject requires. No follow-up
+ * authority is granted (P1-0 unchanged):
+ *   - a price/payment or timing subject (the FIX-4b closed families) becomes
+ *     FACTUAL CURRENT_METADATA for that course under commercial authority;
+ *   - any other subject becomes COURSE_CONTENT anchored on the latest message,
+ *     kept only when the unchanged question-anchored content gate accepts it.
+ * Every other case returns null and keeps the unchanged uncertainty/rejection.
+ */
+function establishedReferenceDecision(
+  messages: readonly ConversationMessage[],
+  courseId: string,
+  evidenceRequested: boolean,
+): ConversationActDecision | null {
+  if (anyCourseWasActuallyInConversation(messages)) return null;
+  if (establishedCourseReference(messages, courseId) === null) return null;
+
+  const latestUserMessage = messages.at(-1)?.content ?? "";
+  // MAJOR-REMEDIATION-1.CORR2 (F-01) — commercial authority needs its own
+  // grounding; without it the request keeps the unchanged uncertainty.
+  if (
+    carriesCommercialRequest(latestUserMessage) &&
+    !commerciallyGrounded(messages, courseId)
+  ) {
+    return null;
+  }
+  const fields = commercialMetadataFields(latestUserMessage);
+  if (fields.length > 0) {
+    return currentMetadataDecision(courseId, fields);
+  }
+
+  if (
+    latestUserMessage.trim().length < 3 ||
+    latestUserMessage.length > 240 ||
+    contentGate(messages, courseId, latestUserMessage).kind !== "ACCEPT"
+  ) {
+    return null;
+  }
+  return {
+    state: "COURSE_CONTENT",
+    courseId,
+    evidenceRequested,
+    contentIntentEvidence: latestUserMessage,
+  };
+}
+
+/**
+ * MAJOR-REMEDIATION-1.CORR2 (F-03) — a provider-proposed literal
+ * COURSE_FOLLOW_UP whose subject is commercial metadata (PRICE / timing) is
+ * answered from commercial authority, not from course-content RAG sufficiency
+ * (the E02 «А сколько он стоит?» after a catalog answer that carries the full
+ * title). It is applied to the provider's proposal in `routeConversationAct`
+ * only: `validateConversationActDecision` stays the unchanged full-conversation
+ * authority that also validates server-built recovery segments, whose literal
+ * EDU segments keep COURSE_FOLLOW_UP. The act becomes FACTUAL only when
+ *   - the latest request asks a PRICE/timing subject and carries no
+ *     enrollment/payment intent (the unchanged payment policy keeps its literal
+ *     follow-up payment route);
+ *   - the user's own words establish exactly this course (the A1 identity rule):
+ *     either the commercial request itself names it (every sentence naming the
+ *     course asks the commercial subject — a content question naming the course
+ *     keeps the follow-up), or an unbroken user antecedent that is commercially
+ *     grounded (F-01).
+ * Every other literal follow-up, including duration and content questions, is
+ * returned unchanged.
+ */
+function revalidateCommercialFollowUp(
+  act: ConversationActDecision,
+  messages: readonly ConversationMessage[],
+): ConversationActDecision {
+  if (act.state !== "COURSE_FOLLOW_UP") return act;
+  const latestUserMessage = messages.at(-1)?.content ?? "";
+  const fields = commercialMetadataFields(latestUserMessage);
+  if (fields.length === 0 || hasEnrollmentPaymentIntent(latestUserMessage)) {
+    return act;
+  }
+  const reference = establishedCourseReference(messages, act.courseId);
+  const naming = establishingSentences(messages, act.courseId) ?? [];
+  const established =
+    reference === "ANTECEDENT"
+      ? commerciallyGrounded(messages, act.courseId)
+      : reference === "CURRENT_TURN" &&
+        naming.length > 0 &&
+        naming.every((sentence) => requestsCommercialMetadata(sentence.text));
+  return established ? currentMetadataDecision(act.courseId, fields) : act;
+}
 
 function readCourseIds(value: unknown, fieldName: string): AcademyCourseId[] {
   if (
@@ -369,6 +563,16 @@ export function validateConversationActDecision(
     }
 
     if (!courseWasActuallyInConversation(value.courseId, messages)) {
+      // MAJOR-REMEDIATION-1 (V-MAJ-01) — an explicit, uniquely established
+      // course reference in the user's own words is not an unestablished
+      // follow-up; it is re-validated as the act its subject requires.
+      const established = establishedReferenceDecision(
+        messages,
+        value.courseId,
+        value.evidenceRequested,
+      );
+      if (established !== null) return established;
+
       // P1-0 — the literal authority above is unchanged; nothing below accepts.
       // A course reference without literal authority becomes the controlled
       // uncertainty; everything else keeps the unchanged rejection.
@@ -627,5 +831,8 @@ export async function routeConversationAct(
     options,
   );
 
-  return validateConversationActDecision(raw, messages);
+  return revalidateCommercialFollowUp(
+    validateConversationActDecision(raw, messages),
+    messages,
+  );
 }

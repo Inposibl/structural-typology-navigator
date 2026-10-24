@@ -1016,3 +1016,99 @@ function evaluateFollowUpWithoutLiteral(messages: readonly Msg[], courseId: stri
   }
   return { kind: "ABSENT", rule: "F3-absent" };
 }
+
+/**
+ * PREVIEW-LIVE-DEEPSEEK-VERIFICATION-1.MAJOR-REMEDIATION-1 (V-MAJ-01) — reference
+ * establishment for a COURSE_FOLLOW_UP proposal that has no literal title/URL
+ * authority. It separates an explicit current-turn course reference from an
+ * anaphoric one; it never names a course of its own and never widens an identity:
+ *   - CURRENT_TURN: every specific course entity of the latest user message is
+ *     RESOLVED through the governed resolver, and those entities and the latest
+ *     message's aliases name exactly the proposed course (two or more courses, an
+ *     unresolved entity or a mixed anaphoric reference keep the unchanged gate);
+ *   - ANTECEDENT: the latest message names no course (no entity, no alias) but
+ *     points back, and its antecedent scope — the same `antecedentEntities`
+ *     chain the content gate uses — is RESOLVED to exactly the proposed course.
+ * Anything else is null and the caller keeps the unchanged F1/F2/F3 outcome.
+ */
+export type EstablishedCourseReference = "CURRENT_TURN" | "ANTECEDENT";
+
+export function establishedCourseReference(
+  messages: readonly Msg[],
+  courseId: string,
+): EstablishedCourseReference | null {
+  return withRequestScopedCaches(() => evaluateEstablishedCourseReference(messages, courseId));
+}
+
+function evaluateEstablishedCourseReference(
+  messages: readonly Msg[],
+  courseId: string,
+): EstablishedCourseReference | null {
+  const last = messages.at(-1);
+  if (last === undefined || last.role !== "user") return null;
+  const c = courseId as CourseId;
+  const latest = analyzeMessage(last);
+  const ents = latest.entities.filter(specific);
+  if (ents.some(identified)) {
+    if (!ents.every((e) => e.kind === "RESOLVED")) return null;
+    if (!latest.aliasIds.every((id) => id === c)) return null;
+    const ids = union(ents);
+    return ids.length === 1 && ids[0] === c ? "CURRENT_TURN" : null;
+  }
+  if (latest.aliasIds.length > 0) return null;
+  const pointsBack =
+    ents.some((e) => e.kind === "ANAPHORIC") || backReferences(latest.toks, 0, latest.toks.length).length > 0;
+  if (!pointsBack) return null;
+  const ant = antecedentEntities(messages, latest, 0).filter((e) => e.kind !== "ANAPHORIC");
+  if (ant.length === 0 || !ant.every((e) => e.kind === "RESOLVED")) return null;
+  const ids = union(ant);
+  return ids.length === 1 && ids[0] === c ? "ANTECEDENT" : null;
+}
+
+/**
+ * MAJOR-REMEDIATION-1.CORR2 (F-01) — the user sentences that carry the course
+ * entities establishing `courseId` under `establishedCourseReference`: the
+ * latest message's sentences for CURRENT_TURN, the antecedent user message's
+ * sentences for ANTECEDENT. Null exactly when the reference is not established.
+ * `question` is structural only: the sentence contains «?» or opens (after at
+ * most one «а/но/и») with a word of the closed interrogative class above.
+ * The router uses these sentences as the commercial-applicability witness;
+ * this module still decides no act and grants no commercial authority.
+ */
+export type EstablishingSentence = { text: string; question: boolean };
+
+export function establishingSentences(
+  messages: readonly Msg[],
+  courseId: string,
+): EstablishingSentence[] | null {
+  return withRequestScopedCaches(() => {
+    const reference = evaluateEstablishedCourseReference(messages, courseId);
+    if (reference === null) return null;
+    const c = courseId as CourseId;
+    const latest = analyzeMessage(messages.at(-1)!);
+    const sources =
+      reference === "CURRENT_TURN"
+        ? [latest]
+        : messages.slice(0, -1).filter((m) => m.role === "user").map(analyzeMessage);
+    const naming =
+      reference === "CURRENT_TURN"
+        ? latest.entities.filter((e) => e.kind === "RESOLVED" && e.ids.includes(c))
+        : antecedentEntities(messages, latest, 0).filter((e) => e.kind === "RESOLVED" && e.ids.includes(c));
+    const out: EstablishingSentence[] = [];
+    for (const m of sources) {
+      const sentences = [...new Set(naming.filter((e) => m.entities.includes(e)).map((e) => e.sentence))];
+      for (const s of sentences) {
+        const toks = m.toks.filter((t) => t.sentence === s);
+        const words = toks.filter((t) => t.kind === "W");
+        const lead = words[0] !== undefined && (NEW_QUESTION_CONJ.has(words[0].low) || words[0].low === "и") ? 1 : 0;
+        out.push({
+          text: m.text.slice(m.sentences[s][0], m.sentences[s][1]),
+          question:
+            toks.some((t) => t.kind === "P" && t.raw === "?") ||
+            (words[lead] !== undefined && INTERROGATIVE.has(words[lead].low)),
+        });
+      }
+    }
+    return out;
+  });
+}

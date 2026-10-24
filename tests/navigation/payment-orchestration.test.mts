@@ -73,7 +73,19 @@ test("unconsumed narrative payment framing follows deterministic local routing",
     },
   );
 
-  assert.equal(routeCalls, 1);
-  assert.equal(result.decision?.state, "NO_CURRENT_COURSE_MATCH");
+  // MAJOR-REMEDIATION-1.CORR1 (OD-2=A supersedes the recommendation-lane fallback):
+  // explicit but unqualified payment intent gets the deterministic payment boundary —
+  // no course recommendation, no payment link (closed grammar unchanged), the dated
+  // authoritative price, no confirmed discount, and the contact-policy handoff.
+  assert.equal(routeCalls, 0);
+  assert.equal(result.decision, null);
   assert.doesNotMatch(result.message, /AST_payment_course_bot/u);
+  assert.equal(result.observability?.answerOrigin, "PAYMENT_POLICY");
+  assert.match(result.message, /провести оплату сам я не могу/u);
+  assert.match(result.message, /никакая запись или оплата сейчас не оформлена/u);
+  assert.match(result.message, /«Иерархия уровней сознания»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 45\u00a0000 ₽\./u);
+  assert.match(result.message, /скидки, специальные условия или рассрочка в подтверждённых данных Академии не указаны/u);
+  assert.match(result.message, /https:\/\/t\.me\/AST_rulang/u);
+  assert.equal(result.contactCard?.kind, "ACADEMY_MANAGER");
+  assert.doesNotMatch(result.message, /Локальный ответ без оплаты/u);
 });

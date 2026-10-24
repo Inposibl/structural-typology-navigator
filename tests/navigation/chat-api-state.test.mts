@@ -362,6 +362,10 @@ async function runSequence(
 }
 
 const COURSERA = "Прохожу курс про Маслоу на Coursera. Что там разбирается?";
+// MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): a single explicit course reference (COURSERA
+// included — OWNER-ACCEPTED RESIDUAL) now resolves; the uncertainty mechanics are kept
+// on an input that A1 still leaves unresolved (an unknown program beside the course).
+const A1_UNRESOLVED = "Прохожу курс алхимии и курс Маслоу. Что там разбирается?";
 const selectedLoc = () =>
   wireState((s) => withCourseBinding(s, "MATCHED", "levels-of-consciousness"));
 const p03 = (attempts: number) =>
@@ -389,7 +393,7 @@ const INCIDENT_Q =
 
 test("S1/P4-B: an uncertainty turn invalidates the stored selection, so «этот курс» no longer pays the stale course", async () => {
   const [t1, t2] = await runSequence(
-    [{ user: COURSERA, decide: FU("maslow") }, { user: "Хочу оплатить этот курс.", decide: NAV }],
+    [{ user: A1_UNRESOLVED, decide: FU("maslow") }, { user: "Хочу оплатить этот курс.", decide: NAV }],
     { initial: selectedLoc() },
   );
   assert.equal(t1.status, 200);
@@ -398,15 +402,38 @@ test("S1/P4-B: an uncertainty turn invalidates the stored selection, so «это
   assert.equal(t1.selected, null);
   assert.equal(t1.courseMatch, "UNKNOWN");
   assert.equal(t2.paymentCourse, null);
+
+  // OD-1=A1: the resolved COURSERA turn (residual) still invalidates the stale
+  // selection (CORR1 P4-B safety), so «этот курс» never pays the stale course.
+  const [r1, r2] = await runSequence(
+    [{ user: COURSERA, decide: FU("maslow") }, { user: "Хочу оплатить этот курс.", decide: NAV }],
+    { initial: selectedLoc() },
+  );
+  assert.equal(r1.status, 200);
+  assert.ok(!r1.uncertainty);
+  assert.deepEqual(r1.retrieved, ["maslow"]);
+  assert.equal(r1.selected, null);
+  assert.equal(r1.courseMatch, "UNKNOWN");
+  assert.equal(r2.paymentCourse, null);
 });
 
 test("API mapping: the uncertainty turn is NAVIGATE / COURSE_SELECTION, never OUT_OF_SCOPE or TECHNICAL_ERROR, with the unchanged wire shape", async () => {
-  const [incident] = await runSequence([{ user: INCIDENT_Q, decide: FU("levels-of-consciousness") }], { prior: INCIDENT });
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): the mapping is kept on an A1-unresolved turn.
+  const [incident] = await runSequence([{ user: A1_UNRESOLVED, decide: FU("maslow") }], { prior: INCIDENT });
   assert.equal(incident.status, 200);
   assert.ok(incident.uncertainty);
   assert.equal(incident.act, "NAVIGATE");
   assert.equal(incident.flowId, "COURSE_SELECTION");
   assert.deepEqual(incident.keys, ["contactCard", "conversationState", "message", "profile", "resetConversation"]);
+
+  // The incident question names one course explicitly; under A1 it is answered.
+  const [resolved] = await runSequence([{ user: INCIDENT_Q, decide: FU("levels-of-consciousness") }], { prior: INCIDENT });
+  assert.equal(resolved.status, 200);
+  assert.ok(!resolved.uncertainty);
+  assert.notEqual(resolved.act, "OUT_OF_SCOPE");
+  assert.notEqual(resolved.act, "TECHNICAL_ERROR");
+  assert.deepEqual(resolved.retrieved, ["levels-of-consciousness"]);
+  assert.deepEqual(resolved.keys, ["contactCard", "conversationState", "message", "profile", "resetConversation"]);
 });
 
 test("S2: a foreign course mention never becomes a payment destination", async () => {
@@ -417,7 +444,15 @@ test("S2: a foreign course mention never becomes a payment destination", async (
     ],
   });
   assert.equal(turn.paymentCourse, null);
+  // MAJOR-REMEDIATION-1.CORR2 (F-01): the HEAD assertion is restored. A1 content
+  // identity does not ground Academy commercial authority for a reported foreign
+  // course, so the payment request keeps the controlled uncertainty: no Academy
+  // price, no general or course-specific payment handoff, no RAG.
   assert.ok(turn.uncertainty);
+  assert.deepEqual(turn.retrieved, []);
+  assert.doesNotMatch(turn.message, /AST_payment_course_bot\?start=/u);
+  assert.equal(turn.paymentBot, false);
+  assert.doesNotMatch(turn.message, /₽/u);
 });
 
 test("S3/S16 (P3-A, P7-A): the inherited literal and stored-selection commercial paths are unchanged", async () => {
@@ -432,7 +467,8 @@ test("S3/S16 (P3-A, P7-A): the inherited literal and stored-selection commercial
 });
 
 test("S4: bounded exit through the API — clarify, clarify, exhausted, then the cycle restarts", async () => {
-  const turns = await runSequence([1, 2, 3, 4, 5].map(() => ({ user: COURSERA, decide: FU("maslow") })));
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): the A1-unresolved input keeps the exit cycle.
+  const turns = await runSequence([1, 2, 3, 4, 5].map(() => ({ user: A1_UNRESOLVED, decide: FU("maslow") })));
   const kinds = turns.map((t) => (t.message === composeReferenceClarificationExhausted() ? "X" : t.uncertainty ? "C" : "?"));
   assert.equal(kinds.join(""), "CCXCC");
   assert.ok(turns.every((t) => t.retrieved.length === 0 && t.paymentCourse === null));
@@ -447,8 +483,9 @@ test("S5/S6/S12: recovery — independent questions, topic switches and literal 
   );
   assert.ok(repeated.every((t) => t.retrieved.join() === "structural-typology"));
 
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): recovery after an A1-unresolved turn.
   const [c, answered, oos] = await runSequence([
-    { user: COURSERA, decide: FU("maslow") },
+    { user: A1_UNRESOLVED, decide: FU("maslow") },
     { user: "Что такое архетип Тени?", decide: CT("structural-typology") },
     { user: "Какая погода в Лондоне?", decide: OOS },
   ]);
@@ -497,9 +534,12 @@ test("S10/S11: explicit payment and selection retention across an independent qu
 });
 
 test("S13/S14: the incident — R1 is a non-technical clarification, R2 is answered", async () => {
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): R1 names exactly one course in the user's own
+  // words, so it is now answered (the same lane as R2) instead of clarified.
   const [r1] = await runSequence([{ user: INCIDENT_Q, decide: FU("levels-of-consciousness") }], { prior: INCIDENT });
-  assert.ok(r1.uncertainty);
+  assert.ok(!r1.uncertainty);
   assert.notEqual(r1.act, "TECHNICAL_ERROR");
+  assert.deepEqual(r1.retrieved, ["levels-of-consciousness"]);
   const [r2] = await runSequence(
     [{ user: INCIDENT_Q, decide: CT_PART("levels-of-consciousness", "Как это объясняется на курсе про уровни сознания?") }],
     { prior: INCIDENT },

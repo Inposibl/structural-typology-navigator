@@ -33,6 +33,7 @@ import {
   type RouteConversationActOptions,
 } from "./conversation-act-router.ts";
 import {
+  ACADEMY_COURSES,
   ACADEMY_COURSE_CATALOG_SNAPSHOT_DATE,
   getAcademyCourse,
 } from "../academy/course-catalog.ts";
@@ -51,6 +52,7 @@ import {
   composePaymentAmbiguityAnswer,
   composePaymentCourseChangeConfirmationAnswer,
   composePaymentCourseIdentityRequiredAnswer,
+  composePaymentIntentBoundaryAnswer,
   composePaymentUnavailableAnswer,
   composeStableNoMatchAnswer,
   composeTechnicalErrorAnswer,
@@ -100,6 +102,7 @@ import {
   withNavigatorStage,
 } from "./navigator-observability.ts";
 import { formulateFollowUpContentQuery } from "./follow-up-query.ts";
+import { establishedCourseReference } from "./course-reference-evidence.ts";
 import {
   assessMetadataFieldConsistency,
   assessRecoveryMetadataTasks,
@@ -1003,6 +1006,62 @@ function deriveTurnCompletion(input: {
   return "ANSWERED";
 }
 
+/**
+ * MAJOR-REMEDIATION-1.CORR1/CORR2 — P4-B under OD-1=A1. Before A1, a
+ * literal-less follow-up about another course was an uncertainty turn, and that
+ * turn invalidated the stored MATCHED selection (P4-B). The COURSE_CONTENT lane
+ * keeps that safety explicitly, decided once per turn and applied to EVERY
+ * return of the lane (the answer and the structural factual ceiling alike —
+ * CORR2 F-02): a stored MATCHED selection is invalidated when the user's own
+ * words establish the content act's course — an explicit current-turn course
+ * reference or an unbroken user antecedent, the same `establishedCourseReference`
+ * rule A1 uses — and that course differs from the selection. A conceptual
+ * question whose subject merely overlaps another course's alias establishes no
+ * course reference and keeps a valid selection (CORR2 F-04). It never selects a
+ * course. FACTUAL keeps its accepted selection-retention semantics unchanged.
+ */
+function staleSelectionInvalidation(
+  messages: readonly ConversationMessage[],
+  courseId: string,
+  state: OrchestrateNavigatorOptions["conversationState"],
+): { courseBinding?: OrchestratedDecision } {
+  const selected =
+    state?.courseMatch === "MATCHED" ? (state.selectedCourseId ?? null) : null;
+  if (selected === null || selected === courseId) return {};
+  return establishedCourseReference(messages, courseId) !== null
+    ? { courseBinding: { kind: "INVALIDATE_SELECTION" } }
+    : {};
+}
+
+/**
+ * LIMITED-PREVIEW-READINESS-1.PAYMENT-REFERENT-GUARD-1 — the payment boundary
+ * never sends a course-specific payment link that contradicts the course the
+ * user's own previous turn established. It applies only when the current
+ * payment request names no course itself (the link comes from the stored
+ * selection or the follow-up act): if the immediately preceding user turn
+ * establishes a different course under the same user-only
+ * `establishedCourseReference` rule A1 uses, the referent is ambiguous and the
+ * caller asks for the course instead of paying either one. Assistant text never
+ * establishes a course, a conceptual alias establishes none, and the stored
+ * selection and FACTUAL retention are left unchanged.
+ */
+function paymentReferentConflict(
+  messages: readonly ConversationMessage[],
+  courseId: string | null,
+): boolean {
+  if (courseId === null) return false;
+  if (resolveCourseReferences(lastUserMessage(messages)).kind !== "ZERO") return false;
+  let prior = messages.length - 2;
+  while (prior >= 0 && messages[prior].role !== "user") prior -= 1;
+  if (prior < 0) return false;
+  const priorTurn = messages.slice(0, prior + 1);
+  return ACADEMY_COURSES.some(
+    (course) =>
+      course.id !== courseId &&
+      establishedCourseReference(priorTurn, course.id) !== null,
+  );
+}
+
 function emptyResult(
   message: string,
   conversationAct: ConversationActDecision,
@@ -1584,6 +1643,17 @@ async function orchestrateNavigatorTurn(
     };
   };
 
+  if (
+    paymentDecision.kind === "ACTION" &&
+    paymentReferentConflict(paymentMessages, paymentDecision.action.courseId)
+  ) {
+    return guardLane(emptyResult(
+      combineFactual(composePaymentCourseIdentityRequiredAnswer(options.profile)),
+      conversationAct,
+      "PAYMENT_POLICY",
+    ));
+  }
+
   if (paymentDecision.kind === "ACTION") {
     // P03 — when the resolved payment consumes a stored candidate set, the
     // resolution is an explicit course selection: bind MATCHED and clear the
@@ -1710,6 +1780,56 @@ async function orchestrateNavigatorTurn(
       conversationAct,
       "PAYMENT_POLICY",
     ));
+  }
+
+  // PREVIEW-LIVE-DEEPSEEK-VERIFICATION-1.MAJOR-REMEDIATION-1 (V-MAJ-02) — an
+  // explicit enrollment/payment request that the payment policy did not qualify
+  // for a payment link (NONE) must not be silently re-answered as a course
+  // recommendation. The policy decision is unchanged and no payment link is
+  // promoted: the turn states the transactional limitation, corrects any price
+  // premise with the dated authoritative price of the uniquely identified
+  // course, and hands off through the unchanged contact policy.
+  const paymentQuery = lastUserMessage(paymentMessages);
+  if (
+    paymentDecision.kind === "NONE" &&
+    conversationAct.state === "NAVIGATE" &&
+    hasEnrollmentPaymentIntent(paymentQuery)
+  ) {
+    const references = resolveCourseReferences(paymentQuery);
+    const explicitCourseId =
+      references.kind === "ONE" &&
+      getAcademyCourse(references.courseIds[0])?.status === "ROUTABLE"
+        ? references.courseIds[0]
+        : null;
+    const selectedCourseId =
+      storedState?.courseMatch === "MATCHED" &&
+      (storedState?.staleReference ?? null) === null
+        ? (storedState?.selectedCourseId ?? null)
+        : null;
+    const boundaryCourseId =
+      references.kind === "ZERO" ? selectedCourseId : explicitCourseId;
+    const contact = composeAcademyContactAnswer("GENERAL", options.profile);
+    return emptyResult(
+      [
+        composePaymentIntentBoundaryAnswer(boundaryCourseId, options.profile),
+        contact.message,
+      ].join("\n\n"),
+      conversationAct,
+      "PAYMENT_POLICY",
+      contact.contactCard,
+      {
+        transactionalAuthorityVersion:
+          boundaryCourseId !== null ? ACADEMY_COMMERCIAL_AUTHORITY_VERSION : null,
+        ...(explicitCourseId !== null
+          ? {
+              courseBinding: {
+                kind: "MATCHED",
+                courseId: explicitCourseId,
+              } satisfies OrchestratedDecision,
+            }
+          : {}),
+      },
+    );
   }
 
   if (conversationAct.state === "FACTUAL") {
@@ -1854,6 +1974,11 @@ async function orchestrateNavigatorTurn(
   // fed the same way. Only the entry into that stack is new.
   if (conversationAct.state === "COURSE_CONTENT") {
     const boundCourseId = conversationAct.courseId;
+    const selectionEffect = staleSelectionInvalidation(
+      messages,
+      boundCourseId,
+      options.conversationState,
+    );
 
     const courseKnowledge = await withNavigatorStage("COURSE_RPC", () =>
       retrieve(
@@ -1901,7 +2026,8 @@ async function orchestrateNavigatorTurn(
 
     // CORR1 F-2: a structural invariant failure is a hard failure. It takes the
     // controlled ceiling here — before composition — so no composer, auditor or
-    // repair ever sees structurally invalid evidence.
+    // repair ever sees structurally invalid evidence. CORR2 F-02: the rejected
+    // evidence never turns into acceptance of a stale selection.
     if (
       courseEvidenceStructurallyInvalid(
         boundCourseId,
@@ -1909,12 +2035,16 @@ async function orchestrateNavigatorTurn(
         evidenceSelection,
       )
     ) {
-      return structuralCeilingResult(
+      const ceiling = structuralCeilingResult(
         boundCourseId,
         conversationAct,
         courseKnowledge,
         options,
       );
+      return {
+        ...ceiling,
+        stateEffects: { ...ceiling.stateEffects, ...selectionEffect },
+      };
     }
 
     const message = await withNavigatorStage("FOLLOW_UP", () =>
@@ -1966,6 +2096,7 @@ async function orchestrateNavigatorTurn(
         catalogAuthorityVersion: null,
         transactionalAuthorityVersion: null,
         pendingConfirmation: null,
+        ...selectionEffect,
       },
       completion: "ANSWERED",
     };

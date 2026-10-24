@@ -385,8 +385,10 @@ test("R1–R7: the original incident decisions keep their accepted CORR4/CORR5 o
       : message,
   );
   const expected: Record<string, string> = {
-    // R1 was a technical rejection; it is now the controlled clarification.
-    R1: "UNRESOLVED:FOLLOW_UP_REFERENCE_NOT_ESTABLISHED",
+    // R1 was a technical rejection, then the controlled clarification; under
+    // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1) its explicit single course reference
+    // («на курсе про уровни сознания») is re-validated as COURSE_CONTENT.
+    R1: "ACCEPT:COURSE_CONTENT",
     R2: "ACCEPT:COURSE_CONTENT",
     R3: "REJECT:COURSE_CONTENT.contentIntentEvidence must be a bounded verba",
     R4: "REJECT:COURSE_CONTENT.contentIntentEvidence must be a bounded verba",
@@ -405,6 +407,12 @@ test("R1–R7: the original incident decisions keep their accepted CORR4/CORR5 o
       assert.throws(() => validated(outcome.input, messages), { message: outcome.recorded.errorMessage }, outcome.id);
     }
   }
+  // OD-1=A1: R1 binds exactly the course the user named, and never as COURSE_FOLLOW_UP.
+  const r1 = R_OUTCOMES.find((outcome) => outcome.id === "R1");
+  assert.ok(r1);
+  const r1Value = validated(r1.input, R_INCIDENT_HISTORY);
+  assert.equal(r1Value.state, "COURSE_CONTENT");
+  assert.equal("courseId" in r1Value ? r1Value.courseId : null, "levels-of-consciousness");
 });
 
 test("CORR5 focused run: every recorded spec outcome is reproduced (M1/M2/M3, controls, limitations, author pairs)", () => {
@@ -553,7 +561,12 @@ test("P1-0: FOLLOW_UP acceptance stays the literal title/URL predicate; aliases 
       evidenceRequested: false,
     });
   }
-  // An alias, an Academy-marked alias, a non-literal URL form: never acceptance.
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1 supersedes P1-0 here): an alias, an
+  // Academy-marked alias or a governed official-URL form that names exactly one
+  // course, with no literal title in the conversation, is re-validated as
+  // COURSE_CONTENT for that course. Literal FOLLOW_UP authority is unchanged: an
+  // alias never yields COURSE_FOLLOW_UP. The «у блогера» framing resolving here is
+  // the OWNER-ACCEPTED RESIDUAL, not a solved case.
   for (const text of [
     "Расскажите про курс Маслоу.",
     "Расскажите про ваш курс про Маслоу.",
@@ -561,9 +574,13 @@ test("P1-0: FOLLOW_UP acceptance stays the literal title/URL predicate; aliases 
     "Я прохожу курс Маслоу у блогера, что там разбирают?",
   ]) {
     const value = validated(followUp("maslow"), [user(text)]);
-    assert.equal(value.state, "COURSE_REFERENCE_UNRESOLVED", text);
-    assert.ok(!("courseId" in value), text);
+    assert.deepEqual(value, content("maslow", text), text);
+    assert.notEqual(value.state, "COURSE_FOLLOW_UP", text);
   }
+  // An alias beside an unknown program is still not established: never acceptance.
+  const unresolved = validated(followUp("maslow"), [user("Прохожу курс алхимии и курс Маслоу. Что там разбирается?")]);
+  assert.equal(unresolved.state, "COURSE_REFERENCE_UNRESOLVED");
+  assert.ok(!("courseId" in unresolved));
   // No named reference at all: the unchanged technical rejection.
   assert.throws(
     () => validated(followUp("maslow"), [user("А что там дальше?")]),
@@ -572,7 +589,13 @@ test("P1-0: FOLLOW_UP acceptance stays the literal title/URL predicate; aliases 
 });
 
 test("FOLLOW_UP uncertainty: F1 names the proposed course, F2 any other named course reference", () => {
-  const f1 = validated(followUp("maslow"), [user("Курс Маслоу на Coursera — что там?")]);
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): F1 is kept on an A1-unresolved reference;
+  // the former Coursera input now resolves (OWNER-ACCEPTED RESIDUAL, not solved).
+  assert.deepEqual(
+    validated(followUp("maslow"), [user("Курс Маслоу на Coursera — что там?")]),
+    content("maslow", "Курс Маслоу на Coursera — что там?"),
+  );
+  const f1 = validated(followUp("maslow"), [user("Прохожу курс алхимии и курс Маслоу. Что там разбирается?")]);
   assert.deepEqual(f1, {
     state: "COURSE_REFERENCE_UNRESOLVED",
     proposed: { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
@@ -774,10 +797,18 @@ test("C1 T04/T09 (A1/A2): the exact smoke histories accept CONTENT for the reque
     const messages = [...SMOKE_SETUP, user(question)];
     const decision = await routeConversationAct(messages, { callJson: async () => content(courseId, question) });
     assert.deepEqual(decision, content(courseId, question), question);
-    // P1-0: the short name grants no literal FOLLOW_UP authority.
+    // P1-0: the short name grants no literal FOLLOW_UP authority. MAJOR-REMEDIATION-1
+    // .CORR1 (OD-1=A1): T04 names exactly one course, so its FOLLOW_UP proposal is
+    // re-validated as that course's COURSE_CONTENT; T09 also names a topic course
+    // (two catalog references), so it stays unresolved.
     const followUpValue = validated(followUp(courseId), messages);
-    assert.equal(followUpValue.state, "COURSE_REFERENCE_UNRESOLVED", question);
-    assert.ok(!("courseId" in followUpValue), question);
+    assert.notEqual(followUpValue.state, "COURSE_FOLLOW_UP", question);
+    if (question === T04_Q) {
+      assert.deepEqual(followUpValue, content(courseId, question), question);
+    } else {
+      assert.equal(followUpValue.state, "COURSE_REFERENCE_UNRESOLVED", question);
+      assert.ok(!("courseId" in followUpValue), question);
+    }
   }
   // HI (B2): the topic course is never a valid container for T09.
   assert.deepEqual(validated(content("normative-situation", T09_Q), [...SMOKE_SETUP, user(T09_Q)]), {
@@ -812,7 +843,11 @@ test("C1 negative preservation: F-1 literal history (any role, URL, unroutable),
   assert.equal(validatorTag(followUp("normative-situation"), [user("Хочу пройти курс Маслоу."), assistant(T10_ASSISTANT), user("А что на курсе «Нормативная ситуация» говорят о правилах?")]), "ACCEPT:COURSE_FOLLOW_UP");
   // B9: exact case-sensitive substring semantics (not semantic / origin matching).
   const lower = "А что на курсе «нормативная ситуация» говорят о правилах?";
-  assert.equal(validatorTag(followUp("normative-situation"), [...SMOKE_SETUP, user(lower)]), "UNRESOLVED:FOLLOW_UP_REFERENCE_NOT_ESTABLISHED");
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): the case-different name is still not literal
+  // FOLLOW_UP authority, but as an explicit single course reference it is re-validated
+  // as COURSE_CONTENT (the same acceptance the CONTENT proposal below already has).
+  assert.equal(validatorTag(followUp("normative-situation"), [...SMOKE_SETUP, user(lower)]), "ACCEPT:COURSE_CONTENT");
+  assert.deepEqual(validated(followUp("normative-situation"), [...SMOKE_SETUP, user(lower)]), content("normative-situation", lower));
   assert.equal(validatorTag(content("normative-situation", lower), [...SMOKE_SETUP, user(lower)]), "ACCEPT:COURSE_CONTENT");
   assert.equal(validatorTag(followUp("normative-situation"), [...SMOKE_SETUP, user("А что на курсе \"Нормативная ситуация\" говорят о правилах?")]), "ACCEPT:COURSE_FOLLOW_UP");
   // B1 / C11: an unresolved container antecedent never yields CONTENT.

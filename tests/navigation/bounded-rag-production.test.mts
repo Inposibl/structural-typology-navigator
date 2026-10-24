@@ -1352,9 +1352,14 @@ test("U1: an unresolved COURSE_CONTENT takes the inert lane — zero retrieval, 
   });
 });
 
+// MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): a single explicit course reference is no
+// longer an unestablished follow-up. The uncertainty-lane mechanics are kept on an
+// input that A1 still leaves unresolved (an unknown program beside the course).
+const A1_UNRESOLVED_FOLLOW_UP = "Прохожу курс алхимии и курс Маслоу. Что там разбирается?";
+
 test("U2: a non-literal COURSE_FOLLOW_UP becomes the follow-up clarification instead of a technical error", async () => {
   const outcome = await orchestrateWith(
-    [{ role: "user", content: "Прохожу курс про Маслоу на Coursera. Что там разбирается?" }],
+    [{ role: "user", content: A1_UNRESOLVED_FOLLOW_UP }],
     { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
   );
   assertInertUncertaintyLane(outcome, VY_FOLLOW_UP_CLARIFICATION);
@@ -1362,11 +1367,21 @@ test("U2: a non-literal COURSE_FOLLOW_UP becomes the follow-up clarification ins
   assert.equal(outcome.result.observability?.courseReferenceUncertainty?.reason, "FOLLOW_UP_REFERENCE_NOT_ESTABLISHED");
 
   const ty = await orchestrateWith(
-    [{ role: "user", content: "Прохожу курс про Маслоу на Coursera. Что там разбирается?" }],
+    [{ role: "user", content: A1_UNRESOLVED_FOLLOW_UP }],
     { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
     { profile: { displayName: null, addressMode: "TY", nameDeclined: false, pendingUserRequest: null } },
   );
   assert.equal(ty.result.message, composeFollowUpReferenceClarification({ displayName: null, addressMode: "TY", nameDeclined: false, pendingUserRequest: null }));
+
+  // OD-1=A1 OWNER-ACCEPTED RESIDUAL: the former Coursera framing now resolves as the
+  // Academy course through COURSE_CONTENT (not solved — recorded, never a technical error).
+  const residual = await orchestrateWith(
+    [{ role: "user", content: "Прохожу курс про Маслоу на Coursera. Что там разбирается?" }],
+    { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false },
+  );
+  assert.equal(residual.result.conversationAct.state, "COURSE_CONTENT");
+  assert.deepEqual(residual.retrieved, ["maslow"]);
+  assert.doesNotMatch(residual.result.message, /технический сбой|техническая проблема/u);
 });
 
 test("U3: clarification wording names no catalog title, URL or alias and is not technical", () => {
@@ -1406,7 +1421,8 @@ test("U4: the A2-5 cases keep their safety consequences under the approved CORR5
 });
 
 test("U5: bounded exit — after two consecutive identical clarifications the third turn is the exhausted exit", async () => {
-  const question = "Прохожу курс про Маслоу на Coursera. Что там разбирается?";
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): the A1-unresolved input keeps the exit mechanics.
+  const question = A1_UNRESOLVED_FOLLOW_UP;
   const decision = { state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false };
   const history: ConversationMessage[] = [];
   const strategies: string[] = [];

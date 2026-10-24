@@ -667,6 +667,47 @@ function authorityDateRu(): string {
   return "19 сентября 2026 года";
 }
 
+/**
+ * PREVIEW-LIVE-DEEPSEEK-VERIFICATION-1.MAJOR-REMEDIATION-1 (V-MAJ-02) — the
+ * deterministic lead of an explicit enrollment/payment request that the payment
+ * policy did not qualify for a payment link. It states the Navigator's
+ * transactional limitation (nothing is enrolled, paid or booked), the dated
+ * authoritative price of the uniquely identified course, and that no other
+ * amount, discount, special rate or installment plan is confirmed. It never
+ * names a payment destination; the caller appends the contact-policy handoff.
+ */
+export function composePaymentIntentBoundaryAnswer(
+  courseId: string | null,
+  profile?: PackageAProfile,
+): string {
+  const lines = [
+    modePick(
+      profile,
+      "Записать тебя на курс или провести оплату сам я не могу: в этом диалоге нельзя оформить участие, оплатить курс или получить подтверждение записи. Поэтому никакая запись или оплата сейчас не оформлена.",
+      "Записать вас на курс или провести оплату сам я не могу: в этом диалоге нельзя оформить участие, оплатить курс или получить подтверждение записи. Поэтому никакая запись или оплата сейчас не оформлена.",
+    ),
+  ];
+  const course = courseId === null ? null : getAcademyCourse(courseId);
+  if (course !== null) {
+    const price = getAuthoritativeCoursePrice(
+      course.id as Parameters<typeof getAuthoritativeCoursePrice>[0],
+    );
+    if (price.status === "SUPPORTED") {
+      lines.push(
+        `Курс «${course.title}»: последняя подтверждённая цена по данным на ${authorityDateRu()} — ${formatRub(price.value)}. Другие суммы, скидки, специальные условия или рассрочка в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу.`,
+      );
+    }
+  }
+  lines.push(
+    modePick(
+      profile,
+      "Чтобы записаться, оплатить курс или уточнить условия, обратись в Академию напрямую:",
+      "Чтобы записаться, оплатить курс или уточнить условия, обратитесь в Академию напрямую:",
+    ),
+  );
+  return lines.join("\n\n");
+}
+
 export function composeAcademyOverviewAnswer(): string {
   return [
     "Академия структурной типологии — образовательный проект с каталогом курсов о моделях личности, мотивации, восприятия, взаимодействия, поведения и организационных ситуаций.",

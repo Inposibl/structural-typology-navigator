@@ -673,10 +673,13 @@ test("T3 FIX-4 validator unchanged: invented DURATION rejected, PRICE accepted (
   assert.deepEqual(validateConversationActDecision(S5_PRICE_DECISION, S5_MESSAGES), S5_PRICE_DECISION);
   // The FIX-4 destination is accepted only through the literal title.
   assert.deepEqual(validateConversationActDecision(S5_FOLLOW_UP_DECISION, S5_MESSAGES), S5_FOLLOW_UP_DECISION);
+  // MAJOR-REMEDIATION-1.CORR1 (OD-1=A1): without the literal title the FOLLOW_UP is
+  // still never accepted as FOLLOW_UP; the user's own earlier explicit reference
+  // («на курсе Маслоу») establishes «этот курс», so it is re-validated as COURSE_CONTENT.
   const shortNameOnly = [user(S4_QUESTION), assistant("Курс Маслоу — это 6 встреч."), user(S5_ROUTED)];
   const unanchored = validateConversationActDecision(S5_FOLLOW_UP_DECISION, shortNameOnly);
-  assert.equal(unanchored.state, "COURSE_REFERENCE_UNRESOLVED");
-  assert.ok(!("courseId" in unanchored));
+  assert.notEqual(unanchored.state, "COURSE_FOLLOW_UP");
+  assert.deepEqual(unanchored, { state: "COURSE_CONTENT", courseId: "maslow", evidenceRequested: false, contentIntentEvidence: S5_ROUTED });
   assert.throws(
     () => validateConversationActDecision(S5_FOLLOW_UP_DECISION, [user("А сколько длится этот курс")]),
     /absent from the conversation/u,
@@ -902,10 +905,12 @@ test("T5 CORR1-A IV1-01: «Сколько длится курс Маслоу?» 
   const decision = { state: "COURSE_CONTENT", courseId: "maslow", evidenceRequested: false, contentIntentEvidence: question };
   // Accepted as-is by the unchanged validator: no exact title, so F-1 permits it; no UNRESOLVED.
   assert.deepEqual(validateConversationActDecision(decision, [user(question)]), decision);
-  // The same short name never gains literal FOLLOW_UP authority.
-  assert.equal(
-    validateConversationActDecision({ state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false }, [user(question)]).state,
-    "COURSE_REFERENCE_UNRESOLVED",
+  // The same short name never gains literal FOLLOW_UP authority. MAJOR-REMEDIATION-1
+  // .CORR1 (OD-1=A1): a FOLLOW_UP proposal for it is re-validated as this same
+  // validator-permitted COURSE_CONTENT decision instead of an uncertainty turn.
+  assert.deepEqual(
+    validateConversationActDecision({ state: "COURSE_FOLLOW_UP", courseId: "maslow", evidenceRequested: false }, [user(question)]),
+    decision,
   );
 
   const retrieved: string[] = [];
