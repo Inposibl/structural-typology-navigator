@@ -448,8 +448,8 @@ test("A31: dated commercial meaning is preserved without the internal authority 
   );
 
   assert.doesNotMatch(answer, /OWNER-COMMERCIAL-AUTHORITY/u);
-  assert.match(answer, /подтверждёнными данными Академии по состоянию на 19 сентября 2026 года/u);
-  assert.match(answer, /последняя подтверждённая цена по данным на 19 сентября 2026 года/u);
+  assert.match(answer, /подтверждёнными данными Академии по состоянию на 26 октября 2026 года/u);
+  assert.match(answer, /последняя подтверждённая цена по данным на 26 октября 2026 года/u);
   assert.match(answer, /60[\s\u00a0]000 ₽/u);
   assert.match(answer, /расписание: авторитетного значения нет/u);
   // The dated ceiling is stated as a fact, never as a live or timeless value.

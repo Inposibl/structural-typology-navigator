@@ -81,11 +81,11 @@ const PLAY_TITLE = "Игра и творчество в жизни взросл�
 const MASLOW_TITLE = "Иерархия потребностей А. Маслоу: новая парадигма";
 const LEVELS_TITLE = "Иерархия уровней сознания";
 // Intl ru-RU groups thousands with U+00A0; the exact rendered bytes are pinned.
-const PLAY_PRICE_LINE = `«${PLAY_TITLE}»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 60\u00a0000 ₽.`;
-const MASLOW_PRICE_LINE = `«${MASLOW_TITLE}»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 60\u00a0000 ₽.`;
+const PLAY_PRICE_LINE = `«${PLAY_TITLE}»: последняя подтверждённая цена по данным на 26 октября 2026 года — 60\u00a0000 ₽.`;
+const MASLOW_PRICE_LINE = `«${MASLOW_TITLE}»: последняя подтверждённая цена по данным на 26 октября 2026 года — 60\u00a0000 ₽.`;
 const literal = (text: string): RegExp => new RegExp(text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"), "u");
 const LEVELS_PRICE = /45[\s ]?000/u;
-const COMMERCIAL_LEAD = "Коммерческие сведения ограничены подтверждёнными данными Академии по состоянию на 19 сентября 2026 года.";
+const COMMERCIAL_LEAD = "Коммерческие сведения ограничены подтверждёнными данными Академии по состоянию на 26 октября 2026 года.";
 const NAME_THE_COURSE = "Уточните, пожалуйста, название курса. Без выбранного или названного курса я не могу определить, о какой цене идёт речь.";
 const UNCERTAINTY = composeFollowUpReferenceClarification(VY);
 const ANY_BOT = /AST_payment_course_bot/u;

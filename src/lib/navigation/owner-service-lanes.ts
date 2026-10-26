@@ -5,7 +5,6 @@ import type {
 import type { FactualIntent } from "./conversation-act-router.ts";
 import {
   ACADEMY_COMMERCIAL_AUTHORITY_AS_OF,
-  getAuthoritativeCoursePrice,
 } from "../academy/commercial-authority.ts";
 import { ACADEMY_COMMERCIAL_POLICY_ADDENDUM } from "../academy/commercial-policy-addendum.ts";
 import {
@@ -29,6 +28,7 @@ import {
   type EnrollmentPaymentAction,
 } from "../academy/payment-policy.ts";
 import { formatMeetingCount } from "./follow-up-grounding.ts";
+import { formatAuthoritativeCoursePrice } from "./commercial-price-response.ts";
 
 /**
  * NAVIGATOR-LIVE-ACCEPTANCE-1.OWNER-DEFECT-REMEDIATION-1 — the Owner-defined
@@ -37,7 +37,7 @@ import { formatMeetingCount } from "./follow-up-grounding.ts";
  *
  * Recognizers are closed phrase forms, not stems of ordinary course language.
  * Composers state only authority-backed facts: the dated commercial snapshot
- * and its 2026-10-24 addendum, the published calendar as read this turn, the
+ * and its current Owner addendum, the published calendar as read this turn, the
  * catalog snapshot, the approved payment-bot destinations and the approved
  * contact authority. Nothing here records an enrollment, a payment or a
  * discount decision.
@@ -175,10 +175,6 @@ function ruShortDate(isoDate: string): string {
   return `${day}.${month}.${year}`;
 }
 
-function formatRub(value: number): string {
-  return `${new Intl.NumberFormat("ru-RU").format(value)} ₽`;
-}
-
 /**
  * The approved contact locators of the human curator, Алексей Лебедев
  * (ACADEMY_CONTACT_POLICY.manager — Owner contact authority v1.3). `lead`
@@ -194,7 +190,7 @@ export type ServiceAnswer = {
   contactCard: AcademyContactCard | null;
 };
 
-/** C04 — installments and discounts under the Owner addendum of 2026-10-24. */
+/** C04 — installments and discounts under the current Owner addendum. */
 export function composeCommercialConditionsAnswer(): ServiceAnswer {
   const addendum = ACADEMY_COMMERCIAL_POLICY_ADDENDUM;
   const prepaymentTitles = addendum.publicPrepaymentDiscount.courseIds
@@ -206,8 +202,8 @@ export function composeCommercialConditionsAnswer(): ServiceAnswer {
     message: [
       `Условия Академии по состоянию на ${ruLongDate(addendum.asOfDate)}:`,
       addendum.installments.offered ? "• Рассрочка доступна." : "• Рассрочки нет.",
-      `• На курс ${prepaymentTitles} действует публичная скидка при полной предоплате курса. Её размер в подтверждённых данных Академии не указан, поэтому называть его я не буду.`,
-      "• По другим курсам индивидуальная скидка может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных. Решение о такой скидке принимает куратор Академии Алексей Лебедев; сам я не проверяю, учился ли человек в Академии, и не определяю право на скидку.",
+      `• На курс ${prepaymentTitles} действует публичная скидка ${addendum.publicPrepaymentDiscount.discountPercent}% при полной предоплате курса.`,
+      "• По другим курсам индивидуальная скидка может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных. Решение о такой скидке принимает куратор Академии Алексей Лебедев вручную; сам я не проверяю, учился ли человек в Академии, и не определяю право на скидку. Тихон скидку не назначает и не рассчитывает.",
       composeCuratorContactLine("По вопросам скидки можно обратиться к куратору Академии Алексею Лебедеву"),
     ].join("\n"),
     contactCard: getAcademyManagerContactCard(),
@@ -342,9 +338,9 @@ export function composeCourseOverviewWithPriceAnswer(
   if (course === null || course.url === null) {
     throw new Error("Course overview requires a routable catalog course with a public page.");
   }
-  const price = getAuthoritativeCoursePrice(courseId);
-  const priceLine = price.status === "SUPPORTED"
-    ? `Стоимость: последняя подтверждённая цена курса «${course.title}» по данным Академии на ${ruLongDate(ACADEMY_COMMERCIAL_AUTHORITY_AS_OF)} — ${formatRub(price.value)}.`
+  const price = formatAuthoritativeCoursePrice(courseId);
+  const priceLine = price !== null
+    ? `Стоимость: последняя подтверждённая цена курса «${course.title}» по данным Академии на ${ruLongDate(ACADEMY_COMMERCIAL_AUTHORITY_AS_OF)} — ${price}.`
     : `Стоимость: подтверждённой цены курса «${course.title}» в данных Академии на ${ruLongDate(ACADEMY_COMMERCIAL_AUTHORITY_AS_OF)} нет.`;
   const dateLine = calendar.status === "AVAILABLE"
     ? [

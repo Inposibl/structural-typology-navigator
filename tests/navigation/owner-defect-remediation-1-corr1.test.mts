@@ -309,7 +309,7 @@ function assertNoTransaction(turn: TurnRecord, label: string): void {
 
 /* ============================================================ OD-5 A ==== */
 
-test("CORR1 C04: every FACTUAL proposal gets exactly the NAVIGATE answer — addendum conditions, curator, no amount, no price", async () => {
+test("CORR1 C04: every FACTUAL proposal gets exactly the NAVIGATE answer — published prepayment percentage, curator, no unrequested course price", async () => {
   for (const question of [C04_LIVE, C04_OWNER]) {
     const [reference] = await apiSequence([{ user: question, propose: NAV, route: ASK_MORE }]);
     assert.deepEqual(lane(reference), { lane: "COMMERCIAL_CONDITIONS", calendar: "NOT_READ" }, question);
@@ -321,7 +321,8 @@ test("CORR1 C04: every FACTUAL proposal gets exactly the NAVIGATE answer — add
       assert.equal(turn.result.stateEffects.transactionalAuthorityVersion, ACADEMY_COMMERCIAL_POLICY_ADDENDUM_VERSION, tag);
       assert.match(turn.message, /• Рассрочки нет\./u, tag);
       assert.match(turn.message, CURATOR_CONTACTS, tag);
-      assert.doesNotMatch(turn.message, DISCOUNT_AMOUNT, tag);
+      assert.match(turn.message, /публичная скидка 20% при полной предоплате курса\./u, tag);
+      assert.doesNotMatch(turn.message.replaceAll("публичная скидка 20%", "публичная скидка"), DISCOUNT_AMOUNT, tag);
       assert.doesNotMatch(turn.message, PRICE_TEXT, `${tag}: no unrequested price`);
       assert.doesNotMatch(turn.message, SUPERSEDED_TIMING_CEILING, tag);
       assert.doesNotMatch(turn.message, ANY_BOT, tag);
@@ -491,10 +492,10 @@ test("CORR1 OD-2 boundary: the addendum rules are stated per course, only amount
     const title = getAcademyCourse(courseId)?.title;
     assert.ok(title, courseId);
     const boundary = composePaymentIntentBoundaryAnswer(courseId, VY);
-    assert.ok(boundary.includes(`Курс «${title}»: последняя подтверждённая цена по данным на 19 сентября 2026 года — `), courseId);
+    assert.ok(boundary.includes(`Курс «${title}»: последняя подтверждённая цена по данным на 26 октября 2026 года — `), courseId);
     assert.match(boundary, /Рассрочки нет\./u, courseId);
     if (courseId === "structural-typology") {
-      assert.match(boundary, /На этот курс действует публичная скидка при полной предоплате; её размер в подтверждённых данных Академии не указан\./u, courseId);
+      assert.match(boundary, /На этот курс действует публичная скидка 20% при полной предоплате\./u, courseId);
       assert.doesNotMatch(boundary, /уже учился в Академии/u, courseId);
     } else {
       assert.match(boundary, /Индивидуальная скидка на этот курс может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных; решение принимает куратор Академии Алексей Лебедев, её размер в подтверждённых данных Академии не указан\./u, courseId);
@@ -503,7 +504,7 @@ test("CORR1 OD-2 boundary: the addendum rules are stated per course, only amount
     assert.match(boundary, /Другие суммы, право на скидку и иные специальные условия в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу\./u, courseId);
     assert.doesNotMatch(boundary, SUPERSEDED_DISCOUNT_DENIAL, courseId);
     assert.doesNotMatch(boundary, DISCOUNT_DENIAL, `${courseId}: never denies the known discount rules`);
-    assert.doesNotMatch(boundary, DISCOUNT_SIZE, courseId);
+    assert.doesNotMatch(boundary.replaceAll("публичная скидка 20%", "публичная скидка"), DISCOUNT_SIZE, courseId);
     assert.match(boundary, /никакая запись или оплата сейчас не оформлена/u, courseId);
     assert.doesNotMatch(boundary, FABRICATED_TRANSACTION, courseId);
     assert.doesNotMatch(boundary, ANY_BOT, courseId);

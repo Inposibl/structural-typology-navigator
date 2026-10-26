@@ -279,7 +279,9 @@ async function apiSequence(
 }
 
 function wireState(selectedCourseId: string | null, lastAssistant?: { act: "NAVIGATE"; content: string }): unknown {
-  let state = createInitialConversationState(NOW.getTime());
+  // The HTTP route uses the system clock; this incoming state must not expire
+  // merely because the calendar fixture is pinned to 24 October.
+  let state = createInitialConversationState(Date.now());
   if (selectedCourseId !== null) state = withCourseBinding(state, "MATCHED", selectedCourseId);
   if (lastAssistant !== undefined) {
     state = withLastAssistant(state, { ...lastAssistant, courseId: selectedCourseId });
@@ -304,14 +306,14 @@ test("C04: installments/discounts get the Owner conditions directly, curator con
     assert.equal(turn.status, 200, question);
     assert.equal(turn.result.observability?.answerOrigin, "COMMERCIAL_AUTHORITY", question);
     assert.deepEqual(lane(turn), { lane: "COMMERCIAL_CONDITIONS", calendar: "NOT_READ" }, question);
-    assert.match(turn.message, /^Условия Академии по состоянию на 24 октября 2026 года:/u, question);
+    assert.match(turn.message, /^Условия Академии по состоянию на 26 октября 2026 года:/u, question);
     assert.match(turn.message, /• Рассрочки нет\./u, question);
-    assert.ok(turn.message.includes(`• На курс «${ST_TITLE}» действует публичная скидка при полной предоплате курса.`), question);
-    assert.match(turn.message, /Её размер в подтверждённых данных Академии не указан, поэтому называть его я не буду\./u, question);
+    assert.ok(turn.message.includes(`• На курс «${ST_TITLE}» действует публичная скидка 20% при полной предоплате курса.`), question);
+    assert.doesNotMatch(turn.message, /Её размер в подтверждённых данных Академии не указан/u, question);
     assert.match(turn.message, /По другим курсам индивидуальная скидка может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных\./u, question);
-    assert.match(turn.message, /Решение о такой скидке принимает куратор Академии Алексей Лебедев; сам я не проверяю, учился ли человек в Академии, и не определяю право на скидку\./u, question);
+    assert.match(turn.message, /Решение о такой скидке принимает куратор Академии Алексей Лебедев вручную; сам я не проверяю, учился ли человек в Академии, и не определяю право на скидку\./u, question);
     assert.match(turn.message, CURATOR_CONTACTS, question);
-    assert.doesNotMatch(turn.message, DISCOUNT_AMOUNT, question);
+    assert.doesNotMatch(turn.message.replaceAll("публичная скидка 20%", "публичная скидка"), DISCOUNT_AMOUNT, question);
     assert.doesNotMatch(turn.message, ANY_BOT, `${question}: curator, not Tikhon, for discretionary discounts`);
     assert.doesNotMatch(turn.message, LEARNING_GOAL_QUESTION, question);
     assert.equal((turn.contactCard as { kind?: string } | null)?.kind, "ACADEMY_MANAGER", question);
@@ -321,15 +323,15 @@ test("C04: installments/discounts get the Owner conditions directly, curator con
   }
 });
 
-test("C04 authority: the 2026-10-24 addendum supplements, and never rewrites, the dated 2026-09-19 price snapshot", () => {
-  assert.equal(ACADEMY_COMMERCIAL_AUTHORITY.authorityId, "OWNER-COMMERCIAL-AUTHORITY-2026-09-19");
-  assert.equal(ACADEMY_COMMERCIAL_AUTHORITY.asOfDate, "2026-09-19");
+test("C04 authority: the refreshed addendum supplements the current dated price snapshot", () => {
+  assert.equal(ACADEMY_COMMERCIAL_AUTHORITY.authorityId, "OWNER-COMMERCIAL-AUTHORITY-2026-10-26");
+  assert.equal(ACADEMY_COMMERCIAL_AUTHORITY.asOfDate, "2026-10-26");
   assert.deepEqual(ACADEMY_COMMERCIAL_AUTHORITY.pricesRub.maslow, { status: "SUPPORTED", value: 60_000 });
   assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.supplements, ACADEMY_COMMERCIAL_AUTHORITY.authorityId);
-  assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.asOfDate, "2026-10-24");
+  assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.asOfDate, "2026-10-26");
   assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.installments.offered, false);
   assert.deepEqual(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.publicPrepaymentDiscount.courseIds, ["structural-typology"]);
-  assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.publicPrepaymentDiscount.amount.status, "UNAVAILABLE");
+  assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.publicPrepaymentDiscount.amount.status, "SUPPORTED");
   assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.discretionaryAlumniDiscount.amount.status, "UNAVAILABLE");
   assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.discretionaryAlumniDiscount.approval, "HUMAN_CURATOR");
   assert.equal(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.discretionaryAlumniDiscount.automaticEligibilityDecision, false);
@@ -612,7 +614,7 @@ test("F02: payment status is never confirmed or denied; the curator, not the bot
 /* ============================================================== F03 ==== */
 
 function assertF03Order(message: string, label: string): void {
-  const price = message.indexOf(`Стоимость: последняя подтверждённая цена курса «Иерархия потребностей А. Маслоу: новая парадигма» по данным Академии на 19 сентября 2026 года — ${new Intl.NumberFormat("ru-RU").format(60_000)} ₽.`);
+  const price = message.indexOf(`Стоимость: последняя подтверждённая цена курса «Иерархия потребностей А. Маслоу: новая парадигма» по данным Академии на 26 октября 2026 года — ${new Intl.NumberFormat("ru-RU").format(60_000)} ₽.`);
   const date = message.indexOf("Ближайший старт:");
   const description = message.indexOf("О курсе: по каталогу Академии на 18.09.2026 курс состоит из 6 встреч. По программе курса его учебные результаты включают: ");
   const link = message.indexOf("Страница курса: https://structural-typology.academy/courses/maslow");

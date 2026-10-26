@@ -11,8 +11,9 @@ import {
 import { getPublicCourseOutcomes } from "../academy/public-course-outcomes.ts";
 import { resolveCourseReferences } from "../academy/course-reference.ts";
 import {
-  getAuthoritativeCoursePrice,
-} from "../academy/commercial-authority.ts";
+  commercialAuthorityDateRu as authorityDateRu,
+  formatAuthoritativeCoursePrice,
+} from "./commercial-price-response.ts";
 import { ACADEMY_COMMERCIAL_POLICY_ADDENDUM } from "../academy/commercial-policy-addendum.ts";
 import type { ResolvedCourseEvidence } from "../knowledge/retrieval/authority-resolver.ts";
 import type { CourseEvidenceSelection } from "../knowledge/retrieval/evidence-selector.ts";
@@ -660,21 +661,13 @@ export function composePaymentUnavailableAnswer(courseTitle: string): string {
   return `Для курса «${courseTitle}» в действующей платёжной политике нет подтверждённой ссылки на оплату. Я не буду придумывать или подменять её общей ссылкой.`;
 }
 
-function formatRub(value: number): string {
-  return `${new Intl.NumberFormat("ru-RU").format(value)} ₽`;
-}
-
-function authorityDateRu(): string {
-  return "19 сентября 2026 года";
-}
-
 /**
  * PREVIEW-LIVE-DEEPSEEK-VERIFICATION-1.MAJOR-REMEDIATION-1 (V-MAJ-02) — the
  * deterministic lead of an explicit enrollment/payment request that the payment
  * policy did not qualify for a payment link. It states the Navigator's
  * transactional limitation (nothing is enrolled, paid or booked), the dated
- * authoritative price of the uniquely identified course, the Owner commercial
- * addendum of 2026-10-24 as it applies to that course, and that no other
+ * authoritative price of the uniquely identified course, the current Owner commercial
+ * addendum as it applies to that course, and that no other
  * amount, discount size, eligibility or special condition is confirmed. It
  * never names a payment destination; the caller appends the contact-policy
  * handoff.
@@ -692,12 +685,12 @@ export function composePaymentIntentBoundaryAnswer(
   ];
   const course = courseId === null ? null : getAcademyCourse(courseId);
   if (course !== null) {
-    const price = getAuthoritativeCoursePrice(
-      course.id as Parameters<typeof getAuthoritativeCoursePrice>[0],
+    const price = formatAuthoritativeCoursePrice(
+      course.id as Parameters<typeof formatAuthoritativeCoursePrice>[0],
     );
-    if (price.status === "SUPPORTED") {
+    if (price !== null) {
       // OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-5 B) — the known addendum rules
-      // are stated as known; only the amounts, the user's eligibility and any
+      // are stated as known; only alumni amounts, the user's eligibility and any
       // other special condition remain unconfirmed.
       const addendum = ACADEMY_COMMERCIAL_POLICY_ADDENDUM;
       const prepaymentCourse = (
@@ -705,11 +698,11 @@ export function composePaymentIntentBoundaryAnswer(
       ).includes(course.id);
       lines.push(
         [
-          `Курс «${course.title}»: последняя подтверждённая цена по данным на ${authorityDateRu()} — ${formatRub(price.value)}.`,
+          `Курс «${course.title}»: последняя подтверждённая цена по данным на ${authorityDateRu()} — ${price}.`,
           addendum.installments.offered ? "Рассрочка доступна." : "Рассрочки нет.",
           prepaymentCourse
-            ? "На этот курс действует публичная скидка при полной предоплате; её размер в подтверждённых данных Академии не указан."
-            : "Индивидуальная скидка на этот курс может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных; решение принимает куратор Академии Алексей Лебедев, её размер в подтверждённых данных Академии не указан.",
+            ? `На этот курс действует публичная скидка ${addendum.publicPrepaymentDiscount.discountPercent}% при полной предоплате.`
+            : "Индивидуальная скидка на этот курс может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных; решение принимает куратор Академии Алексей Лебедев, её размер в подтверждённых данных Академии не указан. Скидку предоставляет куратор вручную; Тихон её не назначает и не рассчитывает.",
           "Другие суммы, право на скидку и иные специальные условия в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу.",
         ].join(" "),
       );
@@ -791,10 +784,10 @@ export function composeCurrentMetadataAnswer(
     for (const courseId of courseIds) {
       const course = getAcademyCourse(courseId);
       if (!course) continue;
-      const price = getAuthoritativeCoursePrice(courseId as Parameters<typeof getAuthoritativeCoursePrice>[0]);
+      const price = formatAuthoritativeCoursePrice(courseId as Parameters<typeof formatAuthoritativeCoursePrice>[0]);
       lines.push(
-        price.status === "SUPPORTED"
-          ? `• «${course.title}»: последняя подтверждённая цена по данным на ${authorityDateRu()} — ${formatRub(price.value)}.`
+        price !== null
+          ? `• «${course.title}»: последняя подтверждённая цена по данным на ${authorityDateRu()} — ${price}.`
           : `• «${course.title}»: подтверждённой цены по данным авторитета на ${authorityDateRu()} нет.`,
       );
     }

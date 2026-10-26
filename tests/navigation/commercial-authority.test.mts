@@ -9,15 +9,15 @@ import {
   getAuthoritativeCoursePrice,
 } from "../../src/lib/academy/commercial-authority.ts";
 
-test("A30: the R0 authority identity, date and five prices are exact", () => {
+test("A30: the current authority identity, date and five prices are exact", () => {
   assert.equal(
     ACADEMY_COMMERCIAL_AUTHORITY_ID,
-    "OWNER-COMMERCIAL-AUTHORITY-2026-09-19",
+    "OWNER-COMMERCIAL-AUTHORITY-2026-10-26",
   );
-  assert.equal(ACADEMY_COMMERCIAL_AUTHORITY_AS_OF, "2026-09-19");
+  assert.equal(ACADEMY_COMMERCIAL_AUTHORITY_AS_OF, "2026-10-26");
   assert.equal(
     ACADEMY_COMMERCIAL_AUTHORITY_VERSION,
-    "OWNER-COMMERCIAL-AUTHORITY-2026-09-19@2026-09-19",
+    "OWNER-COMMERCIAL-AUTHORITY-2026-10-26@2026-10-26",
   );
   assert.deepEqual(getAuthoritativeCoursePrice("structural-typology"), {
     status: "SUPPORTED",
@@ -33,7 +33,7 @@ test("A30: the R0 authority identity, date and five prices are exact", () => {
   });
   assert.deepEqual(getAuthoritativeCoursePrice("normative-situation"), {
     status: "SUPPORTED",
-    value: 45_000,
+    value: 60_000,
   });
   assert.deepEqual(getAuthoritativeCoursePrice("play-and-creativity"), {
     status: "SUPPORTED",

@@ -165,7 +165,7 @@ test("V-MAJ-01 E02: T1 resolves Play and Creativity; T2 «А сколько он
     assert.equal(t2.result.observability?.answerOrigin, "COMMERCIAL_AUTHORITY");
     assert.match(
       t2.result.message,
-      new RegExp(`«${PLAY_TITLE}»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 60 000 ₽\\.`, "u"),
+      new RegExp(`«${PLAY_TITLE}»: последняя подтверждённая цена по данным на 26 октября 2026 года — 60 000 ₽\\.`, "u"),
     );
     assert.ok(!t2.result.message.includes(MASLOW_TITLE));
     assert.ok(!UNCERTAINTY.has(t2.result.message));
@@ -306,7 +306,7 @@ function assertPaymentBoundary(
   assert.match(result.message, /никакая запись или оплата сейчас не оформлена/u, label);
   assert.match(
     result.message,
-    new RegExp(`«${MASLOW_TITLE}»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 60 000 ₽\\.`, "u"),
+    new RegExp(`«${MASLOW_TITLE}»: последняя подтверждённая цена по данным на 26 октября 2026 года — 60 000 ₽\\.`, "u"),
     label,
   );
   // OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-4/OD-5 B) — the 2026-10-24 Owner

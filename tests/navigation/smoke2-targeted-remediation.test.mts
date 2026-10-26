@@ -469,7 +469,7 @@ test("T12: a rejected act decision still reports the unavailable enrollment wind
     );
 
     assert.match(response.message, /окно набора: авторитетного значения нет/u);
-    assert.match(response.message, /19 сентября 2026 года/u);
+    assert.match(response.message, /26 октября 2026 года/u);
     assert.doesNotMatch(response.message, INVENTED_ENROLLMENT_DATE);
     assert.doesNotMatch(response.message, PAYMENT_MARKERS);
     assert.doesNotMatch(response.message, /60[\s\u00a0]?000/u);
@@ -946,7 +946,7 @@ test("a grounded price and enrollment plan remains an explicit HTTP 200 answer",
   assert.equal(counters.extract, 1);
   assert.match(success.message, /60[\s\u00a0]?000/u);
   assert.match(success.message, /окно набора: авторитетного значения нет/u);
-  assert.match(success.message, /19 сентября 2026 года/u);
+  assert.match(success.message, /26 октября 2026 года/u);
   assert.doesNotMatch(success.message, PAYMENT_MARKERS);
   assert.doesNotMatch(success.message, INVENTED_ENROLLMENT_DATE);
   assert.equal(success.conversationState.execution.lastCompletedRequestId, "arch-remediation");
@@ -1668,7 +1668,7 @@ test("duplicate active mentions and a distinct-course correction stay grounded",
     })).response,
   );
   assert.match(ordinary.message, /окно набора: авторитетного значения нет/u);
-  assert.match(ordinary.message, /19 сентября 2026 года/u);
+  assert.match(ordinary.message, /26 октября 2026 года/u);
   assert.doesNotMatch(ordinary.message, COMMERCIAL_PRICE);
   assert.doesNotMatch(ordinary.message, PAYMENT_MARKERS);
 });
@@ -2518,15 +2518,18 @@ test("record order, duplication and merged or inactive tasks stay total", async 
     { courseId: "normative-situation", surface: "Нормативная ситуация", role: "ACTIVE" },
   ], { courseIds: ["maslow", "normative-situation"] });
   assert.match(both.message, /60[\s\u00a0]?000/u);
-  assert.match(both.message, /45[\s\u00a0]?000/u);
+  assert.doesNotMatch(both.message, /45[\s\u00a0]?000/u);
   assert.ok(both.message.includes(MASLOW_TITLE), both.message);
   assert.ok(both.message.includes("Нормативная ситуация"), both.message);
   assert.equal(both.message.includes(PLAY_TITLE), false);
   const maslowAt = both.message.indexOf(MASLOW_TITLE);
   const normativeAt = both.message.indexOf("Нормативная ситуация");
   assert.ok(maslowAt >= 0 && normativeAt >= 0);
-  assert.ok(Math.abs(maslowAt - both.message.indexOf("60")) < 180);
-  assert.ok(Math.abs(normativeAt - both.message.indexOf("45")) < 180);
+  for (const title of [MASLOW_TITLE, "Нормативная ситуация"]) {
+    const line = both.message.split("\n").find((part) => part.includes(title));
+    assert.ok(line, title);
+    assert.match(line, /60[\s\u00a0]?000/u, title);
+  }
 
   const missingMany = await priceTurn(separable, [], {
     courseIds: ["maslow", "normative-situation"],
@@ -2580,7 +2583,7 @@ test("a supported guarded field stays declined by the existing composer predicat
     }),
     true,
   );
-  assert.equal(ACADEMY_COMMERCIAL_AUTHORITY_VERSION, "OWNER-COMMERCIAL-AUTHORITY-2026-09-19@2026-09-19");
+  assert.equal(ACADEMY_COMMERCIAL_AUTHORITY_VERSION, "OWNER-COMMERCIAL-AUTHORITY-2026-10-26@2026-10-26");
   assert.equal(ACADEMY_COMMERCIAL_AUTHORITY.pricesRub.maslow.status, "SUPPORTED");
   if (ACADEMY_COMMERCIAL_AUTHORITY.pricesRub.maslow.status === "SUPPORTED") {
     assert.equal(ACADEMY_COMMERCIAL_AUTHORITY.pricesRub.maslow.value, 60_000);
@@ -2656,7 +2659,7 @@ const F1_WINDOW_TEXT = "Сколько стоит этот курс? Когда 
 const STORED_DEFERRED = "Вернитесь к этому вопросу позже";
 const F1_SELECTED_COURSES = [
   { id: "maslow", title: MASLOW_TITLE, amount: /60[\s\u00a0]?000/u },
-  { id: "normative-situation", title: NORMATIVE_TITLE, amount: /45[\s\u00a0]?000/u },
+  { id: "normative-situation", title: NORMATIVE_TITLE, amount: /60[\s\u00a0]?000/u },
   { id: "play-and-creativity", title: PLAY_TITLE, amount: /60[\s\u00a0]?000/u },
 ] as const;
 const F1_OTHER_TITLES = [
@@ -2698,16 +2701,12 @@ function assertAttributedPrice(
 ): void {
   assert.match(message, amount, label);
   assert.equal(message.split(title).length - 1, 1, label);
-  assert.match(message, /19 сентября 2026 года/u, label);
+  assert.match(message, /26 октября 2026 года/u, label);
   assert.equal(message.split("Коммерческие сведения ограничены").length - 1, 1, label);
   assert.doesNotMatch(message, COURSE_NAME_CLARIFICATION, label);
   assert.doesNotMatch(message, PAYMENT_MARKERS, label);
   assert.doesNotMatch(message, /200[\s\u00a0]?000/u, label);
-  if (amount.source.startsWith("45")) {
-    assert.doesNotMatch(message, /60[\s\u00a0]?000/u, label);
-  } else {
-    assert.doesNotMatch(message, /45[\s\u00a0]?000/u, label);
-  }
+  assert.doesNotMatch(message, /45[\s\u00a0]?000/u, label);
   for (const other of F1_OTHER_TITLES) {
     if (other === title) continue;
     assert.equal(message.includes(other), false, `${label}: ${other}`);

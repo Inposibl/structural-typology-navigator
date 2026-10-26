@@ -942,7 +942,7 @@ test("S09 composition: catalog outcomes + dated commercial price, bounded call c
   // Educational segment from catalog authority, commercial segment dated.
   assert.match(recovered.message!, /Подтверждённые публичные учебные результаты курса/);
   assert.match(recovered.message!, /60\s?\u00a0000|60 000/);
-  assert.match(recovered.message!, /19 сентября 2026/);
+  assert.match(recovered.message!, /26 октября 2026/);
   // Exactly one payment line worth of no-payment-URL safety.
   assert.equal(recovered.message!.includes("t.me/AST_payment_course_bot"), false);
   const coverage = recoveryEvents(recovered).find((event) => event.event === "NAVIGATOR_INTENT_PLAN_COVERAGE");
@@ -1890,7 +1890,7 @@ test("CORR1 exact F-1 validator prices merged selected courses and similar rejec
     {
       id: "normative-situation",
       title: /«Нормативная ситуация»/u,
-      amount: /45[\s\u00a0]?000/u,
+      amount: /60[\s\u00a0]?000/u,
       absent: /Иерархия потребностей А\. Маслоу|Игра и творчество|Иерархия уровней сознания/u,
     },
     {
@@ -1919,7 +1919,7 @@ test("CORR1 exact F-1 validator prices merged selected courses and similar rejec
       assert.equal(result.counters.routeCalls, 0);
       assert.match(result.message ?? "", course.title);
       assert.match(result.message ?? "", course.amount);
-      assert.match(result.message ?? "", /19 сентября 2026 года/u);
+      assert.match(result.message ?? "", /26 октября 2026 года/u);
       assert.doesNotMatch(result.message ?? "", course.absent);
       assert.doesNotMatch(result.message ?? "", /Уточните, пожалуйста, название курса/u);
       assert.doesNotMatch(result.message ?? "", /t\.me\/|@AST_payment/u);

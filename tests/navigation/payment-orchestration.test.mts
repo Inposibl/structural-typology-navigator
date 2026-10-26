@@ -84,7 +84,7 @@ test("unconsumed narrative payment framing follows deterministic local routing",
   assert.equal(result.observability?.answerOrigin, "PAYMENT_POLICY");
   assert.match(result.message, /провести оплату сам я не могу/u);
   assert.match(result.message, /никакая запись или оплата сейчас не оформлена/u);
-  assert.match(result.message, /«Иерархия уровней сознания»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 45\u00a0000 ₽\./u);
+  assert.match(result.message, /«Иерархия уровней сознания»: последняя подтверждённая цена по данным на 26 октября 2026 года — 45\u00a0000 ₽\./u);
   // OWNER-DEFECT-REMEDIATION-1.CORR1 (OD-4/OD-5 B) — the 2026-10-24 Owner
   // addendum supersedes «скидки … или рассрочка … не указаны»: the known rules
   // are stated, only amounts, eligibility and other conditions stay unconfirmed.

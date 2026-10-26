@@ -197,7 +197,7 @@ test("R39-R43/R48: factual Academy, catalog and dated price answers bypass routi
   assert.equal(routeCalls, 0);
   assert.equal(retrievalCalls, 0);
   assert.match(result.message, /образовательный проект/u);
-  assert.match(result.message, /19 сентября 2026 года/u);
+  assert.match(result.message, /26 октября 2026 года/u);
   assert.match(result.message, /60[\s\u00a0]000 ₽/u);
   assert.doesNotMatch(result.message, /сейчас курс стоит/iu);
   assert.ok(result.stateEffects.transactionalAuthorityVersion);
@@ -213,7 +213,7 @@ test("A30: selected-course metadata is dated and missing fields stay unsupported
     },
     "maslow",
   );
-  assert.match(answer, /19 сентября 2026 года/u);
+  assert.match(answer, /26 октября 2026 года/u);
   assert.match(answer, /60[\s\u00a0]000 ₽/u);
   assert.match(answer, /расписание: авторитетного значения нет/u);
   assert.match(answer, /текущий поток: авторитетного значения нет/u);
@@ -415,7 +415,7 @@ test("R30: duplicate payment request ID does not execute orchestration twice", a
       stateEffects: {
         catalogAuthorityVersion: null,
         transactionalAuthorityVersion:
-          "OWNER-COMMERCIAL-AUTHORITY-2026-09-19@2026-09-19",
+          "OWNER-COMMERCIAL-AUTHORITY-2026-10-26@2026-10-26",
         pendingConfirmation: null,
       },
     };
@@ -449,7 +449,7 @@ test("A30: authority provenance round-trips and TTL/reset clears working provena
     ...createInitialConversationState(T0),
     catalogAuthorityVersion: "2026-09-18",
     transactionalAuthorityVersion:
-      "OWNER-COMMERCIAL-AUTHORITY-2026-09-19@2026-09-19",
+      "OWNER-COMMERCIAL-AUTHORITY-2026-10-26@2026-10-26",
   };
   const roundTrip = normalizeConversationStatePayload(raw, T0);
   assert.equal(roundTrip.catalogAuthorityVersion, "2026-09-18");

@@ -58,7 +58,7 @@ const MASLOW_PRICE_Q = "Сколько стоит курс Маслоу?";
 const PAY_THIS = "Хочу оплатить этот курс.";
 const MASLOW_TITLE = "Иерархия потребностей А. Маслоу: новая парадигма";
 const LEVELS_TITLE = "Иерархия уровней сознания";
-const MASLOW_PRICE_LINE = `«${MASLOW_TITLE}»: последняя подтверждённая цена по данным на 19 сентября 2026 года — 60 000 ₽.`;
+const MASLOW_PRICE_LINE = `«${MASLOW_TITLE}»: последняя подтверждённая цена по данным на 26 октября 2026 года — 60 000 ₽.`;
 const literal = (text: string): RegExp => new RegExp(text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"), "u");
 const IDENTITY_REQUIRED = composePaymentCourseIdentityRequiredAnswer(VY);
 const ANY_BOT = /AST_payment_course_bot/u;
