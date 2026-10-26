@@ -2528,7 +2528,7 @@ test("record order, duplication and merged or inactive tasks stay total", async 
   for (const title of [MASLOW_TITLE, "Нормативная ситуация"]) {
     const line = both.message.split("\n").find((part) => part.includes(title));
     assert.ok(line, title);
-    assert.match(line, /60[\s\u00a0]?000/u, title);
+    assert.match(line, /(?<!\d)60[\s\u00a0]?000/u, title);
   }
 
   const missingMany = await priceTurn(separable, [], {
@@ -2659,7 +2659,7 @@ const F1_WINDOW_TEXT = "Сколько стоит этот курс? Когда 
 const STORED_DEFERRED = "Вернитесь к этому вопросу позже";
 const F1_SELECTED_COURSES = [
   { id: "maslow", title: MASLOW_TITLE, amount: /60[\s\u00a0]?000/u },
-  { id: "normative-situation", title: NORMATIVE_TITLE, amount: /60[\s\u00a0]?000/u },
+  { id: "normative-situation", title: NORMATIVE_TITLE, amount: /(?<!\d)60[\s\u00a0]?000/u },
   { id: "play-and-creativity", title: PLAY_TITLE, amount: /60[\s\u00a0]?000/u },
 ] as const;
 const F1_OTHER_TITLES = [

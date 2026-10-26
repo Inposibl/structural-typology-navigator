@@ -501,7 +501,12 @@ test("CORR1 OD-2 boundary: the addendum rules are stated per course, only amount
       assert.match(boundary, /Индивидуальная скидка на этот курс может быть рассмотрена только для тех, кто уже учился в Академии и есть в её учётных данных; решение принимает куратор Академии Алексей Лебедев, её размер в подтверждённых данных Академии не указан\./u, courseId);
       assert.doesNotMatch(boundary, /публичная скидка при полной предоплате/u, courseId);
     }
-    assert.match(boundary, /Другие суммы, право на скидку и иные специальные условия в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу\./u, courseId);
+    if (courseId === "structural-typology") {
+      assert.match(boundary, /Тариф полной предоплаты и публичная скидка подтверждены/u, courseId);
+      assert.doesNotMatch(boundary, /право на скидку.*подтвердить их я не могу/u, courseId);
+    } else {
+      assert.match(boundary, /Другие суммы, право на скидку и иные специальные условия в подтверждённых данных Академии не указаны, поэтому подтвердить их я не могу\./u, courseId);
+    }
     assert.doesNotMatch(boundary, SUPERSEDED_DISCOUNT_DENIAL, courseId);
     assert.doesNotMatch(boundary, DISCOUNT_DENIAL, `${courseId}: never denies the known discount rules`);
     assert.doesNotMatch(boundary.replaceAll("публичная скидка 20%", "публичная скидка"), DISCOUNT_SIZE, courseId);

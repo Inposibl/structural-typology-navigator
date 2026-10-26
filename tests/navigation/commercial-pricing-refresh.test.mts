@@ -30,7 +30,8 @@ test("commercial refresh: the active snapshot is dated 26 October and Normative 
     composeCourseOverviewWithPriceAnswer("normative-situation", { status: "UNAVAILABLE", reason: "NETWORK" }),
   ]) {
     assert.match(answer, /26 октября 2026 года/u);
-    assert.ok(answer.includes(rub(60_000)), answer);
+    assert.match(answer, /«Нормативная ситуация»[^\n]* — 60[\s\u00a0]?000 ₽\./u);
+    assert.doesNotMatch(answer, /(?<!\d)160[\s\u00a0]?000 ₽/u);
     assert.ok(!answer.includes(rub(45_000)), answer);
     assert.ok(!answer.includes(rub(42_000)), answer);
   }
@@ -42,14 +43,14 @@ test("commercial refresh: every Structural Typology price surface distinguishes 
     composePaymentIntentBoundaryAnswer("structural-typology"),
     composeCourseOverviewWithPriceAnswer("structural-typology", { status: "UNAVAILABLE", reason: "NETWORK" }),
   ]) {
-    for (const amount of [200_000, 160_000, 50_000, 100_000]) {
-      assert.ok(answer.includes(rub(amount)), answer);
-    }
-    assert.match(answer, /базов/iu);
-    assert.match(answer, /полной предоплат/iu);
-    assert.match(answer, /20%/u);
-    for (const title of ["Введение в теорию", "Основной курс", "Экспертный уровень"]) {
-      assert.ok(answer.includes(title), answer);
+    assert.match(answer, /200[\s\u00a0]?000 ₽ \(базовая стоимость\)/u);
+    assert.match(answer, /при полной предоплате — 160[\s\u00a0]?000 ₽ \(публичная скидка 20%\)/u);
+    for (const [title, amount] of [
+      ["Введение в теорию", 50_000],
+      ["Основной курс", 100_000],
+      ["Экспертный уровень", 50_000],
+    ] as const) {
+      assert.ok(answer.includes(`«${title}» — ${rub(amount)}`), answer);
     }
   }
 });
@@ -86,4 +87,12 @@ test("commercial refresh: the superseded snapshot remains dated September and ma
   assert.equal(manual.automaticEligibilityDecision, false);
   assert.equal(manual.amount.status, "UNAVAILABLE");
   assert.deepEqual(ACADEMY_COMMERCIAL_POLICY_ADDENDUM.publicPrepaymentDiscount.amount, { status: "SUPPORTED", value: 40_000 });
+});
+
+
+test("commercial refresh: the payment boundary keeps public prepayment confirmed and limits only additional personal terms", () => {
+  const answer = composePaymentIntentBoundaryAnswer("structural-typology");
+  assert.match(answer, /Тариф полной предоплаты и публичная скидка подтверждены/u);
+  assert.match(answer, /дополнительные индивидуальные условия.*куратором Академии вручную/u);
+  assert.doesNotMatch(answer, /право на скидку.*подтвердить их я не могу/u);
 });

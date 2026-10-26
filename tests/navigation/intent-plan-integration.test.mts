@@ -1890,7 +1890,7 @@ test("CORR1 exact F-1 validator prices merged selected courses and similar rejec
     {
       id: "normative-situation",
       title: /«Нормативная ситуация»/u,
-      amount: /60[\s\u00a0]?000/u,
+      amount: /(?<!\d)60[\s\u00a0]?000/u,
       absent: /Иерархия потребностей А\. Маслоу|Игра и творчество|Иерархия уровней сознания/u,
     },
     {
